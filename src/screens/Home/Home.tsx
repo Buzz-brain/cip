@@ -4,6 +4,14 @@ import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import { Separator } from "../../components/ui/separator";
 import { Link } from "react-router-dom";
 
+import logoImg from "@assets/cip-logo.png";
+import headerImg from "@assets/header-1.svg";
+import shieldImg from "@assets/shield-1.svg";
+import divIcon from "@assets/ethereum.png";
+import div1Icon from "@assets/polygon.png";
+import div2Icon from "@assets/bnb-logo.png";
+import solIcon from "@assets/solana.png";
+
 const navigationItems = [
   { label: "How it Works", href: "#" },
   { label: "TaxCore", href: "#" },
@@ -12,15 +20,15 @@ const navigationItems = [
 ];
 
 const blockchains = [
-  { name: "BNB Chain", icon: "/div-2.svg" },
-  { name: "Polygon", icon: "/div-1.svg" },
-  { name: "Ethereum", icon: "/div.svg" },
-  { name: "Solana", icon: "/sol.svg" },
+  { name: "BNB Chain", icon: div2Icon },
+  { name: "Polygon", icon: div1Icon },
+  { name: "Ethereum", icon: divIcon },
+  { name: "Solana", icon: solIcon },
 ];
 
 const coreCapabilities = [
   {
-    icon: "/ic-baseline-timer.svg",
+    icon: "@assets/timer.svg",
     title: "Dead Man's Switch",
     description:
       "Automated triggers based on wallet inactivity or oracle verification. Customizable heartbeat periods from 3 months to 5 years.",
@@ -135,12 +143,8 @@ export const Home = (): JSX.Element => {
           <div className="container mx-auto px-4">
             <nav className="flex items-center justify-between h-16">
               <div className="flex items-center gap-1">
-                <div className="w-10 h-10 bg-[#ff6600] rounded-lg flex items-center justify-center">
-                  <img
-                    src="/logo-3-2.png"
-                    alt="Logo"
-                    className="w-[25px] h-[31px] object-cover"
-                  />
+                <div>
+                  <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
                 </div>
                 <span className="[font-family:'Space_Grotesk',Helvetica] text-[19.4px] font-bold text-white">
                   CIP
@@ -169,7 +173,7 @@ export const Home = (): JSX.Element => {
 
         <section className="relative bg-[#060605] py-20">
           <img
-            src="/header-1.png"
+            src={headerImg}
             alt="Header"
             className="absolute top-0 left-0 w-full h-full object-cover opacity-50"
           />
@@ -179,10 +183,6 @@ export const Home = (): JSX.Element => {
               <div className="space-y-6">
                 <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-7xl leading-[72px]">
                   <span className="text-white">Secure Your Digital Legacy</span>
-                  <br />
-                  <span className="bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-                    Legacy Across Chains
-                  </span>
                 </h2>
                 <p className="[font-family:'Noto_Sans',Helvetica] font-light text-slate-300 text-xl max-w-2xl mx-auto">
                   Automated, non-custodial inheritance for the multi-chain
@@ -197,13 +197,12 @@ export const Home = (): JSX.Element => {
                 </Button>
                 <Button
                   variant="outline"
-                  className="bg-[#111111] border-[#bd4b00] [font-family:'Noto_Sans',Helvetica] font-bold"
+                  className="bg-[#111111] text-[#ffffff] border-[#bd4b00] [font-family:'Noto_Sans',Helvetica] font-bold"
                 >
-                  <img
-                    src="/solar-play-bold.svg"
-                    alt=""
-                    className="w-[18px] h-[18px] mr-2"
-                  />
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16.0568 7.01474C16.417 7.2063 16.7183 7.49226 16.9284 7.84198C17.1385 8.1917 17.2495 8.592 17.2495 8.99999C17.2495 9.40798 17.1385 9.80828 16.9284 10.158C16.7183 10.5077 16.417 10.7937 16.0568 10.9852L6.44775 16.2105C4.9005 17.0527 3 15.9577 3 14.226V3.77474C3 2.04224 4.9005 0.947986 6.44775 1.78874L16.0568 7.01474Z" fill="white"/>
+</svg>
+
                   View Demo
                 </Button>
               </div>
@@ -570,11 +569,7 @@ export const Home = (): JSX.Element => {
                     />
                   </div>
                 </div>
-                <img
-                  src="/shield-1.png"
-                  alt="Shield"
-                  className="w-[252px] h-[277px]"
-                />
+                <img src={shieldImg} alt="Shield" className="w-[252px] h-[277px]" />
               </CardContent>
             </Card>
           </div>
@@ -587,11 +582,7 @@ export const Home = (): JSX.Element => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 bg-[#ff6600] rounded-lg flex items-center justify-center">
-                      <img
-                        src="/logo-3-2.png"
-                        alt="Logo"
-                        className="w-5 h-6 object-cover"
-                      />
+                      <img src={logoImg} alt="Logo" className="w-5 h-6 object-cover" />
                     </div>
                     <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
                       CIP
