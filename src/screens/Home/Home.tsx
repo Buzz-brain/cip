@@ -5,12 +5,15 @@ import { Separator } from "../../components/ui/separator";
 import { Link } from "react-router-dom";
 
 import logoImg from "@assets/cip-logo.png";
-import headerImg from "@assets/header-1.svg";
+import homeBgImg from "@assets/home-bg.svg";
 import shieldImg from "@assets/shield-1.svg";
 import divIcon from "@assets/ethereum.png";
 import div1Icon from "@assets/polygon.png";
 import div2Icon from "@assets/bnb-logo.png";
 import solIcon from "@assets/solana.png";
+import timerIcon from "@assets/timer.svg";
+import verifiedUserIcon from "@assets/verified-user.svg";
+import accBalWallet from "@assets/acc-bal-wallet.svg";
 
 const navigationItems = [
   { label: "How it Works", href: "#" },
@@ -28,19 +31,19 @@ const blockchains = [
 
 const coreCapabilities = [
   {
-    icon: "@assets/solana.png",
+    icon: timerIcon,
     title: "Dead Man's Switch",
     description:
       "Automated triggers based on wallet inactivity or oracle verification. Customizable heartbeat periods from 3 months to 5 years.",
   },
   {
-    icon: "/iconoir-verified-user.svg",
+    icon: verifiedUserIcon,
     title: "Beneficiary KYB",
     description:
       "Integrated Know Your Beneficiary compliance checks ensure assets are only transferred to verified identities, meeting global regulatory standards.",
   },
   {
-    icon: "/material-symbols-account-balance-wallet.svg",
+    icon: accBalWallet,
     title: "Asset Aggregation",
     description:
       "Consolidate assets from multiple wallets and chains into a single abstract smart account for unified distribution.",
@@ -173,8 +176,8 @@ export const Home = (): JSX.Element => {
 
         <section className="relative bg-[#060605] py-20">
           <img
-            src={headerImg}
-            alt="Header"
+            src={homeBgImg}
+            alt="Home Background"
             className="absolute top-0 left-0 w-full h-full object-cover opacity-50"
           />
 
