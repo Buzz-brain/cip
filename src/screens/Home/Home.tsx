@@ -13,7 +13,16 @@ import div2Icon from "@assets/bnb-logo.png";
 import solIcon from "@assets/solana.png";
 import timerIcon from "@assets/timer.svg";
 import verifiedUserIcon from "@assets/verified-user.svg";
-import accBalWallet from "@assets/acc-bal-wallet.svg";
+import accBalWalletIcon from "@assets/acc-bal-wallet.svg";
+import barChartIcon from "@assets/bar-chart.svg";
+import calculatorIcon from "@assets/calculator.svg";
+import downloadIcon from "@assets/download.svg";
+import starIcon from "@assets/star.svg";
+import chartIcon from "@assets/chart.svg";
+import happyFaceIcon from "@assets/happy-face.svg"
+import keyIcon from "@assets/key.svg";
+import checkPinkCircle from "@assets/check-purple-circle.svg";
+import checkGreenCircle from "@assets/check-green-circle.svg";
 
 const navigationItems = [
   { label: "How it Works", href: "#" },
@@ -43,7 +52,7 @@ const coreCapabilities = [
       "Integrated Know Your Beneficiary compliance checks ensure assets are only transferred to verified identities, meeting global regulatory standards.",
   },
   {
-    icon: accBalWallet,
+    icon: accBalWalletIcon,
     title: "Asset Aggregation",
     description:
       "Consolidate assets from multiple wallets and chains into a single abstract smart account for unified distribution.",
@@ -70,20 +79,22 @@ const taxCoreSteps = [
 
 const featureCards = [
   {
-    icon: "/material-symbols-child-care-outline.svg",
+    icon: happyFaceIcon,
     title: "Children's Trust Accounts",
     description:
       "Create time-locked vaults for minor beneficiaries. Set automated drip-feeds for tuition or monthly allowances unlocked only after specific dates or milestones.",
     features: ["18th Birthday Release", "Tuition Direct-Pay"],
     bgColor: "bg-[#ec48991a]",
+    featureIcon: checkPinkCircle
   },
   {
-    icon: "/wpf-key-security.svg",
+    icon: keyIcon,
     title: "MPC Security Architecture",
     description:
       "We use Multi-Party Computation to shard private keys. No single entity—including us—can access your funds. Recovery requires a threshold of shards.",
     features: ["Non-custodial by design", "SOC 2 Type II Audited"],
     bgColor: "bg-[#22c55e1a]",
+    featureIcon: checkGreenCircle
   },
 ];
 
@@ -281,9 +292,10 @@ export const Home = (): JSX.Element => {
             <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
               <div className="space-y-10">
                 <div className="space-y-6">
-                  <Badge className="bg-[#f6a83b1a] border-[#f6b13b33] text-[#faaf60] [font-family:'Noto_Sans',Helvetica] font-bold">
+                  <Badge 
+                  className="bg-[#f6a83b1a] border-[#f6b13b33] !pl-4 !pr-20 !pt-2 !pb-2 text-[#faaf60] [font-family:'Noto_Sans',Helvetica] font-bold rounded-3xl">
                     <img
-                      src="/majesticons-analytics-line.svg"
+                      src={barChartIcon}
                       alt=""
                       className="w-4 h-4 mr-2"
                     />
@@ -320,18 +332,18 @@ export const Home = (): JSX.Element => {
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-[#f6b13b33] rounded flex items-center justify-center">
                         <img
-                          src="/material-symbols-calculate.svg"
+                          src={calculatorIcon}
                           alt=""
-                          className="w-6 h-6"
+                          className="w-4 h-4"
                         />
                       </div>
                       <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white">
                         TaxCore CalculatorIcon
                       </span>
                     </div>
-                    <Badge className="bg-[#22c55e1a] border-[#22c55e33] text-green-400">
+                    <Badge className="bg-[#22c55e1a] border-[#22c55e33] text-green-400 p-2">
                       <img
-                        src="/tabler-download.svg"
+                        src={downloadIcon}
                         alt=""
                         className="w-4 h-4 mr-1"
                       />
@@ -374,9 +386,9 @@ export const Home = (): JSX.Element => {
                         </p>
                         <div className="flex items-center gap-1">
                           <img
-                            src="/fluent-data-trending-24-filled.svg"
+                            src={chartIcon}
                             alt=""
-                            className="w-3.5 h-3.5"
+                            className="w-3 h-3"
                           />
                           <span className="[font-family:'Noto_Sans',Helvetica] text-red-400 text-[10px]">
                             +12% since inception
@@ -401,7 +413,7 @@ export const Home = (): JSX.Element => {
 
                   <div className="bg-[#ff66001a] border border-[#ff66004d] rounded-lg p-4 flex gap-4">
                     <img
-                      src="/ic-baseline-auto-awesome.svg"
+                      src={starIcon}
                       alt=""
                       className="w-6 h-6 flex-shrink-0"
                     />
@@ -435,7 +447,7 @@ export const Home = (): JSX.Element => {
                   className="bg-[#332619] border-[#674932] relative overflow-hidden"
                 >
                   <CardContent className="p-8 space-y-6 relative z-10">
-                    <div className="w-12 h-12 bg-[#ec489933] rounded-lg flex items-center justify-center">
+                    <div className={`w-12 h-12 ${card.bgColor} rounded-lg flex items-center justify-center`}>
                       <img src={card.icon} alt="" className="w-6 h-6" />
                     </div>
                     <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
@@ -448,9 +460,8 @@ export const Home = (): JSX.Element => {
                       {card.features.map((feature) => (
                         <div key={feature} className="flex items-center gap-2">
                           <img
-                            src="/material-symbols-check-circle-outline.svg"
+                            src={card.featureIcon}                          
                             alt=""
-                            className="w-3.5 h-3.5"
                           />
                           <span className="[font-family:'Noto_Sans',Helvetica] text-slate-300 text-sm">
                             {feature}
