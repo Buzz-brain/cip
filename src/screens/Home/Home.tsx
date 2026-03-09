@@ -2,15 +2,16 @@ import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import { Separator } from "../../components/ui/separator";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
+import { Navbar } from "../../components/ui/Navbar";
 
-import logoImg from "@assets/cip-logo.png";
+import logoImg from "@assets/cip-logo.svg";
 import homeBgImg from "@assets/home-bg.svg";
 import shieldImg from "@assets/shield-1.svg";
-import divIcon from "@assets/ethereum.png";
-import div1Icon from "@assets/polygon.png";
-import div2Icon from "@assets/bnb-logo.png";
-import solIcon from "@assets/solana.png";
+import divIcon from "@assets/ethereum.svg";
+import div1Icon from "@assets/polygon.svg";
+import div2Icon from "@assets/bnb-logo.svg";
+import solIcon from "@assets/solana.svg";
 import timerIcon from "@assets/timer.svg";
 import verifiedUserIcon from "@assets/verified-user.svg";
 import accBalWallet from "@assets/acc-bal-wallet.svg";
@@ -142,37 +143,11 @@ export const Home = (): JSX.Element => {
   return (
     <div className="min-h-screen bg-[#1e1e1e]">
       <div className="bg-black">
-        <header className="bg-[#0d0501] border-b border-[#483423]">
-          <div className="container mx-auto px-4">
-            <nav className="flex items-center justify-between h-16">
-              <div className="flex items-center gap-1">
-                <div>
-                  <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
-                </div>
-                <span className="[font-family:'Space_Grotesk',Helvetica] text-[19.4px] font-bold text-white">
-                  CIP
-                </span>
-              </div>
-
-              <div className="flex items-center gap-8">
-                <div className="flex items-center gap-6">
-                  {navigationItems.map((item) => (
-                    <Link
-                      key={item.label}
-                      to={item.href}
-                      className="[font-family:'Noto_Sans',Helvetica] font-medium text-slate-300 text-sm hover:text-white transition-colors"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-                <Button className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 [font-family:'Noto_Sans',Helvetica] font-bold text-sm">
-                  Launch App
-                </Button>
-              </div>
-            </nav>
-          </div>
-        </header>
+        <Navbar
+          logo={logoImg}
+          navItems={navigationItems}
+          rightActions={<Button className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 [font-family:'Noto_Sans',Helvetica] font-bold text-sm">Launch App</Button>}
+        />
 
         <section className="relative bg-[#060605] py-20">
           <img
