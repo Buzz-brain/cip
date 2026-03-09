@@ -2,8 +2,8 @@ import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import { Separator } from "../../components/ui/separator";
-// import { Link } from "react-router-dom";
 import { Navbar } from "../../components/ui/Navbar";
+// import { Link } from "react-router-dom";
 
 import logoImg from "@assets/cip-logo.svg";
 import homeBgImg from "@assets/home-bg.svg";
@@ -162,7 +162,10 @@ export const Home = (): JSX.Element => {
           logo={logoImg}
           navItems={navigationItems}
           rightActions={
-            <Button className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 [font-family:'Noto_Sans',Helvetica] font-bold text-sm">
+            <Button
+              className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 [font-family:'Noto_Sans',Helvetica] font-bold text-sm"
+              onClick={() => window.location.href = '/onboarding/step-one'}
+            >
               Launch App
             </Button>
           }
@@ -189,12 +192,13 @@ export const Home = (): JSX.Element => {
               </div>
 
               <div className="flex items-center justify-center gap-4">
-                <Button className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 shadow-[0px_0px_20px_#ff6633cc] [font-family:'Noto_Sans',Helvetica] font-bold">
+                <Button className="bg-gradient-to-r px-7 py-5 from-[#ff6600] to-[#993d00] hover:opacity-90 shadow-[0px_0px_20px_#ff6633cc] [font-family:'Noto_Sans',Helvetica] font-bold">
                   Start Plan
                 </Button>
+
                 <Button
                   variant="outline"
-                  className="bg-[#111111] text-[#ffffff] border-[#bd4b00] [font-family:'Noto_Sans',Helvetica] font-bold"
+                  className="bg-[#111111] px-5 py-5 border-[#bd4b00] [font-family:'Noto_Sans',Helvetica] font-bold"
                 >
                   <svg
                     width="18"

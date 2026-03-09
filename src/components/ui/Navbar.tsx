@@ -31,7 +31,11 @@ export const Navbar = ({
         <nav className={`flex items-center justify-between ${navHeight}`}>
           <div className="flex items-center gap-1">
             <div>
-              {logo ? <img src={logo} alt="Logo" className={logoClassName} /> : null}
+              {logo ? (
+                <Link to="/onboarding/step-one">
+                  <img src={logo} alt="Logo" className={logoClassName} />
+                </Link>
+              ) : null}
             </div>
             <span className="[font-family:'Space_Grotesk',Helvetica] text-[19.4px] font-bold text-white">
               {brand}
