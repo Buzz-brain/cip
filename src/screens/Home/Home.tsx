@@ -28,7 +28,7 @@ const blockchains = [
 
 const coreCapabilities = [
   {
-    icon: "@assets/timer.svg",
+    icon: "@assets/solana.png",
     title: "Dead Man's Switch",
     description:
       "Automated triggers based on wallet inactivity or oracle verification. Customizable heartbeat periods from 3 months to 5 years.",
