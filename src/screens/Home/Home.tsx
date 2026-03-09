@@ -7,7 +7,7 @@ import { Navbar } from "../../components/ui/Navbar";
 
 import logoImg from "@assets/cip-logo.svg";
 import homeBgImg from "@assets/home-bg.svg";
-import shieldImg from "@assets/shield-1.svg";
+import shieldCheckImg from "@assets/shield-check.svg";
 import divIcon from "@assets/ethereum.svg";
 import div1Icon from "@assets/polygon.svg";
 import div2Icon from "@assets/bnb-logo.svg";
@@ -24,6 +24,10 @@ import happyFaceIcon from "@assets/happy-face.svg"
 import keyIcon from "@assets/key.svg";
 import checkPinkCircle from "@assets/check-purple-circle.svg";
 import checkGreenCircle from "@assets/check-green-circle.svg";
+import sharpCheckWhite from "@assets/sharp-check-white.svg";
+import sharpCheckSolid from "@assets/sharp-check-solid.svg";
+import arrowForward from "@assets/arrow-forward.svg";
+
 
 const navigationItems = [
   { label: "How it Works", href: "#" },
@@ -106,7 +110,7 @@ const pricingPlans = [
     period: "/mo",
     description: "For single-chain assets.",
     features: [
-      { text: "1 WalletIcon Connected", included: true },
+      { text: "1 Wallet Connected", included: true },
       { text: "Basic Beneficiary triggers", included: true },
     ],
     buttonText: "Start Free",
@@ -157,7 +161,11 @@ export const Home = (): JSX.Element => {
         <Navbar
           logo={logoImg}
           navItems={navigationItems}
-          rightActions={<Button className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 [font-family:'Noto_Sans',Helvetica] font-bold text-sm">Launch App</Button>}
+          rightActions={
+            <Button className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 [font-family:'Noto_Sans',Helvetica] font-bold text-sm">
+              Launch App
+            </Button>
+          }
         />
 
         <section className="relative bg-[#060605] py-20">
@@ -188,10 +196,18 @@ export const Home = (): JSX.Element => {
                   variant="outline"
                   className="bg-[#111111] text-[#ffffff] border-[#bd4b00] [font-family:'Noto_Sans',Helvetica] font-bold"
                 >
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M16.0568 7.01474C16.417 7.2063 16.7183 7.49226 16.9284 7.84198C17.1385 8.1917 17.2495 8.592 17.2495 8.99999C17.2495 9.40798 17.1385 9.80828 16.9284 10.158C16.7183 10.5077 16.417 10.7937 16.0568 10.9852L6.44775 16.2105C4.9005 17.0527 3 15.9577 3 14.226V3.77474C3 2.04224 4.9005 0.947986 6.44775 1.78874L16.0568 7.01474Z" fill="white"/>
-</svg>
-
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 18 18"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M16.0568 7.01474C16.417 7.2063 16.7183 7.49226 16.9284 7.84198C17.1385 8.1917 17.2495 8.592 17.2495 8.99999C17.2495 9.40798 17.1385 9.80828 16.9284 10.158C16.7183 10.5077 16.417 10.7937 16.0568 10.9852L6.44775 16.2105C4.9005 17.0527 3 15.9577 3 14.226V3.77474C3 2.04224 4.9005 0.947986 6.44775 1.78874L16.0568 7.01474Z"
+                      fill="white"
+                    />
+                  </svg>
                   View Demo
                 </Button>
               </div>
@@ -267,13 +283,8 @@ export const Home = (): JSX.Element => {
             <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
               <div className="space-y-10">
                 <div className="space-y-6">
-                  <Badge 
-                  className="bg-[#f6a83b1a] border-[#f6b13b33] !pl-4 !pr-20 !pt-2 !pb-2 text-[#faaf60] [font-family:'Noto_Sans',Helvetica] font-bold rounded-3xl">
-                    <img
-                      src={barChartIcon}
-                      alt=""
-                      className="w-4 h-4 mr-2"
-                    />
+                  <Badge className="bg-[#f6a83b1a] border-[#f6b13b33] !pl-4 !pr-20 !pt-2 !pb-2 text-[#faaf60] [font-family:'Noto_Sans',Helvetica] font-bold rounded-3xl">
+                    <img src={barChartIcon} alt="" className="w-4 h-4 mr-2" />
                     Infrastructure for Accountants
                   </Badge>
                   <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-5xl">
@@ -306,22 +317,14 @@ export const Home = (): JSX.Element => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-[#f6b13b33] rounded flex items-center justify-center">
-                        <img
-                          src={calculatorIcon}
-                          alt=""
-                          className="w-4 h-4"
-                        />
+                        <img src={calculatorIcon} alt="" className="w-4 h-4" />
                       </div>
                       <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white">
                         TaxCore CalculatorIcon
                       </span>
                     </div>
                     <Badge className="bg-[#22c55e1a] border-[#22c55e33] text-green-400 p-2">
-                      <img
-                        src={downloadIcon}
-                        alt=""
-                        className="w-4 h-4 mr-1"
-                      />
+                      <img src={downloadIcon} alt="" className="w-4 h-4 mr-1" />
                       Export PDF
                     </Badge>
                   </div>
@@ -360,11 +363,7 @@ export const Home = (): JSX.Element => {
                           $142,050.00
                         </p>
                         <div className="flex items-center gap-1">
-                          <img
-                            src={chartIcon}
-                            alt=""
-                            className="w-3 h-3"
-                          />
+                          <img src={chartIcon} alt="" className="w-3 h-3" />
                           <span className="[font-family:'Noto_Sans',Helvetica] text-red-400 text-[10px]">
                             +12% since inception
                           </span>
@@ -422,7 +421,9 @@ export const Home = (): JSX.Element => {
                   className="bg-[#332619] border-[#674932] relative overflow-hidden"
                 >
                   <CardContent className="p-8 space-y-6 relative z-10">
-                    <div className={`w-12 h-12 ${card.bgColor} rounded-lg flex items-center justify-center`}>
+                    <div
+                      className={`w-12 h-12 ${card.bgColor} rounded-lg flex items-center justify-center`}
+                    >
                       <img src={card.icon} alt="" className="w-6 h-6" />
                     </div>
                     <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
@@ -434,10 +435,7 @@ export const Home = (): JSX.Element => {
                     <div className="space-y-2">
                       {card.features.map((feature) => (
                         <div key={feature} className="flex items-center gap-2">
-                          <img
-                            src={card.featureIcon}                          
-                            alt=""
-                          />
+                          <img src={card.featureIcon} alt="" />
                           <span className="[font-family:'Noto_Sans',Helvetica] text-slate-300 text-sm">
                             {feature}
                           </span>
@@ -446,7 +444,7 @@ export const Home = (): JSX.Element => {
                     </div>
                   </CardContent>
                   <div
-                    className={`absolute bottom-0 right-0 w-40 h-40 ${card.bgColor} rounded-full blur-2xl`}
+                    className={`absolute bottom-0 right-0 w-40 h-40 ${card.bgColor} rounded-full translate-x-1/3 translate-y-1/3`}
                   />
                 </Card>
               ))}
@@ -496,7 +494,7 @@ export const Home = (): JSX.Element => {
                         <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-3xl">
                           {plan.price}
                         </span>
-                        <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-[#8b7664] text-sm">
+                        <span className="[font-family:'Manrope',Helvetica] font-bold text-[#b8a494] text-sm">
                           {plan.period}
                         </span>
                       </div>
@@ -504,7 +502,11 @@ export const Home = (): JSX.Element => {
                         {plan.features.map((feature, idx) => (
                           <div key={idx} className="flex items-center gap-2">
                             <img
-                              src="/streamline-sharp-check-solid.svg"
+                              src={
+                                plan.highlighted
+                                  ? sharpCheckSolid
+                                  : sharpCheckWhite
+                              }
                               alt=""
                               className="w-3.5 h-3.5"
                             />
@@ -521,7 +523,7 @@ export const Home = (): JSX.Element => {
                         className={`w-full ${
                           plan.highlighted
                             ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
-                            : "border-[#674932]"
+                            : "border-[#674932] bg-transparent "
                         } [font-family:'Noto_Sans',Helvetica] font-bold`}
                       >
                         {plan.buttonText}
@@ -536,7 +538,7 @@ export const Home = (): JSX.Element => {
 
         <section className="py-20">
           <div className="container mx-auto px-4">
-            <Card className="max-w-5xl mx-auto bg-gradient-to-r from-[#332319] to-[#99684b] border-[#674932]">
+            <Card className="max-w-5xl mx-auto bg-gradient-to-r from-[#332319] to-[#99684b] [#332319] border-[#674932]">
               <CardContent className="p-12 flex items-center justify-between gap-12">
                 <div className="flex-1 space-y-6">
                   <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-3xl">
@@ -551,14 +553,14 @@ export const Home = (): JSX.Element => {
                     <span className="[font-family:'Noto_Sans',Helvetica] font-bold text-[#ff6600] text-base cursor-pointer hover:underline">
                       Contact Sales
                     </span>
-                    <img
-                      src="/material-symbols-arrow-forward-rounded.svg"
-                      alt=""
-                      className="w-6 h-6"
-                    />
+                    <img src={arrowForward} alt="" className="w-5 h-5" />
                   </div>
                 </div>
-                <img src={shieldImg} alt="Shield" className="w-[252px] h-[277px]" />
+                <img
+                  src={shieldCheckImg}
+                  alt="Shield"
+                  className="w-[252px] h-[277px]"
+                />
               </CardContent>
             </Card>
           </div>
@@ -571,7 +573,11 @@ export const Home = (): JSX.Element => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 bg-[#ff6600] rounded-lg flex items-center justify-center">
-                      <img src={logoImg} alt="Logo" className="w-5 h-6 object-cover" />
+                      <img
+                        src={logoImg}
+                        alt="Logo"
+                        className="w-5 h-6 object-cover"
+                      />
                     </div>
                     <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
                       CIP
