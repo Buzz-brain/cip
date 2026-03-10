@@ -10,6 +10,9 @@ import { StepOne } from "./screens/OnboardingFlow/StepOne";
 import { StepTwo } from "./screens/OnboardingFlow/StepTwo";
 import { ConnectWallet } from "./screens/ConnectWallet";
 import { ProfileSetupForm } from "./screens/ProfileSetupForm";
+import { WalletRecovery } from "./screens/WalletRecovery";
+import { RecoveryProgress } from "./screens/RecoveryProgress";
+import { GuardianApproval } from "./screens/GuardianApproval";
 
 // import { StepThree } from "./screens/OnboardingFlow/StepThree";
 // import { StepFour } from "./screens/OnboardingFlow/StepFour";
@@ -27,6 +30,9 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/onboarding/step-two" element={<StepTwo />} />
         <Route path="/connect-wallet" element={<ConnectWallet />} />
         <Route path="/profile-setup" element={<ProfileSetupForm />} />
+        <Route path="/wallet-recovery" element={<WalletRecovery />} />
+        <Route path="/recovery-progress" element={<RecoveryProgress />} />
+        <Route path="/guardian-approval" element={<GuardianApproval />} />
         {/* <Route path="/onboarding/step-three" element={<StepThree />} />
         <Route path="/onboarding/step-four" element={<StepFour />} /> */}
       </Routes>
