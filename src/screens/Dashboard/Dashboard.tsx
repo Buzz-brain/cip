@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { Link } from "react-router-dom";
 import { Bell, Zap, Settings, CircleHelp as HelpCircle, LogOut, Plus, Eye, EyeOff, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import logoImg from "@assets/cip-logo.png";
 
 interface Plan {
   id: string;
@@ -124,9 +125,9 @@ export const Dashboard = (): JSX.Element => {
           {/* Logo */}
           <div className="p-6 border-b border-[#3a2f1e]">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-[#ff6600] rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">🛡️</span>
-              </div>
+                       <Link to="/dashboard">
+                            <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+                          </Link>
               <div>
                 <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
                   CIP Protocol

@@ -9,6 +9,8 @@ import arrowForwardWhite from "@assets/arrow-forward-white.svg";
 import circlePentagon from "@assets/circle-pentagon.svg";
 import checkGreenCircle from "@assets/check-green-circle.svg";
 import keybg from "@assets/keybg.png";
+import { Link } from "react-router-dom";
+
 
 export const StepTwo = (): JSX.Element => {
   const navigate = useNavigate();
@@ -17,13 +19,9 @@ export const StepTwo = (): JSX.Element => {
     <main className="w-full min-h-screen bg-[#221810] flex flex-col">
       <header className="w-full h-[65px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#392f28]">
         <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-10 h-10 bg-[#ff6600] rounded-lg">
-            <img
-              className="h-[31px] w-[25px] object-cover"
-              alt="Logo"
-              src={logoImg}
-            />
-          </div>
+          <Link to="/dashboard">
+            <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+          </Link>
           <div className="[font-family:'Manrope',Helvetica] font-bold text-white text-[17.6px] leading-[22px]">
             CIP Protocol
           </div>

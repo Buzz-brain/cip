@@ -14,6 +14,8 @@ import wormholeIcon from "@assets/wormhole.svg";
 import iExecTeeIcon from "@assets/iexectee.svg";
 import mpcIcon from "@assets/mpc.svg";
 import connectWallet from "@assets/connect-wallet.svg";
+import { Link } from "react-router-dom";
+
 
 const navigationLinks = [
   { label: "Docs", href: "/docs/dispute" },
@@ -63,13 +65,9 @@ export const StepOne = (): JSX.Element => {
         <header className="sticky top-0 z-50 w-full border-b border-[#37291f] bg-[#0d0501] backdrop-blur-[6px]">
           <div className="container flex h-16 items-center justify-between px-8">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ff6600]">
-                <img
-                  className="h-[31px] w-[25px] object-cover"
-                  alt="Logo"
-                  src={logoImg}
-                />
-              </div>
+                                    <Link to="/dashboard">
+                            <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+                          </Link>
               <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
                 CIP&nbsp;&nbsp;Protocol
               </span>

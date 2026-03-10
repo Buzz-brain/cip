@@ -17,6 +17,8 @@ import userIcon from "@assets/user.svg";
 import protocolIcon from "@assets/protocol.svg";
 import shieldUser from "@assets/shield-user.svg";
 import shieldLockIcon from "@assets/shield-lock.svg";
+import { Link } from "react-router-dom";
+
 
 const navigationLinks = [
   { label: "Dashboard", href: "/docs/dispute" },
@@ -32,13 +34,9 @@ export const ProfileSetupForm = (): JSX.Element => {
       <header className="sticky top-0 z-50 w-full border-b border-[#37291f] bg-[#0d0501] backdrop-blur-[6px]">
         <div className="container flex h-16 items-center justify-between px-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ff6600]">
-              <img
-                className="h-[31px] w-[25px] object-cover"
-                alt="Logo"
-                src={logoImg}
-              />
-            </div>
+            <Link to="/dashboard">
+              <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+            </Link>
             <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
               Inheritance&nbsp;&nbsp;Protocol
             </span>
@@ -277,7 +275,7 @@ export const ProfileSetupForm = (): JSX.Element => {
                       <span className="[font-family:'Manrope',Helvetica] font-medium text-white text-[13.8px] tracking-[0] leading-5">
                         Recovery requires
                       </span>
-                      <span className="[font-family:'Manrope',Helvetica] font-medium text-white text-[13.7px] tracking-[0] leading-5">
+                      <span className="[font-family:'Manrope',Helvetica] font-medium text-white text-[13.8px] tracking-[0] leading-5">
                         of guardians
                       </span>
                     </div>
