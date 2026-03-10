@@ -114,6 +114,7 @@ export const ConnectWallet = (): JSX.Element => {
           {wallets.map((wallet) => (
             <button
               key={wallet.id}
+              onClick={() => navigate("/profile-setup")}
               className="group relative p-6 rounded-2xl bg-[#2d2420] border border-[#3d3530] hover:border-[#ff6600] hover:bg-[#332b22] transition-all duration-200 cursor-pointer flex flex-col items-start gap-3 min-h-[200px] min-w-[280px]"
             >
               {wallet.badge && (
@@ -147,7 +148,7 @@ export const ConnectWallet = (): JSX.Element => {
 
         <div className="flex flex-col items-center gap-4">
           <Button
-            onClick={() => navigate("/profile")}
+            onClick={() => navigate("/wallet-recovery")}
             className="h-12 px-8 bg-[#ff6600] hover:bg-[#ff7700] [font-family:'Manrope',Helvetica] font-bold text-white text-base leading-[21px] rounded-lg gap-2"
           >
             <img src={helpIcon} alt="Icon" />
