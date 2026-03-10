@@ -3,6 +3,7 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import { Separator } from "../../components/ui/separator";
 import { Navbar } from "../../components/ui/Navbar";
+import { useNavigate } from "react-router-dom";
 // import { Link } from "react-router-dom";
 
 import logoImg from "@assets/cip-logo.svg";
@@ -155,6 +156,8 @@ const footerLinks = {
 };
 
 export const Home = (): JSX.Element => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-[#1e1e1e]">
       <div className="bg-black">
@@ -164,7 +167,7 @@ export const Home = (): JSX.Element => {
           rightActions={
             <Button
               className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 [font-family:'Noto_Sans',Helvetica] font-bold text-sm"
-              onClick={() => window.location.href = '/onboarding/step-one'}
+              onClick={() => navigate("/onboarding/step-two")}
             >
               Launch App
             </Button>
