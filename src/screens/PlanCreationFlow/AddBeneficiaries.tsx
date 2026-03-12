@@ -458,7 +458,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                             </Card>
 
                             <Button
-                                onClick={() => navigate("/review-plan")}
+                                onClick={() => navigate("/select-assets")}
                                 disabled={unallocated !== 0}
                                 className="w-full py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 disabled:bg-[#54483b] disabled:text-[#80796b] disabled:cursor-not-allowed rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40]"
                             >
