@@ -167,7 +167,7 @@ export const Home = (): JSX.Element => {
           rightActions={
             <Button
               className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 [font-family:'Noto_Sans',Helvetica] font-bold text-sm"
-              onClick={() => navigate("/onboarding/step-two")}
+              onClick={() => navigate("/onboarding/step-one")}
             >
               Launch App
             </Button>
@@ -195,7 +195,10 @@ export const Home = (): JSX.Element => {
               </div>
 
               <div className="flex items-center justify-center gap-4">
-                <Button className="bg-gradient-to-r px-7 py-5 from-[#ff6600] to-[#993d00] hover:opacity-90 shadow-[0px_0px_20px_#ff6633cc] [font-family:'Noto_Sans',Helvetica] font-bold">
+                <Button
+                  className="bg-gradient-to-r px-7 py-5 from-[#ff6600] to-[#993d00] hover:opacity-90 shadow-[0px_0px_20px_#ff6633cc] [font-family:'Noto_Sans',Helvetica] font-bold"
+                  onClick={() => navigate("/onboarding/step-one")}
+                >
                   Start Plan
                 </Button>
 
