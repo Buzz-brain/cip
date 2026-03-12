@@ -13,6 +13,11 @@ import {
     SelectValue,
 } from "../../components/ui/select";
 import { Slider } from "../../components/ui/slider";
+import connectWalletGreyIcon from "@assets/connect-wallet-grey.svg";
+import usersPlusIcon from "@assets/users-plus.svg";
+import bookCheckIcon from "@assets/book-check-grey.svg";
+import checkGreenCircleIcon from "@assets/check-green-circle.svg";
+import pieCircleIcon from "@assets/pie-circle.svg";
 
 interface Beneficiary {
     id: string;
@@ -44,9 +49,7 @@ const BENEFICIARY_COLORS = [
 ];
 
 const navigationLinks = [
-    { label: "Dashboard", href: "/docs/dispute" },
-    { label: "Create Plan", href: "#" },
-    { label: "Vaults", href: "#" },
+    { label: "Ethereum Mainnet", href: "#" },
     { label: "Settings", href: "#" },
 ];
 
@@ -155,15 +158,15 @@ export const AddBeneficiaries = (): JSX.Element => {
                                 href="/"
                                 className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] hover:text-white transition-colors flex items-center gap-2"
                             >
-                                <span>📄</span> Assets
+                                <img src={connectWalletGreyIcon} /> Assets
                             </a>
                             <ChevronRightIcon className="w-4 h-4 text-[#9dabb9]" />
-                            <span className="[font-family:'Manrope',Helvetica] font-medium text-[#ff6600] flex items-center gap-2">
-                                <span>👥</span> Beneficiaries
+                            <span className="[font-family:'Manrope',Helvetica] p-2 bg-[#FF66001A] rounded-lg font-medium text-[#ff6600] flex items-center gap-2">
+                                <img src={usersPlusIcon} /> Beneficiaries
                             </span>
                             <ChevronRightIcon className="w-4 h-4 text-[#9dabb9]" />
                             <span className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] flex items-center gap-2">
-                                <span>📋</span> Review
+                                <img src={bookCheckIcon} /> Review
                             </span>
                         </div>
 
@@ -185,7 +188,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                                 {beneficiaries.map((beneficiary, index) => (
                                     <Card
                                         key={beneficiary.id}
-                                        className="bg-[#1a1410] border-[#2c231a] rounded-xl overflow-hidden"
+                                        className="bg-[#241F1A] border-[#2c231a] rounded-xl overflow-hidden"
                                     >
                                         <CardContent className="p-6">
                                             <div className="flex items-center justify-between mb-6">
@@ -266,7 +269,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                                                     </label>
                                                     {beneficiary.walletAddress && isValidAddress(beneficiary.walletAddress) && (
                                                         <span className="flex items-center gap-1 text-green-500 text-xs font-medium">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                                            <img src={checkGreenCircleIcon} />
                                                             VALID ADDRESS
                                                         </span>
                                                     )}
@@ -339,11 +342,11 @@ export const AddBeneficiaries = (): JSX.Element => {
                         </div>
 
                         <div className="flex flex-col w-[320px] gap-6 sticky top-8">
-                            <Card className="bg-[#1a1410] border-[#2c231a] rounded-xl overflow-hidden">
+                            <Card className="bg-[#241F1A] border-[#2c231a] rounded-xl overflow-hidden">
                                 <CardContent className="p-6">
                                     <div className="flex items-center gap-2 mb-6">
                                         <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#ff660033]">
-                                            <span className="text-xl">📊</span>
+                                             <img src={pieCircleIcon} alt="Icon"/>
                                         </div>
                                         <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base">
                                             Allocation Summary
@@ -429,7 +432,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                                     </div>
 
                                     {unallocated > 0 && (
-                                        <div className="flex items-start gap-3 p-4 bg-[#78350f] border border-[#f59e0b33] rounded-lg">
+                                        <div className="flex items-start gap-3 p-4 bg-[#EAB30833] border border-[#f59e0b33] rounded-lg">
                                             <div className="flex-shrink-0 mt-0.5">
                                                 <svg
                                                     className="w-5 h-5 text-[#f59e0b]"
@@ -444,7 +447,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                                                 </svg>
                                             </div>
                                             <div className="flex flex-col gap-1">
-                                                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#f59e0b] text-xs uppercase tracking-wide">
+                                                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#FEF08ACC] text-xs uppercase tracking-wide">
                                                     Action Required
                                                 </span>
                                                 <p className="[font-family:'Manrope',Helvetica] font-normal text-[#fef3c7] text-sm leading-5">
@@ -458,8 +461,8 @@ export const AddBeneficiaries = (): JSX.Element => {
                             </Card>
 
                             <Button
-                                onClick={() => navigate("/review-plan")}
-                                disabled={unallocated !== 0}
+                                onClick={() => navigate("/choose-plan-type")}
+                                // disabled={unallocated !== 0}
                                 className="w-full py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 disabled:bg-[#54483b] disabled:text-[#80796b] disabled:cursor-not-allowed rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40]"
                             >
                                 <span className="[font-family:'Manrope',Helvetica] font-bold text-base">
