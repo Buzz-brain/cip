@@ -41,7 +41,7 @@ import robotIcon from "@assets/robot.svg";
 import shieldCheckGreen from "@assets/shield-check-green.svg";
 import connectWalletGreen from "@assets/connect-wallet-green.svg";
 import greaterThanSignIcon from "@assets/gt-sign.svg";
-import bulbIcon from "@assets/bulb-Icon.svg";
+import bulbIcon from "@assets/bulb-icon.svg";
 
 
 import logoImg from "@assets/cip-logo.png";
