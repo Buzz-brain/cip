@@ -13,6 +13,8 @@ import { ProfileSetupForm } from "./screens/ProfileSetupForm";
 import { WalletRecovery } from "./screens/WalletRecovery";
 import { RecoveryProgress } from "./screens/RecoveryProgress";
 import { GuardianApproval } from "./screens/GuardianApproval";
+import { SelectAssets } from "./screens/PlanCreationFlow/SelectAssets";
+import { AddBeneficiaries } from "./screens/PlanCreationFlow/AddBeneficiaries";
 
 // import { StepThree } from "./screens/OnboardingFlow/StepThree";
 // import { StepFour } from "./screens/OnboardingFlow/StepFour";
@@ -33,6 +35,8 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/wallet-recovery" element={<WalletRecovery />} />
         <Route path="/recovery-progress" element={<RecoveryProgress />} />
         <Route path="/guardian-approval" element={<GuardianApproval />} />
+        <Route path="/select-assets" element={<SelectAssets />} />
+        <Route path="/beneficiaries" element={<AddBeneficiaries />} />
         {/* <Route path="/onboarding/step-three" element={<StepThree />} />
         <Route path="/onboarding/step-four" element={<StepFour />} /> */}
       </Routes>
