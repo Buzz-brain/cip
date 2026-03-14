@@ -1,18 +1,13 @@
 import {
-    Clock,
     Zap,
-    Building2,
-    Heart,
-    AlertTriangle,
-    CheckSquare,
-    Users,
-    Landmark,
+    ChevronRightIcon
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import logoImg from "@assets/cip-logo.png";
 import { Progress } from "../../components/ui/progress";
 import calendarClockIcon from "@assets/calendar-clock.svg";
-import circlePentagonnIcon from "@assets/circle-pentagon.svg";
+// import circlePentagonnIcon from "@assets/circle-pentagon.svg";
 import institutionIcon from "@assets/institution.svg";
 import healthWaveIcon from "@assets/health-wave.svg";
 import timeCancelIcon from "@assets/time-cancel.svg";
@@ -20,11 +15,14 @@ import charityIcon from "@assets/charity.svg";
 import staggeredIcon from "@assets/staggered.svg";
 import groupTogetherIcon from "@assets/group-together.svg";
 import multiSigIcon from "@assets/multi-sig.svg";
+import { Button } from "../../components/ui/button";
+
 
 interface PlanType {
     id: string;
     title: string;
-    icon: React.ReactNode;
+    icon: string;
+    bgColor: string,
     description: string;
     details?: string;
     mpcConfig?: {
@@ -43,6 +41,7 @@ const planTypes: PlanType[] = [
         id: "time-lock",
         title: "Time-Lock",
         icon: calendarClockIcon,
+        bgColor: "bg-[#8A561E33]",
         description:
             "Assets unlock automatically on a pre-defined future date. Ideal for trust funds or long-term savings",
     },
@@ -50,6 +49,7 @@ const planTypes: PlanType[] = [
         id: "multi-sig",
         title: "Multi-Sig / MPC",
         icon: multiSigIcon,
+        bgColor: "bg-[#581C8733]",
         description:
             "Requires multiple signatures (e.g. 2-of-3) from trusted parties or devices to authorize asset release.",
         mpcConfig: {
@@ -79,51 +79,54 @@ const planTypes: PlanType[] = [
     {
         id: "custom",
         title: "Custom / Institutional",
-        icon: <Building2 className="w-6 h-6" />,
+        icon: institutionIcon,
+        bgColor: "bg-[#372F1F]",
         description:
             "Bespoke smart contract development for complex estates, high net worth individuals, or family offices.",
     },
     {
         id: "health-oracle",
         title: "Health Oracle",
-        icon: <Heart className="w-6 h-6" />,
+        icon: healthWaveIcon,
+        bgColor: "bg-[#7F1D1D33]",
         description:
             "Uses privacy preserving TEE oracles to verify official death certificates from trusted data providers.",
     },
     {
         id: "inactivity-oracle",
         title: "Inactivity Oracle",
-        icon: <AlertTriangle className="w-6 h-6" />,
+        icon: timeCancelIcon,
+        bgColor: "bg-[#7C2D1233]",
         description:
             'A "Dead Man\'s Switch" that triggers if your wallet remains inactive for a specified duration.',
     },
     {
-        id: "charity",
+        id: "philanthropy",
         title: "Charity / Philanthropy",
-        icon: <Landmark className="w-6 h-6" />,
+        icon: charityIcon,
+        bgColor: "bg-[#83184333]",
         description:
             "Pre-configured logic to distribute assets directly to verified non-profits and charitable organizations.",
     },
     {
         id: "staggered",
         title: "Staggered Distribution",
-        icon: <CheckSquare className="w-6 h-6" />,
+        icon: staggeredIcon,
+        bgColor: "bg-[#064E3B33]",
         description:
             "Release assets in installments over time (e.g., monthly allowances) rather than a lump sum.",
     },
     {
         id: "testamentary-dao",
         title: "Testamentary DAO",
-        icon: <Users className="w-6 h-6" />,
+        icon: groupTogetherIcon,
+        bgColor: "bg-[#816B2E33]",
         description:
             "Establish a Decentralized Autonomous Organization for beneficiaries to collectively manage inheritance.",
     },
 ];
 
-interface ChoosePlanTypesProps {
-    selectedPlan: string | null;
-    onSelectPlan: (planId: string) => void;
-}
+
 
 const navigationLinks = [
     { label: "Dashboard", href: "/docs/dispute" },
@@ -133,10 +136,8 @@ const navigationLinks = [
 ];
 
 
-export const ChoosePlanType = ({
-    selectedPlan,
-    onSelectPlan,
-}: ChoosePlanTypesProps): JSX.Element => {
+export const ChoosePlanType = (): JSX.Element => {
+    const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
     const selectedPlanData = planTypes.find((p) => p.id === selectedPlan);
 
     const navigate = useNavigate();
@@ -150,7 +151,13 @@ export const ChoosePlanType = ({
             if (selectedPlan === "staggered") {
                 navigate("/staggered-distribution");
             } else if (selectedPlan === "time-lock") {
-                navigate("/set-time-lock-date");
+                navigate("/set-time-lock");
+            } else if (selectedPlan === "philanthropy") {
+                navigate("/philanthropy-plan");
+            } else if (selectedPlan === "inactivity-oracle") {
+                navigate("/inactivity-oracle");
+            } else if (selectedPlan === "health-oracle") {
+                navigate("/health-oracle");
             } else {
                 navigate("/summary", { state: { selectedPlan } });
             }
@@ -222,7 +229,7 @@ export const ChoosePlanType = ({
                             {planTypes.map((plan) => (
                                 <button
                                     key={plan.id}
-                                    onClick={() => onSelectPlan(plan.id)}
+                                    onClick={() => setSelectedPlan(plan.id)}
                                     className={`relative p-6 rounded-lg bg-[#27231C] border-2 transition-all text-left ${selectedPlan === plan.id
                                             ? "border-orange-600"
                                             : "border-[#54493B] hover:border-orange-600"
@@ -233,8 +240,12 @@ export const ChoosePlanType = ({
                                             <div className="w-3 h-3 rounded-full bg-orange-600"></div>
                                         )}
                                     </div>
+                    <div
+                      className={`w-12 h-12 ${plan.bgColor} rounded-lg flex items-center mb-4 justify-center`}
+                    >
+                      <img src={plan.icon} alt="" className="w-6 h-6" />
+                    </div>
 
-                                    <img src={plan.icon} alt="Icon" />
                                     <h3 className="text-lg font-semibold text-white mb-2">
                                         {plan.title}
                                     </h3>
@@ -277,22 +288,28 @@ export const ChoosePlanType = ({
                                 </div>
                             </div>
                         )}
+                        
 
-                        <div className="flex justify-between items-center mt-12">
-                            <button
-                                onClick={handleBack}
-                                className="px-8 py-3 text-white border border-gray-600 rounded-lg hover:bg-gray-900 transition-colors"
-                            >
-                                Back
-                            </button>
-                            <button
-                                onClick={handleContinue}
-                                disabled={!selectedPlan}
-                                className="px-8 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                Continue
-                            </button>
-                        </div>
+                            <footer className="flex items-center justify-end pt-8 pb-12 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
+
+                                <div className="inline-flex items-start gap-4 relative flex-[0_0_auto]">
+                                    <Button
+                                        className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+                                        onClick={handleBack}
+                                    >
+                                        Back
+                                    </Button>
+
+                                    <Button
+                                        onClick={handleContinue}
+                                        className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+                                        disabled={!selectedPlan}
+                                    >
+                                        Continue
+                                        <ChevronRightIcon className="w-6 h-6" />
+                                    </Button>
+                                </div>
+                            </footer>
                     </div>
                 </div>
             </div>

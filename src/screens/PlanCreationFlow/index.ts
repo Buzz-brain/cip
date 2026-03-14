@@ -1,8 +1,11 @@
 export { AddBeneficiaries } from "./AddBeneficiaries";
 export { ChoosePlanType } from "./ChoosePlanType";
-// export { PhilantrophyPlan } from "./PhilantrophyPlan";
-// export { PlanActivatedSuccess } from "./PlanActivatedSuccess";
-// export { ReviewPlan } from "./ReviewPlan";
 export { SelectAssets } from "./SelectAssets";
-// export { StaggeredDistribution } from "./StaggeredDistribution";
-
+export { StaggeredDistribution } from "./StaggeredDistribution";
+export { PhilanthropyPlan } from "./PhilantrophyPlan";
+export { ReviewPlan } from "./ReviewPlan";
+export { PlanActivatedSuccess } from "./PlanActivatedSuccess";
+export { SetTimeLock } from "./SetTimeLock";
+export { ReviewTimeLock } from "./ReviewTimeLock";
+export { SetInactivityPeriod } from "./SetInactivityPeriod";
+export { ChooseProofOfLifeMethod } from "./ChooseProofOfLifeMethod";
