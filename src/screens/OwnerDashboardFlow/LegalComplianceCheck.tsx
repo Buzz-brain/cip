@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Alert, AlertDescription } from "../../components/ui/alert";
 import { CircleCheck as CheckCircle2, Upload, FileText, CircleAlert as AlertCircle, ShieldCheck } from "lucide-react";
 
 export const LegalComplianceCheck = (): JSX.Element => {
-  const navigate = useNavigate();
+//   const navigate = useNavigate();
   const [identityFile, setIdentityFile] = useState<File | null>(null);
   const [willFile, setWillFile] = useState<File | null>(null);
   const [executorFile, setExecutorFile] = useState<File | null>(null);
