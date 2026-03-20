@@ -102,11 +102,11 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/set-time-lock" element={<SetTimeLock />} />
         <Route path="/review-time-lock" element={<ReviewTimeLock />} />
 
-        {/* Inactivity Oracle */} ❌
+        {/* Inactivity Oracle - 2 of 5 */} ❌ 
         <Route path="/set-inactivity-period" element={<SetInactivityPeriod />} />
         <Route path="/choose-proof-of-life" element={<ChooseProofOfLifeMethod />} />
 
-        {/* Health/Death Oracle */} ❌
+        {/* Health/Death Oracle - 0 of 5 */} ❌
 
         {/* Owner Dashboard Flow */} ✅
         <Route path="/owner-dashboard" element={<OwnerDashboard />} />
@@ -155,7 +155,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/billing-history" element={<BillingHistory />} />
         <Route path="/grace-period-active" element={<GracePeriodActive />} />
 
-        {/* Mediator Flow */} ❌
+        {/* Mediator Flow */} ✅
         <Route path="/mediator-login" element={<MediatorLogin />} />
         <Route path="/mediator-forgot-password" element={<MediatorForgotPwd />} />
         <Route path="/mediator-set-new-password" element={<MediatorSetNewPwd />} />
@@ -164,12 +164,9 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/mediator-all-cases" element={<AllCases />} />
         <Route path="/mediator-dispute-queue" element={<DisputeQueue />} />
         
-        {/* Executor Dashboard Flow */} ❌
+        {/* Executor Dashboard Flow - 0 of 16 */} ❌
 
-        {/* Administrative Flows */} ❌
-
-
-        
+        {/* Administrative Flows - 0 of 15 */} ❌
 
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/asset-registry" element={<AssetRegistry />} />
