@@ -36,17 +36,37 @@ import { BillingHistory } from "./screens/BillingAndSubscription/BillingHistory"
 import { GracePeriodActive } from "./screens/BillingAndSubscription/GracePeriodActive";
 import { ChildrensTrustAccount } from "./screens/OwnerDashboardFlow/ChildrensTrustAccount"; 
 import { ComplianceSummary } from "./screens/OwnerDashboardFlow/ComplianceSummary"; 
-// import { OwnerDisputePlanExecution } from "./screens/OwnerDashboardFlow/OwnerDisputePlanExecution"; 
+import { OwnerDisputePlanExecution } from "./screens/OwnerDashboardFlow/OwnerDisputePlanExecution"; 
 import { LegalComplianceCheck } from "./screens/OwnerDashboardFlow/LegalComplianceCheck"; 
 import { MainEstateFund } from "./screens/OwnerDashboardFlow/MainEstateFund"; 
-// import { MarketVolatilityAlert } from "./screens/OwnerDashboardFlow/MarketVolatilityAlert"; 
-// import { Notifications } from "./screens/OwnerDashboardFlow/Notifications"; 
+import { MarketVolatilityAlert } from "./screens/OwnerDashboardFlow/MarketVolatilityAlert"; 
+import { Notifications } from "./screens/OwnerDashboardFlow/Notifications"; 
 import { PlanHistory } from "./screens/OwnerDashboardFlow/PlanHistory"; 
 import { RealTimeVolatility } from "./screens/OwnerDashboardFlow/RealTimeVolatility";
 import { SecureStorage } from "./screens/OwnerDashboardFlow/SecureStorage"; 
-// import { SelectJurisdiction } from "./screens/OwnerDashboardFlow/SelectJurisdiction"; 
-// import { UploadSignedDoc } from "./screens/OwnerDashboardFlow/UploadSignedDoc"; 
+import { SelectJurisdiction } from "./screens/OwnerDashboardFlow/SelectJurisdiction"; 
+import { UploadSignedDoc } from "./screens/OwnerDashboardFlow/UploadSignedDoc"; 
+import { ProofOfLifeConfig } from "./screens/ProofOfLifeConfig/ProofOfLifeConfig";
+import { ProofOfLifeCheck } from "./screens/ProofOfLifeConfig/ProofOfLifeCheck";
+import { ProofOfLifeCheckMissed } from "./screens/ProofOfLifeConfig/ProofOfLifeCheckMissed";
+import { CriticalAlert } from "./screens/ProofOfLifeConfig/CriticalAlert";
 
+import { EnterpriseLogin } from "./screens/EnterpriseFlow/EnterpriseLogin";
+// import { EnterpriseDashboard } from "./screens/EnterpriseFlow/EnterpriseDashboard";
+import { ClientManagement } from "./screens/EnterpriseFlow/ClientManagement";
+import { InheritancePlans } from "./screens/EnterpriseFlow/InheritancePlans";
+import { AccessControl } from "./screens/EnterpriseFlow/AccessControl";
+import { AuditLogs } from "./screens/EnterpriseFlow/AuditLogs";
+import { ApiDevTools } from "./screens/EnterpriseFlow/ApiDevTools";
+import { SupportCenter } from "./screens/EnterpriseFlow/SupportCenter";
+
+import { MediatorLogin } from "./screens/MediatorFlow/MediatorLogin";
+import { MediatorForgotPwd } from "./screens/MediatorFlow/MediatorForgotPwd";
+import { MediatorSetNewPwd } from "./screens/MediatorFlow/MediatorSetNewPwd";
+import { PwdResetComplete } from "./screens/MediatorFlow/PwdResetComplete";
+import { DisputeCasesOverview } from "./screens/MediatorFlow/DisputeCasesOverview";
+import { AllCases } from "./screens/MediatorFlow/AllCases";
+import { DisputeQueue } from "./screens/MediatorFlow/DisputeQueue";
 
 
 createRoot(document.getElementById("app") as HTMLElement).render(
@@ -88,19 +108,19 @@ createRoot(document.getElementById("app") as HTMLElement).render(
 
         {/* Health/Death Oracle */} ❌
 
-        {/* Owner Dashboard Flow */} ❌
+        {/* Owner Dashboard Flow */} ✅
         <Route path="/owner-dashboard" element={<OwnerDashboard />} />
         <Route path="/plan-history" element={<PlanHistory />} />
         <Route path="/childrens-trust-account" element={<ChildrensTrustAccount />} />
-        {/* <Route path="/market-volatility-alert" element={<MarketVolatilityAlert />} /> */}
+        <Route path="/market-volatility-alert" element={<MarketVolatilityAlert />} />
         <Route path="/real-time-volatility" element={<RealTimeVolatility />} />
         <Route path="/main-estate-fund" element={<MainEstateFund />} />
-        {/* <Route path="/notifications" element={<Notifications />} /> */}
-        {/* <Route path="/owner-dispute-plan-execution" element={<OwnerDisputePlanExecution />} /> */}
-        {/* <Route path="/select-jurisdiction" element={<SelectJurisdiction />} /> */}
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/owner-dispute-plan-execution" element={<OwnerDisputePlanExecution />} />
+        <Route path="/select-jurisdiction" element={<SelectJurisdiction />} />
         <Route path="/compliance-summary" element={<ComplianceSummary />} />
         <Route path="/legal-compliance-check" element={<LegalComplianceCheck />} />
-        {/* <Route path="/upload-signed-doc" element={<UploadSignedDoc />} /> */}
+        <Route path="/upload-signed-doc" element={<UploadSignedDoc />} />
         <Route path="/secure-storage" element={<SecureStorage />} />
 
         {/* Beneficiary Dashboard Flow */} ✅
@@ -112,8 +132,21 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/escrow-state-visualization" element={<EscrowStateVisualization />} />
 
         {/* Enterprise Flow */} ❌
+        <Route path="/enterprise-login" element={<EnterpriseLogin />} />
+        {/* <Route path="/enterprise-dashboard" element={<EnterpriseDashboard />} /> */}
+        <Route path="/client-management" element={<ClientManagement />} />
+        <Route path="/inheritance-plans" element={<InheritancePlans />} />
+        <Route path="/access-control" element={<AccessControl />} />
+        <Route path="/audit-logs" element={<AuditLogs />} />
+        <Route path="/api-dev-tools" element={<ApiDevTools />} />
+        <Route path="/support-center" element={<SupportCenter />} />
+
         
-        {/* Proof of Life Configuration  */} ❌
+        {/* Proof of Life Configuration  */} ✅
+        <Route path="/proof-of-life-config" element={<ProofOfLifeConfig />} />
+        <Route path="/proof-of-life-check" element={<ProofOfLifeCheck />} />
+        <Route path="/proof-of-life-check-missed" element={<ProofOfLifeCheckMissed />} />
+        <Route path="/critical-alert" element={<CriticalAlert />} />
 
         {/* Billing and Subscription Flow */} ✅
         <Route path="/billing-and-payment" element={<BillingAndPayment />} />
@@ -123,6 +156,13 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/grace-period-active" element={<GracePeriodActive />} />
 
         {/* Mediator Flow */} ❌
+        <Route path="/mediator-login" element={<MediatorLogin />} />
+        <Route path="/mediator-forgot-password" element={<MediatorForgotPwd />} />
+        <Route path="/mediator-set-new-password" element={<MediatorSetNewPwd />} />
+        <Route path="/mediator-password-reset-complete" element={<PwdResetComplete />} />
+        <Route path="/mediator-dispute-cases-overview" element={<DisputeCasesOverview />} />
+        <Route path="/mediator-all-cases" element={<AllCases />} />
+        <Route path="/mediator-dispute-queue" element={<DisputeQueue />} />
         
         {/* Executor Dashboard Flow */} ❌
 
