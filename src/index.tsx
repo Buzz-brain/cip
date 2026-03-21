@@ -68,6 +68,30 @@ import { DisputeCasesOverview } from "./screens/MediatorFlow/DisputeCasesOvervie
 import { AllCases } from "./screens/MediatorFlow/AllCases";
 import { DisputeQueue } from "./screens/MediatorFlow/DisputeQueue";
 
+import { AssignHealthOracleExec } from "./screens/HealthOracle/AssignHealthOracleExec";
+import { SelectAcceptedDocs } from "./screens/HealthOracle/SelectAcceptedDocs";
+import { HealthOracleJurisdiction } from "./screens/HealthOracle/HealthOracleJurisdiction";
+import { ReviewHealthOraclePlan } from "./screens/HealthOracle/ReviewHealthOraclePlan";
+import { ConfirmHealthOraclePlan } from "./screens/HealthOracle/ConfirmHealthOraclePlan";
+
+import { ExecutorLogin } from "./screens/ExecutorDashboardFlow/ExecutorLogin";
+import { ExecutorForgotPwd } from "./screens/ExecutorDashboardFlow/ExecutorForgotPwd";
+import { ExecutorSetNewPwd } from "./screens/ExecutorDashboardFlow/ExecutorSetNewPwd";
+import { ExecPwdResetComplete } from "./screens/ExecutorDashboardFlow/ExecPwdResetComplete";
+import { ExecutorDashboard } from "./screens/ExecutorDashboardFlow/ExecutorDashboard";
+import { ExecutorDisputePlan } from "./screens/ExecutorDashboardFlow/ExecutorDisputePlan";
+import { ExecutorAuditLog } from "./screens/ExecutorDashboardFlow/ExecutorAuditLog";
+import { ExecuteInheritancePlan } from "./screens/ExecutorDashboardFlow/ExecuteInheritancePlan";
+import { DocumentVerification } from "./screens/ExecutorDashboardFlow/DocumentVerification";
+import { Compliance } from "./screens/ExecutorDashboardFlow/Compliance";
+import { CommunicationCenter } from "./screens/ExecutorDashboardFlow/CommunicationCenter";
+import { BeneficiaryCoordination } from "./screens/ExecutorDashboardFlow/BeneficiaryCoordination";
+import { MPCShareManagement } from "./screens/ExecutorDashboardFlow/MPCShareManagement";
+import { ExecutorPlanXp } from "./screens/ExecutorDashboardFlow/ExecutorPlanXp";
+
+import { SettingsAndSecurity } from "./screens/ExecutorDashboardFlow/SettingsAndSecurity";
+import { ExecutorSecureStorage } from "./screens/ExecutorDashboardFlow/ExecutorSecureStorage";
+
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
@@ -106,7 +130,12 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/set-inactivity-period" element={<SetInactivityPeriod />} />
         <Route path="/choose-proof-of-life" element={<ChooseProofOfLifeMethod />} />
 
-        {/* Health/Death Oracle - 0 of 5 */} ❌
+        {/* Health/Death Oracle - 0 of 5 */} ✅
+        <Route path="/assign-health-oracle-exec" element={<AssignHealthOracleExec />} />
+        <Route path="/select-accepted-docs" element={<SelectAcceptedDocs />} />
+        <Route path="/health-oracle-jurisdiction" element={<HealthOracleJurisdiction />} />
+        <Route path="/review-health-oracle-plan" element={<ReviewHealthOraclePlan />} />
+        <Route path="/confirm-health-oracle-plan" element={<ConfirmHealthOraclePlan />} />
 
         {/* Owner Dashboard Flow */} ✅
         <Route path="/owner-dashboard" element={<OwnerDashboard />} />
@@ -165,6 +194,22 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/mediator-dispute-queue" element={<DisputeQueue />} />
         
         {/* Executor Dashboard Flow - 0 of 16 */} ❌
+        <Route path="/executor-login" element={<ExecutorLogin />} />
+        <Route path="/executor-forgot-password" element={<ExecutorForgotPwd />} />
+        <Route path="/executor-set-new-password" element={<ExecutorSetNewPwd />} />
+        <Route path="/executor-password-reset-complete" element={<ExecPwdResetComplete />} />
+        <Route path="/executor-dashboard" element={<ExecutorDashboard />} />
+        <Route path="/plan-xp" element={<ExecutorPlanXp />} />
+        <Route path="/document-verification" element={<DocumentVerification />} />
+        <Route path="/mpc-share-management" element={<MPCShareManagement />} />
+        <Route path="/compliance" element={<Compliance />} />
+        <Route path="/beneficiary-coordination" element={<BeneficiaryCoordination />} />   // Not Done
+        <Route path="/communication-center" element={<CommunicationCenter />} />
+        <Route path="/executor-inheritance-plan" element={<ExecuteInheritancePlan />} />
+        <Route path="/executor-audit-log" element={<ExecutorAuditLog />} />
+        <Route path="/settings-and-security" element={<SettingsAndSecurity />} />
+        <Route path="/executor-dispute-plan" element={<ExecutorDisputePlan />} />
+        <Route path="/executor-secure-storage" element={<ExecutorSecureStorage />} />
 
         {/* Administrative Flows - 0 of 15 */} ❌
 
