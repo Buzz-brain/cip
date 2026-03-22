@@ -1,15 +1,15 @@
 import { ArrowLeft, Lock } from "lucide-react";
 import { useState } from "react";
 
-interface ExecutorForgotPwdProps {
+interface AdministrativeForgotPwdProps {
   onBackToLogin?: () => void;
   onSendReset?: () => void;
 }
 
-export const ExecutorForgotPwd = ({
+export const AdministrativeForgotPwd = ({
   onBackToLogin = () => {},
   onSendReset = () => {},
-}: ExecutorForgotPwdProps): JSX.Element => {
+}: AdministrativeForgotPwdProps): JSX.Element => {
   const [email, setEmail] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {

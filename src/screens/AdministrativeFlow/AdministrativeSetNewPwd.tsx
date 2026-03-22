@@ -1,15 +1,15 @@
 import { Shield, EyeOff, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
 
-interface ExecutorSetNewPwdProps {
+interface AdministrativeSetNewPwdProps {
   onResetComplete?: () => void;
   onBackToLogin?: () => void;
 }
 
-export const ExecutorSetNewPwd = ({
+export const AdministrativeSetNewPwd = ({
   onResetComplete = () => {},
   onBackToLogin = () => {},
-}: ExecutorSetNewPwdProps): JSX.Element => {
+}: AdministrativeSetNewPwdProps): JSX.Element => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);

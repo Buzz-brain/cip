@@ -9,3 +9,6 @@ export { SetTimeLock } from "./SetTimeLock";
 export { ReviewTimeLock } from "./ReviewTimeLock";
 export { SetInactivityPeriod } from "./SetInactivityPeriod";
 export { ChooseProofOfLifeMethod } from "./ChooseProofOfLifeMethod";
+export { SetInactivityGracePeriod } from "./SetInactivityGracePeriod";
+export { ReviewInactivityOraclePlan } from "./ReviewInactivityOraclePlan";
+export { ConfirmInactivityOraclePlan } from "./ConfirmInactivityOraclePlan";

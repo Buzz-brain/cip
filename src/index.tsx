@@ -27,7 +27,14 @@ import { BeneficiaryDashboard } from "./screens/BeneficiaryFlow/BeneficiaryDashb
 import { DisputePlanExecution } from "./screens/DisputeResoqlutionFlow/DisputePlanExecution";
 import { OwnerDashboard } from "./screens/OwnerDashboardFlow/OwnerDashboard";
 import { EscrowStateVisualization } from "./screens/DisputeResoqlutionFlow/EscrowStateVisualization"; 
+
+
 import { SetInactivityPeriod } from "./screens/PlanCreationFlow/SetInactivityPeriod";
+import { SetInactivityGracePeriod } from "./screens/PlanCreationFlow/SetInactivityGracePeriod";
+import { ReviewInactivityOraclePlan } from "./screens/PlanCreationFlow/ReviewInactivityOraclePlan";
+import { ConfirmInactivityOraclePlan } from "./screens/PlanCreationFlow/ConfirmInactivityOraclePlan";
+
+
 import { ChooseProofOfLifeMethod } from "./screens/PlanCreationFlow/ChooseProofOfLifeMethod";
 import { BillingAndPayment } from "./screens/BillingAndSubscription/BillingAndPayment";
 import { SecureCheckout } from "./screens/BillingAndSubscription/SecureCheckout";
@@ -52,7 +59,7 @@ import { ProofOfLifeCheckMissed } from "./screens/ProofOfLifeConfig/ProofOfLifeC
 import { CriticalAlert } from "./screens/ProofOfLifeConfig/CriticalAlert";
 
 import { EnterpriseLogin } from "./screens/EnterpriseFlow/EnterpriseLogin";
-// import { EnterpriseDashboard } from "./screens/EnterpriseFlow/EnterpriseDashboard";
+import { EnterpriseDashboard } from "./screens/EnterpriseFlow/EnterpriseDashboard";
 import { ClientManagement } from "./screens/EnterpriseFlow/ClientManagement";
 import { InheritancePlans } from "./screens/EnterpriseFlow/InheritancePlans";
 import { AccessControl } from "./screens/EnterpriseFlow/AccessControl";
@@ -88,9 +95,17 @@ import { CommunicationCenter } from "./screens/ExecutorDashboardFlow/Communicati
 import { BeneficiaryCoordination } from "./screens/ExecutorDashboardFlow/BeneficiaryCoordination";
 import { MPCShareManagement } from "./screens/ExecutorDashboardFlow/MPCShareManagement";
 import { ExecutorPlanXp } from "./screens/ExecutorDashboardFlow/ExecutorPlanXp";
-
 import { SettingsAndSecurity } from "./screens/ExecutorDashboardFlow/SettingsAndSecurity";
 import { ExecutorSecureStorage } from "./screens/ExecutorDashboardFlow/ExecutorSecureStorage";
+
+
+import { AdministrativeLogin } from "./screens/AdministrativeFlow/AdministrativeLogin";
+import { AdministrativeForgotPwd } from "./screens/AdministrativeFlow/AdministrativeForgotPwd";
+import { AdministrativeSetNewPwd } from "./screens/AdministrativeFlow/AdministrativeSetNewPwd";
+import { AdminPwdResetComplete } from "./screens/AdministrativeFlow/AdminPwdResetComplete";
+import { AdministrativeDashboard } from "./screens/AdministrativeFlow/AdministrativeDashboard";
+import { ManageExecutors } from "./screens/AdministrativeFlow/ManageExecutors";
+import { RoleAccessControl } from "./screens/AdministrativeFlow/RoleAccessControl";
 
 
 createRoot(document.getElementById("app") as HTMLElement).render(
@@ -126,11 +141,14 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/set-time-lock" element={<SetTimeLock />} />
         <Route path="/review-time-lock" element={<ReviewTimeLock />} />
 
-        {/* Inactivity Oracle - 2 of 5 */} ❌ 
+        {/* Inactivity Oracle - 5 of 5 */} ✅ 
         <Route path="/set-inactivity-period" element={<SetInactivityPeriod />} />
         <Route path="/choose-proof-of-life" element={<ChooseProofOfLifeMethod />} />
+        <Route path="/set-inactivity-grace-period" element={<SetInactivityGracePeriod />} />
+        <Route path="/review-inactivity-oracle-plan" element={<ReviewInactivityOraclePlan />} />
+        <Route path="/confirm-inactivity-oracle-plan" element={<ConfirmInactivityOraclePlan />} />
 
-        {/* Health/Death Oracle - 0 of 5 */} ✅
+        {/* Health/Death Oracle */} ✅
         <Route path="/assign-health-oracle-exec" element={<AssignHealthOracleExec />} />
         <Route path="/select-accepted-docs" element={<SelectAcceptedDocs />} />
         <Route path="/health-oracle-jurisdiction" element={<HealthOracleJurisdiction />} />
@@ -160,9 +178,9 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/dispute-plan-execution" element={<DisputePlanExecution />} />
         <Route path="/escrow-state-visualization" element={<EscrowStateVisualization />} />
 
-        {/* Enterprise Flow */} ❌
+        {/* Enterprise Flow */} ✅
         <Route path="/enterprise-login" element={<EnterpriseLogin />} />
-        {/* <Route path="/enterprise-dashboard" element={<EnterpriseDashboard />} /> */}
+        <Route path="/enterprise-dashboard" element={<EnterpriseDashboard />} />
         <Route path="/client-management" element={<ClientManagement />} />
         <Route path="/inheritance-plans" element={<InheritancePlans />} />
         <Route path="/access-control" element={<AccessControl />} />
@@ -193,7 +211,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/mediator-all-cases" element={<AllCases />} />
         <Route path="/mediator-dispute-queue" element={<DisputeQueue />} />
         
-        {/* Executor Dashboard Flow - 0 of 16 */} ❌
+        {/* Executor Dashboard Flow - 0 of 16 */} ✅
         <Route path="/executor-login" element={<ExecutorLogin />} />
         <Route path="/executor-forgot-password" element={<ExecutorForgotPwd />} />
         <Route path="/executor-set-new-password" element={<ExecutorSetNewPwd />} />
@@ -203,7 +221,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/document-verification" element={<DocumentVerification />} />
         <Route path="/mpc-share-management" element={<MPCShareManagement />} />
         <Route path="/compliance" element={<Compliance />} />
-        <Route path="/beneficiary-coordination" element={<BeneficiaryCoordination />} />   // Not Done
+        <Route path="/beneficiary-coordination" element={<BeneficiaryCoordination />} />
         <Route path="/communication-center" element={<CommunicationCenter />} />
         <Route path="/executor-inheritance-plan" element={<ExecuteInheritancePlan />} />
         <Route path="/executor-audit-log" element={<ExecutorAuditLog />} />
@@ -211,7 +229,18 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/executor-dispute-plan" element={<ExecutorDisputePlan />} />
         <Route path="/executor-secure-storage" element={<ExecutorSecureStorage />} />
 
-        {/* Administrative Flows - 0 of 15 */} ❌
+        {/* Administrative Flows - 7 of 15 */} ❌
+        <Route path="/administrative-login" element={<AdministrativeLogin />} />
+        <Route path="/administrative-forgot-password" element={<AdministrativeForgotPwd />} />
+        <Route path="/administrative-set-new-password" element={<AdministrativeSetNewPwd />} />
+        <Route path="/administrative-password-reset-complete" element={<AdminPwdResetComplete />} />
+        <Route path="/administrative-dashboard" element={<AdministrativeDashboard />} />
+        <Route path="/manage-executors" element={<ManageExecutors />} />
+        <Route path="/role-access-control" element={<RoleAccessControl />} />
+
+
+
+
 
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/asset-registry" element={<AssetRegistry />} />
