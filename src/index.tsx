@@ -114,28 +114,28 @@ createRoot(document.getElementById("app") as HTMLElement).render(
       <Routes>
 
         {/* Landing Page */} ✅
-        <Route path="/" element={<Home />} />
-        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/" element={<Home />} /> ✅
+        <Route path="/pricing" element={<Pricing />} /> ✅
 
         {/* User Onboarding Flow */} ✅
-        <Route path="/onboarding/step-one" element={<StepOne />} />
-        <Route path="/onboarding/step-two" element={<StepTwo />} />
-        <Route path="/connect-wallet" element={<ConnectWallet />} />
-        <Route path="/profile-setup" element={<ProfileSetupForm />} />
+        <Route path="/onboarding/step-one" element={<StepOne />} /> ✅
+        <Route path="/onboarding/step-two" element={<StepTwo />} /> ✅
+        <Route path="/connect-wallet" element={<ConnectWallet />} /> ✅
+        <Route path="/profile-setup" element={<ProfileSetupForm />} /> ✅
 
         {/* Recovery Flow */} ✅
-        <Route path="/wallet-recovery" element={<WalletRecovery />} />
-        <Route path="/recovery-progress" element={<RecoveryProgress />} />
-        <Route path="/guardian-approval" element={<GuardianApproval />} />
+        <Route path="/wallet-recovery" element={<WalletRecovery />} /> ✅
+        <Route path="/recovery-progress" element={<RecoveryProgress />} /> ✅
+        <Route path="/guardian-approval" element={<GuardianApproval />} /> ✅
 
         {/* Plan Creation Flow */} ✅
-        <Route path="/select-assets" element={<SelectAssets />} />
-        <Route path="/beneficiaries" element={<AddBeneficiaries />} />
-        <Route path="/choose-plan-type" element={<ChoosePlanType />} />
-        <Route path="/staggered-distribution" element={<StaggeredDistribution />} />
-        <Route path="/philanthropy-plan" element={<PhilanthropyPlan />} />
-        <Route path="/review-plan" element={<ReviewPlan />} />
-        <Route path="/plan-activated" element={<PlanActivatedSuccess />} />
+        <Route path="/select-assets" element={<SelectAssets />} /> ✅
+        <Route path="/beneficiaries" element={<AddBeneficiaries />} /> ✅
+        <Route path="/choose-plan-type" element={<ChoosePlanType />} /> ✅
+        <Route path="/staggered-distribution" element={<StaggeredDistribution />} /> ✅
+        <Route path="/philanthropy-plan" element={<PhilanthropyPlan />} /> ✅
+        <Route path="/review-plan" element={<ReviewPlan />} /> ✅
+        <Route path="/plan-activated" element={<PlanActivatedSuccess />} /> ✅
 
         {/* TimeLock */} ✅
         <Route path="/set-time-lock" element={<SetTimeLock />} />

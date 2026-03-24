@@ -1,10 +1,14 @@
-import { ArrowLeft as ArrowLeftIcon } from "lucide-react";
+import { ArrowLeft as ArrowLeftIcon, Copy } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Checkbox } from "../../components/ui/checkbox";
+import shieldLockIcon from "../../assets/shield-lock.svg";
+import charityWhiteIcon from "../../assets/charity-white.svg";
+import christmasTreeIcon from "../../assets/christmas-tree.svg";
+import saveIcon from "../../assets/save.svg";
 
 interface Charity {
   id: string;
@@ -22,7 +26,7 @@ const charities: Charity[] = [
     network: "Ethereum",
     walletAddress: "0x71C...9A23",
     link: "redcross.org/crypto",
-    icon: "🏥",
+    icon: charityWhiteIcon,
   },
   {
     id: "2",
@@ -30,7 +34,7 @@ const charities: Charity[] = [
     network: "Solana",
     walletAddress: "GuiQ...3d4F",
     link: "Global (Reg: 88291)",
-    icon: "🌲",
+    icon: christmasTreeIcon,
   },
 ];
 
@@ -57,14 +61,10 @@ export const PhilanthropyPlan = (): JSX.Element => {
         </div>
       </header>
 
-      <main className="w-full max-w-[597px] mx-auto px-6 py-10 flex flex-col gap-10">
+      <main className="w-full max-w-[768px] mx-auto px-6 py-10 flex flex-col gap-10">
         <section className="flex flex-col gap-4">
           <div className="flex items-center gap-2">
-            <img
-              className="w-4 h-4"
-              alt="Back"
-              src="/material-symbols-arrow-back.svg"
-            />
+            <img className="w-4 h-4" alt="Back" src={shieldLockIcon} />
             <span className="[font-family:'Manrope',Helvetica] font-medium text-[#ff6600] text-sm leading-5">
               Inheritance Protocol
             </span>
@@ -105,21 +105,21 @@ export const PhilanthropyPlan = (): JSX.Element => {
               </div>
             </div>
 
-            <div className="flex items-center justify-center w-10 h-10 bg-[#3b251e] rounded-full">
-              <span className="[font-family:'Manrope',Helvetica] font-bold text-[#8b7b64] text-sm">
+            <div className="flex items-center justify-center w-10 h-10 bg-white rounded-full">
+              <span className="[font-family:'Manrope',Helvetica] font-bold text-black text-sm">
                 3
               </span>
             </div>
           </div>
 
-          <div className="flex items-start justify-between text-xs">
+          <div className="flex items-start justify-between text-sm">
             <span className="[font-family:'Manrope',Helvetica] font-medium text-white flex-1 text-center">
               Add Charities
             </span>
             <span className="[font-family:'Manrope',Helvetica] font-medium text-white flex-1 text-center">
               Allocate Funds
             </span>
-            <span className="[font-family:'Manrope',Helvetica] font-medium text-[#8b7b64] flex-1 text-center">
+            <span className="[font-family:'Manrope',Helvetica] font-medium text-white flex-1 text-center">
               Review & Confirm
             </span>
           </div>
@@ -135,17 +135,14 @@ export const PhilanthropyPlan = (): JSX.Element => {
                 Organizations designated to receive assets.
               </p>
             </div>
-            <Button
-              variant="ghost"
-              className="h-auto p-0 hover:bg-transparent"
-            >
-              <span className="[font-family:'Manrope',Helvetica] font-bold text-[#ff6600] text-xs">
-                edit Edit
+            <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
+              <span className="[font-family:'Manrope',Helvetica] font-bold text-[#ff6600] text-sm">
+                Edit
               </span>
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-2   gap-4">
             {charities.map((charity) => (
               <Card
                 key={charity.id}
@@ -153,8 +150,8 @@ export const PhilanthropyPlan = (): JSX.Element => {
               >
                 <CardContent className="p-5 flex flex-col gap-4">
                   <div className="flex items-start gap-3">
-                    <div className="flex items-center justify-center w-10 h-10 bg-[#27221c] rounded-lg text-2xl">
-                      {charity.icon}
+                    <div className="flex items-center justify-center w-10 h-10 bg-[#27221c] rounded-full text-2xl">
+                      <img src={charity.icon} alt="" />
                     </div>
                     <div className="flex-1">
                       <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base leading-6 mb-1">
@@ -172,26 +169,22 @@ export const PhilanthropyPlan = (): JSX.Element => {
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-2">
                       <span className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs">
                         Wallet Address
                       </span>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-between gap-2">
                         <span className="[font-family:'Manrope',Helvetica] font-mono text-white text-xs">
                           {charity.walletAddress}
                         </span>
-                        <img
-                          className="w-4 h-4 opacity-50"
-                          alt="Copy"
-                          src="/copy-icon.svg"
-                        />
+                        <Copy className="w-4 h-4 opacity-50 text-white" />
                       </div>
                     </div>
                     {charity.link && (
                       <div className="flex items-center justify-between">
-                        <span className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs">
+                        {/* <span className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs">
                           {charity.link.includes("Reg") ? "ORG" : "LINK"}
-                        </span>
+                        </span> */}
                         <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-xs">
                           {charity.link}
                         </span>
@@ -225,11 +218,8 @@ export const PhilanthropyPlan = (): JSX.Element => {
                 Distribution of assets across beneficiaries.
               </p>
             </div>
-            <Button
-              variant="ghost"
-              className="h-auto p-0 hover:bg-transparent"
-            >
-              <span className="[font-family:'Manrope',Helvetica] font-bold text-[#ff6600] text-xs">
+            <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
+              <span className="[font-family:'Manrope',Helvetica] font-bold text-[#ff6600] text-sm">
                 ⚙ Modify
               </span>
             </Button>
@@ -338,7 +328,7 @@ export const PhilanthropyPlan = (): JSX.Element => {
             </p>
           </div>
 
-          <Card className="bg-[#b8a994] border-none rounded-xl">
+          <Card className="bg-[#B9AF9D] border-none rounded-xl">
             <CardContent className="p-6">
               <div className="flex items-start gap-3 mb-4">
                 <Checkbox
@@ -382,11 +372,7 @@ export const PhilanthropyPlan = (): JSX.Element => {
                   onClick={() => navigate("/review-plan")}
                   className="flex-1 [font-family:'Manrope',Helvetica] font-bold text-white text-base bg-[#ff6600] hover:bg-[#ff6600]/90 disabled:opacity-50 disabled:pointer-events-none h-12 px-6 gap-2"
                 >
-                  <img
-                    className="w-4 h-4"
-                    alt="Save"
-                    src="/save-icon.svg"
-                  />
+                  <img className="w-4 h-4" alt="Save" src={saveIcon} />
                   Confirm & Save Plan
                 </Button>
               </div>

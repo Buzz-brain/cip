@@ -5,6 +5,10 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
+import timeClockIcon from "@assets/time-clock.svg";
+import calendarEditIcon from "@assets/calendar-edit.svg";
+import flagIcon from "@assets/flag.svg";
+import userBeneficiaryIcon from "@assets/user-beneficiary.svg";
 import {
     Select,
     SelectContent,
@@ -52,7 +56,7 @@ const strategyOptions = [
         title: "Fixed Intervals",
         description:
             "Distribute equal amounts over a set period (e.g. Monthly for 5 years).",
-        icon: "/material-symbols-update-rounded.svg",
+        icon: timeClockIcon,
         selected: true,
         bgColor: "bg-[#ff66000d]",
         borderColor: "border-[#ff6600]",
@@ -63,7 +67,7 @@ const strategyOptions = [
         title: "Milestone-based",
         description:
             "Release funds based on beneficiary age or time elapsed since trigger.",
-        icon: "/tabler-flag.svg",
+        icon: flagIcon,
         selected: false,
         bgColor: "bg-[#27221c]",
         borderColor: "border-[#553e33]",
@@ -74,7 +78,7 @@ const strategyOptions = [
         title: "Custom Schedule",
         description:
             "Manually define specific dates and percentage amounts for each payout.",
-        icon: "/material-symbols-edit-calendar-outline.svg",
+        icon: calendarEditIcon,
         selected: false,
         bgColor: "bg-[#27221c]",
         borderColor: "border-[#553e33]",
@@ -211,7 +215,7 @@ export const StaggeredDistribution = (): JSX.Element => {
                                             <img
                                                 className="w-6 h-6"
                                                 alt="Beneficiary"
-                                                src="/akar-icons-person.svg"
+                                                src={userBeneficiaryIcon}
                                             />
                                             <span className="[font-family:'Manrope',Helvetica] font-bold text-[13.5px] tracking-[0] leading-5">
                                                 <span className="text-[#8b7b64]">Beneficiary:</span>
@@ -227,7 +231,7 @@ export const StaggeredDistribution = (): JSX.Element => {
                                                     Frequency
                                                 </Label>
                                                 <Select defaultValue="monthly">
-                                                    <SelectTrigger className="bg-[#181511] border-none h-11 [font-family:'Manrope',Helvetica]">
+                                                    <SelectTrigger className="bg-[#181511] text-white border-none h-11 [font-family:'Manrope',Helvetica]">
                                                         <SelectValue />
                                                     </SelectTrigger>
                                                     <SelectContent>

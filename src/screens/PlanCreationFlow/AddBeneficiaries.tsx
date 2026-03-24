@@ -4,6 +4,9 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import logoImg from "@assets/cip-logo.png";
+import usersPlusIcon from "@assets/users-plus.svg";
+import bookCheckGreyIcon from "@assets/book-check-grey.svg";
+import pieCircleIcon from "@assets/pie-circle.svg";
 import { Link, useNavigate } from "react-router-dom";
 import {
     Select,
@@ -158,15 +161,18 @@ export const AddBeneficiaries = (): JSX.Element => {
                   href="/"
                   className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] hover:text-white transition-colors flex items-center gap-2"
                 >
-                  <span>📄</span> Assets
+                  <WalletIcon className="w-4 h-4 text-[#9DABB9]" />
+                  Assets
                 </a>
                 <ChevronRightIcon className="w-4 h-4 text-[#9dabb9]" />
                 <span className="[font-family:'Manrope',Helvetica] font-medium text-[#ff6600] flex items-center gap-2">
-                  <span>👥</span> Beneficiaries
+                  <img src={usersPlusIcon} alt="" />
+                  Beneficiaries
                 </span>
                 <ChevronRightIcon className="w-4 h-4 text-[#9dabb9]" />
                 <span className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] flex items-center gap-2">
-                  <span>📋</span> Review
+                  <img src={bookCheckGreyIcon} alt="" />
+                  Review
                 </span>
               </div>
 
@@ -373,8 +379,8 @@ export const AddBeneficiaries = (): JSX.Element => {
                 <Card className="bg-[#1a1410] border-[#2c231a] rounded-xl overflow-hidden">
                   <CardContent className="p-6">
                     <div className="flex items-center gap-2 mb-6">
-                      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#ff660033]">
-                        <span className="text-xl">📊</span>
+                      <div className="flex items-center justify-center w-8 h-8 rounded-lg">
+                        <img src={pieCircleIcon} alt="" />
                       </div>
                       <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base">
                         Allocation Summary
@@ -496,7 +502,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                 </Card>
 
                 <Button
-                  onClick={() => navigate("/select-assets")}
+                  onClick={() => navigate("/choose-plan-type")}
                   disabled={unallocated !== 0}
                   className="w-full py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 disabled:bg-[#54483b] disabled:text-[#80796b] disabled:cursor-not-allowed rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40]"
                 >
