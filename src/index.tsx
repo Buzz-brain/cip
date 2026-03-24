@@ -143,10 +143,10 @@ createRoot(document.getElementById("app") as HTMLElement).render(
 
         {/* Inactivity Oracle */}
         <Route path="/set-inactivity-period" element={<SetInactivityPeriod />} /> ✅
-        <Route path="/choose-proof-of-life" element={<ChooseProofOfLifeMethod />} />
-        <Route path="/set-inactivity-grace-period" element={<SetInactivityGracePeriod />} />
-        <Route path="/review-inactivity-oracle-plan" element={<ReviewInactivityOraclePlan />} />
-        <Route path="/confirm-inactivity-oracle-plan" element={<ConfirmInactivityOraclePlan />} />
+        <Route path="/choose-proof-of-life" element={<ChooseProofOfLifeMethod />} /> ✅
+        <Route path="/set-inactivity-grace-period" element={<SetInactivityGracePeriod />} /> ✅
+        <Route path="/review-inactivity-oracle-plan" element={<ReviewInactivityOraclePlan />} /> ✅
+        <Route path="/confirm-inactivity-oracle-plan" element={<ConfirmInactivityOraclePlan />} /> ✅
 
         {/* Health/Death Oracle */}
         <Route path="/assign-health-oracle-exec" element={<AssignHealthOracleExec />} />

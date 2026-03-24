@@ -1,14 +1,35 @@
-import { Clock, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import logoImg from "@assets/cip-logo.svg";
+import timerWhiteIcon from "@assets/timer-white.svg";
+import hourGlassUpIcon from "@assets/hour-glass-up.svg";
+import leafLetterIcon from "@assets/leaf-letter.svg";
+import handTouchIcon from "@assets/hand-touch.svg";
+import { Button } from "../../components/ui/button";
+
 
 export const ReviewInactivityOraclePlan = (): JSX.Element => {
+      const navigate = useNavigate();
+  
+      const handleBack = () => {
+        navigate("/set-inactivity-grace-period");
+      };
+  
+      const handleContinue = () => {
+        navigate("/confirm-inactivity-oracle-plan");
+      };
+
   return (
-    <div className="min-h-screen bg-[#1a1410] text-white">
-      <header className="border-b border-gray-800 px-8 py-4 flex items-center justify-between">
+    <div className="flex flex-col w-full min-h-screen bg-[#221810] text-white [font-family:'Manrope',Helvetica]">
+      <header className="w-full h-[61px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#393028]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
-            <span className="text-xs font-bold">I</span>
-          </div>
-          <span className="text-sm font-semibold">Inheritance Protocol</span>
+          <Link to="/dashboard">
+            <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+          </Link>
+          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
+            Inheritance&nbsp;&nbsp;Protocol
+          </span>
         </div>
         <nav className="flex items-center gap-8">
           <a href="#" className="text-gray-400 hover:text-gray-300 text-sm">
@@ -42,31 +63,35 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
           </p>
         </div>
 
-        <div className="mb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-gray-400 text-sm font-medium">
-              Step 4 of 5: Review Setup
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5">
+              Step 4 of 5: Grace Period
             </span>
-            <span className="text-orange-500 font-semibold text-sm ml-auto">
+            <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
               80% Completed
             </span>
           </div>
-          <div className="w-full bg-gray-900 rounded-full h-2 overflow-hidden">
-            <div
-              className="bg-orange-600 h-full rounded-full"
-              style={{ width: "80%" }}
-            ></div>
+
+          <div className="w-full h-2 bg-[#54493B] rounded-full overflow-hidden">
+            <div className="h-full w-[80%] bg-[#ff6600]"></div>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-6 mb-8">
-          <div className="border border-gray-800 rounded-2xl p-8 bg-gray-900/50">
-            <div className="flex items-start gap-3 mb-6">
-              <Clock className="w-6 h-6 text-gray-500 flex-shrink-0 mt-0.5" />
+          <div className="border border-[#54493B] rounded-2xl p-8 bg-[#27221C]">
+            <div className="flex items-center gap-3 mb-5">
+              <div
+                className={`w-10 h-12 bg-[#372F1F] rounded-lg flex items-center mb-2 justify-center`}
+              >
+                <img src={timerWhiteIcon} className="w-5 h-5" alt="Timer" />
+              </div>
+
               <h2 className="text-white font-bold text-lg">
                 Inactivity Period
               </h2>
             </div>
+
             <div className="text-5xl font-bold text-white mb-2">6 Months</div>
             <p className="text-gray-400 text-sm leading-relaxed">
               The duration of silence before the protocol initiates the check-in
@@ -75,8 +100,16 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
           </div>
 
           <div className="border-2 border-orange-600/60 rounded-2xl p-8 bg-orange-600/5">
-            <div className="flex items-start gap-3 mb-6">
-              <AlertCircle className="w-6 h-6 text-orange-500 flex-shrink-0 mt-0.5" />
+            <div className="flex items-center gap-3 mb-6">
+              <div
+                className={`w-10 h-12 bg-[#FF66001A] rounded-lg flex items-center mb-2 justify-center`}
+              >
+                <img
+                  src={hourGlassUpIcon}
+                  className="w-5 h-5"
+                  alt="Hourglass"
+                />
+              </div>
               <h2 className="text-white font-bold text-lg">Grace Period</h2>
             </div>
             <div className="text-5xl font-bold text-orange-500 mb-2">
@@ -89,7 +122,7 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="border border-gray-800 rounded-2xl p-8 bg-gray-900/50 mb-8">
+        <div className="border border-[#54493B] rounded-2xl p-8 bg-[#27221C] mb-8">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-white font-bold text-lg">
               Selected Proof-of-Life Method(s)
@@ -103,10 +136,10 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
           </div>
 
           <div className="space-y-4">
-            <div className="border border-gray-800 rounded-xl p-6 bg-gray-800/30">
+            <div className="border border-[#54493B] rounded-xl p-6 bg-[#181311]">
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-lg bg-orange-600/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-lg">💳</span>
+                <div className="w-12 h-14 rounded-lg bg-orange-600/20 flex items-center justify-center flex-shrink-0">
+                  <img src={leafLetterIcon} alt="Leaf Letter" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
@@ -123,10 +156,10 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
               </div>
             </div>
 
-            <div className="border border-gray-800 rounded-xl p-6 bg-gray-800/30">
+            <div className="border border-[#54493B] rounded-xl p-6 bg-[#181311]">
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-lg bg-purple-600/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-lg">📱</span>
+                <div className="w-12 h-14 rounded-lg bg-purple-600/20 flex items-center justify-center flex-shrink-0">
+                  <img src={handTouchIcon} alt="Hand Touch" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
@@ -162,15 +195,24 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <button className="border border-gray-700 hover:border-gray-600 text-gray-300 px-6 py-3 rounded-lg font-medium text-sm transition">
-            Back
-          </button>
-          <button className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-semibold text-sm transition flex items-center gap-2">
-            Confirm Plan
-            <span>✓</span>
-          </button>
-        </div>
+        <footer className="flex mt-12 items-center justify-end pt-8 pb-12 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
+          <div className="inline-flex items-start gap-4 relative flex-[0_0_auto]">
+            <Button
+              className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+              onClick={handleBack}
+            >
+              Back
+            </Button>
+
+            <Button
+              onClick={handleContinue}
+              className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            >
+              Continue
+              <span>→</span>
+            </Button>
+          </div>
+        </footer>
       </main>
     </div>
   );

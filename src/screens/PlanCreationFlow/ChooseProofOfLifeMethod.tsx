@@ -1,5 +1,13 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import logoImg from "@assets/cip-logo.svg";
+import { Button } from "../../components/ui/button";
+import leafLetterIcon from "@assets/leaf-letter.svg";
+import handTouchIcon from "@assets/hand-touch.svg";
+import messageCheckIcon from "@assets/message-check.svg";
+import fingerprintIcon from "@assets/fingerprint.svg";
+
 
 type ProofOfLifeMethod = "wallet" | "app" | "email" | "biometric";
 
@@ -26,7 +34,7 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
 
   const handleContinue = () => {
     if (selectedMethods.length > 0) {
-      navigate("/philanthropy-summary", {
+      navigate("/set-inactivity-grace-period", {
         state: {
           inactivityPeriod,
           daysValue,
@@ -42,130 +50,177 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
       title: "Wallet Signature",
       description:
         "Sign a message or transaction with your connected Web3 wallet. This is the most direct way to prove control of your private keys and reset the timer.",
-      icon: "🔐",
+      icon: leafLetterIcon,
       selected: true,
+      bgColor: "bg-[#8A541EAD]",
     },
     {
       id: "app",
       title: "App Login + Confirmation",
       description:
         "Simply log in to the Inheritance Protocol dashboard and click a 'Confirm I'm Alive' button. Convenient for frequent users.",
-      icon: "🔑",
+      icon: handTouchIcon,
+      bgColor: "bg-[#581C8733]",
     },
     {
       id: "email",
       title: "Email/SMS Confirmation",
       description:
         "Receive automated periodic check-ins via Email or SMS. Clicking the secure link in the message verifies your proof-of-life.",
-      icon: "📧",
+      icon: messageCheckIcon,
+      bgColor: "bg-[#7C2D1233]",
     },
     {
       id: "biometric",
       title: "Biometric Confirmation",
       description:
         "Advanced verification using device sensors (FaceID, TouchID) for cryptographically secure proof of physical presence.",
-      icon: "🔒",
+      icon: fingerprintIcon,
       comingSoon: true,
+      bgColor: "bg-[#514837]",
     },
   ];
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#0d0501]">
-      <div className="flex items-center justify-between px-8 py-6 border-b border-gray-800">
+    <div className="flex flex-col w-full min-h-screen bg-[#221810]">
+      <header className="w-full h-[61px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#393028]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold">I</span>
-          </div>
-          <span className="text-white font-semibold">Inheritance Protocol</span>
+          <Link to="/dashboard">
+            <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+          </Link>
+          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
+            Inheritance&nbsp;&nbsp;Protocol
+          </span>
         </div>
-        <div className="flex items-center gap-8">
-          <span className="text-gray-400 text-sm hover:text-white cursor-pointer transition-colors">
+
+        <nav className="flex items-center gap-8">
+          <a
+            href="#"
+            className="[font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-sm tracking-[0] leading-5 whitespace-nowrap hover:text-white transition-colors"
+          >
             Dashboard
-          </span>
-          <span className="text-gray-400 text-sm hover:text-white cursor-pointer transition-colors">
+          </a>
+          <a
+            href="#"
+            className="[font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-sm tracking-[0] leading-5 whitespace-nowrap hover:text-white transition-colors"
+          >
             Create Plan
-          </span>
-          <span className="text-gray-400 text-sm hover:text-white cursor-pointer transition-colors">
+          </a>
+          <a
+            href="#"
+            className="[font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-sm tracking-[0] leading-5 whitespace-nowrap hover:text-white transition-colors"
+          >
             My Plans
-          </span>
-          <span className="text-gray-400 text-sm hover:text-white cursor-pointer transition-colors">
+          </a>
+          <a
+            href="#"
+            className="[font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-sm tracking-[0] leading-5 whitespace-nowrap hover:text-white transition-colors"
+          >
             Settings
-          </span>
-          <div className="w-8 h-8 bg-gray-600 rounded-full"></div>
-        </div>
-      </div>
+          </a>
+        </nav>
 
-      <div className="flex-1 px-8 py-12 max-w-6xl mx-auto w-full">
-        <h1 className="text-5xl font-bold text-white mb-4">Choose Proof-of-Life Method</h1>
-        <p className="text-gray-400 text-lg mb-12">
-          Select one or more methods to verify your activity and reset the Inactivity Oracle.
-          We recommend enabling multiple methods for redundancy and ease of use.
-        </p>
+        <div className="w-10 h-10 bg-[#ff6600] rounded-full"></div>
+      </header>
 
-        <div className="mb-8">
-          <div className="text-gray-400 text-sm mb-2">Step 3 of 5: Proof of Life</div>
-          <div className="w-full bg-gray-800 rounded-full h-2">
-            <div className="bg-orange-600 h-2 rounded-full" style={{ width: "60%" }}></div>
+      <main className="flex-1 flex flex-col items-center px-4 py-12">
+        <div className="w-full max-w-[1040px]">
+          <div className="mb-8">
+            <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-[31.7px] tracking-[0] leading-[38px] mb-2">
+              Choose Proof-of-Life Method
+            </h1>
+            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b9ac9d] text-base tracking-[0] leading-[26px]">
+              Select one or more methods to verify your activity and reset the
+              Inactivity Oracle. We recommend enabling multiple methods for
+              redundancy and ease of use.
+            </p>
           </div>
-          <div className="text-orange-600 text-sm mt-2 float-right">60% Completed</div>
-        </div>
 
-        <div className="grid grid-cols-2 gap-6 mt-12">
-          {methods.map((method) => (
-            <div
-              key={method.id}
-              onClick={() => !method.comingSoon && toggleMethod(method.id as ProofOfLifeMethod)}
-              className={`p-6 rounded-lg border-2 transition-all cursor-pointer ${
-                selectedMethods.includes(method.id as ProofOfLifeMethod)
-                  ? "border-orange-600 bg-gray-900"
-                  : "border-gray-700 bg-gray-900 hover:border-gray-600"
-              } ${method.comingSoon ? "opacity-60 cursor-not-allowed" : ""}`}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="text-3xl">{method.icon}</div>
-                <div className="flex items-center">
-                  {method.comingSoon ? (
-                    <span className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">
-                      Coming Soon
-                    </span>
-                  ) : (
-                    <div
-                      className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
-                        selectedMethods.includes(method.id as ProofOfLifeMethod)
-                          ? "border-orange-600 bg-orange-600"
-                          : "border-gray-600"
-                      }`}
-                    >
-                      {selectedMethods.includes(method.id as ProofOfLifeMethod) && (
-                        <span className="text-white text-sm">✓</span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <h3 className="text-white font-semibold text-lg mb-2">{method.title}</h3>
-              <p className="text-gray-400 text-sm">{method.description}</p>
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5">
+                Step 2 of 4: Trigger Configuration
+              </span>
+              <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
+                40% Completed
+              </span>
             </div>
-          ))}
-        </div>
+            <div className="w-full h-2 bg-[#27211c] rounded-full overflow-hidden">
+              <div className="h-full w-[40%] bg-[#ff6600]"></div>
+            </div>
+          </div>
 
-        <div className="flex justify-between items-center gap-4 mt-12">
-          <button
-            onClick={handleBack}
-            className="px-8 py-3 text-white border border-gray-600 rounded-lg hover:bg-gray-900 transition-colors font-semibold"
-          >
-            Back
-          </button>
-          <button
-            onClick={handleContinue}
-            disabled={selectedMethods.length === 0}
-            className="px-8 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-semibold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Continue
-            <span>→</span>
-          </button>
+          <div className="grid grid-cols-2 gap-6 mt-12">
+            {methods.map((method) => (
+              <div
+                key={method.id}
+                onClick={() =>
+                  !method.comingSoon &&
+                  toggleMethod(method.id as ProofOfLifeMethod)
+                }
+                className={`p-6 rounded-lg border-2 transition-all cursor-pointer ${
+                  selectedMethods.includes(method.id as ProofOfLifeMethod)
+                    ? "border-orange-600 bg-[#27221C]"
+                    : "border-gray-700 bg-[#27221C] hover:border-gray-600"
+                } ${method.comingSoon ? "opacity-60 cursor-not-allowed" : ""}`}
+              >
+                <div className="flex items-start justify-between mb-4">
+                    <div
+                  className={`w-14 h-16 ${method.bgColor} rounded-lg flex items-center mb-2 justify-center`}
+                >
+                    <img src={method.icon} className="w-6 h-6" alt="Icon" />
+                  </div>
+                  <div className="flex items-center">
+                    {method.comingSoon ? (
+                      <span className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">
+                        Coming Soon
+                      </span>
+                    ) : (
+                      <div
+                        className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
+                          selectedMethods.includes(
+                            method.id as ProofOfLifeMethod,
+                          )
+                            ? "border-orange-600 bg-orange-600"
+                            : "border-gray-600"
+                        }`}
+                      >
+                        {selectedMethods.includes(
+                          method.id as ProofOfLifeMethod,
+                        ) && <span className="text-white text-sm">✓</span>}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <h3 className="text-white font-semibold text-lg mb-2">
+                  {method.title}
+                </h3>
+                <p className="text-gray-400 text-sm">{method.description}</p>
+              </div>
+            ))}
+          </div>
+
+          <footer className="flex mt-12 items-center justify-end pt-8 pb-12 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
+            <div className="inline-flex items-start gap-4 relative flex-[0_0_auto]">
+              <Button
+                className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+                onClick={handleBack}
+              >
+                Back
+              </Button>
+
+              <Button
+                onClick={handleContinue}
+                className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+                disabled={selectedMethods.length === 0}
+              >
+                Continue
+                <span>→</span>
+              </Button>
+            </div>
+          </footer>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
