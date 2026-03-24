@@ -155,7 +155,7 @@ export const ChoosePlanType = (): JSX.Element => {
             } else if (selectedPlan === "philanthropy") {
                 navigate("/philanthropy-plan");
             } else if (selectedPlan === "inactivity-oracle") {
-                navigate("/inactivity-oracle");
+                navigate("/set-inactivity-period");
             } else if (selectedPlan === "health-oracle") {
                 navigate("/health-oracle");
             } else {

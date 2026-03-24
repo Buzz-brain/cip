@@ -113,7 +113,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
     <BrowserRouter>
       <Routes>
 
-        {/* Landing Page */} ✅
+        {/* Landing Page */}
         <Route path="/" element={<Home />} /> ✅
         <Route path="/pricing" element={<Pricing />} /> ✅
 
@@ -123,12 +123,12 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/connect-wallet" element={<ConnectWallet />} /> ✅
         <Route path="/profile-setup" element={<ProfileSetupForm />} /> ✅
 
-        {/* Recovery Flow */} ✅
+        {/* Recovery Flow */}
         <Route path="/wallet-recovery" element={<WalletRecovery />} /> ✅
         <Route path="/recovery-progress" element={<RecoveryProgress />} /> ✅
         <Route path="/guardian-approval" element={<GuardianApproval />} /> ✅
 
-        {/* Plan Creation Flow */} ✅
+        {/* Plan Creation Flow */}
         <Route path="/select-assets" element={<SelectAssets />} /> ✅
         <Route path="/beneficiaries" element={<AddBeneficiaries />} /> ✅
         <Route path="/choose-plan-type" element={<ChoosePlanType />} /> ✅
@@ -137,25 +137,25 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/review-plan" element={<ReviewPlan />} /> ✅
         <Route path="/plan-activated" element={<PlanActivatedSuccess />} /> ✅
 
-        {/* TimeLock */} ✅
-        <Route path="/set-time-lock" element={<SetTimeLock />} />
-        <Route path="/review-time-lock" element={<ReviewTimeLock />} />
+        {/* TimeLock */}
+        <Route path="/set-time-lock" element={<SetTimeLock />} /> ✅
+        <Route path="/review-time-lock" element={<ReviewTimeLock />} /> ✅
 
-        {/* Inactivity Oracle - 5 of 5 */} ✅ 
-        <Route path="/set-inactivity-period" element={<SetInactivityPeriod />} />
+        {/* Inactivity Oracle */}
+        <Route path="/set-inactivity-period" element={<SetInactivityPeriod />} /> ✅
         <Route path="/choose-proof-of-life" element={<ChooseProofOfLifeMethod />} />
         <Route path="/set-inactivity-grace-period" element={<SetInactivityGracePeriod />} />
         <Route path="/review-inactivity-oracle-plan" element={<ReviewInactivityOraclePlan />} />
         <Route path="/confirm-inactivity-oracle-plan" element={<ConfirmInactivityOraclePlan />} />
 
-        {/* Health/Death Oracle */} ✅
+        {/* Health/Death Oracle */}
         <Route path="/assign-health-oracle-exec" element={<AssignHealthOracleExec />} />
         <Route path="/select-accepted-docs" element={<SelectAcceptedDocs />} />
         <Route path="/health-oracle-jurisdiction" element={<HealthOracleJurisdiction />} />
         <Route path="/review-health-oracle-plan" element={<ReviewHealthOraclePlan />} />
         <Route path="/confirm-health-oracle-plan" element={<ConfirmHealthOraclePlan />} />
 
-        {/* Owner Dashboard Flow */} ✅
+        {/* Owner Dashboard Flow */}
         <Route path="/owner-dashboard" element={<OwnerDashboard />} />
         <Route path="/plan-history" element={<PlanHistory />} />
         <Route path="/childrens-trust-account" element={<ChildrensTrustAccount />} />
@@ -170,15 +170,15 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/upload-signed-doc" element={<UploadSignedDoc />} />
         <Route path="/secure-storage" element={<SecureStorage />} />
 
-        {/* Beneficiary Dashboard Flow */} ✅
+        {/* Beneficiary Dashboard Flow */}
         <Route path="/beneficiary-dashboard" element={<BeneficiaryDashboard />} />
         <Route path="/beneficiary-details" element={<BeneficiaryDetails />} />
 
-        {/* Dispute Resolution Flow */} ✅
+        {/* Dispute Resolution Flow */}
         <Route path="/dispute-plan-execution" element={<DisputePlanExecution />} />
         <Route path="/escrow-state-visualization" element={<EscrowStateVisualization />} />
 
-        {/* Enterprise Flow */} ✅
+        {/* Enterprise Flow */}
         <Route path="/enterprise-login" element={<EnterpriseLogin />} />
         <Route path="/enterprise-dashboard" element={<EnterpriseDashboard />} />
         <Route path="/client-management" element={<ClientManagement />} />
@@ -189,20 +189,20 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/support-center" element={<SupportCenter />} />
 
         
-        {/* Proof of Life Configuration  */} ✅
+        {/* Proof of Life Configuration  */}
         <Route path="/proof-of-life-config" element={<ProofOfLifeConfig />} />
         <Route path="/proof-of-life-check" element={<ProofOfLifeCheck />} />
         <Route path="/proof-of-life-check-missed" element={<ProofOfLifeCheckMissed />} />
         <Route path="/critical-alert" element={<CriticalAlert />} />
 
-        {/* Billing and Subscription Flow */} ✅
+        {/* Billing and Subscription Flow */}
         <Route path="/billing-and-payment" element={<BillingAndPayment />} />
         <Route path="/secure-checkout" element={<SecureCheckout />} />
         <Route path="/subscription-renewal" element={<SubscriptionRenewal />} />
         <Route path="/billing-history" element={<BillingHistory />} />
         <Route path="/grace-period-active" element={<GracePeriodActive />} />
 
-        {/* Mediator Flow */} ✅
+        {/* Mediator Flow */}
         <Route path="/mediator-login" element={<MediatorLogin />} />
         <Route path="/mediator-forgot-password" element={<MediatorForgotPwd />} />
         <Route path="/mediator-set-new-password" element={<MediatorSetNewPwd />} />
@@ -211,7 +211,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/mediator-all-cases" element={<AllCases />} />
         <Route path="/mediator-dispute-queue" element={<DisputeQueue />} />
         
-        {/* Executor Dashboard Flow - 0 of 16 */} ✅
+        {/* Executor Dashboard Flow */}
         <Route path="/executor-login" element={<ExecutorLogin />} />
         <Route path="/executor-forgot-password" element={<ExecutorForgotPwd />} />
         <Route path="/executor-set-new-password" element={<ExecutorSetNewPwd />} />

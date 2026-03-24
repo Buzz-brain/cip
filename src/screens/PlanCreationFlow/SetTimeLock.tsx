@@ -5,6 +5,12 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
+import { Link } from "react-router-dom";
+import logoImg from "@assets/cip-logo.svg";
+import calendarClockOrangeIcon from "@assets/calendar-clock-orange.svg";
+import lockTimeIcon from "@assets/lock-time.svg";
+import worldUniverseIcon from "@assets/world-universe.svg";
+import shieldLockIcon from "@assets/shield-lock.svg";
 
 export const SetTimeLock = (): JSX.Element => {
   const navigate = useNavigate();
@@ -12,18 +18,14 @@ export const SetTimeLock = (): JSX.Element => {
   const [unlockTime, setUnlockTime] = useState("00:00");
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0806]">
+    <div className="min-h-screen flex flex-col bg-[#221810]">
       <header className="w-full h-[61px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#393028]">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 bg-[#ff6600] rounded-lg">
-            <img
-              className="w-[25px] h-[31px] object-cover"
-              alt="Logo"
-              src="/logo-3.png"
-            />
-          </div>
-          <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-[17.8px] tracking-[0] leading-[22px]">
-            Inheritance Protocol
+          <Link to="/dashboard">
+            <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+          </Link>
+          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
+            Inheritance&nbsp;&nbsp;Protocol
           </span>
         </div>
 
@@ -87,26 +89,14 @@ export const SetTimeLock = (): JSX.Element => {
             <div className="flex-1">
               <Card className="bg-[#1a1410] border-[#392f28] rounded-2xl">
                 <CardContent className="p-8">
-                  <div className="bg-[#27211c] border border-[#392f28] rounded-xl p-4 mb-8">
+                  <div className="bg-[#8A4F1E33] border border-[#AF731E4D] rounded-xl p-4 mb-8">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-[#ff6600] rounded-lg flex items-center justify-center">
-                          <svg
-                            className="w-5 h-5 text-white"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
+                        <div className="w-10 h-10 bg-[#27221C] rounded-full flex items-center justify-center">
+                          <img src={calendarClockOrangeIcon} alt="" />
                         </div>
                         <div>
-                          <p className="[font-family:'Manrope',Helvetica] font-semibold text-[#afa49c] text-xs tracking-[0] leading-4">
+                          <p className="[font-family:'Manrope',Helvetica] font-semibold text-[#FF6600] text-xs tracking-[0] leading-4">
                             Plan Type
                           </p>
                           <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm tracking-[0] leading-5 mt-1">
@@ -114,50 +104,52 @@ export const SetTimeLock = (): JSX.Element => {
                           </p>
                         </div>
                       </div>
-                      <button className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-xs tracking-[0] leading-4 hover:text-[#ff6600]/80 transition-colors">
+                      <button className="[font-family:'Manrope',Helvetica] font-semibold text-[#B9AB9D] text-xs tracking-[0] leading-4 hover:text-[#ff6600]/80 transition-colors">
                         Change Type
                       </button>
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-6">
-                    <div className="flex flex-col gap-2">
-                      <Label className="[font-family:'Manrope',Helvetica] font-semibold text-[#afa49c] text-sm tracking-[0] leading-5">
-                        Unlock Date
-                      </Label>
-                      <Input
-                        type="text"
-                        placeholder="DD/MM/YYYY"
-                        value={unlockDate}
-                        onChange={(e) => setUnlockDate(e.target.value)}
-                        className="h-12 px-4 [font-family:'Manrope',Helvetica] font-normal text-white text-base bg-[#0f0c09] border border-[#392f28] rounded-xl placeholder:text-[#63564b] focus-visible:ring-[#ff6600]"
-                      />
-                      <p className="[font-family:'Manrope',Helvetica] font-normal text-[#63564b] text-xs tracking-[0] leading-4">
-                        Format: DD/MM/YYYY
-                      </p>
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <Label className="[font-family:'Manrope',Helvetica] font-semibold text-[#afa49c] text-sm tracking-[0] leading-5">
-                        Unlock Time (Optional)
-                      </Label>
-                      <div className="flex gap-3">
+                    <div className="flex gap-6">
+                      <div className="flex flex-col w-full gap-2">
+                        <Label className="[font-family:'Manrope',Helvetica] font-semibold text-white text-sm tracking-[0] leading-5">
+                          Unlock Date
+                        </Label>
                         <Input
                           type="text"
-                          placeholder="00:00"
-                          value={unlockTime}
-                          onChange={(e) => setUnlockTime(e.target.value)}
-                          className="flex-1 h-12 px-4 [font-family:'Manrope',Helvetica] font-normal text-white text-base bg-[#0f0c09] border border-[#392f28] rounded-xl placeholder:text-[#63564b] focus-visible:ring-[#ff6600]"
+                          placeholder="DD/MM/YYYY"
+                          value={unlockDate}
+                          onChange={(e) => setUnlockDate(e.target.value)}
+                          className="h-12 px-4 [font-family:'Manrope',Helvetica] font-normal text-white text-base bg-[#0f0c09] border border-[#392f28] rounded-xl placeholder:text-white focus-visible:ring-[#ff6600]"
                         />
-                        <div className="h-12 px-4 bg-[#0f0c09] border border-[#392f28] rounded-xl flex items-center">
-                          <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#afa49c] text-sm tracking-[0] leading-5">
-                            UTC
-                          </span>
-                        </div>
+                        <p className="[font-family:'Manrope',Helvetica] font-normal text-[#B9AB9D] text-xs tracking-[0] leading-4">
+                          Format: DD/MM/YYYY
+                        </p>
                       </div>
-                      <p className="[font-family:'Manrope',Helvetica] font-normal text-[#63564b] text-xs tracking-[0] leading-4">
-                        Defaults to 00:00 UTC
-                      </p>
+
+                      <div className="flex flex-col w-full gap-2">
+                        <Label className="[font-family:'Manrope',Helvetica] font-semibold text-white text-sm tracking-[0] leading-5">
+                          Unlock Time (Optional)
+                        </Label>
+                        <div className="flex gap-3">
+                          <Input
+                            type="text"
+                            placeholder="00:00"
+                            value={unlockTime}
+                            onChange={(e) => setUnlockTime(e.target.value)}
+                            className="flex-1 h-12 px-4 [font-family:'Manrope',Helvetica] font-normal text-white text-base bg-[#0f0c09] border border-[#392f28] rounded-xl placeholder:text-white focus-visible:ring-[#ff6600]"
+                          />
+                          <div className="h-12 px-4 bg-[#0f0c09] border border-[#392f28] rounded-xl flex items-center">
+                            <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#afa49c] text-sm tracking-[0] leading-5">
+                              UTC
+                            </span>
+                          </div>
+                        </div>
+                        <p className="[font-family:'Manrope',Helvetica] font-normal text-[#B9AB9D] text-xs tracking-[0] leading-4">
+                          Defaults to 00:00 UTC
+                        </p>
+                      </div>
                     </div>
 
                     <div className="bg-[#0f0c09] border border-[#392f28] rounded-xl p-4">
@@ -170,8 +162,8 @@ export const SetTimeLock = (): JSX.Element => {
                           <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b9ac9d] text-sm tracking-[0] leading-[22px]">
                             This date is encoded into the smart contract. While
                             you can extend the lock period later, you cannot
-                            shorten it once the contract is deployed for security
-                            reasons.
+                            shorten it once the contract is deployed for
+                            security reasons.
                           </p>
                         </div>
                       </div>
@@ -190,21 +182,11 @@ export const SetTimeLock = (): JSX.Element => {
 
                   <div className="space-y-4">
                     <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 bg-[#ff6600] rounded-lg flex items-center justify-center mt-1">
-                        <svg
-                          className="w-3.5 h-3.5 text-white"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                      </div>
+                      <img
+                        src={lockTimeIcon}
+                        className="w-5 h-5"
+                        alt="Lock Time"
+                      />
                       <div>
                         <p className="[font-family:'Manrope',Helvetica] font-semibold text-[#afa49c] text-xs tracking-[0] leading-4">
                           Trigger
@@ -216,21 +198,11 @@ export const SetTimeLock = (): JSX.Element => {
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 bg-[#ff6600] rounded-lg flex items-center justify-center mt-1">
-                        <svg
-                          className="w-3.5 h-3.5 text-white"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                      </div>
+                      <img
+                        src={worldUniverseIcon}
+                        className="w-5 h-5"
+                        alt="World Universe"
+                      />
                       <div>
                         <p className="[font-family:'Manrope',Helvetica] font-semibold text-[#afa49c] text-xs tracking-[0] leading-4">
                           Timezone
@@ -242,21 +214,11 @@ export const SetTimeLock = (): JSX.Element => {
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 bg-[#392f28] rounded-lg flex items-center justify-center mt-1">
-                        <svg
-                          className="w-3.5 h-3.5 text-[#afa49c]"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                          />
-                        </svg>
-                      </div>
+                      <img
+                        src={shieldLockIcon}
+                        className="w-5 h-5"
+                        alt="Lock Time"
+                      />
                       <div>
                         <p className="[font-family:'Manrope',Helvetica] font-semibold text-[#afa49c] text-xs tracking-[0] leading-4">
                           Security
@@ -275,13 +237,14 @@ export const SetTimeLock = (): JSX.Element => {
           <div className="flex items-center justify-end gap-4 mt-8">
             <Button
               variant="outline"
-            onClick={() => navigate("/choose-plan-type")}
+              onClick={() => navigate("/choose-plan-type")}
               className="h-11 px-6 [font-family:'Manrope',Helvetica] font-bold text-[#afa49c] text-sm bg-[#27211c] border border-[#392f28] hover:bg-[#392f28] hover:text-white rounded-xl"
             >
               Back
             </Button>
-            <Button className="h-11 px-6 [font-family:'Manrope',Helvetica] font-bold text-white text-sm bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-xl flex items-center gap-2"
-            onClick={() => navigate("/review-time-lock")}
+            <Button
+              className="h-11 px-6 [font-family:'Manrope',Helvetica] font-bold text-white text-sm bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-xl flex items-center gap-2"
+              onClick={() => navigate("/review-time-lock")}
             >
               Continue
               <ArrowRightIcon className="w-4 h-4" />

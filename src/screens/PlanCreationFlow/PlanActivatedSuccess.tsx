@@ -64,7 +64,7 @@ export const PlanActivatedSuccess = (): JSX.Element => {
             has been deployed and assets are now monitored.
           </p>
 
-          <div className="bg-[#181411] rounded-lg p-4 mb-8 flex justify-between items-center">
+          <div style={{ width: "55%", margin: "20px auto" }} className="bg-[#181411] rounded-lg p-4 flex justify-between items-center">
             <p className="text-gray-400 text-xl">REFERENCE ID</p>
             <p className="text-white text-xl font-semibold">#CIP-8354-JD</p>
             <button className="text-orange-600 hover:text-orange-500 transition-colors">
