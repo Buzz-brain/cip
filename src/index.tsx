@@ -149,9 +149,9 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/confirm-inactivity-oracle-plan" element={<ConfirmInactivityOraclePlan />} /> ✅
 
         {/* Health/Death Oracle */}
-        <Route path="/assign-health-oracle-exec" element={<AssignHealthOracleExec />} />
-        <Route path="/select-accepted-docs" element={<SelectAcceptedDocs />} />
-        <Route path="/health-oracle-jurisdiction" element={<HealthOracleJurisdiction />} />
+        <Route path="/assign-health-oracle-exec" element={<AssignHealthOracleExec />} /> ✅
+        <Route path="/select-accepted-docs" element={<SelectAcceptedDocs />} /> ✅
+        <Route path="/health-oracle-jurisdiction" element={<HealthOracleJurisdiction />} /> ✅
         <Route path="/review-health-oracle-plan" element={<ReviewHealthOraclePlan />} />
         <Route path="/confirm-health-oracle-plan" element={<ConfirmHealthOraclePlan />} />
 

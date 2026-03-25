@@ -1,20 +1,85 @@
-import { CheckCircle2, Circle, FileText, Gavel, Plus } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import logoImg from "@assets/cip-logo.svg";
+import { useNavigate } from "react-router-dom";
+import { Button } from "../../components/ui/button";
+import docIcon from "@assets/doc.svg";
+import gavelYellowIcon from "@assets/gavel-yellow.svg";
+import firstAidIcon from "@assets/first-aid.svg";
+
+type SelectDoc = "death" | "court" | "hospital" | null;
+
+const docOptions = [
+  {
+    id: "death",
+    label: "Death Certificate",
+    description: "Standard government-issued death certificate. The most common and widely accepted proof for executing inheritance protocols.",
+    icon: docIcon,
+    bgColor: "bg-[#7C2D1233]",
+  },
+  {
+    id: "court",
+    label: "Court Declaration",
+    description: " Official court ruling declaring presumption of death. Required in special cases such as missing persons where no body is recovered.",
+    icon: gavelYellowIcon,
+    bgColor: "bg-[#7C2D1233]",
+  },
+  {
+    id: "hospital",
+    label: "Hospital Record",
+    description: "Certified medical record or verified physician's statement confirming time and cause of death. Useful for immediate triggers.",
+    icon: firstAidIcon,
+    bgColor: "bg-[#7C2D1233]",
+  },
+];
 
 export const SelectAcceptedDocs = (): JSX.Element => {
+  const navigate = useNavigate();
+  const [selectedDoc, setSelectedDoc] = useState<SelectDoc>(null);
+
+  const handleBack = () => {
+    navigate("/assign-health-oracle-exec");
+  };
+
+  const confirmSelection = () => {
+     if (selectedDoc) {
+       const doc =
+         selectedDoc === "death"
+           ? "90"
+           : selectedDoc === "court"
+             ? "180"
+             : selectedDoc === "hospital"
+               ? "365"
+               : null;
+
+       navigate("/health-oracle-jurisdiction", {
+         state: {
+           inactivityPeriod: selectedDoc,
+           doc,
+         },
+       });
+     }
+  };
+
   return (
-    <div className="min-h-screen bg-[#1a1410] text-white">
-      <header className="border-b border-gray-800 px-8 py-4 flex items-center justify-between">
+    <div className="flex flex-col w-full min-h-screen bg-[#221810] text-white [font-family:'Manrope',Helvetica]">
+      <header className="w-full h-[61px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#393028]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
-            <span className="text-xs font-bold">I</span>
-          </div>
-          <span className="text-sm font-semibold">Inheritance Protocol</span>
+          <Link to="/dashboard">
+            <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+          </Link>
+          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
+            Inheritance&nbsp;&nbsp;Protocol
+          </span>
         </div>
         <nav className="flex items-center gap-8">
           <a href="#" className="text-gray-400 hover:text-gray-300 text-sm">
             Dashboard
           </a>
-          <a href="#" className="text-gray-400 hover:text-gray-300 text-sm">
+          <a
+            href="#"
+            className="text-gray-400 hover:text-gray-300 text-sm font-semibold"
+          >
             Create Plan
           </a>
           <a href="#" className="text-gray-400 hover:text-gray-300 text-sm">
@@ -27,9 +92,9 @@ export const SelectAcceptedDocs = (): JSX.Element => {
         </nav>
       </header>
 
-      <main className="max-w-6xl mx-auto px-8 py-12">
+      <main className="max-w-5xl mx-auto px-8 py-12">
         <div className="mb-12">
-          <h1 className="text-4xl font-bold mb-3">Select Accepted Documents</h1>
+          <h1 className="text-4xl font-bold mb-4">Select Accepted Documents</h1>
           <p className="text-gray-400 text-base leading-relaxed max-w-3xl">
             Choose which official documents will be accepted as valid proof of
             death by the Health Oracle. You can select multiple options to
@@ -37,82 +102,68 @@ export const SelectAcceptedDocs = (): JSX.Element => {
           </p>
         </div>
 
-        <div className="mb-8">
+        <div className="mb-12">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-gray-300 text-sm font-medium">
+            <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5">
               Step 3 of 5: Verification Proofs
-            </h2>
-            <span className="text-orange-500 text-sm font-semibold">
+            </span>
+            <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
               60% Completed
             </span>
           </div>
-          <div className="w-full bg-gray-900 rounded-full h-2 overflow-hidden">
-            <div
-              className="bg-orange-600 h-full rounded-full"
-              style={{ width: "60%" }}
-            ></div>
+
+          <div className="w-full h-2 bg-[#54493B] rounded-full overflow-hidden">
+            <div className="h-full w-[60%] bg-[#ff6600]"></div>
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-6 mb-12">
-          <button className="border-2 border-orange-600 rounded-2xl p-8 text-left bg-gray-900/50 hover:bg-gray-900 transition relative cursor-pointer">
-            <div className="flex items-center justify-between mb-6">
-              <div className="w-12 h-12 bg-orange-600/20 rounded-lg flex items-center justify-center">
-                <FileText className="w-6 h-6 text-orange-500" />
+        <div className="grid grid-cols-3 gap-6 [font-family:'Manrope',Helvetica]">
+          {docOptions.map((option) => (
+            <button
+              key={option.id}
+              onClick={() => setSelectedDoc(option.id as SelectDoc)}
+              className={`relative p-6 rounded-lg bg-[#27231C] border-2 transition-all text-left ${
+                selectedDoc === option.id
+                  ? "border-orange-600 bg-[#27221C]"
+                  : "border-[#54493B] bg-[#27221C] hover:border-gray-600"
+              }`}
+            >
+              <div className="absolute top-4 right-4 w-5 h-5 rounded-full border-2 border-gray-600 flex items-center justify-center">
+                {selectedDoc === option.id && (
+                  <div className="w-3 h-3 rounded-full bg-orange-600"></div>
+                )}
               </div>
-              <CheckCircle2 className="w-6 h-6 text-orange-600" />
-            </div>
-            <h3 className="text-white font-bold text-lg mb-2">
-              Death Certificate
-            </h3>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Standard government-issued death certificate. The most common and
-              widely accepted proof for executing inheritance protocols.
-            </p>
-          </button>
 
-          <button className="border-2 border-orange-600 rounded-2xl p-8 text-left bg-gray-900/50 hover:bg-gray-900 transition relative cursor-pointer">
-            <div className="flex items-center justify-between mb-6">
-              <div className="w-12 h-12 bg-orange-600/20 rounded-lg flex items-center justify-center">
-                <Gavel className="w-6 h-6 text-orange-500" />
+              <div
+                className={`w-12 h-14 ${option.bgColor} rounded-lg flex items-center mb-4 justify-center`}
+              >
+                <img src={option.icon} alt="" className="w-6 h-6" />
               </div>
-              <CheckCircle2 className="w-6 h-6 text-orange-600" />
-            </div>
-            <h3 className="text-white font-bold text-lg mb-2">
-              Court Declaration
-            </h3>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Official court ruling declaring presumption of death. Required in
-              special cases such as missing persons where no body is recovered.
-            </p>
-          </button>
-
-          <button className="border-2 border-gray-800 rounded-2xl p-8 text-left bg-gray-900/50 hover:bg-gray-900 transition relative cursor-pointer opacity-60">
-            <div className="flex items-center justify-between mb-6">
-              <div className="w-12 h-12 bg-gray-800/20 rounded-lg flex items-center justify-center">
-                <Plus className="w-6 h-6 text-gray-600" />
-              </div>
-              <Circle className="w-6 h-6 text-gray-700" />
-            </div>
-            <h3 className="text-gray-500 font-bold text-lg mb-2">
-              Hospital Record
-            </h3>
-            <p className="text-gray-500 text-sm leading-relaxed">
-              Certified medical record or verified physician's statement
-              confirming time and cause of death. Useful for immediate triggers.
-            </p>
-          </button>
+              <h3 className="text-white font-semibold text-lg mb-1">
+                {option.label}
+              </h3>
+              <p className="text-gray-400 text-sm">{option.description}</p>
+            </button>
+          ))}
         </div>
 
-        <div className="flex items-center justify-between">
-          <button className="border border-gray-700 hover:border-gray-600 text-gray-300 px-6 py-3 rounded-lg font-medium text-sm transition">
-            Back
-          </button>
-          <button className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-semibold text-sm transition flex items-center gap-2">
-            Confirm Selection
-            <CheckCircle2 className="w-4 h-4" />
-          </button>
-        </div>
+        <footer className="flex mt-12 items-center justify-end pt-8 pb-12 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
+          <div className="inline-flex items-start gap-4 relative flex-[0_0_auto]">
+            <Button
+              className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+              onClick={handleBack}
+            >
+              Back
+            </Button>
+
+            <Button
+              onClick={confirmSelection}
+              className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            >
+              Confirm Selection
+            </Button>
+          </div>
+        </footer>
       </main>
     </div>
   );

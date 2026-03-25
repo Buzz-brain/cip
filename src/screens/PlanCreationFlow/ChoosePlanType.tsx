@@ -157,7 +157,7 @@ export const ChoosePlanType = (): JSX.Element => {
             } else if (selectedPlan === "inactivity-oracle") {
                 navigate("/set-inactivity-period");
             } else if (selectedPlan === "health-oracle") {
-                navigate("/health-oracle");
+                navigate("/assign-health-oracle-exec");
             } else {
                 navigate("/summary", { state: { selectedPlan } });
             }
