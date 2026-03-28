@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
-import { Wallet, AlertTriangle, Zap } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import logoImg from "@assets/cip-logo.svg";
+import alarmBuzzOrangeIcon from "@assets/alarm-buzz-orange.svg";
+import thumbprintIcon from "@assets/thumbprint.svg";
 
-interface ProofOfLifeCheckProps {
-  onConfirmLife?: () => void;
-}
+export const ProofOfLifeCheck = (): JSX.Element => {
+  const navigate = useNavigate();
 
-export const ProofOfLifeCheck = ({ onConfirmLife = () => {} }: ProofOfLifeCheckProps): JSX.Element => {
+  const onConfirmLife = () => {
+    navigate("/proof-of-life-check-missed");
+  };
+
   const [timeRemaining, setTimeRemaining] = useState({
     days: 7,
     hours: 0,
@@ -42,121 +48,122 @@ export const ProofOfLifeCheck = ({ onConfirmLife = () => {} }: ProofOfLifeCheckP
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white relative overflow-hidden">
-      <div className="absolute top-1/4 left-[-10%] w-96 h-96 bg-amber-950/20 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-1/4 right-[-10%] w-96 h-96 bg-amber-950/20 rounded-full blur-3xl"></div>
+    <div className="flex flex-col w-full min-h-screen bg-[#221810] text-white [font-family:'Manrope',Helvetica]">
+      {/* <div className="absolute top-1/4 left-[-10%] w-96 h-96 bg-amber-950/20 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-1/4 right-[-10%] w-96 h-96 bg-amber-950/20 rounded-full blur-3xl"></div> */}
 
-      <header className="bg-[#1a1a1a] border-b border-gray-800 relative z-10">
-        <div className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
-              <Wallet className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl font-semibold">CIP Protocol</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <a
-              href="#"
-              className="text-gray-300 hover:text-white transition text-sm"
-            >
-              Support
-            </a>
-            <div className="px-3 py-1.5 bg-yellow-600/20 border border-yellow-600/40 rounded text-yellow-500 text-xs font-mono">
-              0x4a...8f92 Connected
-            </div>
-          </div>
+      <header className="w-full h-[61px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#393028]">
+        <div className="flex items-center gap-3">
+          <Link to="/dashboard">
+            <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+          </Link>
+          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
+            CIP&nbsp;&nbsp;Protocol
+          </span>
         </div>
+        <nav className="flex items-center gap-8">
+          <a href="#" className="text-gray-400 hover:text-gray-300 text-sm">
+            Dashboard
+          </a>
+          <a
+            href="#"
+            className="text-gray-400 hover:text-gray-300 text-sm font-semibold"
+          >
+            Assets
+          </a>
+          <a href="#" className="text-gray-400 hover:text-gray-300 text-sm">
+            Beneficiaries
+          </a>
+          <a href="#" className="text-gray-400 hover:text-gray-300 text-sm">
+            Settings
+          </a>
+          <div className="w-9 h-9 bg-gray-400 rounded-full"></div>
+        </nav>
       </header>
 
-      <main className="relative z-10 flex items-center justify-center min-h-[calc(100vh-73px)] px-8">
-        <div className="w-full max-w-2xl">
-          <div className="border-2 border-amber-700/50 rounded-lg p-12 bg-gradient-to-b from-amber-950/30 to-transparent">
+      <main className="relative z-10 flex items-center justify-center min-h-[calc(100vh-73px)] mt-20 px-8">
+        <div className="w-full max-w-2xl mb-20">
+
+          <div className="border-t-4 border-[#EC7813] rounded-lg p-12 bg-[#2E261C] to-transparent">
             <div className="flex justify-center mb-8">
-              <div className="w-14 h-14 bg-amber-600/30 rounded-full flex items-center justify-center">
-                <AlertTriangle className="w-7 h-7 text-amber-500" />
+              <div className="w-20 h-20 bg-[#FF66001A] rounded-full flex items-center justify-center">
+                <img src={alarmBuzzOrangeIcon} className="w-7 h-7" alt="Alarm Buzz" />
               </div>
             </div>
 
             <h1 className="text-4xl font-bold text-center mb-2">
               Proof-of-Life Check
             </h1>
-            <p className="text-amber-500/80 text-center mb-8 font-medium">
-              Critical Attention Required
-            </p>
 
-            <div className="bg-[#2a2a2a] rounded-lg p-8 mb-8">
-              <p className="text-gray-300 leading-relaxed mb-4">
+            <div className="rounded-lg p-4">
+              <p className="text-[#CBD5E1] leading-relaxed mb-4">
                 Please confirm that you are active. Failure to respond within the deadline below will automatically initiate your inheritance protocol distribution.
               </p>
             </div>
 
             <div className="mb-8">
-              <p className="text-amber-500 text-center mb-4 font-semibold flex items-center justify-center gap-2">
-                <Zap className="w-4 h-4" />
-                Time Remaining Before Pre-Execution
-              </p>
-              <div className="grid grid-cols-4 gap-3 bg-[#1a1a1a] rounded-lg p-6">
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-amber-500 mb-2">
-                    {String(timeRemaining.days).padStart(2, "0")}
+              <div className="gap-3 bg-[#181411] border border-[#393128] rounded-lg p-6">
+                <p className="text-[#B8A194] text-center mb-4 flex items-center justify-center gap-2">
+                  Time Remaining
+                </p>
+
+
+                <div className="grid grid-cols-4 gap-6">
+
+                  <div className="text-center">
+                    <div className="text-4xl font-bold mb-2 bg-[#393128] rounded-lg p-5">
+                      {String(timeRemaining.days).padStart(2, "0")}
+                    </div>
+
+                    <div className="text-sm text-[#B8A194]">Days</div>
                   </div>
-                  <div className="text-xs text-gray-500">Days</div>
-                </div>
-                <div className="flex items-center justify-center text-gray-500">
-                  :
-                </div>
-                <div className="text-center">
-                  <div className="text-4xl font-bold mb-2">
-                    {String(timeRemaining.hours).padStart(2, "0")}
+
+                  <div className="text-center">
+                    <div className="text-4xl font-bold mb-2 bg-[#393128] rounded-lg p-5">
+                      {String(timeRemaining.hours).padStart(2, "0")}
+                    </div>
+                    <div className="text-sm text-[#B8A194]">Hours</div>
                   </div>
-                  <div className="text-xs text-gray-500">Hours</div>
-                </div>
-                <div className="flex items-center justify-center text-gray-500">
-                  :
-                </div>
-                <div className="text-center">
-                  <div className="text-4xl font-bold mb-2">
-                    {String(timeRemaining.minutes).padStart(2, "0")}
+                  <div className="text-center">
+                    <div className="text-4xl font-bold mb-2 bg-[#393128] rounded-lg p-5">
+                      {String(timeRemaining.minutes).padStart(2, "0")}
+                    </div>
+                    <div className="text-sm text-[#B8A194]">Mins</div>
                   </div>
-                  <div className="text-xs text-gray-500">Mins</div>
-                </div>
-                <div className="flex items-center justify-center text-gray-500">
-                  :
-                </div>
-                <div className="text-center">
-                  <div className="text-4xl font-bold mb-2">
-                    {String(timeRemaining.seconds).padStart(2, "0")}
+
+                  <div className="text-center">
+                    <div className="text-4xl text-[#FF6600] font-bold mb-2 bg-[#393128] rounded-lg p-5">
+                      {String(timeRemaining.seconds).padStart(2, "0")}
+                    </div>
+                    <div className="text-sm text-[#B8A194]">Secs</div>
                   </div>
-                  <div className="text-xs text-gray-500">Secs</div>
                 </div>
+
               </div>
             </div>
 
-            <button
-              onClick={onConfirmLife}
-              className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-lg font-bold transition mb-6 flex items-center justify-center gap-2"
-            >
-              <span>📱</span>
-              Confirm I'm Alive
-            </button>
+            <div className="flex gap-3">
 
-            <div className="flex gap-4 text-sm">
-              <button className="flex-1 bg-transparent border border-gray-700 hover:border-gray-600 text-gray-300 py-3 rounded-lg font-medium transition">
-                Something is wrong? Contact Support
+              <button
+                onClick={onConfirmLife}
+                className="w-full bg-[#FF6600] hover:bg-orange-700 text-white py-4 rounded-lg font-bold transition flex gap-3 items-center justify-center"
+              >
+                <img src={thumbprintIcon} className="w-5 h-5" alt="Thumbprint" />
+                <span>Confirm Life</span>
+              </button>
+              <button
+                onClick={onConfirmLife}
+                className="w-full bg-transparent border border[#63564B] hover:border-gray-600 text-white py-3 rounded-lg font-medium transition"
+              >
+                Remind Me Later
               </button>
             </div>
 
-            <p className="text-xs text-gray-600 text-center mt-6 flex items-center justify-center gap-4">
-              <span>🔒 Secured by Multi-sig Protocol</span>
+
+            <p className="text-sm text-[#B8A194] text-center mt-6 flex items-center justify-center gap-4">
+              <span>Secured CIP X TEE</span>
             </p>
           </div>
-
-          <p className="text-center text-gray-600 text-xs mt-8">
-            CIP Protocol ID: #B82-591-A • Status:{" "}
-            <span className="text-amber-500 font-semibold">
-              AWAITING CONFIRMATION
-            </span>
-          </p>
         </div>
       </main>
     </div>

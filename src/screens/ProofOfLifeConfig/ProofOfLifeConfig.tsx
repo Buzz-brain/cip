@@ -1,11 +1,22 @@
 import { useState } from 'react';
-import { Settings, Wallet, Mail, Smartphone, MessageSquare, Scan, Key, PenTool, AlertTriangle } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
+import { Wallet, Mail, MessageSquare, AlertTriangle } from 'lucide-react';
+import { Link } from "react-router-dom";
+import logoImg from "@assets/cip-logo.svg";
+import alarmBuzzIcon from "@assets/alarm-buzz.svg";
+import facialBiometricIcon from "@assets/facial-biometric.svg";
+import passphraseIcon from "@assets/passphrase.svg";
+import paperEditIcon from "@assets/paper-edit.svg";
 
-interface ProofOfLifeConfigProps {
-  onSaveChanges?: () => void;
-}
 
-export const ProofOfLifeConfig = ({ onSaveChanges = () => {} }: ProofOfLifeConfigProps): JSX.Element => {
+
+export const ProofOfLifeConfig = (): JSX.Element => {
+  const navigate = useNavigate();
+
+  const onSaveChanges = () => {
+    navigate("/proof-of-life-check");
+  };
+
   const [frequency, setFrequency] = useState<'monthly' | 'quarterly' | 'bi-annually'>('monthly');
   const [walletTrigger, setWalletTrigger] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -15,30 +26,36 @@ export const ProofOfLifeConfig = ({ onSaveChanges = () => {} }: ProofOfLifeConfi
   const [email, setEmail] = useState('user@example.com');
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white">
-      <header className="bg-[#2a2a2a] border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
-              <Wallet className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl font-semibold">CIP Protocol</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <button className="p-2 hover:bg-gray-700 rounded-lg transition">
-              <Settings className="w-5 h-5" />
-            </button>
-            <button className="p-2 hover:bg-gray-700 rounded-lg transition">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-            </button>
-            <div className="w-9 h-9 bg-orange-500 rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium">A</span>
-            </div>
-          </div>
+    <div className="flex flex-col w-full min-h-screen bg-[#221810] text-white [font-family:'Manrope',Helvetica]">
+      <header className="w-full h-[61px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#393028]">
+        <div className="flex items-center gap-3">
+          <Link to="/dashboard">
+            <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+          </Link>
+          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
+            CIP&nbsp;&nbsp;Protocol
+          </span>
         </div>
+        <nav className="flex items-center gap-8">
+          <a href="#" className="text-gray-400 hover:text-gray-300 text-sm">
+            Dashboard
+          </a>
+          <a
+            href="#"
+            className="text-gray-400 hover:text-gray-300 text-sm font-semibold"
+          >
+            Create Plan
+          </a>
+          <a href="#" className="text-gray-400 hover:text-gray-300 text-sm">
+            My Plans
+          </a>
+          <a href="#" className="text-gray-400 hover:text-gray-300 text-sm">
+            Settings
+          </a>
+          <div className="w-9 h-9 bg-gray-400 rounded-full"></div>
+        </nav>
       </header>
+
 
       <main className="max-w-6xl mx-auto px-8 py-12">
         <div className="flex items-start justify-between mb-12">
@@ -58,11 +75,11 @@ export const ProofOfLifeConfig = ({ onSaveChanges = () => {} }: ProofOfLifeConfi
           <h2 className="text-xl font-semibold mb-4">Frequency & Triggers</h2>
           <div className="mb-6">
             <label className="text-sm text-gray-400 mb-3 block">Check-in Frequency</label>
-            <div className="flex gap-0 bg-[#2a2a2a] rounded-lg p-1">
+            <div className="flex gap-0 bg-[#393128] rounded-lg p-1">
               <button
                 onClick={() => setFrequency('monthly')}
                 className={`flex-1 px-6 py-2.5 rounded-md transition ${
-                  frequency === 'monthly' ? 'bg-[#3a3a3a] text-white' : 'text-gray-400 hover:text-white'
+                  frequency === 'monthly' ? 'bg-[#181411] text-white' : 'text-[#B9AF9D] hover:text-white'
                 }`}
               >
                 Monthly
@@ -70,7 +87,7 @@ export const ProofOfLifeConfig = ({ onSaveChanges = () => {} }: ProofOfLifeConfi
               <button
                 onClick={() => setFrequency('quarterly')}
                 className={`flex-1 px-6 py-2.5 rounded-md transition ${
-                  frequency === 'quarterly' ? 'bg-[#3a3a3a] text-white' : 'text-gray-400 hover:text-white'
+                  frequency === 'quarterly' ? 'bg-[#181411] text-white' : 'text-[#B9AF9D] hover:text-white'
                 }`}
               >
                 Quarterly
@@ -78,7 +95,7 @@ export const ProofOfLifeConfig = ({ onSaveChanges = () => {} }: ProofOfLifeConfi
               <button
                 onClick={() => setFrequency('bi-annually')}
                 className={`flex-1 px-6 py-2.5 rounded-md transition ${
-                  frequency === 'bi-annually' ? 'bg-[#3a3a3a] text-white' : 'text-gray-400 hover:text-white'
+                  frequency === 'bi-annually' ? 'bg-[#181411] text-white' : 'text-[#B9AF9D] hover:text-white'
                 }`}
               >
                 Bi-annually
@@ -86,7 +103,7 @@ export const ProofOfLifeConfig = ({ onSaveChanges = () => {} }: ProofOfLifeConfi
             </div>
           </div>
 
-          <div className="bg-[#2a2a2a] rounded-lg p-5 flex items-center justify-between">
+          <div className="bg-[#37281F] rounded-lg p-5 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-orange-600/20 rounded-lg flex items-center justify-center">
                 <Wallet className="w-5 h-5 text-orange-500" />
@@ -116,7 +133,7 @@ export const ProofOfLifeConfig = ({ onSaveChanges = () => {} }: ProofOfLifeConfi
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-4">Notification Preferences</h2>
           <div className="space-y-4">
-            <div className="bg-[#2a2a2a] rounded-lg p-5">
+            <div className="bg-[#37281F] rounded-lg p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center">
@@ -124,7 +141,7 @@ export const ProofOfLifeConfig = ({ onSaveChanges = () => {} }: ProofOfLifeConfi
                   </div>
                   <div>
                     <h3 className="font-medium mb-1">Email Notifications</h3>
-                    <p className="text-sm text-gray-400">Receive monthly digest and urgent alerts</p>
+                    <p className="text-sm text-[#B9AF9D]">Receive monthly digest and urgent alerts</p>
                   </div>
                 </div>
                 <button
@@ -151,14 +168,14 @@ export const ProofOfLifeConfig = ({ onSaveChanges = () => {} }: ProofOfLifeConfi
               )}
             </div>
 
-            <div className="bg-[#2a2a2a] rounded-lg p-5 flex items-center justify-between">
+            <div className="bg-[#37281F] rounded-lg p-5 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center">
-                  <Smartphone className="w-5 h-5 text-gray-300" />
+                  <img src={alarmBuzzIcon} className='w-5 h-5' alt="Alarm Buzz" />
                 </div>
                 <div>
                   <h3 className="font-medium mb-1">Push Notifications</h3>
-                  <p className="text-sm text-gray-400">Instant alerts on your mobile device</p>
+                  <p className="text-sm text-[#B9AF9D]">Instant alerts on your mobile device</p>
                 </div>
               </div>
               <button
@@ -175,14 +192,14 @@ export const ProofOfLifeConfig = ({ onSaveChanges = () => {} }: ProofOfLifeConfi
               </button>
             </div>
 
-            <div className="bg-[#2a2a2a] rounded-lg p-5 flex items-center justify-between">
+            <div className="bg-[#37281F] rounded-lg p-5 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center">
                   <MessageSquare className="w-5 h-5 text-gray-300" />
                 </div>
                 <div>
                   <h3 className="font-medium mb-1">SMS Alerts</h3>
-                  <p className="text-sm text-gray-400">Critical failure warnings via text</p>
+                  <p className="text-sm text-[#B9AF9D]">Critical failure warnings via text</p>
                 </div>
               </div>
               <button
@@ -204,57 +221,59 @@ export const ProofOfLifeConfig = ({ onSaveChanges = () => {} }: ProofOfLifeConfi
         <section className="mb-10">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">Backup Verification Method</h2>
+            <div className='bg-[#FF66001A] px-3 rounded-lg py-1'>
             <span className="text-orange-500 text-sm font-medium">Required</span>
+            </div>
           </div>
           <div className="grid grid-cols-3 gap-4">
             <button
               onClick={() => setVerificationMethod('facial')}
-              className={`bg-[#2a2a2a] rounded-lg p-6 text-left transition border-2 ${
-                verificationMethod === 'facial' ? 'border-orange-600' : 'border-transparent hover:border-gray-700'
+              className={`bg-[#37281F] rounded-lg p-6 text-left transition border-2 ${
+                verificationMethod === 'facial' ? 'border-orange-600 bg-[#FF66000D]' : 'border-transparent hover:border-gray-700'
               }`}
             >
-              <div className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
-                <Scan className="w-5 h-5 text-gray-300" />
+              <div className="w-14 h-14 bg-[#393128] rounded-full flex items-center justify-center mb-4">
+                <img src={facialBiometricIcon} className='w-5 h-5' alt="Facial Biometric" />
               </div>
               <h3 className="font-medium mb-2">Facial Biometric</h3>
-              <p className="text-sm text-gray-400 mb-4">Verify liveness using your device's camera.</p>
+              <p className="text-sm text-[#B9AF9D] mb-4">Verify liveness using your device's camera.</p>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                <span className="text-xs text-gray-400">High Security</span>
+                <div className="w-2 h-2 bg-[#22C55E] rounded-full"></div>
+                <span className="text-xs text-white">High Security</span>
               </div>
             </button>
 
             <button
               onClick={() => setVerificationMethod('passphrase')}
-              className={`bg-[#2a2a2a] rounded-lg p-6 text-left transition border-2 ${
-                verificationMethod === 'passphrase' ? 'border-orange-600' : 'border-transparent hover:border-gray-700'
+              className={`bg-[#37281F] rounded-lg p-6 text-left transition border-2 ${
+                verificationMethod === 'passphrase' ? 'border-orange-600 bg-[#FF66000D]' : 'border-transparent hover:border-[#393128]'
               }`}
             >
-              <div className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
-                <Key className="w-5 h-5 text-gray-300" />
+              <div className="w-14 h-14 bg-[#393128] rounded-full flex items-center justify-center mb-4">
+                <img src={passphraseIcon} className='w-5 h-5' alt="Passphrase" />
               </div>
               <h3 className="font-medium mb-2">Passphrase</h3>
-              <p className="text-sm text-gray-400 mb-4">Enter your secret 12-word recovery phrase.</p>
+              <p className="text-sm text-[#B9AF9D] mb-4">Enter your secret 12-word recovery phrase.</p>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                <span className="text-xs text-gray-400">Medium Security</span>
+                <div className="w-2 h-2 bg-[#EAB308] rounded-full"></div>
+                <span className="text-xs text-white">Medium Security</span>
               </div>
             </button>
 
             <button
               onClick={() => setVerificationMethod('wallet')}
-              className={`bg-[#2a2a2a] rounded-lg p-6 text-left transition border-2 ${
-                verificationMethod === 'wallet' ? 'border-orange-600' : 'border-transparent hover:border-gray-700'
+              className={`bg-[#37281F] rounded-lg p-6 text-left transition border-2 ${
+                verificationMethod === 'wallet' ? 'border-orange-600 bg-[#FF66000D]' : 'border-transparent hover:border-[#393128]'
               }`}
             >
-              <div className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center mb-4">
-                <PenTool className="w-5 h-5 text-gray-300" />
+              <div className="w-14 h-14 bg-[#393128] rounded-full flex items-center justify-center mb-4">
+                <img src={paperEditIcon} className='w-5 h-5' alt="" />
               </div>
               <h3 className="font-medium mb-2">Wallet Signature</h3>
-              <p className="text-sm text-gray-400 mb-4">Sign a verification message with your wallet.</p>
+              <p className="text-sm text-[#B9AF9D] mb-4">Sign a verification message with your wallet.</p>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-xs text-gray-400">High Security</span>
+                <div className="w-2 h-2 bg-[#22C55E] rounded-full"></div>
+                <span className="text-xs text-white">High Security</span>
               </div>
             </button>
           </div>

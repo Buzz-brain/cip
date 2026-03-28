@@ -24,9 +24,9 @@ import { SetTimeLock } from "./screens/PlanCreationFlow/SetTimeLock";
 import { ReviewTimeLock } from "./screens/PlanCreationFlow/ReviewTimeLock";
 import { BeneficiaryDetails } from "./screens/BeneficiaryFlow/BeneficiaryDetails";
 import { BeneficiaryDashboard } from "./screens/BeneficiaryFlow/BeneficiaryDashboard";
-import { DisputePlanExecution } from "./screens/DisputeResoqlutionFlow/DisputePlanExecution";
+import { DisputePlanExecution } from "./screens/DisputeResolutionFlow/DisputePlanExecution";
 import { OwnerDashboard } from "./screens/OwnerDashboardFlow/OwnerDashboard";
-import { EscrowStateVisualization } from "./screens/DisputeResoqlutionFlow/EscrowStateVisualization"; 
+import { EscrowStateVisualization } from "./screens/DisputeResolutionFlow/EscrowStateVisualization"; 
 
 
 import { SetInactivityPeriod } from "./screens/PlanCreationFlow/SetInactivityPeriod";
@@ -171,12 +171,12 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/secure-storage" element={<SecureStorage />} />
 
         {/* Beneficiary Dashboard Flow */}
-        <Route path="/beneficiary-dashboard" element={<BeneficiaryDashboard />} />
+        <Route path="/beneficiary-dashboard" element={<BeneficiaryDashboard />} /> 
         <Route path="/beneficiary-details" element={<BeneficiaryDetails />} />
 
         {/* Dispute Resolution Flow */}
-        <Route path="/dispute-plan-execution" element={<DisputePlanExecution />} />
-        <Route path="/escrow-state-visualization" element={<EscrowStateVisualization />} />
+        <Route path="/dispute-plan-execution" element={<DisputePlanExecution />} /> ✅
+        <Route path="/escrow-state-visualization" element={<EscrowStateVisualization />} /> ✅
 
         {/* Enterprise Flow */}
         <Route path="/enterprise-login" element={<EnterpriseLogin />} />
@@ -188,34 +188,33 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/api-dev-tools" element={<ApiDevTools />} />
         <Route path="/support-center" element={<SupportCenter />} />
 
-        
         {/* Proof of Life Configuration  */}
-        <Route path="/proof-of-life-config" element={<ProofOfLifeConfig />} />
-        <Route path="/proof-of-life-check" element={<ProofOfLifeCheck />} />
-        <Route path="/proof-of-life-check-missed" element={<ProofOfLifeCheckMissed />} />
-        <Route path="/critical-alert" element={<CriticalAlert />} />
+        <Route path="/proof-of-life-config" element={<ProofOfLifeConfig />} /> ✅
+        <Route path="/proof-of-life-check" element={<ProofOfLifeCheck />} /> ✅
+        <Route path="/proof-of-life-check-missed" element={<ProofOfLifeCheckMissed />} /> ✅
+        <Route path="/critical-alert" element={<CriticalAlert />} /> ✅
 
         {/* Billing and Subscription Flow */}
-        <Route path="/billing-and-payment" element={<BillingAndPayment />} />
-        <Route path="/secure-checkout" element={<SecureCheckout />} />
-        <Route path="/subscription-renewal" element={<SubscriptionRenewal />} />
-        <Route path="/billing-history" element={<BillingHistory />} />
-        <Route path="/grace-period-active" element={<GracePeriodActive />} />
+        <Route path="/billing-and-payment" element={<BillingAndPayment />} /> ✅
+        <Route path="/secure-checkout" element={<SecureCheckout />} /> ✅
+        <Route path="/subscription-renewal" element={<SubscriptionRenewal />} /> ✅
+        <Route path="/billing-history" element={<BillingHistory />} /> ✅
+        <Route path="/grace-period-active" element={<GracePeriodActive />} /> ✅
 
         {/* Mediator Flow */}
-        <Route path="/mediator-login" element={<MediatorLogin />} />
-        <Route path="/mediator-forgot-password" element={<MediatorForgotPwd />} />
-        <Route path="/mediator-set-new-password" element={<MediatorSetNewPwd />} />
-        <Route path="/mediator-password-reset-complete" element={<PwdResetComplete />} />
-        <Route path="/mediator-dispute-cases-overview" element={<DisputeCasesOverview />} />
-        <Route path="/mediator-all-cases" element={<AllCases />} />
-        <Route path="/mediator-dispute-queue" element={<DisputeQueue />} />
+        <Route path="/mediator-login" element={<MediatorLogin />} /> ✅
+        <Route path="/mediator-forgot-password" element={<MediatorForgotPwd />} /> ✅
+        <Route path="/mediator-set-new-password" element={<MediatorSetNewPwd />} /> ✅
+        <Route path="/mediator-password-reset-complete" element={<PwdResetComplete />} /> ✅
+        <Route path="/mediator-dispute-cases-overview" element={<DisputeCasesOverview />} /> ✅
+        <Route path="/mediator-all-cases" element={<AllCases />} /> ✅
+        <Route path="/mediator-dispute-queue" element={<DisputeQueue />} /> ✅
         
         {/* Executor Dashboard Flow */}
-        <Route path="/executor-login" element={<ExecutorLogin />} />
-        <Route path="/executor-forgot-password" element={<ExecutorForgotPwd />} />
-        <Route path="/executor-set-new-password" element={<ExecutorSetNewPwd />} />
-        <Route path="/executor-password-reset-complete" element={<ExecPwdResetComplete />} />
+        <Route path="/executor-login" element={<ExecutorLogin />} /> ✅
+        <Route path="/executor-forgot-password" element={<ExecutorForgotPwd />} /> ✅
+        <Route path="/executor-set-new-password" element={<ExecutorSetNewPwd />} /> ✅
+        <Route path="/executor-password-reset-complete" element={<ExecPwdResetComplete />} /> ✅
         <Route path="/executor-dashboard" element={<ExecutorDashboard />} />
         <Route path="/plan-xp" element={<ExecutorPlanXp />} />
         <Route path="/document-verification" element={<DocumentVerification />} />
@@ -230,10 +229,10 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/executor-secure-storage" element={<ExecutorSecureStorage />} />
 
         {/* Administrative Flows - 7 of 15 */} ❌
-        <Route path="/administrative-login" element={<AdministrativeLogin />} />
-        <Route path="/administrative-forgot-password" element={<AdministrativeForgotPwd />} />
-        <Route path="/administrative-set-new-password" element={<AdministrativeSetNewPwd />} />
-        <Route path="/administrative-password-reset-complete" element={<AdminPwdResetComplete />} />
+        <Route path="/administrative-login" element={<AdministrativeLogin />} /> ✅
+        <Route path="/administrative-forgot-password" element={<AdministrativeForgotPwd />} /> ✅
+        <Route path="/administrative-set-new-password" element={<AdministrativeSetNewPwd />} /> ✅
+        <Route path="/administrative-password-reset-complete" element={<AdminPwdResetComplete />} /> ✅
         <Route path="/administrative-dashboard" element={<AdministrativeDashboard />} />
         <Route path="/manage-executors" element={<ManageExecutors />} />
         <Route path="/role-access-control" element={<RoleAccessControl />} />
