@@ -1,7 +1,7 @@
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Separator } from "../../components/ui/separator";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Navbar } from "../../components/ui/Navbar";
 import { ToggleBilling } from "../../components/ui/ToggleBilling";
@@ -122,6 +122,7 @@ const footerLinksAlt = [
 ];
 
 export const Pricing = (): JSX.Element => {
+  const navigate = useNavigate();
   const [isYearly, setIsYearly] = useState(false);
   const navItems = [
     { label: "Features", href: "#" },
@@ -140,7 +141,10 @@ export const Pricing = (): JSX.Element => {
           Log In
         </Button>
       </Link>
-      <Button className="bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Manrope',Helvetica] font-bold text-sm">
+      <Button 
+        className="bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Manrope',Helvetica] font-bold text-sm"
+        onClick={() => navigate("/onboarding/step-one")}
+      >
         Get Started
       </Button>
     </div>
@@ -214,6 +218,7 @@ export const Pricing = (): JSX.Element => {
                 ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
                 : "bg-[#554233] hover:bg-[#554233]/90"
             } [font-family:'Manrope',Helvetica] font-bold`}
+            onClick={() => navigate("/connect-wallet")}
           >
             {plan.buttonText}
           </Button>

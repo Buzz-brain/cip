@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ReactNode } from "react";
+import { ReactNode, MouseEvent } from "react";
 
 export type NavItem = {
   label: string;
@@ -44,25 +44,47 @@ export const Navbar = ({
 
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-6">
-              {navItems.map((item) =>
-                item.href.startsWith("/") ? (
-                  <Link
-                    key={item.label}
-                    to={item.href}
-                    className="[font-family:'Noto_Sans',Helvetica] font-medium text-slate-300 text-sm hover:text-white transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                ) : (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    className="[font-family:'Noto_Sans',Helvetica] font-medium text-slate-300 text-sm hover:text-white transition-colors"
-                  >
-                    {item.label}
-                  </a>
-                )
-              )}
+              {navItems.map((item) => {
+                if (item.href.startsWith("/")) {
+                  return (
+                    <Link
+                      key={item.label}
+                      to={item.href}
+                      className="[font-family:'Noto_Sans',Helvetica] font-medium text-slate-300 text-sm hover:text-white transition-colors"
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                } else if (item.href.startsWith("#")) {
+                  return (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      className="[font-family:'Noto_Sans',Helvetica] font-medium text-slate-300 text-sm hover:text-white transition-colors"
+                      onClick={(e: MouseEvent<HTMLAnchorElement>) => {
+                        e.preventDefault();
+                        const id = item.href.replace('#', '');
+                        const el = document.getElementById(id);
+                        if (el) {
+                          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }}
+                    >
+                      {item.label}
+                    </a>
+                  );
+                } else {
+                  return (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      className="[font-family:'Noto_Sans',Helvetica] font-medium text-slate-300 text-sm hover:text-white transition-colors"
+                    >
+                      {item.label}
+                    </a>
+                  );
+                }
+              })}
             </div>
 
             <div>{rightActions ?? null}</div>

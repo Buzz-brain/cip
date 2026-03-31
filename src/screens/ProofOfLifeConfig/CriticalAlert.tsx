@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { Info, AlertTriangle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import logoImg from "@assets/cip-logo.svg";
 import thumbprintIcon from "@assets/thumbprint.svg";
 
 export const CriticalAlert = (): JSX.Element => {
+  const navigate = useNavigate();
   const [timeRemaining, setTimeRemaining] = useState({
     days: 0,
     hours: 23,
@@ -132,7 +134,10 @@ export const CriticalAlert = (): JSX.Element => {
                 </div>
               </div>
 
-              <button className="w-full bg-[#EC1313] hover:bg-red-700 text-white py-4 rounded-lg font-bold text-lg transition mb-4 flex items-center justify-center gap-2">
+              <button 
+                onClick={() => navigate("/owner-dashboard")}
+                className="w-full bg-[#EC1313] hover:bg-red-700 text-white py-4 rounded-lg font-bold text-lg transition mb-4 flex items-center justify-center gap-2"
+              >
                                 <img src={thumbprintIcon} className="w-5 h-5" alt="Thumbprint" />
                 
                 I AM ALIVE - CANCEL EXECUTION
@@ -142,7 +147,10 @@ export const CriticalAlert = (): JSX.Element => {
                 <button className="bg-transparent border border-[#CFBABA33] hover:border-gray-600 text-[#CFBABA] py-3 rounded-lg font-medium transition">
                   Get Urgent Support
                 </button>
-                <button className="bg-transparent border border-[#CFBABA33] hover:border-gray-600 text-[#CFBABA] py-3 rounded-lg font-medium transition">
+                <button 
+                  onClick={() => navigate("/view-plan-history")}
+                  className="bg-transparent border border-[#CFBABA33] hover:border-gray-600 text-[#CFBABA] py-3 rounded-lg font-medium transition"
+                >
                   View Plan Details
                 </button>
               </div>

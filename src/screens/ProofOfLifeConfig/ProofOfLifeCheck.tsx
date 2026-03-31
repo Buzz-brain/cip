@@ -9,7 +9,7 @@ export const ProofOfLifeCheck = (): JSX.Element => {
   const navigate = useNavigate();
 
   const onConfirmLife = () => {
-    navigate("/proof-of-life-check-missed");
+    navigate(-1);
   };
 
   const [timeRemaining, setTimeRemaining] = useState({

@@ -1,10 +1,18 @@
-import { StrictMode } from "react";
+import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+// Scroll to top on route change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [pathname]);
+  return null;
+}
 import { Home } from "./screens/Home";
 import { Pricing } from "./screens/Pricing";
 import { Dashboard } from "./screens/Dashboard";
-import { CreatePlan } from "./screens/CreatePlan";
+import { ViewPlanHistory } from "./screens/ViewPlanHistory";
 import { AssetRegistry } from "./screens/AssetRegistry";
 import { StepOne } from "./screens/OnboardingFlow/StepOne";
 import { StepTwo } from "./screens/OnboardingFlow/StepTwo";
@@ -48,7 +56,6 @@ import { LegalComplianceCheck } from "./screens/OwnerDashboardFlow/LegalComplian
 import { MainEstateFund } from "./screens/OwnerDashboardFlow/MainEstateFund"; 
 import { MarketVolatilityAlert } from "./screens/OwnerDashboardFlow/MarketVolatilityAlert"; 
 import { Notifications } from "./screens/OwnerDashboardFlow/Notifications"; 
-import { PlanHistory } from "./screens/OwnerDashboardFlow/PlanHistory"; 
 import { RealTimeVolatility } from "./screens/OwnerDashboardFlow/RealTimeVolatility";
 import { SecureStorage } from "./screens/OwnerDashboardFlow/SecureStorage"; 
 import { SelectJurisdiction } from "./screens/OwnerDashboardFlow/SelectJurisdiction"; 
@@ -111,6 +118,7 @@ import { RoleAccessControl } from "./screens/AdministrativeFlow/RoleAccessContro
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
 
         {/* Landing Page */}
@@ -157,7 +165,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
 
         {/* Owner Dashboard Flow */}
         <Route path="/owner-dashboard" element={<OwnerDashboard />} />
-        <Route path="/plan-history" element={<PlanHistory />} />
+        <Route path="/view-plan-history" element={<ViewPlanHistory />} />
         <Route path="/childrens-trust-account" element={<ChildrensTrustAccount />} />
         <Route path="/market-volatility-alert" element={<MarketVolatilityAlert />} />
         <Route path="/real-time-volatility" element={<RealTimeVolatility />} />
@@ -241,9 +249,8 @@ createRoot(document.getElementById("app") as HTMLElement).render(
 
 
 
-        <Route path="/dashboard" element={<Dashboard />} />
+        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
         <Route path="/asset-registry" element={<AssetRegistry />} />
-        <Route path="/create-plan" element={<CreatePlan />} />
 
       </Routes>
     </BrowserRouter>

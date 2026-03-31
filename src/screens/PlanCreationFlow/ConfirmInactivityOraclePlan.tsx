@@ -15,7 +15,7 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate("/set-inactivity-grace-period");
+    navigate(-1);
   };
 
   return (
@@ -244,7 +244,10 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
               </div>
             </div>
 
-            <Button className="inline-flex w-full mt-8 items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6">
+            <Button 
+              onClick={() => navigate("/review-plan")}
+              className="inline-flex w-full mt-8 items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            >
               <img src={paperEditIcon} alt="Icon" />
               Sign & Create Plan
             </Button>

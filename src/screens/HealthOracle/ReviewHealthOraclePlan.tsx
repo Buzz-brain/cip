@@ -1,6 +1,8 @@
 import { ChevronLeft, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const ReviewHealthOraclePlan = (): JSX.Element => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-[#1a1410] text-white">
       <header className="border-b border-gray-800 px-8 py-4 flex items-center justify-between">
@@ -153,7 +155,10 @@ export const ReviewHealthOraclePlan = (): JSX.Element => {
         </div>
 
         <div className="flex items-center justify-between">
-          <button className="border border-gray-700 hover:border-gray-600 text-gray-300 px-6 py-3 rounded-lg font-medium text-sm transition flex items-center gap-2">
+          <button 
+            onClick={() => navigate(-1)}
+            className="border border-gray-700 hover:border-gray-600 text-gray-300 px-6 py-3 rounded-lg font-medium text-sm transition flex items-center gap-2"
+          >
             <ChevronLeft className="w-4 h-4" />
             Back to Selection
           </button>
@@ -161,7 +166,10 @@ export const ReviewHealthOraclePlan = (): JSX.Element => {
             <button className="border border-gray-700 hover:border-gray-600 text-gray-300 px-6 py-3 rounded-lg font-medium text-sm transition">
               Save as Draft
             </button>
-            <button className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-semibold text-sm transition flex items-center gap-2">
+            <button 
+              onClick={() => navigate("/review-plan")}
+              className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-semibold text-sm transition flex items-center gap-2"
+            >
               Confirm & Deploy
               <span>🚀</span>
             </button>

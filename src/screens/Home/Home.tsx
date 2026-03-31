@@ -1,4 +1,6 @@
 import { Badge } from "../../components/ui/badge";
+
+import { useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import { Separator } from "../../components/ui/separator";
@@ -31,9 +33,9 @@ import arrowForward from "@assets/arrow-forward.svg";
 
 
 const navigationItems = [
-  { label: "How it Works", href: "#" },
-  { label: "TaxCore", href: "#" },
-  { label: "Pricing", href: "/pricing" },
+  { label: "How it Works", href: "#core-capabilities" },
+  { label: "TaxCore", href: "#taxcore-intelligence" },
+  { label: "Pricing", href: "#pricing" },
   { label: "Enterprise", href: "#" },
 ];
 
@@ -155,8 +157,26 @@ const footerLinks = {
   legal: ["Terms of Service", "Privacy Policy", "Cookie Policy"],
 };
 
+
 export const Home = (): JSX.Element => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Dynamically inject Sora font only for this page
+    const id = "sora-font-link";
+    if (!document.getElementById(id)) {
+      const link = document.createElement("link");
+      link.id = id;
+      link.rel = "stylesheet";
+      link.href = "https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap";
+      document.head.appendChild(link);
+    }
+    return () => {
+      // Optionally remove the font when unmounting
+      // const el = document.getElementById(id);
+      // if (el) el.remove();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#1e1e1e]">
@@ -166,7 +186,7 @@ export const Home = (): JSX.Element => {
           navItems={navigationItems}
           rightActions={
             <Button
-              className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 [font-family:'Noto_Sans',Helvetica] font-bold text-sm"
+              className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 [font-family:'Sora',Helvetica] font-bold text-sm"
               onClick={() => navigate("/onboarding/step-one")}
             >
               Launch App
@@ -184,10 +204,10 @@ export const Home = (): JSX.Element => {
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center space-y-12">
               <div className="space-y-6">
-                <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-7xl leading-[72px]">
+                <h2 className="[font-family:'Sora',Helvetica] font-bold text-7xl leading-[72px]">
                   <span className="text-white">Secure Your Digital Legacy</span>
                 </h2>
-                <p className="[font-family:'Noto_Sans',Helvetica] font-light text-slate-300 text-xl max-w-2xl mx-auto">
+                <p className="[font-family:'Sora',Helvetica] font-light text-slate-300 text-xl max-w-2xl mx-auto">
                   Automated, non-custodial inheritance for the multi-chain
                   future. Ensure your assets reach your beneficiaries safely,
                   securely, and tax-efficiently.
@@ -196,7 +216,7 @@ export const Home = (): JSX.Element => {
 
               <div className="flex items-center justify-center gap-4">
                 <Button
-                  className="bg-gradient-to-r px-7 py-5 from-[#ff6600] to-[#993d00] hover:opacity-90 shadow-[0px_0px_20px_#ff6633cc] [font-family:'Noto_Sans',Helvetica] font-bold"
+                  className="bg-gradient-to-r px-7 py-5 from-[#ff6600] to-[#993d00] hover:opacity-90 shadow-[0px_0px_20px_#ff6633cc] [font-family:'Sora',Helvetica] font-bold"
                   onClick={() => navigate("/onboarding/step-one")}
                 >
                   Start Plan
@@ -204,7 +224,7 @@ export const Home = (): JSX.Element => {
 
                 <Button
                   variant="outline"
-                  className="bg-[#111111] px-5 py-5 border-[#bd4b00] [font-family:'Noto_Sans',Helvetica] font-bold"
+                  className="bg-[#111111] px-5 py-5 border-[#bd4b00] [font-family:'Sora',Helvetica] font-bold"
                 >
                   <svg
                     width="18"
@@ -228,7 +248,7 @@ export const Home = (): JSX.Element => {
         <section className="bg-[#1c130d] py-8">
           <div className="container mx-auto px-4">
             <div className="text-center space-y-4">
-              <p className="[font-family:'Space_Grotesk',Helvetica] font-bold text-[#8b7664] text-xs">
+              <p className="[font-family:'Sora',Helvetica] font-bold text-[#8b7664] text-xs">
                 Securing Assets On Top Chains
               </p>
               <div className="flex items-center justify-center gap-16">
@@ -239,7 +259,7 @@ export const Home = (): JSX.Element => {
                       alt={chain.name}
                       className="w-8 h-8"
                     />
-                    <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-[#b8a494] text-base">
+                    <span className="[font-family:'Sora',Helvetica] font-bold text-[#b8a494] text-base">
                       {chain.name}
                     </span>
                   </div>
@@ -249,14 +269,14 @@ export const Home = (): JSX.Element => {
           </div>
         </section>
 
-        <section className="py-20">
+        <section id="core-capabilities" className="py-20">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto space-y-12">
               <div className="space-y-5">
-                <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl">
+                <h2 className="[font-family:'Sora',Helvetica] font-bold text-white text-4xl">
                   Core Capabilities
                 </h2>
-                <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-lg max-w-2xl">
+                <p className="[font-family:'Sora',Helvetica] text-[#b8a494] text-lg max-w-2xl">
                   Built for security and autonomy across multiple blockchains,
                   ensuring your plan executes exactly as intended.
                 </p>
@@ -272,10 +292,10 @@ export const Home = (): JSX.Element => {
                       <div className="w-12 h-12 bg-[#135bec1a] rounded-lg flex items-center justify-center">
                         <img src={capability.icon} alt="" className="w-6 h-6" />
                       </div>
-                      <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-xl">
+                      <h3 className="[font-family:'Sora',Helvetica] font-bold text-white text-xl">
                         {capability.title}
                       </h3>
-                      <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-base leading-[26px]">
+                      <p className="[font-family:'Sora',Helvetica] text-[#b8a494] text-base leading-[26px]">
                         {capability.description}
                       </p>
                     </CardContent>
@@ -286,21 +306,21 @@ export const Home = (): JSX.Element => {
           </div>
         </section>
 
-        <section className="bg-[#20190f] border-t border-b border-[#483423] py-20 relative">
+        <section id="taxcore-intelligence" className="bg-[#20190f] border-t border-b border-[#483423] py-20 relative">
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#8a6f1e1a] rounded-full blur-3xl" />
 
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
               <div className="space-y-10">
                 <div className="space-y-6">
-                  <Badge className="bg-[#f6a83b1a] border-[#f6b13b33] !pl-4 !pr-20 !pt-2 !pb-2 text-[#faaf60] [font-family:'Noto_Sans',Helvetica] font-bold rounded-3xl">
+                  <Badge className="bg-[#f6a83b1a] border-[#f6b13b33] !pl-4 !pr-20 !pt-2 !pb-2 text-[#faaf60] [font-family:'Sora',Helvetica] font-bold rounded-3xl">
                     <img src={barChartIcon} alt="" className="w-4 h-4 mr-2" />
                     Infrastructure for Accountants
                   </Badge>
-                  <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-5xl">
+                  <h2 className="[font-family:'Sora',Helvetica] font-bold text-white text-5xl">
                     TaxCore Intelligence
                   </h2>
-                  <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-lg leading-[29px]">
+                  <p className="[font-family:'Sora',Helvetica] text-[#b8a494] text-lg leading-[29px]">
                     TaxCore isn't just a calculator; it's a full compliance
                     suite. It integrates real-time transaction analysis,
                     automatic capital gains calculation, and multi-jurisdiction
@@ -311,10 +331,10 @@ export const Home = (): JSX.Element => {
                 <div className="border-l border-[#674932] pl-8 space-y-12">
                   {taxCoreSteps.map((step) => (
                     <div key={step.title} className="space-y-2">
-                      <h3 className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-lg">
+                      <h3 className="[font-family:'Sora',Helvetica] font-bold text-white text-lg">
                         {step.title}
                       </h3>
-                      <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm">
+                      <p className="[font-family:'Sora',Helvetica] text-[#b8a494] text-sm">
                         {step.description}
                       </p>
                     </div>
@@ -329,7 +349,7 @@ export const Home = (): JSX.Element => {
                       <div className="w-8 h-8 bg-[#f6b13b33] rounded flex items-center justify-center">
                         <img src={calculatorIcon} alt="" className="w-4 h-4" />
                       </div>
-                      <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white">
+                      <span className="[font-family:'Sora',Helvetica] font-bold text-white">
                         TaxCore CalculatorIcon
                       </span>
                     </div>
@@ -342,21 +362,21 @@ export const Home = (): JSX.Element => {
                 <CardContent className="p-6 space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                      <label className="[font-family:'Sora',Helvetica] text-[#8b7664] text-xs">
                         Origin Jurisdiction
                       </label>
                       <div className="bg-[#221911] border border-[#674932] rounded px-3 py-2">
-                        <span className="[font-family:'Noto_Sans',Helvetica] text-white text-sm">
+                        <span className="[font-family:'Sora',Helvetica] text-white text-sm">
                           United Kingdom
                         </span>
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <label className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                      <label className="[font-family:'Sora',Helvetica] text-[#8b7664] text-xs">
                         Beneficiary Residency
                       </label>
                       <div className="bg-[#221911] border border-[#674932] rounded px-3 py-2">
-                        <span className="[font-family:'Noto_Sans',Helvetica] text-white text-sm">
+                        <span className="[font-family:'Sora',Helvetica] text-white text-sm">
                           Germany
                         </span>
                       </div>
@@ -402,10 +422,10 @@ export const Home = (): JSX.Element => {
                       className="w-6 h-6 flex-shrink-0"
                     />
                     <div className="space-y-1">
-                      <p className="[font-family:'Noto_Sans',Helvetica] font-bold text-[#ff6600] text-xs">
+                      <p className="[font-family:'Sora',Helvetica] font-bold text-[#ff6600] text-xs">
                         TaxCore AI Insight
                       </p>
-                      <p className="[font-family:'Noto_Sans',Helvetica] text-slate-300 text-xs leading-[19px]">
+                      <p className="[font-family:'Sora',Helvetica] text-slate-300 text-xs leading-[19px]">
                         Based on the double taxation treaty between UK and
                         Germany, the beneficiary may claim credit for tax paid
                         in the UK.
@@ -413,7 +433,7 @@ export const Home = (): JSX.Element => {
                     </div>
                   </div>
 
-                  <Button className="w-full bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Noto_Sans',Helvetica] font-bold">
+                  <Button className="w-full bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Sora',Helvetica] font-bold">
                     Generate Preliminary Report
                   </Button>
                 </CardContent>
@@ -436,17 +456,17 @@ export const Home = (): JSX.Element => {
                     >
                       <img src={card.icon} alt="" className="w-6 h-6" />
                     </div>
-                    <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                    <h3 className="[font-family:'Poppins',Helvetica] font-bold text-white text-2xl">
                       {card.title}
                     </h3>
-                    <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-base leading-6">
+                    <p className="[font-family:'Poppins',Helvetica] text-[#b8a494] text-base leading-6">
                       {card.description}
                     </p>
                     <div className="space-y-2">
                       {card.features.map((feature) => (
                         <div key={feature} className="flex items-center gap-2">
                           <img src={card.featureIcon} alt="" />
-                          <span className="[font-family:'Noto_Sans',Helvetica] text-slate-300 text-sm">
+                          <span className="[font-family:'Poppins',Helvetica] text-slate-300 text-sm">
                             {feature}
                           </span>
                         </div>
@@ -462,7 +482,7 @@ export const Home = (): JSX.Element => {
           </div>
         </section>
 
-        <section className="bg-[#20180f] border-t border-[#483423] py-20">
+        <section id="pricing" className="bg-[#20180f] border-t border-[#483423] py-20">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto space-y-12">
               <div className="text-center space-y-5">
@@ -486,25 +506,25 @@ export const Home = (): JSX.Element => {
                   >
                     {plan.badge && (
                       <div className="absolute top-0 right-0 bg-[#ff6600] px-3 py-1">
-                        <span className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-xs">
+                        <span className="[font-family:'Sora',Helvetica] font-bold text-white text-xs">
                           {plan.badge}
                         </span>
                       </div>
                     )}
                     <CardContent className="p-8 space-y-6">
                       <div className="space-y-2">
-                        <h3 className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-xl">
+                        <h3 className="[font-family:'Sora',Helvetica] font-bold text-white text-xl">
                           {plan.name}
                         </h3>
-                        <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                        <p className="[font-family:'Sora',Helvetica] text-[#8b7664] text-sm">
                           {plan.description}
                         </p>
                       </div>
                       <div className="flex items-baseline gap-1">
-                        <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-3xl">
+                        <span className="[font-family:'Sora',Helvetica] font-bold text-white text-3xl">
                           {plan.price}
                         </span>
-                        <span className="[font-family:'Manrope',Helvetica] font-bold text-[#b8a494] text-sm">
+                        <span className="[font-family:'Sora',Helvetica] font-bold text-[#b8a494] text-sm">
                           {plan.period}
                         </span>
                       </div>
@@ -521,7 +541,7 @@ export const Home = (): JSX.Element => {
                               className="w-3.5 h-3.5"
                             />
                             <span
-                              className={`[font-family:'Noto_Sans',Helvetica] text-sm ${plan.highlighted ? "text-white" : "text-slate-300"}`}
+                              className={`[font-family:'Sora',Helvetica] text-sm ${plan.highlighted ? "text-white" : "text-slate-300"}`}
                             >
                               {feature.text}
                             </span>
@@ -534,7 +554,8 @@ export const Home = (): JSX.Element => {
                           plan.highlighted
                             ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
                             : "border-[#674932] bg-transparent "
-                        } [font-family:'Noto_Sans',Helvetica] font-bold`}
+                        } [font-family:'Sora',Helvetica] font-bold`}
+                        onClick={() => navigate("/pricing")}
                       >
                         {plan.buttonText}
                       </Button>
@@ -551,16 +572,16 @@ export const Home = (): JSX.Element => {
             <Card className="max-w-5xl mx-auto bg-gradient-to-r from-[#332319] to-[#99684b] [#332319] border-[#674932]">
               <CardContent className="p-12 flex items-center justify-between gap-12">
                 <div className="flex-1 space-y-6">
-                  <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-3xl">
+                  <h2 className="[font-family:'Sora',Helvetica] font-bold text-white text-3xl">
                     For Family Offices & Custodians
                   </h2>
-                  <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-lg leading-7">
+                  <p className="[font-family:'Sora',Helvetica] text-[#b8a494] text-lg leading-7">
                     Manage high-net-worth digital estates with enterprise-grade
                     multi-sig coordination, dedicated account managers, and
                     custom legal framework integration.
                   </p>
                   <div className="flex items-center gap-6">
-                    <span className="[font-family:'Noto_Sans',Helvetica] font-bold text-[#ff6600] text-base cursor-pointer hover:underline">
+                    <span className="[font-family:'Sora',Helvetica] font-bold text-[#ff6600] text-base cursor-pointer hover:underline">
                       Contact Sales
                     </span>
                     <img src={arrowForward} alt="" className="w-5 h-5" />
@@ -589,11 +610,11 @@ export const Home = (): JSX.Element => {
                         className="w-5 h-6 object-cover"
                       />
                     </div>
-                    <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                    <span className="[font-family:'Sora',Helvetica] font-bold text-white text-lg">
                       CIP
                     </span>
                   </div>
-                  <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm leading-[22px]">
+                  <p className="[font-family:'Sora',Helvetica] text-[#8b7664] text-sm leading-[22px]">
                     The standard for sovereign digital inheritance. Securing the
                     future of decentralized wealth.
                   </p>
@@ -608,7 +629,7 @@ export const Home = (): JSX.Element => {
                       <a
                         key={link}
                         href="#"
-                        className="block [font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm hover:text-white transition-colors"
+                        className="block [font-family:'Sora',Helvetica] text-[#b8a494] text-sm hover:text-white transition-colors"
                       >
                         {link}
                       </a>
@@ -625,7 +646,7 @@ export const Home = (): JSX.Element => {
                       <a
                         key={link}
                         href="#"
-                        className="block [font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm hover:text-white transition-colors"
+                        className="block [font-family:'Sora',Helvetica] text-[#b8a494] text-sm hover:text-white transition-colors"
                       >
                         {link}
                       </a>
@@ -642,7 +663,7 @@ export const Home = (): JSX.Element => {
                       <a
                         key={link}
                         href="#"
-                        className="block [font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm hover:text-white transition-colors"
+                        className="block [font-family:'Sora',Helvetica] text-[#b8a494] text-sm hover:text-white transition-colors"
                       >
                         {link}
                       </a>
@@ -654,14 +675,14 @@ export const Home = (): JSX.Element => {
               <Separator className="bg-[#483423]" />
 
               <div className="flex items-center justify-between">
-                <p className="[font-family:'Noto_Sans',Helvetica] text-[#695d47] text-sm">
+                <p className="[font-family:'Sora',Helvetica] text-[#695d47] text-sm">
                   © 2024 CIP Protocol. All rights reserved.
                 </p>
                 <div className="flex items-center gap-4">
-                  <span className="[font-family:'Inter',Helvetica] text-[#8b7664] text-xs">
+                  <span className="[font-family:'Sora',Helvetica] text-[#8b7664] text-xs">
                     public
                   </span>
-                  <span className="[font-family:'Inter',Helvetica] text-[#8b7664] text-sm">
+                  <span className="[font-family:'Sora',Helvetica] text-[#8b7664] text-sm">
                     mail
                   </span>
                 </div>

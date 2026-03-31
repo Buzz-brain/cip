@@ -28,7 +28,7 @@ export const StepTwo = (): JSX.Element => {
         </div>
 
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/connect-wallet")}
           className="[font-family:'Manrope',Helvetica] font-medium text-white text-sm hover:text-[#ff6600] transition-colors flex items-center gap-3"
         >
           Skip Intro

@@ -1,6 +1,8 @@
 import { ShieldCheck, ExternalLink } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const UploadSignedDoc = (): JSX.Element => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-[#1a1410] text-white relative overflow-hidden">
       <div className="absolute inset-0">
@@ -78,7 +80,7 @@ export const UploadSignedDoc = (): JSX.Element => {
               <ExternalLink className="w-4 h-4" />
             </button>
 
-            <button className="text-orange-500 hover:text-orange-400 text-sm font-medium transition">
+            <button className="text-orange-500 hover:text-orange-400 text-sm font-medium transition" onClick={() => navigate(-1)}>
               Remind me later
             </button>
           </div>
