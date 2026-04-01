@@ -1,5 +1,6 @@
 import { CircleAlert as AlertCircleIcon, CircleCheck as CheckCircleIcon, ShieldAlert as ShieldAlertIcon, ThumbsUp as ThumbsUpIcon } from "lucide-react";
 import { Button } from "../../components/ui/button";
+import { ConnectWalletButton } from "../../components/ConnectWalletButton";
 import { Card, CardContent } from "../../components/ui/card";
 import logoImg from "@assets/cip-logo.png";
 import { Link } from "react-router-dom";
@@ -82,9 +83,7 @@ export const GuardianApproval = (): JSX.Element => {
                 </nav>
 
                 <div className="flex items-center gap-3">
-                    <Button className="h-10 px-5 [font-family:'Manrope',Helvetica] font-bold text-white text-sm bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg">
-                        Connect Wallet
-                    </Button>
+                    <ConnectWalletButton variant="default" showAddress={true} compact={false} />
                     <div className="w-10 h-10 bg-[#ff6600] rounded-full"></div>
                 </div>
             </header>

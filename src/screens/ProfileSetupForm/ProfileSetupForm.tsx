@@ -10,7 +10,7 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Separator } from "../../components/ui/separator";
-import connectWallet from "@assets/connect-wallet.svg";
+import { ConnectWalletButton } from "../../components/ConnectWalletButton";
 import logoImg from "@assets/cip-logo.svg";
 import lockWhite from "@assets/lock-white.svg";
 import userIcon from "@assets/user.svg";
@@ -55,21 +55,7 @@ export const ProfileSetupForm = (): JSX.Element => {
               ))}
             </div>
 
-            <Button
-              onClick={() => navigate("/connect-wallet")}
-              className="gap-2 rounded-lg bg-[#ff6600] px-4 py-[7px] hover:bg-[#ff6600]/90"
-            >
-              <div className="relative h-[22px] w-[18px]">
-                <img
-                  className="absolute left-[12.50%] top-[19.32%] h-[61.36%] w-[79.17%]"
-                  alt="Wallet"
-                  src={connectWallet}
-                />
-              </div>
-              <span className="text-sm font-bold leading-5 text-white [font-family:'Manrope',Helvetica]">
-                Connect Wallet
-              </span>
-            </Button>
+            <ConnectWalletButton variant="default" showAddress={true} />
           </nav>
         </div>
       </header>

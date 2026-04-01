@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
+import { ConnectWalletButton } from "../../components/ConnectWalletButton";
 import { Link } from "react-router-dom";
 import { Bell, Zap, Settings, CircleHelp as HelpCircle, LogOut, Plus, Eye, EyeOff, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import logoImg from "@assets/cip-logo.png";
@@ -221,10 +222,7 @@ export const Dashboard = (): JSX.Element => {
                   <Bell className="w-5 h-5 text-[#8b7664]" />
                   <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full" />
                 </button>
-                <Button className="bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Noto_Sans',Helvetica] font-bold text-sm gap-2">
-                  <span>🔌</span>
-                  Connect Wallet
-                </Button>
+                <ConnectWalletButton variant="default" showAddress={true} compact={false} />
               </div>
             </div>
           </header>

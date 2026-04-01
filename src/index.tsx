@@ -1,9 +1,9 @@
-import React, { StrictMode } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 import { Home } from "./screens/Home";
 import { Pricing } from "./screens/Pricing";
-import { Dashboard } from "./screens/Dashboard";
 import { ViewPlanHistory } from "./screens/ViewPlanHistory";
 import { AssetRegistry } from "./screens/AssetRegistry";
 import { StepOne } from "./screens/OnboardingFlow/StepOne";
@@ -111,8 +111,9 @@ import { Login } from "./screens/Login";
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
 
         {/* Landing Page */}
         <Route path="/" element={<Home />} /> ✅
@@ -248,7 +249,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/asset-registry" element={<AssetRegistry />} />
 
       </Routes>
-      </BrowserRouter>
+    </BrowserRouter>
     </AuthProvider>
-  </StrictMode>     
+  </StrictMode>
 );

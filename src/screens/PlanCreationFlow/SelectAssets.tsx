@@ -21,7 +21,7 @@ import {
 } from "../../components/ui/table";
 import { Progress } from "../../components/ui/progress";
 import { Link, useNavigate } from "react-router-dom";
-import connectWallet from "@assets/connect-wallet.svg";
+import { ConnectWalletButton } from "../../components/ConnectWalletButton";
 import filterIcon from "@assets/filter.svg";
 import sortIcon from "@assets/sort.svg";
 import ethIcon from "@assets/eth-icon.svg";
@@ -149,21 +149,7 @@ export const SelectAssets = (): JSX.Element => {
                             ))}
                         </div>
 
-                        <Button
-                            onClick={() => navigate("/connect-wallet")}
-                            className="gap-2 rounded-lg bg-[#ff6600] px-4 py-[7px] hover:bg-[#ff6600]/90"
-                        >
-                            <div className="relative h-[22px] w-[18px]">
-                                <img
-                                    className="absolute left-[12.50%] top-[19.32%] h-[61.36%] w-[79.17%]"
-                                    alt="Wallet"
-                                    src={connectWallet}
-                                />
-                            </div>
-                            <span className="text-sm font-bold leading-5 text-white [font-family:'Manrope',Helvetica]">
-                                Connect Wallet
-                            </span>
-                        </Button>
+                        <ConnectWalletButton variant="default" showAddress={true} compact={false} />
                     </nav>
                 </div>
             </header>
