@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { ChevronLeft, AlertCircle, CheckCircle2, Copy } from "lucide-react";
 import { Link } from "react-router-dom";
 import logoImg from "@assets/cip-logo.svg";
@@ -24,6 +25,13 @@ export const ReviewHealthOraclePlan = (): JSX.Element => {
       navigate("/review-health-oracle-plan");
     };
 
+=======
+import { ChevronLeft, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+export const ReviewHealthOraclePlan = (): JSX.Element => {
+  const navigate = useNavigate();
+>>>>>>> 29ad55ccb63ba2b0029508890d2863811da4e937
   return (
     <div className="flex flex-col w-full min-h-screen bg-[#221810] text-white [font-family:'Manrope',Helvetica]">
       <header className="w-full h-[61px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#393028]">
@@ -200,8 +208,16 @@ export const ReviewHealthOraclePlan = (): JSX.Element => {
           </div>
         </div>
 
+<<<<<<< HEAD
         <footer className="flex items-center pt-8 justify-between border-t [border-top-style:solid] border-[#54483b]">
           <button className="border border-gray-700 hover:border-gray-600 text-gray-300 px-6 py-3 rounded-lg font-medium text-sm transition flex items-center gap-2">
+=======
+        <div className="flex items-center justify-between">
+          <button 
+            onClick={() => navigate(-1)}
+            className="border border-gray-700 hover:border-gray-600 text-gray-300 px-6 py-3 rounded-lg font-medium text-sm transition flex items-center gap-2"
+          >
+>>>>>>> 29ad55ccb63ba2b0029508890d2863811da4e937
             <ChevronLeft className="w-4 h-4" />
             Back to Selection
           </button>
@@ -209,7 +225,10 @@ export const ReviewHealthOraclePlan = (): JSX.Element => {
             <button className="border border-gray-700 hover:border-gray-600 text-gray-300 px-6 py-3 rounded-lg font-medium text-sm transition">
               Save as Draft
             </button>
-            <button className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-semibold text-sm transition flex items-center gap-2">
+            <button 
+              onClick={() => navigate("/review-plan")}
+              className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-semibold text-sm transition flex items-center gap-2"
+            >
               Confirm & Deploy
               <img src={rocketIcon} alt="" />
             </button>

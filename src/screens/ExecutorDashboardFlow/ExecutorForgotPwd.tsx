@@ -1,16 +1,19 @@
 import { ArrowLeft, Lock } from "lucide-react";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import logoImg from "@assets/cip-logo.svg";
 
-interface ExecutorForgotPwdProps {
-  onBackToLogin?: () => void;
-  onSendReset?: () => void;
-}
+export const ExecutorForgotPwd = (): JSX.Element => {
+  const navigate = useNavigate();
 
-export const ExecutorForgotPwd = ({
-  onBackToLogin = () => {},
-  onSendReset = () => {},
-}: ExecutorForgotPwdProps): JSX.Element => {
   const [email, setEmail] = useState("");
+
+  const onBackToLogin = () => {
+    navigate("/executor-login");
+  };
+  const onSendReset = () => {
+    navigate("/executor-set-new-password");
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,24 +23,48 @@ export const ExecutorForgotPwd = ({
   };
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-[700px] h-[700px] bg-gradient-to-br from-amber-900/30 to-transparent rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-gradient-to-tl from-purple-900/20 to-transparent rounded-full blur-3xl transform translate-x-1/2 translate-y-1/2" />
-      <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-gradient-to-bl from-red-900/20 to-transparent rounded-full blur-3xl" />
+    <div className="flex flex-col w-full min-h-screen bg-[#221810] text-white [font-family:'Manrope',Helvetica]">
+      <header className="w-full h-[61px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#393028]">
+        <div className="flex items-center gap-3">
+          <Link to="/dashboard">
+            <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+          </Link>
+          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
+            CIP&nbsp;&nbsp;Secure Protocol
+          </span>
+        </div>
+        <nav className="flex items-center gap-8">
+          <a href="#" className="text-[#DBD8D1] hover:text-gray-300 text-sm">
+            Documentation
+          </a>
+          <a
+            href="#"
+            className="text-[#DBD8D1] hover:text-gray-300 text-sm"
+          >
+            Support
+          </a>
+          <a href="/mediator-login" className="text-[#FF6600] hover:text-gray-300 text-sm">
+            Login
+          </a>
+        </nav>
+      </header>
 
-      <main className="relative z-10 flex items-center justify-center min-h-screen px-4">
+      <main className="relative z-10 flex items-center justify-center min-h-screen px-4"
+        style={{ minHeight: "150vh" }}
+
+      >
         <div className="w-full max-w-md">
-          <div className="bg-zinc-900/80 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-zinc-800">
+          <div className="bg-[#2D231C] backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-[#393428]">
             <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-amber-700 to-amber-800 rounded-full flex items-center justify-center">
-                <Lock className="w-8 h-8 text-amber-200" />
+              <div className="w-20 h-20 bg-[#FF66001A] rounded-full flex items-center justify-center">
+                <Lock className="w-8 h-8 text-[#FF6600]" />
               </div>
             </div>
 
-            <h1 className="text-2xl font-bold text-white text-center mb-3">
+            <h1 className="text-2xl font-bold text-white text-center mb-4">
               Forgot your password?
             </h1>
-            <p className="text-gray-400 text-center text-sm mb-8 leading-relaxed">
+            <p className="text-[#AFA89C] text-sm pl-3 mb-6 leading-relaxed">
               No worries! Enter your registered email address or username below
               and we'll send you password reset instructions.
             </p>
@@ -52,13 +79,13 @@ export const ExecutorForgotPwd = ({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="w-full bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
+                  className="w-full bg-[#181411] border border-[#54483B] rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-medium py-3 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg shadow-orange-500/20"
+                className="w-full bg-[#FF6600] text-white font-medium py-3 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg shadow-orange-500/20"
               >
                 Send Reset Instructions
               </button>
@@ -85,4 +112,4 @@ export const ExecutorForgotPwd = ({
       </main>
     </div>
   );
-};
+}

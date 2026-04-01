@@ -8,11 +8,11 @@ export const PlanActivatedSuccess = (): JSX.Element => {
   const navigate = useNavigate();
 
   const handleViewPlans = () => {
-    navigate("/dashboard");
+    navigate("/view-plan-history");
   };
 
   const handleReturnDashboard = () => {
-    navigate("/");
+    navigate("/owner-dashboard");
   };
 
   return (

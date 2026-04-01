@@ -18,7 +18,7 @@ export const SetInactivityPeriod = (): JSX.Element => {
   const [customDays, setCustomDays] = useState("");
 
   const handleBack = () => {
-    navigate("/review-plan");
+    navigate(-1);
   };
 
   const handleContinue = () => {

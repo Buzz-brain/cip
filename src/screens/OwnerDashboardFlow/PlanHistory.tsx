@@ -3,6 +3,7 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { Link } from "react-router-dom";
+import logoImg from "@assets/cip-logo.svg";
 import {
   ChevronLeft,
   Share2,
@@ -86,22 +87,24 @@ export const PlanHistory = (): JSX.Element => {
   return (
     <div className="min-h-screen bg-[#0d0b08]">
       {/* Header */}
-      <header className="bg-[#1a1410] border-b border-[#3a2f1e] px-8 py-4">
+      <header className="bg-[#0D0501] border-b border-[#3a2f1e] px-8 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-[#ff6600] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">🛡️</span>
-            </div>
-            <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
-              CIP
-            </span>
-          </div>
+             <div className="flex items-center gap-3">
+                                      <div className="flex items-center gap-3 mb-2">
+                                          <Link to="/dashboard">
+                                              <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+                                          </Link>
+                                          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
+                                              CIP
+                                          </span>
+                                      </div>
+                                  </div>
 
           <div className="flex items-center gap-6">
             <a href="#" className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] hover:text-white text-sm">
               Dashboard
             </a>
-            <a href="#" className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] hover:text-white text-sm">
+            <a href="#" className="[font-family:'Noto_Sans',Helvetica] text-[#ff6600] hover:text-white text-sm">
               Plans
             </a>
             <a href="#" className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] hover:text-white text-sm">
@@ -125,7 +128,7 @@ export const PlanHistory = (): JSX.Element => {
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Back and Title */}
           <div className="space-y-4">
-            <Link to="/dashboard" className="flex items-center gap-2 [font-family:'Noto_Sans',Helvetica] font-bold text-[#ff6600] hover:text-[#ff6600]/80 text-sm">
+            <Link to="/dashboard" className="flex items-center gap-2 [font-family:'Noto_Sans',Helvetica] text-[#ff6600] hover:text-[#ff6600]/80 text-sm">
               <ChevronLeft className="w-4 h-4" />
               Back to Plans
             </Link>
@@ -134,12 +137,12 @@ export const PlanHistory = (): JSX.Element => {
                 <h1 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl mb-2">
                   Plan History: Family Trust Alpha
                 </h1>
-                <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                <p className="[font-family:'Noto_Sans',Helvetica] text-[#B8AA9D] text-sm">
                   📝 Immutable audit log stored on Autonomys Network
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button className="bg-[#332619] hover:bg-[#3a2f1e] border border-[#554433] text-white gap-2 [font-family:'Noto_Sans',Helvetica] font-bold text-sm">
+                <Button className="bg-transparent hover:bg-[#3a2f1e] border border-[#554433] text-white gap-2 [font-family:'Noto_Sans',Helvetica] font-bold text-sm">
                   <DownloadIcon className="w-4 h-4" />
                   Export History
                 </Button>

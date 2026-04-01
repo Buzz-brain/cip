@@ -1,15 +1,13 @@
 import { Shield, EyeOff, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import logoImg from "@assets/cip-logo.svg";
+import setNewPwdIcon from "@assets/set-new-pwd.svg";
 
-interface MediatorSetNewPwdProps {
-  onResetComplete?: () => void;
-  onBackToLogin?: () => void;
-}
+export const MediatorSetNewPwd = (): JSX.Element => {
 
-export const MediatorSetNewPwd = ({
-  onResetComplete = () => {},
-  onBackToLogin = () => {},
-}: MediatorSetNewPwdProps): JSX.Element => {
+  const navigate = useNavigate();
+
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -20,6 +18,13 @@ export const MediatorSetNewPwd = ({
     number: false,
     uppercase: false,
   });
+
+    const onResetComplete = () => {
+    navigate("/mediator-password-reset-complete");
+  };
+  const onBackToLogin = () => {
+    navigate("/mediator-login");
+  };
 
   useEffect(() => {
     setRequirements({
@@ -40,69 +45,45 @@ export const MediatorSetNewPwd = ({
   };
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-bl from-amber-900/30 to-transparent rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-green-900/20 to-transparent rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2" />
-      <div className="absolute top-1/2 left-1/4 w-[400px] h-[400px] bg-gradient-to-br from-red-900/20 to-transparent rounded-full blur-3xl" />
-
-      <header className="relative z-10 flex items-center justify-between px-8 py-6">
+    <div className="flex flex-col w-full min-h-screen bg-[#221810] text-white [font-family:'Manrope',Helvetica]">
+      <header className="w-full h-[61px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#393028]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
-            <Shield className="w-6 h-6 text-white" fill="white" />
-          </div>
-          <span className="text-white text-xl font-semibold">
+          <Link to="/dashboard">
+            <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+          </Link>
+          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
             Inheritance Protocol
           </span>
         </div>
-        <button className="p-2 rounded-full hover:bg-zinc-800 transition-colors">
-          <svg
-            className="w-6 h-6 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <circle cx="12" cy="12" r="1" fill="currentColor" />
-            <circle cx="12" cy="5" r="1" fill="currentColor" />
-            <circle cx="12" cy="19" r="1" fill="currentColor" />
-          </svg>
-        </button>
+          <div className="w-6 h-6 rounded-full border border-white flex items-center justify-center">
+            <span className="text-lg text-white font-bold hover:border-gray-500 transition-colors">?</span>
+          </div>
       </header>
 
       <main
         className="relative z-10 flex items-center justify-center px-4"
-        style={{ minHeight: "calc(100vh - 200px)" }}
+        style={{ minHeight: "150vh" }}
+
       >
         <div className="w-full max-w-md">
-          <div className="bg-zinc-900/80 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-zinc-800">
+          <div className="bg-[#2B2018] backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-[#393428]">
             <div className="flex justify-center mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
-                <svg
-                  className="w-7 h-7 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                  />
-                </svg>
+              <div className="w-20 h-20 bg-[#FF66001A] rounded-full flex items-center justify-center">
+<img src={setNewPwdIcon} className="w-8 h-8" alt="" />
               </div>
             </div>
 
-            <h1 className="text-2xl font-bold text-white text-center mb-2">
+            <h1 className="text-2xl font-bold text-white text-center mb-4">
               Set New Password
             </h1>
-            <p className="text-gray-400 text-center text-sm mb-8">
+            <p className="text-[#B9AF9D] pl-3 text-sm mb-8">
               Create a strong password to secure your inheritance protocol
               account.
             </p>
 
             <form onSubmit={handleSubmit}>
               <div className="mb-5">
-                <label className="block text-gray-300 text-sm mb-2">
+                <label className="block text-[#DBD8D1] text-sm mb-2">
                   New Password
                 </label>
                 <div className="relative">
@@ -111,7 +92,7 @@ export const MediatorSetNewPwd = ({
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Enter new password"
-                    className="w-full bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors pr-10"
+                    className="w-full bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors pr-10"
                   />
                   <button
                     type="button"
@@ -128,7 +109,7 @@ export const MediatorSetNewPwd = ({
               </div>
 
               <div className="mb-6">
-                <label className="block text-gray-300 text-sm mb-2">
+                <label className="block text-[#DBD8D1] text-sm mb-2">
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -137,7 +118,7 @@ export const MediatorSetNewPwd = ({
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirm new password"
-                    className="w-full bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors pr-10"
+                    className="w-full bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors pr-10"
                   />
                   <button
                     type="button"
@@ -153,13 +134,14 @@ export const MediatorSetNewPwd = ({
                 </div>
               </div>
 
-              <div className="bg-black/30 border border-zinc-700 rounded-lg p-4 mb-6">
-                <h3 className="text-sm font-medium text-gray-300 mb-3">
-                  Security Requirements
-                </h3>
+              <div className="bg-[#22191066] border border-[#393428] rounded-lg p-4 mb-6">
+                <div className="text-sm font-medium flex items-center gap-2 text-white mb-3">
+                  <Shield className="w-4 h-4 inline-block mr-1 text-white" />
+                  <p>Security Requirements</p>
+                </div>
                 <div className="space-y-2">
                   <div
-                    className={`flex items-center gap-3 text-sm ${requirements.minLength ? "text-green-400" : "text-gray-400"}`}
+                    className={`flex items-center gap-3 text-sm ${requirements.minLength ? "text-green-400" : "text-[#B9AF9D]"}`}
                   >
                     <div className="w-4 h-4 rounded-full border border-current flex items-center justify-center">
                       {requirements.minLength && (
@@ -169,7 +151,7 @@ export const MediatorSetNewPwd = ({
                     <span>At least 8 characters</span>
                   </div>
                   <div
-                    className={`flex items-center gap-3 text-sm ${requirements.specialChar ? "text-green-400" : "text-gray-400"}`}
+                    className={`flex items-center gap-3 text-sm ${requirements.specialChar ? "text-green-400" : "text-[#B9AF9D]"}`}
                   >
                     <div className="w-4 h-4 rounded-full border border-current flex items-center justify-center">
                       {requirements.specialChar && (
@@ -179,7 +161,7 @@ export const MediatorSetNewPwd = ({
                     <span>Includes a special character (!@#$%^&*)</span>
                   </div>
                   <div
-                    className={`flex items-center gap-3 text-sm ${requirements.number ? "text-green-400" : "text-gray-400"}`}
+                    className={`flex items-center gap-3 text-sm ${requirements.number ? "text-green-400" : "text-[#B9AF9D]"}`}
                   >
                     <div className="w-4 h-4 rounded-full border border-current flex items-center justify-center">
                       {requirements.number && (
@@ -189,7 +171,7 @@ export const MediatorSetNewPwd = ({
                     <span>Includes a number</span>
                   </div>
                   <div
-                    className={`flex items-center gap-3 text-sm ${requirements.uppercase ? "text-green-400" : "text-gray-400"}`}
+                    className={`flex items-center gap-3 text-sm ${requirements.uppercase ? "text-green-400" : "text-[#B9AF9D]"}`}
                   >
                     <div className="w-4 h-4 rounded-full border border-current flex items-center justify-center">
                       {requirements.uppercase && (
@@ -236,8 +218,12 @@ export const MediatorSetNewPwd = ({
             Back to Login
           </button>
 
-          <footer className="relative z-10 mt-12 text-center text-gray-500 text-xs">
-            <div className="flex items-center justify-center gap-6 mb-4">
+          
+        </div>
+        
+      </main>
+      <footer className="relative z-10 mb-10  text-center text-[#B9AF9D] text-xs w-full border-t border-[#393428] pt-8">
+            <div className="flex items-center justify-center gap-20 mb-6">
               <a href="#" className="hover:text-gray-400 transition-colors">
                 Privacy Policy
               </a>
@@ -250,8 +236,6 @@ export const MediatorSetNewPwd = ({
             </div>
             <p>© 2024 Inheritance Protocol. All rights reserved.</p>
           </footer>
-        </div>
-      </main>
     </div>
   );
 }

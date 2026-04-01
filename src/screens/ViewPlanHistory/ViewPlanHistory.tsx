@@ -81,7 +81,7 @@ const historyEvents: HistoryEvent[] = [
   },
 ];
 
-export const CreatePlan = (): JSX.Element => {
+export const ViewPlanHistory = (): JSX.Element => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("All Events");
 
@@ -127,9 +127,9 @@ export const CreatePlan = (): JSX.Element => {
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Back and Title */}
           <div className="space-y-4">
-            <Link to="/dashboard" className="flex items-center gap-2 [font-family:'Noto_Sans',Helvetica] font-bold text-[#ff6600] hover:text-[#ff6600]/80 text-sm">
+            <Link to="/owner-dashboard" className="flex items-center gap-2 [font-family:'Noto_Sans',Helvetica] font-bold text-[#ff6600] hover:text-[#ff6600]/80 text-sm">
               <ChevronLeft className="w-4 h-4" />
-              Back to Plans
+              Back
             </Link>
             <div className="flex items-start justify-between">
               <div>

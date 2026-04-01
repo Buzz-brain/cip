@@ -2,6 +2,7 @@ import { ChartBar as BarChart3Icon, Bell as BellIcon, FileText as FileTextIcon, 
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
+import padlockImg from "@assets/padlock-img.svg";
 
 export const BeneficiaryDashboard = (): JSX.Element => {
   const navigate = useNavigate();
@@ -237,7 +238,7 @@ export const BeneficiaryDashboard = (): JSX.Element => {
                   <img
                     className="w-40 h-40 rounded-lg object-cover"
                     alt="Security"
-                    src="https://images.pexels.com/photos/3153198/pexels-photo-3153198.jpeg?auto=compress&cs=tinysrgb&w=400"
+                    src={padlockImg}
                   />
                   <Button className="bg-[#ff3b30] hover:bg-[#ff3b30]/90 text-white [font-family:'Manrope',Helvetica] font-bold text-base px-6 py-3 gap-2">
                     <CheckCircleIcon className="w-5 h-5" />
@@ -404,7 +405,7 @@ export const BeneficiaryDashboard = (): JSX.Element => {
         </div>
       </main>
 
-      <aside className="w-[320px] bg-[#0d0501] border-l border-[#392f28] flex flex-col">
+      <aside className="w-[250px] bg-[#0d0501] border-l border-[#392f28] flex flex-col">
         <div className="p-6 border-b border-[#392f28]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base">

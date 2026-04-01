@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
-import { Wallet, AlertTriangle } from "lucide-react";
+import { Info, AlertTriangle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import logoImg from "@assets/cip-logo.svg";
+import thumbprintIcon from "@assets/thumbprint.svg";
 
 export const CriticalAlert = (): JSX.Element => {
+  const navigate = useNavigate();
   const [timeRemaining, setTimeRemaining] = useState({
     days: 0,
     hours: 23,
@@ -38,124 +43,128 @@ export const CriticalAlert = (): JSX.Element => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-red-950/20 via-transparent to-transparent"></div>
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-red-600 to-transparent"></div>
-
-      <header className="bg-[#0f0f0f] border-b border-gray-800 relative z-10">
-        <div className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
-              <Wallet className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl font-semibold">CIP Protocol</span>
-          </div>
-          <nav className="flex items-center gap-6">
-            <a href="#" className="text-gray-300 hover:text-white transition">
-              Dashboard
-            </a>
-            <a href="#" className="text-gray-300 hover:text-white transition">
-              My Plans
-            </a>
-            <div className="w-9 h-9 bg-gray-700 rounded-full flex items-center justify-center">
-              <span className="text-xs font-medium">A</span>
-            </div>
-          </nav>
+    <div className="flex flex-col w-full min-h-screen bg-[#221010] text-white [font-family:'Manrope',Helvetica] ">
+      <header className="w-full h-[61px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#393028]">
+        <div className="flex items-center gap-3">
+          <Link to="/dashboard">
+            <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+          </Link>
+          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
+            CIP&nbsp;&nbsp;Protocol
+          </span>
         </div>
+        <nav className="flex items-center gap-8">
+          <a href="#" className="text-gray-400 hover:text-gray-300 text-sm">
+            Dashboard
+          </a>
+          <a
+            href="#"
+            className="text-gray-400 hover:text-gray-300 text-sm font-semibold"
+          >
+            My Plans
+          </a>
+          <div className="w-9 h-9 bg-gray-400 rounded-full"></div>
+        </nav>
       </header>
 
-      <main className="relative z-10 flex items-center justify-center min-h-[calc(100vh-73px)] px-8">
+      <main className="relative z-10 flex items-center justify-center min-h-[calc(100vh-73px)] mt-20 px-8">
         <div className="w-full max-w-2xl">
-          <div className="border-2 border-red-900/60 rounded-xl p-12 bg-gradient-to-b from-red-950/40 to-[#1a0a0a]">
-            <div className="text-center mb-8">
-              <p className="text-red-500 text-sm font-bold flex items-center justify-center gap-2 mb-4">
+          <div className="border-2 border-[#EC13134D] rounded-xl bg-[#221010]">
+
+            <div className="text-center bg-[#EC131333] rounded-t-xl border-b border-[#EC13134D] py-4">
+              <p className="text-red-500 text-sm font-bold flex items-center justify-center gap-2">
                 <AlertTriangle className="w-4 h-4" />
                 Action Required: Final Notice
                 <AlertTriangle className="w-4 h-4" />
               </p>
             </div>
 
-            <h1 className="text-5xl font-bold text-center mb-2 leading-tight">
-              <span className="text-red-500">CRITICAL ALERT:</span>
-              <br />
-              Plan Execution Imminent
-            </h1>
+            <div className="p-12 pb-3">
+              <h1 className="text-4xl font-bold text-center mb-4 leading-tight">
+                <span className="text-[#EC1313]">CRITICAL ALERT:</span>
+                <br />
+                Plan Execution Imminent
+              </h1>
 
-            <p className="text-gray-400 text-center mb-8 text-lg">
-              You have missed{" "}
-              <span className="text-red-400 font-bold">
-                3 consecutive Proof-of-Life checks
-              </span>
-              .
-            </p>
-
-            <div className="bg-[#1a1a1a] rounded-lg p-8 mb-8 border border-red-900/30">
-              <p className="text-amber-100 text-center leading-relaxed">
-                Your inheritance plan will enter{" "}
-                <span className="font-bold">automatic execution</span> and your
-                assets will be transferred to your designated beneficiaries.
-                This action cannot be stopped once initiated.
+              <p className="text-gray-400 text-center mb-8 text-md">
+                You have missed{" "}
+                <span className="text-white font-semibold">
+                  3 consecutive Proof-of-Life checks
+                </span>
+                .
               </p>
-            </div>
 
-            <div className="mb-10">
-              <p className="text-red-500 text-center mb-6 font-bold flex items-center justify-center gap-2">
-                <AlertTriangle className="w-5 h-5" />
-                Time Remaining to Halt Execution
-              </p>
-              <div className="grid grid-cols-4 gap-4 bg-[#1a1a1a] rounded-lg p-8 border border-red-900/20">
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-white mb-2">
-                    {String(timeRemaining.days).padStart(2, "0")}
+              <div className="mb-10">
+                <p className="text-[#EC1313] text-center mb-4 font-semibold text-sm flex items-center justify-center gap-2">
+                  Time Remaining to Halt Execution
+                </p>
+                <div className="grid grid-cols-4 gap-4">
+                  <div className="text-center">
+                    <div className="text-4xl flex items-center justify-center h-20 border border-[#EC131333] bg-[#00000066] rounded-lg font-bold mb-2">
+                      {String(timeRemaining.days).padStart(2, "0")}
+                    </div>
+                    <div className="text-xs text-[#CFBABA] tracking-wider">
+                      Days
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wider">
-                    Days
+                  <div className="text-center">
+                    <div className="text-4xl flex items-center justify-center h-20 border border-[#EC131333] bg-[#00000066] rounded-lg font-bold mb-2">
+                      {String(timeRemaining.hours).padStart(2, "0")}
+                    </div>
+                    <div className="text-xs text-[#CFBABA] tracking-wider">
+                      Hours
+                    </div>
                   </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-white mb-2">
-                    {String(timeRemaining.hours).padStart(2, "0")}
+                  <div className="text-center">
+                    <div className="text-4xl flex items-center text-[#EC1313] justify-center h-20 border border-[#EC131333] bg-[#00000066] rounded-lg font-bold mb-2">
+                      {String(timeRemaining.minutes).padStart(2, "0")}
+                    </div>
+                    <div className="text-xs text-[#CFBABA] tracking-wider">
+                      Mins
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wider">
-                    Hours
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-red-500 mb-2">
-                    {String(timeRemaining.minutes).padStart(2, "0")}
-                  </div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wider">
-                    Mins
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-red-500 mb-2">
-                    {String(timeRemaining.seconds).padStart(2, "0")}
-                  </div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wider">
-                    Secs
+                  <div className="text-center">
+                    <div className="text-4xl flex items-center text-[#EC1313] justify-center h-20 border border-[#EC131333] bg-[#00000066] rounded-lg font-bold mb-2">
+                      {String(timeRemaining.seconds).padStart(2, "0")}
+                    </div>
+                    <div className="text-xs text-[#CFBABA] tracking-wider">
+                      Secs
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <button 
+                onClick={() => navigate("/owner-dashboard")}
+                className="w-full bg-[#EC1313] hover:bg-red-700 text-white py-4 rounded-lg font-bold text-lg transition mb-4 flex items-center justify-center gap-2"
+              >
+                                <img src={thumbprintIcon} className="w-5 h-5" alt="Thumbprint" />
+                
+                I AM ALIVE - CANCEL EXECUTION
+              </button>
+
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <button className="bg-transparent border border-[#CFBABA33] hover:border-gray-600 text-[#CFBABA] py-3 rounded-lg font-medium transition">
+                  Get Urgent Support
+                </button>
+                <button 
+                  onClick={() => navigate("/view-plan-history")}
+                  className="bg-transparent border border-[#CFBABA33] hover:border-gray-600 text-[#CFBABA] py-3 rounded-lg font-medium transition"
+                >
+                  View Plan Details
+                </button>
+              </div>
+
             </div>
 
-            <button className="w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-lg font-bold text-lg transition mb-4 flex items-center justify-center gap-2">
-              <span>⊗</span>I AM ALIVE - CANCEL EXECUTION
-            </button>
 
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <button className="bg-transparent border border-gray-700 hover:border-gray-600 text-gray-300 py-3 rounded-lg font-medium transition">
-                Get Urgent Support
-              </button>
-              <button className="bg-transparent border border-gray-700 hover:border-gray-600 text-gray-300 py-3 rounded-lg font-medium transition">
-                View Plan Details
-              </button>
-            </div>
 
-            <div className="bg-red-950/30 border border-red-900/50 rounded-lg p-6 text-center">
-              <p className="text-red-300 text-sm leading-relaxed flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                <span>
+            
+          </div>
+          <div className=" p-6 text-left">
+              <p className="text-sm leading-relaxed flex items-start gap-3">
+                <Info className="text-[#EC1313] w-5 h-5 mt-0.5 flex-shrink-0" />
+                <span className="text-[#CFBABA]">
                   Failure to respond within the timeframe above will result in
                   the permanent transfer of assets to your designated
                   beneficiaries via Smart Contract execution. This action cannot
@@ -163,7 +172,6 @@ export const CriticalAlert = (): JSX.Element => {
                 </span>
               </p>
             </div>
-          </div>
         </div>
       </main>
     </div>

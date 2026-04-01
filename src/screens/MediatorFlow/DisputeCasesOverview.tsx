@@ -2,16 +2,11 @@ import {
   Search,
   Plus,
   ChevronDown,
-  Bell,
-  User,
-  TrendingUp,
 } from "lucide-react";
-import { useState } from "react";
-
-interface DisputeCasesOverviewProps {
-  onLogout?: () => void;
-  onCreateCase?: () => void;
-}
+import { useNavigate } from "react-router-dom";
+import { Header } from "./Header";
+import { Sidebar } from "./Sidebar";
+import gavelGreyBorderIcon from "@assets/gavel-gray-border.svg";
 
 const casesData = [
   {
@@ -19,10 +14,11 @@ const casesData = [
     name: "Estate of J. Doe",
     executor: "Executor: 0x4a...8B2",
     chain: "Ethereum",
-    chainColor: "from-blue-500 to-blue-600",
+    chainColor: "bg-[#D4691133]",
+    chainBorderColor: "border-[#D9770633]",
     value: "$1,250,000",
-    status: "Voting Open",
-    statusColor: "bg-orange-500/20 text-orange-400",
+    status: "Open",
+    statusColor: "bg-[#D473111A] text-orange-400",
     time: "48h",
     avatar: "JD",
   },
@@ -31,10 +27,11 @@ const casesData = [
     name: "Estate of A. Smith",
     executor: "Executor: 0x9f...3C1",
     chain: "Polygon",
-    chainColor: "from-purple-500 to-purple-600",
+    chainColor: "bg-[#D4691133]",
+    chainBorderColor: "border-[#D9770633]",
     value: "$45,200",
-    status: "Pending Review",
-    statusColor: "bg-orange-500/20 text-orange-400",
+    status: "Pending",
+    statusColor: "bg-[#D473111A] text-orange-400",
     time: "5 Days",
     avatar: "AS",
   },
@@ -43,10 +40,12 @@ const casesData = [
     name: "Trust of K. Nakamoto",
     executor: "Executor: 0x1a...F99",
     chain: "BNB Chain",
-    chainColor: "from-yellow-500 to-yellow-600",
+    chainColor: "bg-[#16A34A33]",
+    chainBorderColor: "border-[#16A34A33]",
+
     value: "$12,850,000",
-    status: "Voting Open",
-    statusColor: "bg-orange-500/20 text-orange-400",
+    status: "Open",
+    statusColor: "bg-[#D473111A] text-orange-400",
     time: "12h",
     avatar: "KN",
   },
@@ -55,7 +54,8 @@ const casesData = [
     name: "Estate of B. Lovelace",
     executor: "Executor: 0x2b...D22",
     chain: "Ethereum",
-    chainColor: "from-blue-500 to-blue-600",
+    chainColor: "bg-[#39312833]",
+    chainBorderColor: "border-[#39312833]",
     value: "$890,000",
     status: "Resolved",
     statusColor: "bg-green-500/20 text-green-400",
@@ -67,146 +67,30 @@ const casesData = [
     name: "Estate of M. Turing",
     executor: "Executor: 0x7c...A11",
     chain: "Gnosis",
-    chainColor: "from-green-500 to-green-600",
+    chainColor: "bg-[#D4691133]",
+    chainBorderColor: "border-[#D9770633]",
     value: "$2,100,000",
-    status: "Pending Review",
-    statusColor: "bg-orange-500/20 text-orange-400",
+    status: "Pending",
+    statusColor: "bg-[#D473111A] text-orange-400",
     time: "6 Days",
     avatar: "MT",
   },
 ];
 
-export const DisputeCasesOverview = ({
-  onLogout = () => {},
-  onCreateCase = () => {},
-}: DisputeCasesOverviewProps): JSX.Element => {
-  const [searchQuery, setSearchQuery] = useState("");
+export const DisputeCasesOverview = (): JSX.Element => {
+  const navigate = useNavigate();
+
+  const onCreateCase = () => {
+    navigate("/mediator-all-cases");
+  };
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-bl from-amber-900/20 to-transparent rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-green-900/20 to-transparent rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2" />
-
-      <header className="relative z-20 bg-zinc-900/50 backdrop-blur-xl border-b border-zinc-800 sticky top-0">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">C</span>
-            </div>
-            <span className="text-white text-lg font-semibold">
-              CIP Mediation
-            </span>
-          </div>
-
-          <div className="flex-1 max-w-md mx-8">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-              <input
-                type="text"
-                placeholder="Global search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-zinc-800/50 border border-zinc-700 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
-              />
-            </div>
-          </div>
-
-          <nav className="flex items-center gap-6 mr-6">
-            <a
-              href="#"
-              className="text-gray-400 hover:text-white transition-colors text-sm"
-            >
-              Dashboard
-            </a>
-            <a
-              href="#"
-              className="text-orange-500 hover:text-orange-400 transition-colors text-sm font-medium"
-            >
-              Cases
-            </a>
-            <a
-              href="#"
-              className="text-gray-400 hover:text-white transition-colors text-sm"
-            >
-              Governance
-            </a>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 bg-orange-500/20 border border-orange-500/30 rounded-full px-3 py-1">
-              <span className="text-orange-400 text-xs font-medium">
-                0x4a...8B2
-              </span>
-            </div>
-            <button className="relative p-2 hover:bg-zinc-800 rounded-full transition-colors">
-              <Bell className="w-5 h-5 text-gray-400" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-orange-500 rounded-full" />
-            </button>
-            <button
-              onClick={onLogout}
-              className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center hover:from-orange-600 hover:to-orange-700 transition-all"
-            >
-              <User className="w-5 h-5 text-white" />
-            </button>
-          </div>
-        </div>
-      </header>
+    <div className="flex flex-col w-full min-h-screen bg-[#221710] text-white [font-family:'Manrope',Helvetica]">
+      
+      <Header />
 
       <div className="relative z-10 flex">
-        <aside className="w-48 bg-zinc-900/50 backdrop-blur-xl border-r border-zinc-800 p-6">
-          <div className="mb-8">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
-              Dispute Queue
-            </h3>
-            <nav className="space-y-2">
-              <button className="w-full flex items-center gap-3 px-4 py-3 bg-orange-500/20 border border-orange-500/30 rounded-lg text-orange-500 font-medium transition-colors">
-                <span className="w-5 h-5 flex items-center justify-center">
-                  📁
-                </span>
-                All Cases
-              </button>
-              <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition-colors">
-                <span className="w-5 h-5 flex items-center justify-center">
-                  👤
-                </span>
-                <span className="flex-1 text-left">My Assigned</span>
-                <span className="text-xs bg-zinc-800 px-2 py-1 rounded">3</span>
-              </button>
-              <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition-colors">
-                <span className="w-5 h-5 flex items-center justify-center">
-                  ⏳
-                </span>
-                Pending Review
-              </button>
-              <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition-colors">
-                <span className="w-5 h-5 flex items-center justify-center">
-                  🗳
-                </span>
-                Voting Open
-              </button>
-              <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition-colors">
-                <span className="w-5 h-5 flex items-center justify-center">
-                  ✓
-                </span>
-                Resolved
-              </button>
-            </nav>
-          </div>
-
-          <div className="pt-6 border-t border-zinc-800">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
-              Analytics
-            </h3>
-            <div className="bg-zinc-800/50 rounded-lg p-4 border border-zinc-700">
-              <p className="text-xs text-gray-400 mb-1">Total Value Secured</p>
-              <p className="text-2xl font-bold text-white mb-2">$42.8M</p>
-              <p className="text-xs text-green-400 flex items-center gap-1">
-                <TrendingUp className="w-3 h-3" />
-                +23.4% this week
-              </p>
-            </div>
-          </div>
-        </aside>
+        <Sidebar />
 
         <main className="flex-1 p-8">
           <div className="mb-8">
@@ -241,25 +125,25 @@ export const DisputeCasesOverview = ({
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-zinc-800 bg-zinc-800/30">
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#B9AB9D] tracking-wider">
                       Case ID
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#B9AB9D] tracking-wider">
                       Owner Name
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#B9AB9D] tracking-wider">
                       Chain
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#B9AB9D] tracking-wider">
                       Value (USD)
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#B9AB9D] tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#B9AB9D] tracking-wider">
                       Time Remaining
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#B9AB9D] tracking-wider">
                       Action
                     </th>
                   </tr>
@@ -272,56 +156,63 @@ export const DisputeCasesOverview = ({
                     >
                       <td className="px-6 py-4">
                         <span className="text-gray-300 font-medium flex items-center gap-2">
-                          <span>🔐</span>
+                          <img src={gavelGreyBorderIcon} className="w-4 h-4" alt="GavelIcon" />
                           {caseItem.id}
                         </span>
                       </td>
+                      
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
+
                           <div
-                            className={`w-8 h-8 rounded-full bg-gradient-to-br ${caseItem.chainColor} flex items-center justify-center text-white text-xs font-bold`}
+                            className={`w-8 h-8 rounded-full bg-gradient-to-br ${caseItem.chainColor} border ${caseItem.chainBorderColor} flex items-center justify-center text-white text-xs font-bold`}
                           >
-                            {caseItem.avatar.substring(0, 1)}
+                            {caseItem.avatar.substring(0, 2)}
                           </div>
-                          <div>
-                            <p className="text-white font-medium">
+
+                          <div className="flex flex-col">
+                            <p className="text-white text-sm font-medium">
                               {caseItem.name}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-[#B9AB9D]">
                               {caseItem.executor}
                             </p>
                           </div>
+
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <span className="w-2 h-2 rounded-full bg-orange-500" />
-                          <span className="text-gray-300 text-sm">
+                          <span className="text-[#B9AB9D] text-sm">
                             {caseItem.chain}
                           </span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-white font-medium">
+                        <span className="text-[#B9AB9D] font-medium">
                           {caseItem.value}
                         </span>
                       </td>
+
                       <td className="px-6 py-4">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${caseItem.statusColor}`}
-                        >
-                          {caseItem.status === "Resolved" ? "✓" : "⏳"}{" "}
+                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${caseItem.statusColor}`}>
+                          {caseItem.status === "Resolved" ?
+                            "✓" :
+                            <span className="inline-block w-2 h-2 rounded-full bg-orange-500 mx-1" />
+                          } {" "}
                           {caseItem.status}
-                        </span>
+                        </div>
                       </td>
+
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 text-gray-400">
+                        <div className="flex items-center gap-2 text-[#B9AB9D]">
                           {caseItem.status !== "Resolved" && <span>⏱</span>}
                           <span className="text-sm">{caseItem.time}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <button className="text-gray-400 hover:text-white transition-colors">
+                        <button className="text-[#B9AB9D] hover:text-white transition-colors">
                           <ChevronDown className="w-4 h-4" />
                         </button>
                       </td>
@@ -332,12 +223,12 @@ export const DisputeCasesOverview = ({
             </div>
 
             <div className="flex items-center justify-between px-6 py-4 border-t border-zinc-800 bg-zinc-800/30">
-              <p className="text-sm text-gray-400">Showing 1-5 of 24 cases</p>
+              <p className="text-sm text-gray-300">Showing 1-5 of 24 cases</p>
               <div className="flex items-center gap-2">
-                <button className="px-3 py-1 text-gray-400 hover:text-white transition-colors text-sm">
+                <button className="px-3 py-1 text-gray-300 border border-[#393128] rounded-lg hover:text-white transition-colors text-sm">
                   Previous
                 </button>
-                <button className="px-3 py-1 text-gray-400 hover:text-white transition-colors text-sm">
+                <button className="px-3 py-1 text-gray-300 border border-[#393128] rounded-lg hover:text-white transition-colors text-sm">
                   Next
                 </button>
               </div>

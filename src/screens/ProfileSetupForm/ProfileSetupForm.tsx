@@ -304,6 +304,7 @@ export const ProfileSetupForm = (): JSX.Element => {
                 <Button
                   variant="outline"
                   className="h-12 gap-2 rounded-lg border-[#554733] bg-transparent px-8 hover:bg-[#554733]/10"
+                  onClick={() => navigate("/connect-wallet")}
                 >
                   <span className="text-base font-bold leading-6 text-white [font-family:'Manrope',Helvetica]">
                     Cancel
@@ -311,7 +312,7 @@ export const ProfileSetupForm = (): JSX.Element => {
                 </Button>
 
                 <Button
-                  onClick={() => navigate("/select-assets")}
+                  onClick={() => navigate("/owner-dashboard")}
                   className="h-12 px-8 bg-[#ff6600] hover:bg-[#ff7700] [font-family:'Manrope',Helvetica] font-bold text-white text-base rounded-lg flex items-center gap-2"
                 >
                   Save Profile

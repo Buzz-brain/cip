@@ -36,15 +36,7 @@ export const ReviewTimeLock = (): JSX.Element => {
   };
 
   const handleConfirmDeploy = () => {
-    navigate("/plan-activated", {
-      state: {
-        referenceId: "#CIP-8354-JD",
-        triggerMechanism: "Time-Lock Trigger",
-        assetsIncluded: "4 Tokens",
-        mainBeneficiary: "0x71c...9a21",
-        securityLevel: "Time-based unlock",
-      },
-    });
+    navigate("/review-plan");
   };
 
   return (
