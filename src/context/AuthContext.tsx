@@ -84,7 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setError(null);
         const token = await authAPI.login({ publicKey, signature, message });
         const newUser: User = { publicKey, token };
-        
+
         // Optionally fetch user info after login
         try {
           const userInfo = await authAPI.getUserInfo(token);
@@ -92,7 +92,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } catch (err) {
           console.warn("Failed to fetch user info after login:", err);
         }
-        
+
         setUser(newUser);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Login failed";

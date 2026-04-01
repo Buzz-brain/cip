@@ -21,40 +21,38 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
 }) => {
   const { user, isAuthenticated, loading, error, getNonce, loginWithWallet, logout, clearError } = useAuth();
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
+  const [isSwitchingNetwork, setIsSwitchingNetwork] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [connectedAccount, setConnectedAccount] = useState("");
 
-  const handleConnectWallet = async () => {
+  const handleConnectAndLogin = async () => {
     try {
       clearError();
       setIsConnectingWallet(true);
+
+      // Step 1: Ensure user is on Ethereum mainnet
+      setIsSwitchingNetwork(true);
+      await walletUtils.ensureEthereumNetwork();
+      setIsSwitchingNetwork(false);
+
+      // Step 2: Connect wallet
       const account = await walletUtils.requestWalletConnection();
-      setConnectedAccount(account);
-    } catch (err) {
-      console.error("Wallet connection failed:", err);
-    } finally {
-      setIsConnectingWallet(false);
-    }
-  };
 
-  const handleLogin = async () => {
-    if (!connectedAccount) return;
+      // Step 3: Get nonce
+      const nonce = await getNonce(account);
 
-    try {
-      clearError();
-      // Get nonce
-      const nonce = await getNonce(connectedAccount);
-      // Sign nonce
-      const signature = await walletUtils.signMessage(nonce, connectedAccount);
-      // Login
-      await loginWithWallet(connectedAccount, signature, nonce);
-      // Clear connected account and close dropdown
-      setConnectedAccount("");
-      setShowDropdown(false);
+      // Step 4: Sign the raw nonce (not formatted)
+      const signature = await walletUtils.signMessage(nonce, account);
+
+      // Step 5: Login with raw nonce as message
+      await loginWithWallet(account, signature, nonce);
+
       // Callback
       onLoginSuccess?.();
     } catch (err) {
-      console.error("Login failed:", err);
+      console.error("Wallet connection and login failed:", err);
+    } finally {
+      setIsConnectingWallet(false);
+      setIsSwitchingNetwork(false);
     }
   };
 
@@ -74,40 +72,33 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
 
   // Not authenticated - show connect wallet button
   if (!isAuthenticated) {
-    if (connectedAccount && !loading) {
-      // Wallet connected, waiting for login
-      return (
-        <div className="flex items-center gap-2">
-          {error && (
-            <div className="absolute bottom-full mb-2 bg-red-900/30 border border-red-600 rounded-lg p-2 whitespace-nowrap text-xs text-red-300 flex items-center gap-1">
-              <AlertCircle className="w-3 h-3" />
-              {error}
-            </div>
-          )}
-          <div className={`${baseStyles} ${variantStyles[variant]}`}>
-            <Wallet className="w-4 h-4" />
-            <span>{compact ? "Login" : "Sign In with Wallet"}</span>
-          </div>
-          <button
-            onClick={handleLogin}
-            disabled={loading}
-            className={`${baseStyles} ${variantStyles[variant]} disabled:opacity-50 disabled:cursor-not-allowed`}
-          >
-            {loading ? "Signing..." : "Sign In"}
-          </button>
-        </div>
-      );
-    }
-
     return (
-      <button
-        onClick={handleConnectWallet}
-        disabled={isConnectingWallet || loading}
-        className={`${baseStyles} ${variantStyles[variant]} disabled:opacity-50 disabled:cursor-not-allowed`}
-      >
-        <Wallet className="w-4 h-4" />
-        <span>{isConnectingWallet ? "Connecting..." : compact ? "Connect" : "Connect Wallet"}</span>
-      </button>
+      <div className="relative">
+        {error && (
+          <div className="absolute bottom-full mb-2 bg-red-900/30 border border-red-600 rounded-lg p-2 whitespace-nowrap text-xs text-red-300 flex items-center gap-1">
+            <AlertCircle className="w-3 h-3" />
+            {error}
+          </div>
+        )}
+        <button
+          onClick={handleConnectAndLogin}
+          disabled={isConnectingWallet || loading}
+          className={`${baseStyles} ${variantStyles[variant]} disabled:opacity-50 disabled:cursor-not-allowed`}
+        >
+          <Wallet className="w-4 h-4" />
+          <span>
+            {isSwitchingNetwork
+              ? "Switching to Ethereum..."
+              : isConnectingWallet
+              ? "Connecting..."
+              : loading
+              ? "Signing..."
+              : compact
+              ? "Connect"
+              : "Connect Wallet"}
+          </span>
+        </button>
+      </div>
     );
   }
 

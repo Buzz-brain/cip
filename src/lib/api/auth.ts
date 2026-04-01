@@ -9,7 +9,9 @@ export async function getNonce(publicKey: string): Promise<string> {
     headers: { "Accept": "application/json" },
   });
   if (!res.ok) throw new Error("Failed to get nonce");
-  return res.json();
+  const data = await res.json();
+  // The API returns {nonce: string}, so extract the nonce value
+  return data.nonce || data;
 }
 
 export async function login({
