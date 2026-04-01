@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context";
 import { Home } from "./screens/Home";
 import { Pricing } from "./screens/Pricing";
 import { Dashboard } from "./screens/Dashboard";
@@ -107,15 +108,20 @@ import { AdministrativeDashboard } from "./screens/AdministrativeFlow/Administra
 import { ManageExecutors } from "./screens/AdministrativeFlow/ManageExecutors";
 import { RoleAccessControl } from "./screens/AdministrativeFlow/RoleAccessControl";
 
+import { Login } from "./screens/Login";
+
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
 
         {/* Landing Page */}
         <Route path="/" element={<Home />} /> ✅
         <Route path="/pricing" element={<Pricing />} /> ✅
+
+        <Route path="/login" element={<Login />} /> ✅
 
         {/* User Onboarding Flow */} ✅
         <Route path="/onboarding/step-one" element={<StepOne />} /> ✅
@@ -247,6 +253,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/create-plan" element={<CreatePlan />} />
 
       </Routes>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthProvider>
   </StrictMode>     
 );
