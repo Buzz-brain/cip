@@ -1,10 +1,18 @@
 // src/components/ConnectWalletButton.tsx
 // Reusable wallet connection and login component for navbars and pages
 
+// Type declaration for window.ethereum
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
+}
+
 import React, { useState } from "react";
 import { Wallet, LogOut, AlertCircle } from "lucide-react";
 import { useAuth } from "../context/useAuth";
 import * as walletUtils from "../lib/wallet/walletUtils";
+import { verifyMessage } from "ethers";
 
 interface ConnectWalletButtonProps {
   variant?: "default" | "outline" | "ghost";
@@ -34,17 +42,112 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
       await walletUtils.ensureEthereumNetwork();
       setIsSwitchingNetwork(false);
 
-      // Step 2: Connect wallet
+      // Step 2: Prompt wallet connection and always use the returned account
       const account = await walletUtils.requestWalletConnection();
+      console.log("[Wallet] Selected account from wallet:", account);
 
-      // Step 3: Get nonce
+      // Verify this is actually the active account in MetaMask
+      if (window.ethereum && window.ethereum.selectedAddress) {
+        const selectedAddress = window.ethereum.selectedAddress;
+        console.log("[Wallet] MetaMask selectedAddress:", selectedAddress);
+        if (selectedAddress.toLowerCase() !== account.toLowerCase()) {
+          console.warn("[Wallet] WARNING: MetaMask selectedAddress differs from requested account!");
+          console.warn("[Wallet] Using requested account:", account);
+          console.warn("[Wallet] MetaMask selectedAddress:", selectedAddress);
+        }
+      }
+
+      // Additional check: ensure ethers can get the correct signer
+      try {
+        const ethers = await import("ethers");
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner(account);
+        const signerAddress = await signer.getAddress();
+        console.log("[Wallet] Ethers signer address:", signerAddress);
+        if (signerAddress.toLowerCase() !== account.toLowerCase()) {
+          console.warn("[Wallet] WARNING: Ethers signer address differs from requested account!");
+        }
+      } catch (ethersCheckError) {
+        console.warn("[Wallet] Could not verify ethers signer:", ethersCheckError);
+      }
+
+      // Step 3: Get nonce for this account
       const nonce = await getNonce(account);
+      console.log("[Wallet] Nonce to sign:", nonce);
 
-      // Step 4: Sign the raw nonce (not formatted)
+      // Step 4: Sign the raw nonce (no formatting)
       let signature = await walletUtils.signMessage(nonce, account);
+      console.log("[Wallet] Signature from personal_sign:", signature);
 
-      // Step 5: Remove 0x prefix from signature if present (backend could expectR without prefix)
+      // Step 5: Remove 0x prefix from signature if present (backend could expect without prefix)
       signature = signature.startsWith("0x") ? signature.slice(2) : signature;
+
+      // Client-side recovery check: try to recover address from signature before sending
+      try {
+        let recoveredAddress: string | null = null;
+
+        // Use ethers verifyMessage for reliable recovery
+        try {
+          recoveredAddress = verifyMessage(nonce, '0x' + signature);
+          console.log('[Wallet] Using ethers verifyMessage recovery');
+        } catch (e) {
+          console.warn('[Wallet] ethers verifyMessage failed:', e);
+        }
+
+        // Fallback: try provider-level recovery if available
+        if (!recoveredAddress && window.ethereum && typeof window.ethereum.request === 'function') {
+          try {
+            // Some providers implement personal_ecRecover
+            // params: [message, signature]
+            // signature must include 0x prefix
+            const rec = await window.ethereum.request({
+              method: 'personal_ecRecover',
+              params: [nonce, '0x' + signature],
+            });
+            if (rec) {
+              recoveredAddress = rec;
+              console.log('[Wallet] Using provider personal_ecRecover');
+            }
+          } catch (err) {
+            console.warn('[Wallet] Provider recovery failed:', err);
+          }
+        }
+
+        console.log('[Wallet] Recovered address from signature:', recoveredAddress);
+        if (recoveredAddress && recoveredAddress.toLowerCase() !== account.toLowerCase()) {
+          console.warn('[Wallet] CRITICAL: Recovered address does not match connected account!');
+          console.warn('[Wallet] Expected account:', account);
+          console.warn('[Wallet] Recovered address:', recoveredAddress);
+          console.warn('[Wallet] Nonce used:', nonce);
+          console.warn('[Wallet] Signature used for recovery:', '0x' + signature);
+
+          // Try manual verification with different approaches
+          try {
+            // Check if the signature is valid for the expected account
+            const expectedSigner = verifyMessage(nonce, '0x' + signature);
+            console.warn('[Wallet] Manual verification result:', expectedSigner);
+
+            // If they don't match, this indicates the signature is from a different account
+            if (expectedSigner.toLowerCase() !== account.toLowerCase()) {
+              console.error('[Wallet] SIGNATURE VERIFICATION FAILED: Signature is not from the expected account!');
+              console.error('[Wallet] This usually means:');
+              console.error('[Wallet] 1. MetaMask signed with a different account');
+              console.error('[Wallet] 2. The user switched accounts during signing');
+              console.error('[Wallet] 3. There\'s a bug in account selection');
+
+              // Stop the process and show error to user
+              throw new Error('Signature verification failed. Please ensure you\'re using the correct MetaMask account and try again.');
+            }
+          } catch (manualErr) {
+            console.error('[Wallet] Manual verification failed:', manualErr);
+            throw new Error('Unable to verify signature. Please try again.');
+          }
+        } else if (recoveredAddress) {
+          console.log('[Wallet] ✓ Signature verification successful');
+        }
+      } catch (err) {
+        console.warn('[Wallet] Client-side signature recovery failed:', err);
+      }
 
       // Step 6: Login with raw nonce as message
       await loginWithWallet(account, signature, nonce);

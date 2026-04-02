@@ -1,6 +1,22 @@
 // src/lib/wallet/walletUtils.ts
 // Utility functions for wallet operations (assuming MetaMask or similar Web3 wallet)
 
+// Type declaration for window.ethereum
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
+}
+
+import { BrowserProvider } from "ethers";
+
+// Type declaration for window.ethereum
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
+}
+
 export async function getPublicKey(): Promise<string> {
   if (!window.ethereum) {
     throw new Error("Wallet not detected. Please install a Web3 wallet extension.");
@@ -16,10 +32,13 @@ export async function requestWalletConnection(): Promise<string> {
   if (!window.ethereum) {
     throw new Error("Wallet not detected. Please install a Web3 wallet extension.");
   }
+  // Always prompt user to select account
   const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
   if (!accounts || accounts.length === 0) {
     throw new Error("Failed to connect wallet.");
   }
+  // Log the selected account for debugging
+  console.log("[WalletUtils] eth_requestAccounts returned:", accounts);
   return accounts[0];
 }
 
@@ -27,11 +46,37 @@ export async function signMessage(message: string, account: string): Promise<str
   if (!window.ethereum) {
     throw new Error("Wallet not detected.");
   }
-  const signature = await window.ethereum.request({
-    method: "personal_sign",
-    params: [message, account],
-  });
-  return signature;
+
+  try {
+    // Use ethers.js BrowserProvider for proper account handling
+    const provider = new BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner(account); // Explicitly get signer for the account
+
+    console.log("[WalletUtils] Using ethers signer for account:", await signer.getAddress());
+    console.log("[WalletUtils] Signing message:", message);
+
+    // Use signMessage which handles the Ethereum prefix automatically
+    const signature = await signer.signMessage(message);
+
+    console.log("[WalletUtils] Signature result:", signature);
+    return signature;
+  } catch (ethersError) {
+    console.warn("[WalletUtils] ethers signing failed, falling back to direct RPC:", ethersError);
+
+    // Fallback to direct RPC call
+    console.log("[WalletUtils] Signing message:", message, "with account:", account);
+
+    // Double-check the currently selected account
+    const currentAccounts = await window.ethereum.request({ method: "eth_accounts" });
+    console.log("[WalletUtils] Current accounts in wallet:", currentAccounts);
+
+    const signature = await window.ethereum.request({
+      method: "personal_sign",
+      params: [message, account],
+    });
+    console.log("[WalletUtils] Signature result:", signature);
+    return signature;
+  }
 }
 
 export async function getCurrentChainId(): Promise<string> {

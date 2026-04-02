@@ -64,7 +64,13 @@ export async function login({
   
   const result = await res.json();
   console.log("   ✅ Login response:", result);
-  
+
+  // Ensure consumers get the token string directly (backend returns { token, ... })
+  if (result && typeof result === "object" && "token" in result) {
+    return result.token;
+  }
+
+  // Fallback for unexpected response shape
   return result;
 }
 
@@ -75,14 +81,18 @@ export async function getUserInfo(token: string): Promise<any> {
       "Authorization": `Bearer ${token}`,
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch user info");
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    console.error("auth.getUserInfo failed", res.status, errorData);
+    throw new Error("Failed to fetch user info");
+  }
   return res.json();
 }
 
 export async function updateAccountInfo(
   token: string,
   data: { full_name?: string; country?: string; preferred_chain?: string }
-): Promise<string> {
+): Promise<any> {
   const res = await fetch(`${BASE_URL}/auth/account-info-update`, {
     method: "PATCH",
     headers: {
@@ -92,6 +102,10 @@ export async function updateAccountInfo(
     },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Failed to update account info");
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    console.error("auth.updateAccountInfo failed", res.status, errorData);
+    throw new Error("Failed to update account info");
+  }
   return res.json();
 }

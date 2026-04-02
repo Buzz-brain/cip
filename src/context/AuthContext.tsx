@@ -82,7 +82,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         setLoading(true);
         setError(null);
-        const token = await authAPI.login({ publicKey, signature, message });
+const loginResponse = await authAPI.login({ publicKey, signature, message });
+
+      // loginResponse may be a token string (preferred) or object containing token
+      const token = typeof loginResponse === "string" ? loginResponse : loginResponse?.token;
+      if (!token || typeof token !== "string") {
+        throw new Error("Login failed: invalid auth token");
+      }
+
         const newUser: User = { publicKey, token };
 
         // Optionally fetch user info after login

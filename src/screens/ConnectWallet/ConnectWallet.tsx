@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/useAuth";
 import { Button } from "../../components/ui/button";
+import * as walletUtils from "../../lib/wallet/walletUtils";
 import logoImg from "@assets/cip-logo.svg";
 import helpIcon from "@assets/help.svg";
 import connectWalletOrange from "@assets/connect-wallet.-orange.svg";
@@ -63,6 +66,30 @@ const wallets = [
 
 export const ConnectWallet = (): JSX.Element => {
   const navigate = useNavigate();
+  const { getNonce, loginWithWallet } = useAuth();
+  const [isConnectingWallet, setIsConnectingWallet] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleWalletSelect = async (walletId: string) => {
+    setError(null);
+    setIsConnectingWallet(true);
+
+    try {
+      // Always sign through the wallet extension (MetaMask provider path)
+      const account = await walletUtils.requestWalletConnection();
+      const nonce = await getNonce(account);
+      let signature = await walletUtils.signMessage(nonce, account);
+      signature = signature.startsWith("0x") ? signature.slice(2) : signature;
+
+      await loginWithWallet(account, signature, nonce);
+      navigate("/profile-setup");
+    } catch (err) {
+      console.error("ConnectWallet: failed:", err);
+      setError(err instanceof Error ? err.message : "Failed to connect wallet");
+    } finally {
+      setIsConnectingWallet(false);
+    }
+  };
 
   return (
     <div className="w-full min-h-screen bg-[#221810] flex flex-col">
@@ -114,7 +141,8 @@ export const ConnectWallet = (): JSX.Element => {
           {wallets.map((wallet) => (
             <button
               key={wallet.id}
-              onClick={() => navigate("/profile-setup")}
+              disabled={isConnectingWallet}
+              onClick={() => handleWalletSelect(wallet.id)}
               className="group relative p-6 rounded-2xl bg-[#2d2420] border border-[#3d3530] hover:border-[#ff6600] hover:bg-[#332b22] transition-all duration-200 cursor-pointer flex flex-col items-start gap-3 min-h-[200px] min-w-[280px]"
             >
               {wallet.badge && (
@@ -145,6 +173,16 @@ export const ConnectWallet = (): JSX.Element => {
             </button>
           ))}
         </div>
+
+        {error && (
+          <div className="text-sm text-red-400 font-medium mb-4">{error}</div>
+        )}
+
+        {isConnectingWallet && (
+          <div className="text-sm text-yellow-300 font-medium mb-4">
+            Connecting wallet and signing message...
+          </div>
+        )}
 
         <div className="flex flex-col items-center gap-4">
           <Button

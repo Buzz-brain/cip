@@ -86,11 +86,12 @@ export const StepOne = (): JSX.Element => {
                 ))}
               </div>
 
-              <ConnectWalletButton 
-                variant="default"
-                showAddress={true}
-                onLoginSuccess={() => navigate("/onboarding/step-two")}
-              />
+              <Button
+                onClick={() => navigate("/connect-wallet")}
+                className="h-10 px-4 bg-[#ff6600] hover:bg-[#ff7700] [font-family:'Manrope',Helvetica] font-bold text-white text-sm leading-[21px] rounded-lg"
+              >
+                Connect Wallet
+              </Button>
             </nav>
           </div>
         </header>

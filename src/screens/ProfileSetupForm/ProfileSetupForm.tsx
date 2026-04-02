@@ -2,7 +2,10 @@ import {
   InfoIcon,
   PlusCircleIcon,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/useAuth";
+import * as authAPI from "../../lib/api/auth";
 import { Alert, AlertDescription } from "../../components/ui/alert";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
@@ -29,6 +32,82 @@ const navigationLinks = [
 
 export const ProfileSetupForm = (): JSX.Element => {
   const navigate = useNavigate();
+  const { user, fetchUserInfo } = useAuth();
+  const [profile, setProfile] = useState({
+    fullName: "",
+    emailAddress: "",
+    backupContact: "",
+    preferredChain: "",
+    taxResidence: "",
+  });
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
+
+  const loadProfile = async () => {
+    if (!user?.token) {
+      return;
+    }
+
+    setIsLoadingProfile(true);
+    setProfileError(null);
+
+    try {
+      const payload = await authAPI.getUserInfo(user.token);
+
+      setProfile({
+        fullName: payload.full_name || payload.fullName || "",
+        emailAddress: payload.email || payload.emailAddress || "",
+        backupContact: payload.backup_contact || payload.backupContact || "",
+        preferredChain: payload.preferred_chain || payload.preferredChain || "",
+        taxResidence: payload.country || payload.tax_residence || payload.taxResidence || "",
+      });
+    } catch (error) {
+      console.warn("Failed to auto-fill profile from API:", error);
+      setProfileError("Could not load profile data. Please complete manually.");
+    } finally {
+      setIsLoadingProfile(false);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    if (!user?.token) {
+      setSaveError("Not authenticated");
+      return;
+    }
+
+    setSaveError(null);
+    setSaveSuccess(null);
+    setSaveLoading(true);
+
+    try {
+      await authAPI.updateAccountInfo(user.token, {
+        full_name: profile.fullName,
+        country: profile.taxResidence,
+        preferred_chain: profile.preferredChain,
+      });
+
+      setSaveSuccess("Profile saved successfully.");
+      await loadProfile();
+    } catch (err) {
+      console.error("Profile save failed:", err);
+      setSaveError(err instanceof Error ? err.message : "Failed to save profile.");
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!user?.token) {
+      navigate("/connect-wallet");
+      return;
+    }
+
+    loadProfile();
+  }, [user, navigate]);
+
   return (
     <div className="w-full min-h-screen bg-[#221810] flex flex-col">
       <header className="sticky top-0 z-50 w-full border-b border-[#37291f] bg-[#0d0501] backdrop-blur-[6px]">
@@ -93,7 +172,9 @@ export const ProfileSetupForm = (): JSX.Element => {
                     </Label>
                     <Input
                       id="fullName"
-                      defaultValue="e.g. Alex Sterling"
+                      value={profile.fullName}
+                      onChange={(e) => setProfile((prev) => ({ ...prev, fullName: e.target.value }))}
+                      placeholder="e.g. Alex Sterling"
                       className="bg-[#181411] border-[#54463b] text-white [font-family:'Manrope',Helvetica] font-normal text-sm"
                     />
                   </div>
@@ -107,7 +188,9 @@ export const ProfileSetupForm = (): JSX.Element => {
                     </Label>
                     <Input
                       id="emailAddress"
-                      defaultValue="e.g. alex@example.com"
+                      value={profile.emailAddress}
+                      onChange={(e) => setProfile((prev) => ({ ...prev, emailAddress: e.target.value }))}
+                      placeholder="e.g. alex@example.com"
                       className="bg-[#181411] border-[#54463b] text-white [font-family:'Manrope',Helvetica] font-normal text-sm"
                     />
                   </div>
@@ -126,7 +209,9 @@ export const ProfileSetupForm = (): JSX.Element => {
                   <div className="relative">
                     <Input
                       id="backupContact"
-                      defaultValue="Email or phone number for emergency contact"
+                      value={profile.backupContact}
+                      onChange={(e) => setProfile((prev) => ({ ...prev, backupContact: e.target.value }))}
+                      placeholder="Email or phone number for emergency contact"
                       className="bg-[#181411] border-[#54463b] text-white [font-family:'Manrope',Helvetica] font-normal text-sm"
                     />
                   </div>
@@ -153,7 +238,9 @@ export const ProfileSetupForm = (): JSX.Element => {
                     </Label>
                     <Input
                       id="preferredChain"
-                      defaultValue="eg: ETH"
+                      value={profile.preferredChain}
+                      onChange={(e) => setProfile((prev) => ({ ...prev, preferredChain: e.target.value }))}
+                      placeholder="eg: ETH"
                       className="bg-[#27211c] border-[#54463b] text-white [font-family:'Manrope',Helvetica] font-normal text-sm"
                     />
                     <p className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] text-[11.9px] tracking-[0] leading-4">
@@ -170,7 +257,9 @@ export const ProfileSetupForm = (): JSX.Element => {
                     </Label>
                     <Input
                       id="taxResidence"
-                      defaultValue="Nigeria"
+                      value={profile.taxResidence}
+                      onChange={(e) => setProfile((prev) => ({ ...prev, taxResidence: e.target.value }))}
+                      placeholder="Nigeria"
                       className="bg-[#27211c] border-[#54463b] text-white [font-family:'Manrope',Helvetica] font-normal text-sm"
                     />
                     <p className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] text-xs tracking-[0] leading-4">
@@ -298,11 +387,19 @@ export const ProfileSetupForm = (): JSX.Element => {
                 </Button>
 
                 <Button
-                  onClick={() => navigate("/owner-dashboard")}
+                  onClick={handleSaveProfile}
+                  disabled={saveLoading}
                   className="h-12 px-8 bg-[#ff6600] hover:bg-[#ff7700] [font-family:'Manrope',Helvetica] font-bold text-white text-base rounded-lg flex items-center gap-2"
                 >
-                  Save Profile
+                  {saveLoading ? "Saving..." : "Save Profile"}
                 </Button>
+
+                {saveError && (
+                  <p className="text-sm text-red-400">{saveError}</p>
+                )}
+                {saveSuccess && (
+                  <p className="text-sm text-emerald-400">{saveSuccess}</p>
+                )}
               </div>
             </CardContent>
           </Card>
