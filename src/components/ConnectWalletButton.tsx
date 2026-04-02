@@ -41,9 +41,12 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
       const nonce = await getNonce(account);
 
       // Step 4: Sign the raw nonce (not formatted)
-      const signature = await walletUtils.signMessage(nonce, account);
+      let signature = await walletUtils.signMessage(nonce, account);
 
-      // Step 5: Login with raw nonce as message
+      // Step 5: Remove 0x prefix from signature if present (backend could expectR without prefix)
+      signature = signature.startsWith("0x") ? signature.slice(2) : signature;
+
+      // Step 6: Login with raw nonce as message
       await loginWithWallet(account, signature, nonce);
 
       // Callback

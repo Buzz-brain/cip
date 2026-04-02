@@ -4,14 +4,26 @@
 const BASE_URL = "https://xcip.name.ng";
 
 export async function getNonce(publicKey: string): Promise<string> {
-  const res = await fetch(`${BASE_URL}/auth/nonce?public_key=${encodeURIComponent(publicKey)}`, {
+  const url = `${BASE_URL}/auth/nonce?public_key=${encodeURIComponent(publicKey)}`;
+  console.log("   📡 Fetching nonce from:", url);
+  
+  const res = await fetch(url, {
     method: "POST",
     headers: { "Accept": "application/json" },
   });
+  
+  console.log("Nonce endpoint response status:", res.status);
+  
   if (!res.ok) throw new Error("Failed to get nonce");
+  
   const data = await res.json();
+  console.log("Nonce response data:", data);
+  
   // The API returns {nonce: string}, so extract the nonce value
-  return data.nonce || data;
+  const nonce = data.nonce || data;
+  // console.log("Extracted nonce:", nonce);
+  
+  return nonce;
 }
 
 export async function login({
@@ -28,12 +40,32 @@ export async function login({
     signature,
     message,
   });
-  const res = await fetch(`${BASE_URL}/auth/login?${params.toString()}`, {
+  
+  const url = `${BASE_URL}/auth/login?${params.toString()}`;
+  console.log("   📡 Login endpoint URL:", url);
+  console.log("   📊 Login request parameters:");
+  console.log("      - public_key:", publicKey);
+  console.log("      - signature (first 20 chars):", signature.substring(0, 20) + "...");
+  console.log("      - signature (total length):", signature.length);
+  console.log("      - message (nonce):", message);
+  
+  const res = await fetch(url, {
     method: "POST",
     headers: { "Accept": "application/json" },
   });
-  if (!res.ok) throw new Error("Login failed");
-  return res.json();
+  
+  console.log("   📊 Login endpoint response status:", res.status);
+  
+  if (!res.ok) {
+    const errorData = await res.json();
+    console.log("   ❌ Login failed. Error response:", errorData);
+    throw new Error("Login failed: " + JSON.stringify(errorData));
+  }
+  
+  const result = await res.json();
+  console.log("   ✅ Login response:", result);
+  
+  return result;
 }
 
 export async function getUserInfo(token: string): Promise<any> {
