@@ -714,38 +714,110 @@ export const Home = (): JSX.Element => {
         <section className="py-20">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-              {featureCards.map((card) => (
-                <Card
+              {featureCards.map((card, index) => (
+                <motion.div
                   key={card.title}
-                  className="bg-[#332619] border-[#674932] relative overflow-hidden"
+                  initial={{ opacity: 0, y: 100, scale: 0.5, rotateY: 90, rotateX: 45 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1, rotateY: 0, rotateX: 0 }}
+                  transition={{ duration: 1, delay: index * 0.3, type: "spring", stiffness: 80, damping: 15 }}
+                  viewport={{}}
+                  whileHover={{ 
+                    y: -20, 
+                    scale: 1.05, 
+                    rotateY: 5, 
+                    rotateX: -5,
+                    boxShadow: "0 30px 60px rgba(0,0,0,0.4), 0 0 30px rgba(255, 102, 0, 0.3)" 
+                  }}
+                  style={{ perspective: 1000 }}
                 >
-                  <CardContent className="p-8 space-y-6 relative z-10">
+                  <Card
+                    className="bg-[#332619] border-[#674932] relative overflow-hidden"
+                  >
+                    <CardContent className="p-8 space-y-6 relative z-10">
+                      <motion.div
+                        className={`w-12 h-12 ${card.bgColor} rounded-lg flex items-center justify-center`}
+                        initial={{ scale: 0, rotate: -180 }}
+                        whileInView={{ scale: 1, rotate: 0 }}
+                        transition={{ duration: 0.6, delay: index * 0.3 + 0.2, type: "spring", stiffness: 200 }}
+                        viewport={{}}
+                        whileHover={{ 
+                          rotate: 360, 
+                          scale: 1.2,
+                          boxShadow: "0 0 20px rgba(255, 102, 0, 0.5)"
+                        }}
+                      >
+                        <motion.img 
+                          src={card.icon} 
+                          alt="" 
+                          className="w-6 h-6"
+                          whileHover={{ rotate: -360, scale: 1.1 }}
+                          transition={{ duration: 0.4 }}
+                        />
+                      </motion.div>
+                      <motion.h3 
+                        className="[font-family:'Poppins',Helvetica] font-bold text-white text-2xl"
+                        initial={{ opacity: 0, x: -50, scale: 0.8 }}
+                        whileInView={{ opacity: 1, x: 0, scale: 1 }}
+                        transition={{ duration: 0.7, delay: index * 0.3 + 0.4, type: "spring", stiffness: 150 }}
+                        viewport={{}}
+                        whileHover={{ 
+                          scale: 1.1, 
+                          textShadow: "0 0 20px rgba(255, 102, 0, 0.8)",
+                          color: "#ff6600"
+                        }}
+                      >
+                        {card.title}
+                      </motion.h3>
+                      <motion.p 
+                        className="[font-family:'Poppins',Helvetica] text-[#b8a494] text-base leading-6"
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: index * 0.3 + 0.6 }}
+                        viewport={{}}
+                      >
+                        {card.description}
+                      </motion.p>
+                      <motion.div 
+                        className="space-y-2"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        transition={{ duration: 0.5, delay: index * 0.3 + 0.8 }}
+                        viewport={{}}
+                      >
+                        {card.features.map((feature, featureIndex) => (
+                          <motion.div 
+                            key={feature} 
+                            className="flex items-center gap-2"
+                            initial={{ opacity: 0, x: -30, scale: 0.9 }}
+                            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+                            transition={{ duration: 0.5, delay: index * 0.3 + 0.8 + featureIndex * 0.1, type: "spring", stiffness: 200 }}
+                            viewport={{}}
+                            whileHover={{ scale: 1.05, x: 5 }}
+                          >
+                            <motion.img 
+                              src={card.featureIcon} 
+                              alt="" 
+                              initial={{ scale: 0 }}
+                              whileInView={{ scale: 1 }}
+                              transition={{ duration: 0.3, delay: index * 0.3 + 0.8 + featureIndex * 0.1 + 0.2 }}
+                              viewport={{}}
+                              whileHover={{ rotate: 360, scale: 1.2 }}
+                            />
+                            <motion.span 
+                              className="[font-family:'Poppins',Helvetica] text-slate-300 text-sm"
+                              whileHover={{ color: "#ff6600", scale: 1.05 }}
+                            >
+                              {feature}
+                            </motion.span>
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    </CardContent>
                     <div
-                      className={`w-12 h-12 ${card.bgColor} rounded-lg flex items-center justify-center`}
-                    >
-                      <img src={card.icon} alt="" className="w-6 h-6" />
-                    </div>
-                    <h3 className="[font-family:'Poppins',Helvetica] font-bold text-white text-2xl">
-                      {card.title}
-                    </h3>
-                    <p className="[font-family:'Poppins',Helvetica] text-[#b8a494] text-base leading-6">
-                      {card.description}
-                    </p>
-                    <div className="space-y-2">
-                      {card.features.map((feature) => (
-                        <div key={feature} className="flex items-center gap-2">
-                          <img src={card.featureIcon} alt="" />
-                          <span className="[font-family:'Poppins',Helvetica] text-slate-300 text-sm">
-                            {feature}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                  <div
-                    className={`absolute bottom-0 right-0 w-40 h-40 ${card.bgColor} rounded-full translate-x-1/3 translate-y-1/3`}
-                  />
-                </Card>
+                      className={`absolute bottom-0 right-0 w-40 h-40 ${card.bgColor} rounded-full translate-x-1/3 translate-y-1/3`}
+                    />
+                  </Card>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -754,25 +826,51 @@ export const Home = (): JSX.Element => {
         <section id="pricing" className="bg-[#20180f] border-t border-[#483423] py-20">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto space-y-12">
-              <div className="text-center space-y-5">
-                <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl">
+              <motion.div
+                className="text-center space-y-5"
+                initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.7, type: "spring", stiffness: 150, damping: 20 }}
+                viewport={{}}
+              >
+                <motion.h2
+                  className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl"
+                  initial={{ scale: 0.8, rotate: -5 }}
+                  whileInView={{ scale: 1, rotate: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1, type: "spring", stiffness: 200 }}
+                  viewport={{}}
+                  whileHover={{ textShadow: "0 0 20px #ff6600" }}
+                >
                   Simple Pricing for Peace of Mind
-                </h2>
-                <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-base">
+                </motion.h2>
+                <motion.p
+                  className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-base"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  viewport={{}}
+                >
                   Choose the plan that fits your estate complexity.
-                </p>
-              </div>
+                </motion.p>
+              </motion.div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {pricingPlans.map((plan) => (
-                  <Card
+                {pricingPlans.map((plan, index) => (
+                  <motion.div
                     key={plan.name}
-                    className={`${
-                      plan.highlighted
-                        ? "bg-[#332619] border-2 border-[#ff6600]"
-                        : "bg-[#221911] border-[#674932]"
-                    } relative`}
+                    initial={{ opacity: 0, y: 80, scale: 0.9, rotateY: 20 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1, rotateY: 0 }}
+                    transition={{ duration: 0.8, delay: index * 0.15, type: "spring", stiffness: 120, damping: 18 }}
+                    viewport={{}}
+                    whileHover={{ y: -15, scale: 1.03, boxShadow: "0 25px 50px rgba(255, 102, 0, 0.2)" }}
                   >
+                    <Card
+                      className={`${
+                        plan.highlighted
+                          ? "bg-[#332619] border-2 border-[#ff6600]"
+                          : "bg-[#221911] border-[#674932]"
+                      } relative`}
+                    >
                     {plan.badge && (
                       <div className="absolute top-0 right-0 bg-[#ff6600] px-3 py-1">
                         <span className="[font-family:'Sora',Helvetica] font-bold text-white text-xs">
@@ -837,6 +935,7 @@ export const Home = (): JSX.Element => {
                       </motion.div>
                     </CardContent>
                   </Card>
+                  </motion.div>
                 ))}
               </div>
             </div>
