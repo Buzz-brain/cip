@@ -94,13 +94,11 @@ export async function switchToEthereumMainnet(): Promise<void> {
   const ETHEREUM_MAINNET_CHAIN_ID = "0x1"; // Chain ID 1 in hex
 
   try {
-    // Try to switch to Ethereum mainnet
     await window.ethereum.request({
       method: "wallet_switchEthereumChain",
       params: [{ chainId: ETHEREUM_MAINNET_CHAIN_ID }],
     });
   } catch (switchError: any) {
-    // If the network is not added to MetaMask, add it
     if (switchError.code === 4902) {
       try {
         await window.ethereum.request({
@@ -125,6 +123,105 @@ export async function switchToEthereumMainnet(): Promise<void> {
     } else {
       throw new Error("Failed to switch to Ethereum network.");
     }
+  }
+}
+
+const ARBITRUM_MAINNET_CHAIN_ID = "0xa4b1"; // 42161 in hex
+const ARBITRUM_SEPOLIA_CHAIN_ID = "0x66eee"; // 421614 in hex
+
+export async function switchToArbitrumMainnet(): Promise<void> {
+  if (!window.ethereum) {
+    throw new Error("Wallet not detected.");
+  }
+
+  try {
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: ARBITRUM_MAINNET_CHAIN_ID }],
+    });
+  } catch (switchError: any) {
+    if (switchError.code === 4902) {
+      try {
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: ARBITRUM_MAINNET_CHAIN_ID,
+              chainName: "Arbitrum One",
+              nativeCurrency: {
+                name: "Ether",
+                symbol: "ETH",
+                decimals: 18,
+              },
+              rpcUrls: ["https://arb1.arbitrum.io/rpc"],
+              blockExplorerUrls: ["https://arbiscan.io/"],
+            },
+          ],
+        });
+      } catch (addError) {
+        throw new Error("Failed to add Arbitrum Mainnet to wallet.");
+      }
+    } else {
+      throw new Error("Failed to switch to Arbitrum Mainnet.");
+    }
+  }
+}
+
+export async function switchToArbitrumSepolia(): Promise<void> {
+  if (!window.ethereum) {
+    throw new Error("Wallet not detected.");
+  }
+
+  try {
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: ARBITRUM_SEPOLIA_CHAIN_ID }],
+    });
+  } catch (switchError: any) {
+    if (switchError.code === 4902) {
+      try {
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: ARBITRUM_SEPOLIA_CHAIN_ID,
+              chainName: "Arbitrum Sepolia",
+              nativeCurrency: {
+                name: "Ether",
+                symbol: "ETH",
+                decimals: 18,
+              },
+              rpcUrls: ["https://sepolia-rollup.arbitrum.io/rpc"],
+              blockExplorerUrls: ["https://sepolia.arbiscan.io/"],
+            },
+          ],
+        });
+      } catch (addError) {
+        throw new Error("Failed to add Arbitrum Sepolia to wallet.");
+      }
+    } else {
+      throw new Error("Failed to switch to Arbitrum Sepolia.");
+    }
+  }
+}
+
+export async function ensureArbitrumMainnet(): Promise<void> {
+  const currentChainId = await getCurrentChainId();
+
+  if (currentChainId !== ARBITRUM_MAINNET_CHAIN_ID) {
+    console.log("Switching to Arbitrum Mainnet...");
+    await switchToArbitrumMainnet();
+    console.log("Successfully switched to Arbitrum Mainnet");
+  }
+}
+
+export async function ensureArbitrumSepolia(): Promise<void> {
+  const currentChainId = await getCurrentChainId();
+
+  if (currentChainId !== ARBITRUM_SEPOLIA_CHAIN_ID) {
+    console.log("Switching to Arbitrum Sepolia...");
+    await switchToArbitrumSepolia();
+    console.log("Successfully switched to Arbitrum Sepolia");
   }
 }
 

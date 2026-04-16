@@ -1,33 +1,86 @@
-// import { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { Checkbox } from "../../components/ui/checkbox";
 import { TriangleAlert as AlertTriangle, Download } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { usePlan } from "../../context/usePlan";
+import { useDataProtector } from "../../lib/hooks/useDataProtector";
+import { ensureArbitrumSepolia } from "../../lib/wallet/walletUtils";
 import logoImg from "@assets/cip-logo.svg";
 import calculatorWhiteIcon from "@assets/calculator-white.svg";
 import fingerprintIcon from "@assets/fingerprint.svg";
 import flagOrangeIcon from "@assets/flag-orange.svg";
-
+import { InheritancePlanData } from "../../lib/api/dataProtector";
 
 export const ReviewPlan = (): JSX.Element => {
   const navigate = useNavigate();
-  // const [isConfirmed, setIsConfirmed] = useState(false);
+  const { getProtectorPayload, setProtectedDataAddress, setPlanField } = usePlan();
+  const { protectInheritancePlan, grantAccessToIApp } = useDataProtector();
+  const [_, setIsSaving] = useState(false);
 
   const handleBack = () => {
     navigate("/philanthropy-plan");
   };
 
-  const handleConfirmSign = () => {
-    navigate("/plan-activated", {
-      state: {
-        referenceId: "#CIP-8354-JD",
-        triggerMechanism: "Inactivity Monitor (12 Months)",
-        assetsIncluded: "12 Assets (ETH, SOL, USDC)",
-        mainBeneficiary: "0x71c...9a21",
-        securityLevel: "AES-256 ENCRYPTED",
-      },
-    });
+  const handleConfirmSign = async () => {
+    setIsSaving(true);
+    try {
+      await ensureArbitrumSepolia();
+
+      const payload = getProtectorPayload() as InheritancePlanData;
+      console.log('[ReviewPlan] Payload:', payload);
+      if (!payload.owner_wallet) {
+        throw new Error("Owner wallet is required to protect the inheritance plan.");
+      }
+
+      const name = `Inheritance Plan - ${payload.owner_wallet}`;
+      let response;
+      try {
+        response = await protectInheritancePlan(payload as InheritancePlanData, name);
+      } catch (err) {
+        console.error('[ReviewPlan] protectInheritancePlan error:', err);
+        throw err;
+      }
+      console.log('[ReviewPlan] protectInheritancePlan response:', response);
+      const protectedDataAddress = (response as any)?.address;
+
+      if (!protectedDataAddress) {
+        console.error('[ReviewPlan] No protectedDataAddress in response:', response);
+        throw new Error("Could not retrieve protected data address from DataProtector.");
+      }
+
+      setPlanField('protectedDataAddress', protectedDataAddress);
+      console.log('[ReviewPlan] Granting access to iApp for address:', protectedDataAddress);
+      try {
+        await grantAccessToIApp(protectedDataAddress);
+        console.log('[ReviewPlan] Grant access successful');
+      } catch (grantErr) {
+        console.error('[ReviewPlan] Grant access failed:', grantErr);
+        throw grantErr;
+      }
+      setProtectedDataAddress(protectedDataAddress);
+
+      toast.success("Inheritance plan protected successfully.");
+
+      navigate("/plan-activated", {
+        state: {
+          referenceId: "#CIP-8354-JD",
+          triggerMechanism: payload.plan_type || "Inactivity Monitor (12 Months)",
+          assetsIncluded: `${payload.crypto_asset} ${payload.amount}`,
+          mainBeneficiary: payload.beneficiary_1_wallet || payload.owner_wallet,
+          securityLevel: "AES-256 ENCRYPTED",
+          protectedDataAddress,
+        },
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to protect the inheritance plan.";
+      toast.error(message);
+      console.error("DataProtector error:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (

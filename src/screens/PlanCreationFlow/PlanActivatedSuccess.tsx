@@ -1,11 +1,27 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Copy } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useDataProtector } from "../../lib/hooks/useDataProtector";
 import logoImg from "@assets/cip-logo.svg";
 import shieldCheckOrangeIcon from "@assets/shield-check-orange.svg";
 
 export const PlanActivatedSuccess = (): JSX.Element => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { getProtectedData, getGrantedAccess } = useDataProtector();
+  const [accessList, setAccessList] = useState<any>(null);
+  const [loadingAccess, setLoadingAccess] = useState(false);
+  const [grantedAccess, setGrantedAccess] = useState<any>(null);
+  const [loadingGranted, setLoadingGranted] = useState(false);
+  const state = location.state as {
+    referenceId?: string;
+    triggerMechanism?: string;
+    assetsIncluded?: string;
+    mainBeneficiary?: string;
+    securityLevel?: string;
+    protectedDataAddress?: string;
+  } | null;
 
   const handleViewPlans = () => {
     navigate("/view-plan-history");
@@ -13,6 +29,36 @@ export const PlanActivatedSuccess = (): JSX.Element => {
 
   const handleReturnDashboard = () => {
     navigate("/owner-dashboard");
+  };
+
+  const handleFetchAccessList = async () => {
+    if (!state?.protectedDataAddress) return;
+    setLoadingAccess(true);
+    try {
+      const details = await getProtectedData(state.protectedDataAddress);
+      setAccessList(details);
+      console.log('Protected Data Details:', details);
+    } catch (error) {
+      console.error('Error fetching access list:', error);
+      setAccessList({ error: 'Failed to fetch access list' });
+    } finally {
+      setLoadingAccess(false);
+    }
+  };
+
+  const handleFetchGrantedAccess = async () => {
+    if (!state?.protectedDataAddress) return;
+    setLoadingGranted(true);
+    try {
+      const granted = await getGrantedAccess(state.protectedDataAddress);
+      setGrantedAccess(granted);
+      console.log('Granted Access:', granted);
+    } catch (error) {
+      console.error('Error fetching granted access:', error);
+      setGrantedAccess({ error: 'Failed to fetch granted access' });
+    } finally {
+      setLoadingGranted(false);
+    }
   };
 
   return (
@@ -66,7 +112,7 @@ export const PlanActivatedSuccess = (): JSX.Element => {
 
           <div style={{ width: "55%", margin: "20px auto" }} className="bg-[#181411] rounded-lg p-4 flex justify-between items-center">
             <p className="text-gray-400 text-xl">REFERENCE ID</p>
-            <p className="text-white text-xl font-semibold">#CIP-8354-JD</p>
+            <p className="text-white text-xl font-semibold">{state?.referenceId || "#CIP-8354-JD"}</p>
             <button className="text-orange-600 hover:text-orange-500 transition-colors">
               <Copy className="w-5 h-5" />
             </button>
@@ -100,7 +146,7 @@ export const PlanActivatedSuccess = (): JSX.Element => {
                 Main Beneficiary
               </div>
               <div className="text-white font-semibold text-sm font-mono">
-                0x71c...9a21
+                {state?.mainBeneficiary || "0x71c...9a21"}
               </div>
             </div>
             <div className="bg-[#181411] rounded-lg p-6 border border-gray-700">
@@ -108,10 +154,55 @@ export const PlanActivatedSuccess = (): JSX.Element => {
                 Security Level
               </div>
               <div className="text-white font-semibold text-sm">
-                AES-256 ENCRYPTED
+                {state?.securityLevel || "AES-256 ENCRYPTED"}
               </div>
             </div>
           </div>
+
+          {state?.protectedDataAddress && (
+            <div className="bg-[#181411] rounded-lg p-4 mb-6 border border-gray-700 text-sm text-gray-300">
+              <div className="text-[#FFC589] text-xs font-semibold mb-2">
+                Protected Data Address
+              </div>
+              <div className="break-all">{state.protectedDataAddress}</div>
+              <button
+                onClick={handleFetchAccessList}
+                disabled={loadingAccess}
+                className="mt-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 text-white text-xs rounded"
+              >
+                {loadingAccess ? 'Fetching...' : 'Check iApp Access'}
+              </button>
+              <button
+                onClick={handleFetchGrantedAccess}
+                disabled={loadingGranted}
+                className="mt-2 ml-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white text-xs rounded"
+              >
+                {loadingGranted ? 'Fetching...' : 'Check Granted Access'}
+              </button>
+            </div>
+          )}
+
+          {accessList && (
+            <div className="bg-[#181411] rounded-lg p-4 mb-6 border border-gray-700 text-sm text-gray-300">
+              <div className="text-[#FFC589] text-xs font-semibold mb-2">
+                Access List
+              </div>
+              <pre className="text-xs break-all whitespace-pre-wrap">
+                {JSON.stringify(accessList, null, 2)}
+              </pre>
+            </div>
+          )}
+
+          {grantedAccess && (
+            <div className="bg-[#181411] rounded-lg p-4 mb-6 border border-gray-700 text-sm text-gray-300">
+              <div className="text-[#FFC589] text-xs font-semibold mb-2">
+                Granted Access List
+              </div>
+              <pre className="text-xs break-all whitespace-pre-wrap">
+                {JSON.stringify(grantedAccess, null, 2)}
+              </pre>
+            </div>
+          )}
 
           <div className="text-center text-gray-400 text-xs mb-8">
             <div className="flex items-center justify-center gap-2">

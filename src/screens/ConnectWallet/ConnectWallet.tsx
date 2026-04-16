@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { Button } from "../../components/ui/button";
+import { toast } from "react-toastify";
 import * as walletUtils from "../../lib/wallet/walletUtils";
 import logoImg from "@assets/cip-logo.svg";
 import helpIcon from "@assets/help.svg";
@@ -15,8 +16,8 @@ import ledger from "@assets/ledger.svg";
 import arrowForward from "@assets/arrow-forward.svg";
 
 const navigationItems = [
-  { label: "Home", href: "#home" },
-  { label: "Features", href: "#features" },
+  { label: "Home", href: "/" },
+  { label: "Features", href: "/#core-capabilities" },
   { label: "Security", href: "#security" },
 ];
 
@@ -70,6 +71,21 @@ export const ConnectWallet = (): JSX.Element => {
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const handleNavigation = (href: string) => {
+    if (href === "/") {
+      navigate("/");
+    } else if (href === "/#core-capabilities") {
+      navigate("/", { replace: false });
+      // Scroll after navigation completes
+      setTimeout(() => {
+        const element = document.getElementById("core-capabilities");
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    }
+  };
+
   const handleWalletSelect = async (walletId: string) => {
     setError(null);
     setIsConnectingWallet(true);
@@ -84,8 +100,10 @@ export const ConnectWallet = (): JSX.Element => {
       await loginWithWallet(account, signature, nonce);
       navigate("/profile-setup");
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to connect wallet";
       console.error("ConnectWallet: failed:", err);
-      setError(err instanceof Error ? err.message : "Failed to connect wallet");
+      toast.error(errorMessage);
+      setError(null);
     } finally {
       setIsConnectingWallet(false);
     }
@@ -103,13 +121,13 @@ export const ConnectWallet = (): JSX.Element => {
 
         <nav className="flex items-center gap-[35px]">
           {navigationItems.map((item) => (
-            <a
+            <button
               key={item.label}
-              href={item.href}
-              className="[font-family:'Manrope',Helvetica] font-medium text-white text-sm leading-[21px] whitespace-nowrap hover:text-[#ff6600] transition-colors"
+              onClick={() => handleNavigation(item.href)}
+              className="[font-family:'Manrope',Helvetica] font-medium text-white text-sm leading-[21px] whitespace-nowrap hover:text-[#ff6600] transition-colors cursor-pointer"
             >
               {item.label}
-            </a>
+            </button>
           ))}
         </nav>
 
@@ -136,6 +154,17 @@ export const ConnectWallet = (): JSX.Element => {
             manage your digital legacy across chains.
           </p>
         </div>
+
+        {isConnectingWallet && (
+          <div className="bg-[#332b22] border border-[#ff6600]/30 rounded-lg p-4 mb-6 flex items-center gap-3 max-w-md mx-auto">
+            <div className="w-5 h-5 border-2 border-[#ff6600] border-t-transparent rounded-full animate-spin"></div>
+            <div className="text-[#ff6600] font-semibold text-base [font-family:'Manrope',Helvetica]">
+              Connecting wallet and signing message...
+            </div>
+          </div>
+        )}
+
+
 
         <div className="grid grid-cols-3 gap-6 max-w-5xl mb-8">
           {wallets.map((wallet) => (
@@ -173,16 +202,6 @@ export const ConnectWallet = (): JSX.Element => {
             </button>
           ))}
         </div>
-
-        {error && (
-          <div className="text-sm text-red-400 font-medium mb-4">{error}</div>
-        )}
-
-        {isConnectingWallet && (
-          <div className="text-sm text-yellow-300 font-medium mb-4">
-            Connecting wallet and signing message...
-          </div>
-        )}
 
         <div className="flex flex-col items-center gap-4">
           <Button

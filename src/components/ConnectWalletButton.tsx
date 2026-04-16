@@ -13,6 +13,7 @@ import { Wallet, LogOut, AlertCircle } from "lucide-react";
 import { useAuth } from "../context/useAuth";
 import * as walletUtils from "../lib/wallet/walletUtils";
 import { verifyMessage } from "ethers";
+import { toast } from "react-toastify";
 
 interface ConnectWalletButtonProps {
   variant?: "default" | "outline" | "ghost";
@@ -151,6 +152,9 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
 
       // Step 6: Login with raw nonce as message
       await loginWithWallet(account, signature, nonce);
+
+      // Show success toast
+      toast.success("Wallet connected successfully!");
 
       // Callback
       onLoginSuccess?.();

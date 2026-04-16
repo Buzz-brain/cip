@@ -1,17 +1,11 @@
 import { Shield, Wallet, Lock, AlertCircle } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import * as walletUtils from "../../lib/wallet/walletUtils";
 
-interface LoginProps {
-  onForgotPassword?: () => void;
-  onLoginSuccess?: () => void;
-}
-
-export const Login = ({
-  onForgotPassword = () => {},
-  onLoginSuccess = () => {},
-}: LoginProps): JSX.Element => {
+export const Login = (): JSX.Element => {
+  const navigate = useNavigate();
   const { loginWithWallet, getNonce, loading, error, clearError } = useAuth();
   const [connectedAccount, setConnectedAccount] = useState("");
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
@@ -47,8 +41,8 @@ export const Login = ({
       // Step 3: Login with signature
       await loginWithWallet(connectedAccount, signature, nonce);
 
-      // Success callback
-      onLoginSuccess();
+      // Success - redirect to owner dashboard
+      navigate("/owner-dashboard");
     } catch (err) {
       console.error("Login failed:", err);
     }

@@ -141,6 +141,7 @@ export const StepTwo = (): JSX.Element => {
                 <Button
                   variant="outline"
                   className="h-12 gap-2 rounded-lg border-[#554733] bg-transparent px-8 hover:bg-[#554733]/10"
+                  onClick={() => navigate(-1)}
                 >
                   <span className="text-base font-bold leading-6 text-white [font-family:'Manrope',Helvetica]">
                     Back

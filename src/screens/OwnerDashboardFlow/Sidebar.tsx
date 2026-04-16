@@ -50,7 +50,7 @@ export const Sidebar = (): JSX.Element => {
             {sidebarMenuItems.map((item) => {
               let href = "#";
               if (item.id === "create-plan") href = "/select-assets";
-              if (item.id === "asset-registry") href = "/asset-selection";
+              if (item.id === "asset-registry") href = "/select-assets";
 
               return (
                 <Link

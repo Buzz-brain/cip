@@ -18,7 +18,7 @@ import { Link } from "react-router-dom";
 
 
 const navigationLinks = [
-  { label: "Docs", href: "/docs/dispute" },
+  { label: "Docs", href: "#" },
   { label: "FAQ", href: "#" },
 ];
 

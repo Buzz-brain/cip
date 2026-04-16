@@ -2,7 +2,7 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Separator } from "../../components/ui/separator";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navbar } from "../../components/ui/Navbar";
 import { ToggleBilling } from "../../components/ui/ToggleBilling";
 import logoImg from "@assets/cip-logo.png";
@@ -124,6 +124,11 @@ const footerLinksAlt = [
 export const Pricing = (): JSX.Element => {
   const navigate = useNavigate();
   const [isYearly, setIsYearly] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   const navItems = [
     { label: "Features", href: "#" },
     { label: "Security", href: "#" },
@@ -133,7 +138,7 @@ export const Pricing = (): JSX.Element => {
 
   const rightActions = (
     <div className="flex items-center gap-2">
-      <Link to="/dashboard">
+      <Link to="/login">
         <Button
           variant="default"
           className="bg-[#554233] hover:bg-[#554233]/90 [font-family:'Manrope',Helvetica] font-bold text-sm"

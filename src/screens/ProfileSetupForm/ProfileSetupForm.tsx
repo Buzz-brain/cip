@@ -14,6 +14,7 @@ import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Separator } from "../../components/ui/separator";
 import { ConnectWalletButton } from "../../components/ConnectWalletButton";
+import { toast } from "react-toastify";
 import logoImg from "@assets/cip-logo.svg";
 import lockWhite from "@assets/lock-white.svg";
 import userIcon from "@assets/user.svg";
@@ -24,8 +25,8 @@ import { Link } from "react-router-dom";
 
 
 const navigationLinks = [
-  { label: "Dashboard", href: "/docs/dispute" },
-  { label: "Plans", href: "#" },
+  { label: "Dashboard", href: "/owner-dashboard" },
+  { label: "Plans", href: "/select-assets" },
   { label: "Vault", href: "#" },
   { label: "Settings", href: "#" },
 ];
@@ -44,7 +45,6 @@ export const ProfileSetupForm = (): JSX.Element => {
   const [profileError, setProfileError] = useState<string | null>(null);
   const [saveLoading, setSaveLoading] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
 
   const loadProfile = async () => {
     if (!user?.token) {
@@ -79,7 +79,6 @@ export const ProfileSetupForm = (): JSX.Element => {
     }
 
     setSaveError(null);
-    setSaveSuccess(null);
     setSaveLoading(true);
 
     try {
@@ -89,8 +88,9 @@ export const ProfileSetupForm = (): JSX.Element => {
         preferred_chain: profile.preferredChain,
       });
 
-      setSaveSuccess("Profile saved successfully.");
+      toast.success("Profile saved successfully!");
       await loadProfile();
+      navigate("/owner-dashboard");
     } catch (err) {
       console.error("Profile save failed:", err);
       setSaveError(err instanceof Error ? err.message : "Failed to save profile.");
@@ -396,9 +396,6 @@ export const ProfileSetupForm = (): JSX.Element => {
 
                 {saveError && (
                   <p className="text-sm text-red-400">{saveError}</p>
-                )}
-                {saveSuccess && (
-                  <p className="text-sm text-emerald-400">{saveSuccess}</p>
                 )}
               </div>
             </CardContent>

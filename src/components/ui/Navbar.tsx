@@ -14,6 +14,7 @@ interface NavbarProps {
   headerClassName?: string;
   navHeight?: string;
   logoClassName?: string;
+  logoHref?: string;
 }
 
 export const Navbar = ({
@@ -24,6 +25,7 @@ export const Navbar = ({
   headerClassName = "bg-[#0d0501] border-b border-[#483423]",
   navHeight = "h-16",
   logoClassName = "h-[45px] object-cover",
+  logoHref = "/onboarding/step-one",
 }: NavbarProps) => {
   return (
     <header className={headerClassName}>
@@ -32,9 +34,15 @@ export const Navbar = ({
           <div className="flex items-center gap-1">
             <div>
               {logo ? (
-                <Link to="/onboarding/step-one">
-                  <img src={logo} alt="Logo" className={logoClassName} />
-                </Link>
+                window.location.pathname === logoHref ? (
+                  <button onClick={() => window.location.reload()}>
+                    <img src={logo} alt="Logo" className={logoClassName} />
+                  </button>
+                ) : (
+                  <Link to={logoHref}>
+                    <img src={logo} alt="Logo" className={logoClassName} />
+                  </Link>
+                )
               ) : null}
             </div>
             <span className="[font-family:'Space_Grotesk',Helvetica] text-[19.4px] font-bold text-white">

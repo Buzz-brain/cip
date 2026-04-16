@@ -5,7 +5,9 @@ import { resolve } from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react({
+    jsxRuntime: 'automatic'
+  })],
   base: "./",
   resolve: {
     alias: {

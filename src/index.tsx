@@ -2,6 +2,10 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { PlanProvider } from "./context/PlanContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Home } from "./screens/Home";
 import { Pricing } from "./screens/Pricing";
 import { ViewPlanHistory } from "./screens/ViewPlanHistory";
@@ -112,8 +116,9 @@ import { Login } from "./screens/Login";
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
+      <PlanProvider>
+        <BrowserRouter>
+          <Routes>
 
         {/* Landing Page */}
         <Route path="/" element={<Home />} /> ✅
@@ -160,7 +165,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/confirm-health-oracle-plan" element={<ConfirmHealthOraclePlan />} />
 
         {/* Owner Dashboard Flow */}
-        <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+        <Route path="/owner-dashboard" element={<ProtectedRoute><OwnerDashboard /></ProtectedRoute>} />
         <Route path="/view-plan-history" element={<ViewPlanHistory />} />
         <Route path="/childrens-trust-account" element={<ChildrensTrustAccount />} />
         <Route path="/market-volatility-alert" element={<MarketVolatilityAlert />} />
@@ -249,7 +254,19 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/asset-registry" element={<AssetRegistry />} />
 
       </Routes>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </BrowserRouter>
+      </PlanProvider>
     </AuthProvider>
   </StrictMode>
 );

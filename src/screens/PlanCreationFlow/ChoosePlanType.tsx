@@ -5,6 +5,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import logoImg from "@assets/cip-logo.png";
+import { usePlan } from "../../context/usePlan";
 import { Progress } from "../../components/ui/progress";
 import calendarClockIcon from "@assets/calendar-clock.svg";
 // import circlePentagonnIcon from "@assets/circle-pentagon.svg";
@@ -137,7 +138,8 @@ const navigationLinks = [
 
 
 export const ChoosePlanType = (): JSX.Element => {
-    const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+    const { plan, setPlanType, setPlanField } = usePlan();
+    const [selectedPlan, setSelectedPlan] = useState<string | null>(plan.planType ?? null);
     const selectedPlanData = planTypes.find((p) => p.id === selectedPlan);
 
     const navigate = useNavigate();
@@ -148,6 +150,8 @@ export const ChoosePlanType = (): JSX.Element => {
 
     const handleContinue = () => {
         if (selectedPlan) {
+            setPlanType(selectedPlan as any);
+            setPlanField('planType', selectedPlan);
             if (selectedPlan === "staggered") {
                 navigate("/staggered-distribution");
             } else if (selectedPlan === "time-lock") {

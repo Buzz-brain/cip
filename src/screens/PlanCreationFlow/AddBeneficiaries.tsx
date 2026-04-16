@@ -1,9 +1,10 @@
 import { ChevronRightIcon, PlusIcon, TrashIcon, UserIcon, WalletIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import logoImg from "@assets/cip-logo.png";
+import { usePlan } from "../../context/usePlan";
 import usersPlusIcon from "@assets/users-plus.svg";
 import bookCheckGreyIcon from "@assets/book-check-grey.svg";
 import pieCircleIcon from "@assets/pie-circle.svg";
@@ -56,64 +57,58 @@ const navigationLinks = [
 
 export const AddBeneficiaries = (): JSX.Element => {
     const navigate = useNavigate();
-    const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([
-        {
-            id: "1",
-            name: "Alice Smith",
-            relationship: "Spouse",
-            walletAddress: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
-            allocation: 45,
-            color: BENEFICIARY_COLORS[0],
-            initial: "A",
-        },
-        {
-            id: "2",
-            name: "Michael Chang",
-            relationship: "Child",
-            walletAddress: "",
-            allocation: 30,
-            color: BENEFICIARY_COLORS[1],
-            initial: "M",
-        },
-    ]);
+    const { plan, addBeneficiary, removeBeneficiary, updateBeneficiary, setBeneficiaries } = usePlan();
+    const beneficiaries = plan.beneficiaries;
+
+    useEffect(() => {
+        if (beneficiaries.length === 0) {
+            setBeneficiaries([
+                {
+                    id: "1",
+                    name: "Alice Smith",
+                    relationship: "Spouse",
+                    walletAddress: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+                    allocation: 45,
+                    color: BENEFICIARY_COLORS[0],
+                    initial: "A",
+                },
+                {
+                    id: "2",
+                    name: "Michael Chang",
+                    relationship: "Child",
+                    walletAddress: "",
+                    allocation: 30,
+                    color: BENEFICIARY_COLORS[1],
+                    initial: "M",
+                },
+            ]);
+        }
+    }, [plan.beneficiaries.length, setBeneficiaries]);
 
     const totalAllocated = beneficiaries.reduce((sum, b) => sum + b.allocation, 0);
     const unallocated = 100 - totalAllocated;
 
-    const addBeneficiary = () => {
+    const handleAddBeneficiary = () => {
         const newId = (Math.max(...beneficiaries.map((b) => parseInt(b.id))) + 1).toString();
         const colorIndex = beneficiaries.length % BENEFICIARY_COLORS.length;
-        setBeneficiaries([
-            ...beneficiaries,
-            {
-                id: newId,
-                name: "",
-                relationship: "",
-                walletAddress: "",
-                allocation: 0,
-                color: BENEFICIARY_COLORS[colorIndex],
-                initial: "?",
-            },
-        ]);
+        const newBeneficiary = {
+            id: newId,
+            name: "",
+            relationship: "",
+            walletAddress: "",
+            allocation: 0,
+            color: BENEFICIARY_COLORS[colorIndex],
+            initial: "?",
+        };
+        addBeneficiary(newBeneficiary);
     };
 
-    const removeBeneficiary = (id: string) => {
-        setBeneficiaries(beneficiaries.filter((b) => b.id !== id));
-    };
-
-    const updateBeneficiary = (id: string, field: keyof Beneficiary, value: any) => {
-        setBeneficiaries(
-            beneficiaries.map((b) => {
-                if (b.id === id) {
-                    const updated = { ...b, [field]: value };
-                    if (field === "name" && value) {
-                        updated.initial = value.charAt(0).toUpperCase();
-                    }
-                    return updated;
-                }
-                return b;
-            })
-        );
+    const handleUpdateBeneficiary = (id: string, field: keyof Beneficiary, value: any) => {
+        const updates: Partial<Beneficiary> = { [field]: value };
+        if (field === "name" && value) {
+            updates.initial = value.charAt(0).toUpperCase();
+        }
+        updateBeneficiary(id, updates);
     };
 
     const isValidAddress = (address: string) => {
@@ -237,7 +232,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                               <Input
                                 value={beneficiary.name}
                                 onChange={(e) =>
-                                  updateBeneficiary(
+                                  handleUpdateBeneficiary(
                                     beneficiary.id,
                                     "name",
                                     e.target.value,
@@ -256,7 +251,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                             <Select
                               value={beneficiary.relationship}
                               onValueChange={(value) =>
-                                updateBeneficiary(
+                                handleUpdateBeneficiary(
                                   beneficiary.id,
                                   "relationship",
                                   value,
@@ -299,7 +294,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                             <Input
                               value={beneficiary.walletAddress}
                               onChange={(e) =>
-                                updateBeneficiary(
+                                handleUpdateBeneficiary(
                                   beneficiary.id,
                                   "walletAddress",
                                   e.target.value,
@@ -321,7 +316,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                                 type="number"
                                 value={beneficiary.allocation}
                                 onChange={(e) =>
-                                  updateBeneficiary(
+                                  handleUpdateBeneficiary(
                                     beneficiary.id,
                                     "allocation",
                                     Math.max(
@@ -341,7 +336,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                           <Slider
                             value={[beneficiary.allocation]}
                             onValueChange={(value) =>
-                              updateBeneficiary(
+                              handleUpdateBeneficiary(
                                 beneficiary.id,
                                 "allocation",
                                 value[0],
@@ -362,7 +357,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                   ))}
 
                   <button
-                    onClick={addBeneficiary}
+                    onClick={handleAddBeneficiary}
                     className="flex items-center justify-center gap-2 p-6 border-2 border-dashed border-[#2c231a] rounded-xl hover:border-[#ff6600] hover:bg-[#ff66000d] transition-colors group"
                   >
                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#2c231a] group-hover:bg-[#ff6600] transition-colors">

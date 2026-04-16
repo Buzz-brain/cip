@@ -4,6 +4,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
+import { ConnectWalletButton } from "../../components/ConnectWalletButton";
 import connectWalletIcon from "@assets/conn-wallet.svg";
 
 
@@ -34,10 +35,7 @@ export const Header = (): JSX.Element => {
             <Bell className="w-5 h-5 text-[#B9B09D]" />
             <div className="absolute top-2 right-3 w-2 h-2 bg-red-500 rounded-full" />
           </button>
-          <Button className="bg-[#FF6600] hover:bg-[#ff6600]/90 [font-family:'Noto_Sans',Helvetica] font-semibold text-sm gap-2">
-            <img src={connectWalletIcon} alt="" />
-            Connect Wallet
-          </Button>
+          <ConnectWalletButton variant="default" showAddress={true} />
         </div>
       </div>
     </header>
