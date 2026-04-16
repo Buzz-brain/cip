@@ -327,7 +327,7 @@ export const Home = (): JSX.Element => {
                   stiffness: 200,
                   damping: 20
                 }}
-                viewport={{ once: true }}
+                viewport={{}}
               >
                 Securing Assets On Top Chains
               </motion.p>
@@ -353,7 +353,7 @@ export const Home = (): JSX.Element => {
                       stiffness: 150,
                       damping: 25
                     }}
-                    viewport={{ once: true }}
+                    viewport={{}}
                     whileHover={{ 
                       y: -12,
                       rotateY: index % 2 === 0 ? 5 : -5,
@@ -428,14 +428,14 @@ export const Home = (): JSX.Element => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                viewport={{ once: true }}
+                viewport={{}}
               >
                 <motion.h2 
                   className="[font-family:'Sora',Helvetica] font-bold text-white text-4xl"
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.2, type: "spring", stiffness: 200 }}
-                  viewport={{ once: true }}
+                  viewport={{}}
                 >
                   Core Capabilities
                 </motion.h2>
@@ -444,7 +444,7 @@ export const Home = (): JSX.Element => {
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
-                  viewport={{ once: true }}
+                  viewport={{}}
                 >
                   Built for security and autonomy across multiple blockchains,
                   ensuring your plan executes exactly as intended.
@@ -460,7 +460,7 @@ export const Home = (): JSX.Element => {
                       initial={{ opacity: 0, y: 50, scale: 0.95 }}
                       whileInView={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ duration: 0.6, delay: 0.4 + index * 0.1, type: "spring", stiffness: 200, damping: 20 }}
-                      viewport={{ once: true }}
+                      viewport={{}}
                       className="group perspective-1000"
                       style={{ perspective: 1000 }}
                     >
@@ -540,14 +540,14 @@ export const Home = (): JSX.Element => {
                   initial={{ opacity: 0, y: 40, scale: 0.95 }}
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ duration: 0.7, type: "spring", stiffness: 180, damping: 18 }}
-                  viewport={{ once: true }}
+                  viewport={{}}
                   className="space-y-6"
                 >
                   <motion.div
                     initial={{ scale: 0.8, rotate: -8, opacity: 0 }}
                     whileInView={{ scale: 1, rotate: 0, opacity: 1 }}
                     transition={{ duration: 0.7, delay: 0.1, type: "spring", stiffness: 300, damping: 20 }}
-                    viewport={{ once: true }}
+                    viewport={{}}
                   >
                     <Badge className="bg-[#f6a83b1a] border-[#f6b13b33] !pl-4 !pr-20 !pt-2 !pb-2 text-[#faaf60] [font-family:'Sora',Helvetica] font-bold rounded-3xl">
                       <img src={barChartIcon} alt="" className="w-4 h-4 mr-2" />
@@ -559,7 +559,7 @@ export const Home = (): JSX.Element => {
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.2, type: "spring", stiffness: 200 }}
-                    viewport={{ once: true }}
+                    viewport={{}}
                     whileHover={{ textShadow: "0 0 24px #f6a83b, 0 0 8px #ff6600" }}
                   >
                     TaxCore Intelligence
@@ -569,22 +569,38 @@ export const Home = (): JSX.Element => {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.3 }}
-                    viewport={{ once: true }}
+                    viewport={{}}
                   >
                     TaxCore isn't just a calculator; it's a full compliance suite. It integrates real-time transaction analysis, automatic capital gains calculation, and multi-jurisdiction tax rules to prepare accountant-ready documentation.
                   </motion.p>
                 </motion.div>
 
                 <div className="border-l border-[#674932] pl-8 space-y-12">
-                  {taxCoreSteps.map((step) => (
-                    <div key={step.title} className="space-y-2">
-                      <h3 className="[font-family:'Sora',Helvetica] font-bold text-white text-lg">
+                  {taxCoreSteps.map((step, index) => (
+                    <motion.div
+                      key={step.title}
+                      initial={{ x: -200, rotate: -15, scale: 0.8, opacity: 0 }}
+                      whileInView={{ x: 0, rotate: 0, scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.8, delay: index * 0.3, type: "spring", stiffness: 100, damping: 15 }}
+                      viewport={{}}
+                      className="space-y-2"
+                    >
+                      <motion.h3
+                        className="[font-family:'Sora',Helvetica] font-bold text-white text-lg"
+                        whileHover={{ scale: 1.1, textShadow: "0 0 20px #ff6600" }}
+                      >
                         {step.title}
-                      </h3>
-                      <p className="[font-family:'Sora',Helvetica] text-[#b8a494] text-sm">
+                      </motion.h3>
+                      <motion.p
+                        className="[font-family:'Sora',Helvetica] text-[#b8a494] text-sm"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: index * 0.3 + 0.2 }}
+                        viewport={{}}
+                      >
                         {step.description}
-                      </p>
-                    </div>
+                      </motion.p>
+                    </motion.div>
                   ))}
                 </div>
               </div>
@@ -802,9 +818,10 @@ export const Home = (): JSX.Element => {
                         ))}
                       </div>
                       <motion.div
-                        whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255, 102, 0, 0.3)" }}
-                        whileTap={{ scale: 0.98 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255, 102, 0, 0.3)", transition: { type: "spring", stiffness: 300, damping: 20 } }}
+                        whileTap={{ scale: 0.98, transition: { type: "spring", stiffness: 300, damping: 20 } }}
+                        animate={plan.highlighted ? { scale: [1, 1.2, 1], boxShadow: ["0 0 0 rgba(255, 102, 0, 0)", "0 0 30px rgba(255, 102, 0, 0.8)", "0 0 0 rgba(255, 102, 0, 0)"] } : {}}
+                        transition={plan.highlighted ? { duration: 1, repeat: Infinity, ease: "easeInOut" } : {}}
                       >
                         <Button
                           variant={plan.buttonVariant}
