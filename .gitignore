@@ -28,5 +28,6 @@ dist-ssr
 
 .env
 *.md
+**/*.md
 
 scripts/
