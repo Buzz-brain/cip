@@ -1,4 +1,4 @@
-# CIP Project
+# CIP - Secure Your Digital Legacy
 
 ## Getting started
 
