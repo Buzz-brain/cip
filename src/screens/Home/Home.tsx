@@ -955,11 +955,26 @@ export const Home = (): JSX.Element => {
                     multi-sig coordination, dedicated account managers, and
                     custom legal framework integration.
                   </p>
-                  <div className="flex items-center gap-6">
-                    <span className="[font-family:'Sora',Helvetica] font-bold text-[#ff6600] text-base cursor-pointer hover:underline">
+                  <div className="flex items-center gap-2">
+                    <motion.span
+                      className="[font-family:'Sora',Helvetica] font-bold text-[#ff6600] text-base cursor-pointer"
+                      initial={{ opacity: 0.85, scale: 1 }}
+                      whileHover={{ scale: 1.08, color: "#ffc77a", textShadow: "0 0 16px rgba(255, 102, 0, 0.6)" }}
+                      whileTap={{ scale: 0.98 }}
+                      animate={{ opacity: [0.85, 1, 0.85] }}
+                      transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                    >
                       Contact Sales
-                    </span>
-                    <img src={arrowForward} alt="" className="w-5 h-5" />
+                    </motion.span>
+                    <motion.img
+                      src={arrowForward}
+                      alt=""
+                      className="w-5 h-5"
+                      initial={{ x: 0, rotate: 0 }}
+                      whileHover={{ x: 6, rotate: 15 }}
+                      animate={{ x: [0, 6, 0], rotate: [0, 15, 0] }}
+                      transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+                    />
                   </div>
                 </div>
                 <motion.div
