@@ -3,7 +3,7 @@ import {
     ChevronRightIcon
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import logoImg from "@assets/cip-logo.png";
 import { usePlan } from "../../context/usePlan";
 import { Progress } from "../../components/ui/progress";
@@ -18,6 +18,8 @@ import groupTogetherIcon from "@assets/group-together.svg";
 import multiSigIcon from "@assets/multi-sig.svg";
 import { Button } from "../../components/ui/button";
 
+
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "https://xcip.name.ng";
 
 interface PlanType {
     id: string;
@@ -39,7 +41,7 @@ interface PlanType {
 
 const planTypes: PlanType[] = [
     {
-        id: "time-lock",
+        id: "timelock",
         title: "Time-Lock",
         icon: calendarClockIcon,
         bgColor: "bg-[#8A561E33]",
@@ -86,7 +88,7 @@ const planTypes: PlanType[] = [
             "Bespoke smart contract development for complex estates, high net worth individuals, or family offices.",
     },
     {
-        id: "health-oracle",
+        id: "health_oracle",
         title: "Health Oracle",
         icon: healthWaveIcon,
         bgColor: "bg-[#7F1D1D33]",
@@ -94,7 +96,7 @@ const planTypes: PlanType[] = [
             "Uses privacy preserving TEE oracles to verify official death certificates from trusted data providers.",
     },
     {
-        id: "inactivity-oracle",
+        id: "inactivity",
         title: "Inactivity Oracle",
         icon: timeCancelIcon,
         bgColor: "bg-[#7C2D1233]",
@@ -140,7 +142,36 @@ const navigationLinks = [
 export const ChoosePlanType = (): JSX.Element => {
     const { plan, setPlanType, setPlanField } = usePlan();
     const [selectedPlan, setSelectedPlan] = useState<string | null>(plan.planType ?? null);
+    const [supportedBackendTypes, setSupportedBackendTypes] = useState<string[] | null>(null);
+
+    useEffect(() => {
+        let mounted = true;
+        (async () => {
+            try {
+                const res = await fetch(`${BACKEND_API_URL}/inherit/plan-types`, { headers: { accept: 'application/json' } });
+                if (!mounted) return;
+                if (!res.ok) {
+                    setSupportedBackendTypes([]);
+                    return;
+                }
+                const data = await res.json();
+                if (Array.isArray(data)) setSupportedBackendTypes(data);
+                else setSupportedBackendTypes([]);
+            } catch (err) {
+                console.error('Failed to fetch supported plan types', err);
+                if (mounted) setSupportedBackendTypes([]);
+            }
+        })();
+        return () => { mounted = false; };
+    }, []);
+
     const selectedPlanData = planTypes.find((p) => p.id === selectedPlan);
+
+    const displayedPlanTypes = (() => {
+        if (supportedBackendTypes === null) return [];
+        if (supportedBackendTypes.length === 0) return planTypes; // fallback: show all
+        return planTypes.filter((pt) => supportedBackendTypes.includes(pt.id));
+    })();
 
     const navigate = useNavigate();
 
@@ -154,13 +185,13 @@ export const ChoosePlanType = (): JSX.Element => {
             setPlanField('planType', selectedPlan);
             if (selectedPlan === "staggered") {
                 navigate("/staggered-distribution");
-            } else if (selectedPlan === "time-lock") {
+            } else if (selectedPlan === "timelock") {
                 navigate("/set-time-lock");
             } else if (selectedPlan === "philanthropy") {
                 navigate("/philanthropy-plan");
-            } else if (selectedPlan === "inactivity-oracle") {
+            } else if (selectedPlan === "inactivity") {
                 navigate("/set-inactivity-period");
-            } else if (selectedPlan === "health-oracle") {
+            } else if (selectedPlan === "health_oracle") {
                 navigate("/assign-health-oracle-exec");
             } else {
                 navigate("/summary", { state: { selectedPlan } });
@@ -229,34 +260,46 @@ export const ChoosePlanType = (): JSX.Element => {
                             />
                         </section>
 
-                        <div className="grid grid-cols-3 gap-6">
-                            {planTypes.map((plan) => (
-                                <button
-                                    key={plan.id}
-                                    onClick={() => setSelectedPlan(plan.id)}
-                                    className={`relative p-6 rounded-lg bg-[#27231C] border-2 transition-all text-left ${selectedPlan === plan.id
-                                            ? "border-orange-600"
-                                            : "border-[#54493B] hover:border-orange-600"
-                                        }`}
-                                >
-                                    <div className="absolute top-4 right-4 w-5 h-5 rounded-full border-2 border-gray-600 flex items-center justify-center">
-                                        {selectedPlan === plan.id && (
-                                            <div className="w-3 h-3 rounded-full bg-orange-600"></div>
-                                        )}
+                        {supportedBackendTypes === null ? (
+                            <div className="grid grid-cols-3 gap-6">
+                                {Array.from({ length: 6 }).map((_, i) => (
+                                    <div key={i} className="p-6 rounded-lg bg-[#27231C] border-2 border-[#54493B] animate-pulse">
+                                        <div className="w-12 h-12 bg-gray-700 rounded-lg mb-4"></div>
+                                        <div className="h-6 bg-gray-700 rounded mb-2 w-3/4"></div>
+                                        <div className="h-4 bg-gray-700 rounded w-full"></div>
                                     </div>
-                    <div
-                      className={`w-12 h-12 ${plan.bgColor} rounded-lg flex items-center mb-4 justify-center`}
-                    >
-                      <img src={plan.icon} alt="" className="w-6 h-6" />
-                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-3 gap-6">
+                                {displayedPlanTypes.map((plan) => (
+                                    <button
+                                        key={plan.id}
+                                        onClick={() => setSelectedPlan(plan.id)}
+                                        className={`relative p-6 rounded-lg bg-[#27231C] border-2 transition-all text-left ${selectedPlan === plan.id
+                                                ? "border-orange-600"
+                                                : "border-[#54493B] hover:border-orange-600"
+                                            }`}
+                                    >
+                                        <div className="absolute top-4 right-4 w-5 h-5 rounded-full border-2 border-gray-600 flex items-center justify-center">
+                                            {selectedPlan === plan.id && (
+                                                <div className="w-3 h-3 rounded-full bg-orange-600"></div>
+                                            )}
+                                        </div>
+                                        <div
+                                            className={`w-12 h-12 ${plan.bgColor} rounded-lg flex items-center mb-4 justify-center`}
+                                        >
+                                            <img src={plan.icon} alt="" className="w-6 h-6" />
+                                        </div>
 
-                                    <h3 className="text-lg font-semibold text-white mb-2">
-                                        {plan.title}
-                                    </h3>
-                                    <p className="text-sm text-gray-400">{plan.description}</p>
-                                </button>
-                            ))}
-                        </div>
+                                        <h3 className="text-lg font-semibold text-white mb-2">
+                                            {plan.title}
+                                        </h3>
+                                        <p className="text-sm text-gray-400">{plan.description}</p>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
 
                         {selectedPlanData && selectedPlanData.mpcConfig && (
                             <div className="border-2 border-orange-600 rounded-lg p-6 bg-gray-900">

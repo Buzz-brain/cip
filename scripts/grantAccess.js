@@ -8,7 +8,8 @@ dotenv.config();
 const ARBITRUM_SEPOLIA_RPC = 'https://sepolia-rollup.arbitrum.io/rpc';
 const ARBITRUM_SEPOLIA_CHAIN_ID = 421614;
 
-const appAddress = "0xBd53166C8873969536d41E64DC9E69EC468baFf1";
+// const appAddress = "0xBd53166C8873969536d41E64DC9E69EC468baFf1";
+const appAddress = "0x720Adc75c3f5941e772aec1818Dc288484100bf6";
 
 async function grantAccess(protectedDataAddress, authorizedUserAddress) {
   // Check if private key is provided

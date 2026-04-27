@@ -11,6 +11,7 @@ declare module 'react-toastify/dist/ReactToastify.css';
 interface ImportMetaEnv {
   readonly VITE_IEXEC_APP_ADDRESS: string;
   readonly VITE_BACKEND_WALLET: string;
+  readonly VITE_BACKEND_API_URL: string;
 }
 
 interface ImportMeta {
