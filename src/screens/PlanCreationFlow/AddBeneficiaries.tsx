@@ -22,6 +22,7 @@ interface Beneficiary {
     id: string;
     name: string;
     relationship: string;
+  email?: string;
     walletAddress: string;
     allocation: number;
     color: string;
@@ -66,8 +67,9 @@ export const AddBeneficiaries = (): JSX.Element => {
                 {
                     id: "1",
                     name: "Alice Smith",
-                    relationship: "Spouse",
-                    walletAddress: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+              relationship: "Spouse",
+              email: "alice@example.com",
+              walletAddress: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
                     allocation: 45,
                     color: BENEFICIARY_COLORS[0],
                     initial: "A",
@@ -75,8 +77,9 @@ export const AddBeneficiaries = (): JSX.Element => {
                 {
                     id: "2",
                     name: "Michael Chang",
-                    relationship: "Child",
-                    walletAddress: "",
+              relationship: "Child",
+              email: "",
+              walletAddress: "",
                     allocation: 30,
                     color: BENEFICIARY_COLORS[1],
                     initial: "M",
@@ -306,6 +309,24 @@ export const AddBeneficiaries = (): JSX.Element => {
                           </div>
                         </div>
 
+                        <div className="flex flex-col gap-2 mb-6">
+                          <label className="[font-family:'Manrope',Helvetica] font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
+                            Email (optional)
+                          </label>
+                          <Input
+                            value={beneficiary.email || ''}
+                            onChange={(e) =>
+                              handleUpdateBeneficiary(
+                                beneficiary.id,
+                                "email",
+                                e.target.value,
+                              )
+                            }
+                            placeholder="name@example.com"
+                            className="bg-[#0d0501] border-[#2c231a] text-white placeholder:text-[#80796b]"
+                          />
+                        </div>
+
                         <div className="flex flex-col gap-3">
                           <div className="flex items-center justify-between">
                             <label className="[font-family:'Manrope',Helvetica] font-medium text-white text-sm">
@@ -497,7 +518,21 @@ export const AddBeneficiaries = (): JSX.Element => {
                 </Card>
 
                 <Button
-                  onClick={() => navigate("/choose-plan-type")}
+                  onClick={() => {
+                    // log beneficiaries selected before navigation (backend payload shape)
+                    console.log(
+                      '[AddBeneficiaries] Beneficiaries:',
+                      beneficiaries.map((b) => ({
+                        id: b.id,
+                        name: b.name,
+                        relationship: b.relationship,
+                        email: b.email || '',
+                        wallet: b.walletAddress,
+                        allocation_percentage: b.allocation,
+                      })),
+                    );
+                    navigate("/choose-plan-type");
+                  }}
                   disabled={unallocated !== 0}
                   className="w-full py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 disabled:bg-[#54483b] disabled:text-[#80796b] disabled:cursor-not-allowed rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40]"
                 >

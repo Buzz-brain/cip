@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { usePlan } from "../../context/usePlan";
 import { CircleAlert as AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import logoImg from "@assets/cip-logo.svg";
@@ -17,7 +18,11 @@ import rocketIcon from "@assets/rocket.svg";
 export const ReviewTimeLock = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { unlockDate = "", unlockTime = "00:00" } = location.state || {};
+  const { unlockDate: stateUnlockDate = "", unlockTime: stateUnlockTime = "00:00" } = location.state || {};
+  const { plan } = usePlan();
+  const releaseTimestamp = plan?.releaseTimestamp;
+  const unlockDate = stateUnlockDate || (releaseTimestamp ? new Date(releaseTimestamp * 1000).toLocaleDateString('en-GB').replace(/\//g,'/') : '');
+  const unlockTime = stateUnlockTime || (releaseTimestamp ? new Date(releaseTimestamp * 1000).toISOString().substr(11,5) : '00:00');
 
   const formatDisplayDate = () => {
     if (!unlockDate) return "Not set";

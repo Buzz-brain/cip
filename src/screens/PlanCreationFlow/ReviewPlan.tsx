@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 // import { Checkbox } from "../../components/ui/checkbox";
 import { TriangleAlert as AlertTriangle, Download } from "lucide-react";
@@ -6,7 +6,7 @@ import { Badge } from "../../components/ui/badge";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { usePlan } from "../../context/usePlan";
-import { useDataProtector } from "../../lib/hooks/useDataProtector";
+// import { useDataProtector } from "../../lib/hooks/useDataProtector";
 import { ensureArbitrumSepolia } from "../../lib/wallet/walletUtils";
 import logoImg from "@assets/cip-logo.svg";
 import calculatorWhiteIcon from "@assets/calculator-white.svg";
@@ -16,9 +16,17 @@ import { InheritancePlanData } from "../../lib/api/dataProtector";
 
 export const ReviewPlan = (): JSX.Element => {
   const navigate = useNavigate();
-  const { getProtectorPayload, setProtectedDataAddress, setPlanField } = usePlan();
-  const { protectInheritancePlan, grantAccessToIApp } = useDataProtector();
-  const [_, setIsSaving] = useState(false);
+  const { plan, getProtectorPayload, setProtectedDataAddress, setPlanField, submitPlan } = usePlan();
+  // const { protectInheritancePlan, grantAccessToIApp } = useDataProtector();
+  const [isSaving, setIsSaving] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => {
+      // abort any in-flight submit if component unmounts
+      abortControllerRef.current?.abort();
+    };
+  }, []);
 
   const handleBack = () => {
     navigate("/philanthropy-plan");
@@ -27,55 +35,113 @@ export const ReviewPlan = (): JSX.Element => {
   const handleConfirmSign = async () => {
     setIsSaving(true);
     try {
+      // Basic validation from plan context
+      if (!plan) throw new Error("No plan data available.");
+      if (!plan.ownerWallet && !plan.ownerName) throw new Error("Owner wallet must be connected.");
+      // crypto asset is validated from the protector payload (getProtectorPayload may provide a default)
+      if (!plan.planType) throw new Error("Please select a plan type.");
+      if (!plan.beneficiaries || plan.beneficiaries.length === 0) throw new Error("Add at least one beneficiary.");
+
       await ensureArbitrumSepolia();
 
       const payload = getProtectorPayload() as InheritancePlanData;
-      console.log('[ReviewPlan] Payload:', payload);
+      console.log("[ReviewPlan] Payload:", payload);
+
+      if (!payload.crypto_asset) {
+        throw new Error("Please select at least one crypto asset to protect.");
+      }
       if (!payload.owner_wallet) {
         throw new Error("Owner wallet is required to protect the inheritance plan.");
       }
 
-      const name = `Inheritance Plan - ${payload.owner_wallet}`;
-      let response;
+      // Build backend payload preview (same shape as submitPlan) for logging
+      const backendPreview = {
+        crypto_asset: plan.cryptoAsset || "",
+        plan_type: payload.plan_type || mapPlanTypeToDataProtectorType(plan.planType),
+        beneficiaries: plan.beneficiaries.map((b) => ({
+          name: b.name,
+          relationship: b.relationship,
+          email: b.email || "",
+          wallet: b.walletAddress,
+          allocation_percentage: b.allocation,
+        })),
+        executor: [
+          {
+            full_name: plan.ownerName || "",
+            email: undefined,
+            wallet: plan.ownerWallet || payload.owner_wallet,
+          },
+        ],
+        release_timestamp: typeof plan.releaseTimestamp === 'number' ? plan.releaseTimestamp : undefined,
+      };
+      console.log('[ReviewPlan] Backend payload preview:', backendPreview);
+
+      /*
+       * DataProtector flow is intentionally skipped per request.
+       * The original implementation is commented out so it can be re-enabled later.
+       */
+      // const name = `Inheritance Plan - ${payload.owner_wallet}`;
+      // let response;
+      // try {
+      //   response = await protectInheritancePlan(payload as InheritancePlanData, name);
+      // } catch (err) {
+      //   console.error("[ReviewPlan] protectInheritancePlan error:", err);
+      //   throw err;
+      // }
+      // console.log("[ReviewPlan] protectInheritancePlan response:", response);
+      // const protectedDataAddress = (response as any)?.address;
+      // if (!protectedDataAddress) {
+      //   console.error("[ReviewPlan] No protectedDataAddress in response:", response);
+      //   throw new Error("Could not retrieve protected data address from DataProtector.");
+      // }
+      // setPlanField("protectedDataAddress", protectedDataAddress);
+      // console.log("[ReviewPlan] Granting access to iApp for address:", protectedDataAddress);
+      // try {
+      //   await grantAccessToIApp(protectedDataAddress);
+      //   console.log("[ReviewPlan] Grant access successful");
+      // } catch (grantErr) {
+      //   console.error("[ReviewPlan] Grant access failed:", grantErr);
+      //   throw grantErr;
+      // }
+      // setProtectedDataAddress(protectedDataAddress);
+      // toast.success("Inheritance plan protected successfully.");
+
+      console.log('[ReviewPlan] DataProtector skipped; submitting directly to backend');
+      const protectedDataAddress = undefined; // placeholder while DataProtector is skipped
+
+      // Submit to backend create-inheritance endpoint (abortable)
+      abortControllerRef.current = new AbortController();
+      let submitResponse: any = null;
       try {
-        response = await protectInheritancePlan(payload as InheritancePlanData, name);
-      } catch (err) {
-        console.error('[ReviewPlan] protectInheritancePlan error:', err);
-        throw err;
+        submitResponse = await submitPlan({ signal: abortControllerRef.current.signal });
+        console.log("[ReviewPlan] submitPlan response:", submitResponse);
+        toast.success("Inheritance plan submitted successfully.");
+      } catch (submitErr) {
+        if ((submitErr as any).name === "AbortError") {
+          toast.info("Plan submission aborted.");
+        } else {
+          console.error("[ReviewPlan] submitPlan error:", submitErr);
+          throw submitErr;
+        }
+      } finally {
+        abortControllerRef.current = null;
       }
-      console.log('[ReviewPlan] protectInheritancePlan response:', response);
-      const protectedDataAddress = (response as any)?.address;
 
-      if (!protectedDataAddress) {
-        console.error('[ReviewPlan] No protectedDataAddress in response:', response);
-        throw new Error("Could not retrieve protected data address from DataProtector.");
+      // Navigate only if submission succeeded
+      if (submitResponse) {
+        navigate("/plan-activated", {
+          state: {
+            referenceId: submitResponse?.id || "#CIP-8354-JD",
+            triggerMechanism: payload.plan_type || "Inactivity Monitor (12 Months)",
+            assetsIncluded: `${payload.crypto_asset} ${payload.amount}`,
+            mainBeneficiary: payload.beneficiary_1_wallet || payload.owner_wallet,
+            securityLevel: "AES-256 ENCRYPTED",
+            protectedDataAddress,
+          },
+        });
       }
-
-      setPlanField('protectedDataAddress', protectedDataAddress);
-      console.log('[ReviewPlan] Granting access to iApp for address:', protectedDataAddress);
-      try {
-        await grantAccessToIApp(protectedDataAddress);
-        console.log('[ReviewPlan] Grant access successful');
-      } catch (grantErr) {
-        console.error('[ReviewPlan] Grant access failed:', grantErr);
-        throw grantErr;
-      }
-      setProtectedDataAddress(protectedDataAddress);
-
-      toast.success("Inheritance plan protected successfully.");
-
-      navigate("/plan-activated", {
-        state: {
-          referenceId: "#CIP-8354-JD",
-          triggerMechanism: payload.plan_type || "Inactivity Monitor (12 Months)",
-          assetsIncluded: `${payload.crypto_asset} ${payload.amount}`,
-          mainBeneficiary: payload.beneficiary_1_wallet || payload.owner_wallet,
-          securityLevel: "AES-256 ENCRYPTED",
-          protectedDataAddress,
-        },
-      });
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to protect the inheritance plan.";
+      const message = error instanceof Error ? error.message : "Failed to protect or submit the inheritance plan.";
       toast.error(message);
       console.error("DataProtector error:", error);
     } finally {
@@ -370,10 +436,19 @@ export const ReviewPlan = (): JSX.Element => {
 
               <button
                 onClick={handleConfirmSign}
-                className="px-8 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-semibold flex items-center gap-2"
+                disabled={isSaving}
+                aria-busy={isSaving}
+                className={`px-8 py-3 bg-orange-600 text-white rounded-lg transition-colors font-semibold flex items-center gap-2 ${isSaving ? 'opacity-60 cursor-not-allowed' : 'hover:bg-orange-700'}`}
               >
-                <img src={fingerprintIcon} alt="" />
-                Confirm & Sign Plan
+                {isSaving ? (
+                  <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" strokeOpacity="0.2" />
+                    <path d="M4 12a8 8 0 018-8" />
+                  </svg>
+                ) : (
+                  <img src={fingerprintIcon} alt="" />
+                )}
+                {isSaving ? 'Saving…' : 'Confirm & Sign Plan'}
               </button>
             </div>
           </div>

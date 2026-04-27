@@ -1,5 +1,6 @@
 import { ArrowRight as ArrowRightIcon, Info as InfoIcon } from "lucide-react";
 import { useState } from "react";
+import { usePlan } from "../../context/usePlan";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
@@ -14,6 +15,7 @@ import shieldLockIcon from "@assets/shield-lock.svg";
 
 export const SetTimeLock = (): JSX.Element => {
   const navigate = useNavigate();
+  const { setPlanField } = usePlan();
   const [unlockDate, setUnlockDate] = useState("");
   const [unlockTime, setUnlockTime] = useState("00:00");
 
@@ -244,7 +246,39 @@ export const SetTimeLock = (): JSX.Element => {
             </Button>
             <Button
               className="h-11 px-6 [font-family:'Manrope',Helvetica] font-bold text-white text-sm bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-xl flex items-center gap-2"
-              onClick={() => navigate("/review-time-lock")}
+              onClick={() => {
+                // parse DD/MM/YYYY and optional time HH:MM into UTC timestamp (seconds)
+                if (!unlockDate) {
+                  // still navigate but warn
+                  console.warn('[SetTimeLock] No unlock date set');
+                  navigate('/review-time-lock');
+                  return;
+                }
+                const parts = unlockDate.split('/');
+                if (parts.length !== 3) {
+                  console.warn('[SetTimeLock] unlockDate in unexpected format', unlockDate);
+                  navigate('/review-time-lock');
+                  return;
+                }
+                const [day, month, year] = parts.map((p) => parseInt(p, 10));
+                const [hourStr, minuteStr] = (unlockTime || '00:00').split(':');
+                const hour = parseInt(hourStr || '0', 10);
+                const minute = parseInt(minuteStr || '0', 10);
+                // create UTC date
+                const dateUtc = new Date(Date.UTC(year, month - 1, day, hour, minute, 0));
+                const epochSeconds = Math.floor(dateUtc.getTime() / 1000);
+                // save to plan context
+                setPlanField('releaseTimestamp', epochSeconds);
+                // log the chosen timestamp and display values (consistent with other step logs)
+                console.log('[SetTimeLock] releaseTimestamp saved', {
+                  release_timestamp: epochSeconds,
+                  unlockDate,
+                  unlockTime,
+                  iso: dateUtc.toISOString(),
+                });
+                // also save display values in case other components rely on location.state
+                navigate('/review-time-lock', { state: { unlockDate, unlockTime } });
+              }}
             >
               Continue
               <ArrowRightIcon className="w-4 h-4" />

@@ -21,6 +21,8 @@ import {
 } from "../../components/ui/table";
 import { Progress } from "../../components/ui/progress";
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { usePlan } from "../../context/usePlan";
 import { ConnectWalletButton } from "../../components/ConnectWalletButton";
 import filterIcon from "@assets/filter.svg";
 import sortIcon from "@assets/sort.svg";
@@ -123,6 +125,31 @@ const aiGuardianChecks = [
 
 export const SelectAssets = (): JSX.Element => {
     const navigate = useNavigate();
+    const [selectedAssets, setSelectedAssets] = useState<string[]>(assetData.filter(a => a.checked).map(a => a.id));
+
+    const toggleAsset = (id: string) => {
+        setSelectedAssets(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+    };
+
+    const { setAssets } = usePlan();
+
+    const handleNext = () => {
+        // Log selected assets for debugging / audit trail
+        const chosen = assetData.filter(a => selectedAssets.includes(a.id)).map(a => ({ id: a.id, name: a.name, symbol: a.symbol, balance: a.balance }));
+        console.log('[SelectAssets] Selected assets:', chosen);
+        // persist first selected asset into PlanContext (cryptoAsset, amount)
+        if (chosen.length > 0) {
+            // take first asset as primary
+            const first = chosen[0];
+            // amount: use the balance string (caller can edit later)
+            setAssets(first.symbol || first.id, first.balance || '0');
+            console.log('[SelectAssets] persisted to PlanContext:', { cryptoAsset: first.symbol || first.id, amount: first.balance });
+        } else {
+            console.warn('[SelectAssets] no assets selected to persist');
+        }
+        // proceed to beneficiaries step
+        navigate('/beneficiaries');
+    };
     return (
         <div className="w-full min-h-screen bg-[#221810] flex flex-col">
             <header className="sticky top-0 z-50 w-full border-b border-[#37291f] bg-[#0d0501] backdrop-blur-[6px]">
@@ -282,7 +309,11 @@ export const SelectAssets = (): JSX.Element => {
                                                     >
                                                         <TableCell className="p-4">
                                                             <div className="flex items-center justify-center">
-                                                                <Checkbox className="w-4 h-4 mr-4 border-[#54483b]" />
+                                                                <Checkbox
+                                                                    className="w-4 h-4 mr-4 border-[#54483b]"
+                                                                    checked={selectedAssets.includes(asset.id)}
+                                                                    onCheckedChange={() => toggleAsset(asset.id)}
+                                                                />
                                                             </div>
                                                         </TableCell>
                                                         <TableCell className="p-4">
@@ -555,7 +586,7 @@ export const SelectAssets = (): JSX.Element => {
                                 </Button>
 
                                 <Button
-                                    onClick={() => navigate("/beneficiaries")}
+                                    onClick={handleNext}
                                     className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40] [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
                                 >
                                     Next: Configure Beneficiaries

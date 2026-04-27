@@ -84,6 +84,7 @@ export const ProfileSetupForm = (): JSX.Element => {
     try {
       await authAPI.updateAccountInfo(user.token, {
         full_name: profile.fullName,
+        email: profile.emailAddress,
         country: profile.taxResidence,
         preferred_chain: profile.preferredChain,
       });

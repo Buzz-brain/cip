@@ -10,6 +10,8 @@ export interface User {
   publicKey: string;
   token: string;
   userInfo?: any; // Extended with user info from backend
+  name?: string;
+  email?: string;
 }
 
 export interface AuthContextType {
@@ -21,7 +23,7 @@ export interface AuthContextType {
   getNonce: (publicKey: string) => Promise<string>;
   logout: () => void;
   clearError: () => void;
-  updateUserInfo: (data: { full_name?: string; country?: string; preferred_chain?: string }) => Promise<void>;
+  updateUserInfo: (data: { full_name?: string; email?: string; country?: string; preferred_chain?: string }) => Promise<void>;
   fetchUserInfo: () => Promise<void>;
 }
 
@@ -82,20 +84,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         setLoading(true);
         setError(null);
-const loginResponse = await authAPI.login({ publicKey, signature, message });
+      const loginResponse = await authAPI.login({ publicKey, signature, message });
 
-      // loginResponse may be a token string (preferred) or object containing token
-      const token = typeof loginResponse === "string" ? loginResponse : loginResponse?.token;
+      // API returns a token string
+      const token = loginResponse as string;
       if (!token || typeof token !== "string") {
         throw new Error("Login failed: invalid auth token");
       }
 
         const newUser: User = { publicKey, token };
-
         // Optionally fetch user info after login
         try {
           const userInfo = await authAPI.getUserInfo(token);
           newUser.userInfo = userInfo;
+          // map common fields if present
+          newUser.name = userInfo?.full_name || userInfo?.name || newUser.name;
+          newUser.email = userInfo?.email || newUser.email;
         } catch (err) {
           console.warn("Failed to fetch user info after login:", err);
         }
@@ -122,7 +126,11 @@ const loginResponse = await authAPI.login({ publicKey, signature, message });
       setLoading(true);
       setError(null);
       const userInfo = await authAPI.getUserInfo(user.token);
-      setUser((prev) => (prev ? { ...prev, userInfo } : null));
+      setUser((prev) =>
+        prev
+          ? { ...prev, userInfo, name: userInfo?.full_name || userInfo?.name || prev.name, email: userInfo?.email || prev.email }
+          : null,
+      );
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to fetch user info";
       setError(message);
@@ -133,7 +141,7 @@ const loginResponse = await authAPI.login({ publicKey, signature, message });
 
   // Update user account info
   const updateUserInfo = useCallback(
-    async (data: { full_name?: string; country?: string; preferred_chain?: string }) => {
+    async (data: { full_name?: string; email?: string; country?: string; preferred_chain?: string }) => {
       if (!user?.token) {
         setError("No authentication token found");
         return;

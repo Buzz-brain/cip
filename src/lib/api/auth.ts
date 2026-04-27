@@ -1,10 +1,10 @@
 // src/lib/api/auth.ts
 // Authentication API utility functions for CIP Portal
 
-const BASE_URL = "https://xcip.name.ng";
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "https://xcip.name.ng";
 
 export async function getNonce(publicKey: string): Promise<string> {
-  const url = `${BASE_URL}/auth/nonce?public_key=${encodeURIComponent(publicKey)}`;
+  const url = `${BACKEND_API_URL}/auth/nonce?public_key=${encodeURIComponent(publicKey)}`;
   console.log("   📡 Fetching nonce from:", url);
   
   const res = await fetch(url, {
@@ -41,7 +41,7 @@ export async function login({
     message,
   });
   
-  const url = `${BASE_URL}/auth/login?${params.toString()}`;
+  const url = `${BACKEND_API_URL}/auth/login?${params.toString()}`;
   console.log("   📡 Login endpoint URL:", url);
   console.log("   📊 Login request parameters:");
   console.log("      - public_key:", publicKey);
@@ -75,7 +75,7 @@ export async function login({
 }
 
 export async function getUserInfo(token: string): Promise<any> {
-  const res = await fetch(`${BASE_URL}/auth/user-info`, {
+  const res = await fetch(`${BACKEND_API_URL}/auth/user-info`, {
     headers: {
       "Accept": "application/json",
       "Authorization": `Bearer ${token}`,
@@ -91,9 +91,9 @@ export async function getUserInfo(token: string): Promise<any> {
 
 export async function updateAccountInfo(
   token: string,
-  data: { full_name?: string; country?: string; preferred_chain?: string }
+  data: { full_name?: string; email?: string; country?: string; preferred_chain?: string }
 ): Promise<any> {
-  const res = await fetch(`${BASE_URL}/auth/account-info-update`, {
+  const res = await fetch(`${BACKEND_API_URL}/auth/account-info-update`, {
     method: "PATCH",
     headers: {
       "Accept": "application/json",

@@ -181,6 +181,7 @@ export const ChoosePlanType = (): JSX.Element => {
 
     const handleContinue = () => {
         if (selectedPlan) {
+            console.log('[ChoosePlanType] Selected plan type:', selectedPlan);
             setPlanType(selectedPlan as any);
             setPlanField('planType', selectedPlan);
             if (selectedPlan === "staggered") {
