@@ -140,13 +140,31 @@ export const ReviewPlan = (): JSX.Element => {
           },
         });
       }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to protect or submit the inheritance plan.";
-      toast.error(message);
-      console.error("DataProtector error:", error);
-    } finally {
-      setIsSaving(false);
-    }
+      } catch (error) {
+        let message = "Failed to protect or submit the inheritance plan.";
+        if (error instanceof Error) {
+          // Try to extract backend error detail if present
+          const match = error.message.match(/\{.*\}/);
+          if (match) {
+            try {
+              const errObj = JSON.parse(match[0]);
+              if (errObj.detail) {
+                message = typeof errObj.detail === 'string' ? errObj.detail : JSON.stringify(errObj.detail);
+              } else {
+                message = error.message;
+              }
+            } catch {
+              message = error.message;
+            }
+          } else {
+            message = error.message;
+          }
+        }
+        toast.error(message);
+        console.error("DataProtector error:", error);
+      } finally {
+        setIsSaving(false);
+      }
   };
 
   return (
