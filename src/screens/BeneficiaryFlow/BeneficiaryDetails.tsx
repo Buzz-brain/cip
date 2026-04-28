@@ -1,7 +1,7 @@
 import { ChartBar as BarChart3Icon, Bell as BellIcon, FileText as FileTextIcon, LayoutGrid as LayoutGridIcon, LogOut as LogOutIcon, ChartPie as PieChartIcon, Search as SearchIcon, Settings as SettingsIcon, TrendingUp as TrendingUpIcon, CircleCheck as CheckCircleIcon, Download as DownloadIcon, Lock as LockIcon, Chrome as HomeIcon, ChevronRight as ChevronRightIcon, CircleAlert as AlertCircleIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent } from "../../components/ui/card";
+import { Button } from "@components/ui/button";
+import { Card, CardContent } from "@components/ui/card";
 
 export const BeneficiaryDetails = (): JSX.Element => {
   const navigate = useNavigate();

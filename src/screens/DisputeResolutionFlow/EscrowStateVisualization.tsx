@@ -1,5 +1,5 @@
 // import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/ui/button";
+import { Button } from "@components/ui/button";
 import { Header } from "./Header";
 import cubeIcon from "@assets/cube.svg";
 import hourGlassYellowIcon from "@assets/hour-glass-yellow.svg";

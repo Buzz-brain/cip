@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/ui/button";
+import { Button } from "@components/ui/button";
 import logoImg from "@assets/cip-logo.svg";
 import forwardPlayBtn from "@assets/forward-play-btn.svg";
 import shareButton from "@assets/share-button.svg";

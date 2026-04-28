@@ -10,7 +10,7 @@ import {
   Zap,
   Bell,
 } from "lucide-react";
-import { Button } from "../../components/ui/button";
+import { Button } from "@components/ui/button";
 import { ConnectWalletButton } from "../../components/ConnectWalletButton";
 import { Link } from "react-router-dom";
 

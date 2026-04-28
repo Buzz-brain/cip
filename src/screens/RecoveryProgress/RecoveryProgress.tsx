@@ -1,8 +1,8 @@
 import { Info as InfoIcon, Lock as LockIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent } from "../../components/ui/card";
+import { Button } from "@components/ui/button";
+import { Card, CardContent } from "@components/ui/card";
 import initiatedIcon from "@assets/initiated.svg";
 import guardiansIcon from "@assets/guardians.svg";
 import delayIcon from "@assets/delay.svg";

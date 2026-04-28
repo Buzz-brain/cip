@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { Badge } from "../../components/ui/badge";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent } from "../../components/ui/card";
+import { Badge } from "@components/ui/badge";
+import { Button } from "@components/ui/button";
+import { Card, CardContent } from "@components/ui/card";
 import { ConnectWalletButton } from "../../components/ConnectWalletButton";
 import logoImg from "@assets/cip-logo.svg";
 import plusIcon from "@assets/plus-icon.svg";

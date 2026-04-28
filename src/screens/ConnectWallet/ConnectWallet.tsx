@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
-import { Button } from "../../components/ui/button";
+import { Button } from "@components/ui/button";
 import { toast } from "react-toastify";
 import * as walletUtils from "../../lib/wallet/walletUtils";
 import logoImg from "@assets/cip-logo.svg";

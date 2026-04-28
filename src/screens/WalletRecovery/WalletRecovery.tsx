@@ -1,10 +1,10 @@
 import { ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Alert, AlertDescription } from "../../components/ui/alert";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent } from "../../components/ui/card";
-import { Input } from "../../components/ui/input";
-import { Label } from "../../components/ui/label";
+import { Alert, AlertDescription } from "@components/ui/alert";
+import { Button } from "@components/ui/button";
+import { Card, CardContent } from "@components/ui/card";
+import { Input } from "@components/ui/input";
+import { Label } from "@components/ui/label";
 import logoImg from "@assets/cip-logo.png";
 import shieldPadlock from "@assets/shield-padlock.svg";
 import infoIcon from "@assets/info.svg";

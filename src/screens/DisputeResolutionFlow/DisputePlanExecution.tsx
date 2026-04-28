@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/ui/button";
+import { Button } from "@components/ui/button";
 import { Header } from "./Header";
 import signalIcon from "@assets/signal.svg";
 import { Trash2, Wallet } from "lucide-react";

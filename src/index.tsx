@@ -3,13 +3,16 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { PlanProvider } from "./context/PlanContext";
+import { ToastProvider } from "./components/ui/toast-context";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Navigate } from "react-router-dom";
+import OwnerDashboardLayout from "./screens/Owner/OwnerDashboardFlow/OwnerDashboardLayout";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Home } from "./screens/Home";
 import { Pricing } from "./screens/Pricing";
-import { ViewPlanHistory } from "./screens/ViewPlanHistory";
-import { AssetRegistry } from "./screens/AssetRegistry";
+import { ViewPlanHistory } from "./screens/Owner/ViewPlanHistory";
+import { AssetRegistry } from "./screens/Owner/AssetRegistry";
 import { StepOne } from "./screens/OnboardingFlow/StepOne";
 import { StepTwo } from "./screens/OnboardingFlow/StepTwo";
 import { ConnectWallet } from "./screens/ConnectWallet";
@@ -17,49 +20,50 @@ import { ProfileSetupForm } from "./screens/ProfileSetupForm";
 import { WalletRecovery } from "./screens/WalletRecovery";
 import { RecoveryProgress } from "./screens/RecoveryProgress";
 import { GuardianApproval } from "./screens/GuardianApproval";
-import { SelectAssets } from "./screens/PlanCreationFlow/SelectAssets";
-import { AddBeneficiaries } from "./screens/PlanCreationFlow/AddBeneficiaries";
-import { ChoosePlanType } from "./screens/PlanCreationFlow/ChoosePlanType";
-import { StaggeredDistribution } from "./screens/PlanCreationFlow/StaggeredDistribution";
-import { PhilanthropyPlan } from "./screens/PlanCreationFlow/PhilantrophyPlan";
-import { ReviewPlan } from "./screens/PlanCreationFlow/ReviewPlan";
-import { PlanActivatedSuccess } from "./screens/PlanCreationFlow/PlanActivatedSuccess";
-import { SetTimeLock } from "./screens/PlanCreationFlow/SetTimeLock";
-import { ReviewTimeLock } from "./screens/PlanCreationFlow/ReviewTimeLock";
+import { SelectAssets } from "./screens/Owner/PlanCreationFlow/SelectAssets";
+import { AddBeneficiaries } from "./screens/Owner/PlanCreationFlow/AddBeneficiaries";
+import { ChoosePlanType } from "./screens/Owner/PlanCreationFlow/ChoosePlanType";
+import { StaggeredDistribution } from "./screens/Owner/PlanCreationFlow/StaggeredDistribution/StaggeredDistribution.tsx";
+import { PhilanthropyPlan } from "./screens/Owner/PlanCreationFlow/Philantrophy/PhilantrophyPlan.tsx";
+import { ReviewPlan } from "./screens/Owner/PlanCreationFlow/ReviewPlan";
+import { PlanActivatedSuccess } from "./screens/Owner/PlanCreationFlow/PlanActivatedSuccess";
+import { SetTimeLock } from "./screens/Owner/PlanCreationFlow/TimeLock/SetTimeLock.tsx";
+import { ReviewTimeLock } from "./screens/Owner/PlanCreationFlow/TimeLock/ReviewTimeLock.tsx";
 import { BeneficiaryDetails } from "./screens/BeneficiaryFlow/BeneficiaryDetails";
 import { BeneficiaryDashboard } from "./screens/BeneficiaryFlow/BeneficiaryDashboard";
 import { DisputePlanExecution } from "./screens/DisputeResolutionFlow/DisputePlanExecution";
-import { OwnerDashboard } from "./screens/OwnerDashboardFlow/OwnerDashboard";
+import { OwnerDashboard } from "./screens/Owner/OwnerDashboardFlow/Dashboard/OwnerDashboard";
 import { EscrowStateVisualization } from "./screens/DisputeResolutionFlow/EscrowStateVisualization"; 
+import { MPCSelected } from "./screens/Owner/PlanCreationFlow/MPCSelected/MPCSelected.tsx"; 
 
 
-import { SetInactivityPeriod } from "./screens/PlanCreationFlow/SetInactivityPeriod";
-import { SetInactivityGracePeriod } from "./screens/PlanCreationFlow/SetInactivityGracePeriod";
-import { ReviewInactivityOraclePlan } from "./screens/PlanCreationFlow/ReviewInactivityOraclePlan";
-import { ConfirmInactivityOraclePlan } from "./screens/PlanCreationFlow/ConfirmInactivityOraclePlan";
+import { SetInactivityPeriod } from "./screens/Owner/PlanCreationFlow/InactivityOracle/SetInactivityPeriod.tsx";
+import { SetInactivityGracePeriod } from "./screens/Owner/PlanCreationFlow/InactivityOracle/SetInactivityGracePeriod.tsx";
+import { ReviewInactivityOraclePlan } from "./screens/Owner/PlanCreationFlow/InactivityOracle/ReviewInactivityOraclePlan.tsx";
+import { ConfirmInactivityOraclePlan } from "./screens/Owner/PlanCreationFlow/InactivityOracle/ConfirmInactivityOraclePlan.tsx";
 
 
-import { ChooseProofOfLifeMethod } from "./screens/PlanCreationFlow/ChooseProofOfLifeMethod";
-import { BillingAndPayment } from "./screens/BillingAndSubscription/BillingAndPayment";
-import { SecureCheckout } from "./screens/BillingAndSubscription/SecureCheckout";
-import { SubscriptionRenewal } from "./screens/BillingAndSubscription/SubscriptionRenewal";
-import { BillingHistory } from "./screens/BillingAndSubscription/BillingHistory";
-import { GracePeriodActive } from "./screens/BillingAndSubscription/GracePeriodActive";
-import { ChildrensTrustAccount } from "./screens/OwnerDashboardFlow/ChildrensTrustAccount"; 
-import { ComplianceSummary } from "./screens/OwnerDashboardFlow/ComplianceSummary"; 
-import { OwnerDisputePlanExecution } from "./screens/OwnerDashboardFlow/OwnerDisputePlanExecution"; 
-import { LegalComplianceCheck } from "./screens/OwnerDashboardFlow/LegalComplianceCheck"; 
-import { MainEstateFund } from "./screens/OwnerDashboardFlow/MainEstateFund"; 
-import { MarketVolatilityAlert } from "./screens/OwnerDashboardFlow/MarketVolatilityAlert"; 
-import { Notifications } from "./screens/OwnerDashboardFlow/Notifications"; 
-import { RealTimeVolatility } from "./screens/OwnerDashboardFlow/RealTimeVolatility";
-import { SecureStorage } from "./screens/OwnerDashboardFlow/SecureStorage"; 
-import { SelectJurisdiction } from "./screens/OwnerDashboardFlow/SelectJurisdiction"; 
-import { UploadSignedDoc } from "./screens/OwnerDashboardFlow/UploadSignedDoc"; 
-import { ProofOfLifeConfig } from "./screens/ProofOfLifeConfig/ProofOfLifeConfig";
-import { ProofOfLifeCheck } from "./screens/ProofOfLifeConfig/ProofOfLifeCheck";
-import { ProofOfLifeCheckMissed } from "./screens/ProofOfLifeConfig/ProofOfLifeCheckMissed";
-import { CriticalAlert } from "./screens/ProofOfLifeConfig/CriticalAlert";
+import { ChooseProofOfLifeMethod } from "./screens/Owner/PlanCreationFlow/InactivityOracle/ChooseProofOfLifeMethod.tsx";
+import { BillingAndPayment } from "./screens/Owner/BillingAndSubscription/BillingAndPayment";
+import { SecureCheckout } from "./screens/Owner/BillingAndSubscription/SecureCheckout";
+import { SubscriptionRenewal } from "./screens/Owner/BillingAndSubscription/SubscriptionRenewal";
+import { BillingHistory } from "./screens/Owner/BillingAndSubscription/BillingHistory";
+import { GracePeriodActive } from "./screens/Owner/BillingAndSubscription/GracePeriodActive";
+import { ChildrensTrustAccount } from "./screens/Owner/OwnerDashboardFlow/ChildrensTrustAccount"; 
+import { ComplianceSummary } from "./screens/Owner/OwnerDashboardFlow/ComplianceSummary"; 
+import { OwnerDisputePlanExecution } from "./screens/Owner/OwnerDashboardFlow/OwnerDisputePlanExecution.tsx"; 
+import { LegalComplianceCheck } from "./screens/Owner/OwnerDashboardFlow/LegalComplianceCheck.tsx"; 
+import { MainEstateFund } from "./screens/Owner/OwnerDashboardFlow/MainEstateFund"; 
+import { MarketVolatilityAlert } from "./screens/Owner/OwnerDashboardFlow/MarketVolatilityAlert"; 
+import { Notifications } from "./screens/Owner/OwnerDashboardFlow/Notifications"; 
+import { RealTimeVolatility } from "./screens/Owner/OwnerDashboardFlow/RealTimeVolatility";
+import { SecureStorage } from "./screens/Owner/OwnerDashboardFlow/SecureStorage"; 
+import { SelectJurisdiction } from "./screens/Owner/OwnerDashboardFlow/SelectJurisdiction"; 
+import { UploadSignedDoc } from "./screens/Owner/OwnerDashboardFlow/UploadSignedDoc"; 
+import { ProofOfLifeConfig } from "./screens/Owner/ProofOfLifeConfig/ProofOfLifeConfig";
+import { ProofOfLifeCheck } from "./screens/Owner/ProofOfLifeConfig/ProofOfLifeCheck";
+import { ProofOfLifeCheckMissed } from "./screens/Owner/ProofOfLifeConfig/ProofOfLifeCheckMissed";
+import { CriticalAlert } from "./screens/Owner/ProofOfLifeConfig/CriticalAlert";
 
 import { EnterpriseLogin } from "./screens/EnterpriseFlow/EnterpriseLogin";
 import { EnterpriseDashboard } from "./screens/EnterpriseFlow/EnterpriseDashboard";
@@ -78,11 +82,11 @@ import { DisputeCasesOverview } from "./screens/MediatorFlow/DisputeCasesOvervie
 import { AllCases } from "./screens/MediatorFlow/AllCases";
 import { DisputeQueue } from "./screens/MediatorFlow/DisputeQueue";
 
-import { AssignHealthOracleExec } from "./screens/HealthOracle/AssignHealthOracleExec";
-import { SelectAcceptedDocs } from "./screens/HealthOracle/SelectAcceptedDocs";
-import { HealthOracleJurisdiction } from "./screens/HealthOracle/HealthOracleJurisdiction";
-import { ReviewHealthOraclePlan } from "./screens/HealthOracle/ReviewHealthOraclePlan";
-import { ConfirmHealthOraclePlan } from "./screens/HealthOracle/ConfirmHealthOraclePlan";
+import { AssignHealthOracleExec } from "./screens/Owner/PlanCreationFlow/HealthOracle/AssignHealthOracleExec.tsx";
+import { SelectAcceptedDocs } from "./screens/Owner/PlanCreationFlow/HealthOracle/SelectAcceptedDocs.tsx";
+import { HealthOracleJurisdiction } from "./screens/Owner/PlanCreationFlow/HealthOracle/HealthOracleJurisdiction.tsx";
+import { ReviewHealthOraclePlan } from "./screens/Owner/PlanCreationFlow/HealthOracle/ReviewHealthOraclePlan.tsx";
+import { ConfirmHealthOraclePlan } from "./screens/Owner/PlanCreationFlow/HealthOracle/ConfirmHealthOraclePlan.tsx";
 
 import { ExecutorLogin } from "./screens/ExecutorDashboardFlow/ExecutorLogin";
 import { ExecutorForgotPwd } from "./screens/ExecutorDashboardFlow/ExecutorForgotPwd";
@@ -116,6 +120,7 @@ import { Login } from "./screens/Login";
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
     <AuthProvider>
+      <ToastProvider>
       <PlanProvider>
         <BrowserRouter>
           <Routes>
@@ -137,47 +142,91 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/recovery-progress" element={<RecoveryProgress />} /> ✅
         <Route path="/guardian-approval" element={<GuardianApproval />} /> ✅
 
-        {/* Plan Creation Flow */}
-        <Route path="/select-assets" element={<SelectAssets />} /> ✅
-        <Route path="/beneficiaries" element={<AddBeneficiaries />} /> ✅
-        <Route path="/choose-plan-type" element={<ChoosePlanType />} /> ✅
-        <Route path="/staggered-distribution" element={<StaggeredDistribution />} /> ✅
-        <Route path="/philanthropy-plan" element={<PhilanthropyPlan />} /> ✅
-        <Route path="/review-plan" element={<ReviewPlan />} /> ✅
-        <Route path="/plan-activated" element={<PlanActivatedSuccess />} /> ✅
+        {/* Legacy plan/creation/time/inactivity/health routes redirect into dashboard layout */}
+        <Route path="/select-assets" element={<Navigate to="/owner-dashboard/select-assets" replace />} />
+        <Route path="/beneficiaries" element={<Navigate to="/owner-dashboard/beneficiaries" replace />} />
+        <Route path="/choose-plan-type" element={<Navigate to="/owner-dashboard/choose-plan-type" replace />} />
+        <Route path="/staggered-distribution" element={<Navigate to="/owner-dashboard/staggered-distribution" replace />} />
+        <Route path="/philanthropy-plan" element={<Navigate to="/owner-dashboard/philanthropy-plan" replace />} />
+        <Route path="/review-plan" element={<Navigate to="/owner-dashboard/review-plan" replace />} />
+        <Route path="/plan-activated" element={<Navigate to="/owner-dashboard/plan-activated" replace />} />
 
-        {/* TimeLock */}
-        <Route path="/set-time-lock" element={<SetTimeLock />} /> ✅
-        <Route path="/review-time-lock" element={<ReviewTimeLock />} /> ✅
+        <Route path="/set-time-lock" element={<Navigate to="/owner-dashboard/set-time-lock" replace />} />
+        <Route path="/review-time-lock" element={<Navigate to="/owner-dashboard/review-time-lock" replace />} />
 
-        {/* Inactivity Oracle */}
-        <Route path="/set-inactivity-period" element={<SetInactivityPeriod />} /> ✅
-        <Route path="/choose-proof-of-life" element={<ChooseProofOfLifeMethod />} /> ✅
-        <Route path="/set-inactivity-grace-period" element={<SetInactivityGracePeriod />} /> ✅
-        <Route path="/review-inactivity-oracle-plan" element={<ReviewInactivityOraclePlan />} /> ✅
-        <Route path="/confirm-inactivity-oracle-plan" element={<ConfirmInactivityOraclePlan />} /> ✅
+        <Route path="/set-inactivity-period" element={<Navigate to="/owner-dashboard/set-inactivity-period" replace />} />
+        <Route path="/choose-proof-of-life" element={<Navigate to="/owner-dashboard/choose-proof-of-life" replace />} />
+        <Route path="/set-inactivity-grace-period" element={<Navigate to="/owner-dashboard/set-inactivity-grace-period" replace />} />
+        <Route path="/review-inactivity-oracle-plan" element={<Navigate to="/owner-dashboard/review-inactivity-oracle-plan" replace />} />
+        <Route path="/confirm-inactivity-oracle-plan" element={<Navigate to="/owner-dashboard/confirm-inactivity-oracle-plan" replace />} />
 
-        {/* Health/Death Oracle */}
-        <Route path="/assign-health-oracle-exec" element={<AssignHealthOracleExec />} /> ✅
-        <Route path="/select-accepted-docs" element={<SelectAcceptedDocs />} /> ✅
-        <Route path="/health-oracle-jurisdiction" element={<HealthOracleJurisdiction />} /> ✅
-        <Route path="/review-health-oracle-plan" element={<ReviewHealthOraclePlan />} />
-        <Route path="/confirm-health-oracle-plan" element={<ConfirmHealthOraclePlan />} />
+        <Route path="/assign-health-oracle-exec" element={<Navigate to="/owner-dashboard/assign-health-oracle-exec" replace />} />
+        <Route path="/select-accepted-docs" element={<Navigate to="/owner-dashboard/select-accepted-docs" replace />} />
+        <Route path="/health-oracle-jurisdiction" element={<Navigate to="/owner-dashboard/health-oracle-jurisdiction" replace />} />
+        <Route path="/review-health-oracle-plan" element={<Navigate to="/owner-dashboard/review-health-oracle-plan" replace />} />
+        <Route path="/confirm-health-oracle-plan" element={<Navigate to="/owner-dashboard/confirm-health-oracle-plan" replace />} />
 
-        {/* Owner Dashboard Flow */}
-        <Route path="/owner-dashboard" element={<ProtectedRoute><OwnerDashboard /></ProtectedRoute>} />
-        <Route path="/view-plan-history" element={<ViewPlanHistory />} />
-        <Route path="/childrens-trust-account" element={<ChildrensTrustAccount />} />
-        <Route path="/market-volatility-alert" element={<MarketVolatilityAlert />} />
-        <Route path="/real-time-volatility" element={<RealTimeVolatility />} />
-        <Route path="/main-estate-fund" element={<MainEstateFund />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/owner-dispute-plan-execution" element={<OwnerDisputePlanExecution />} />
-        <Route path="/select-jurisdiction" element={<SelectJurisdiction />} />
-        <Route path="/compliance-summary" element={<ComplianceSummary />} />
-        <Route path="/legal-compliance-check" element={<LegalComplianceCheck />} />
-        <Route path="/upload-signed-doc" element={<UploadSignedDoc />} />
-        <Route path="/secure-storage" element={<SecureStorage />} />
+        <Route path="/mpc-selected" element={<Navigate to="/owner-dashboard/mpc-selected" replace />} />
+
+        {/* Owner Dashboard Flow - protected layout with nested routes */}
+        <Route path="/owner-dashboard" element={<ProtectedRoute><OwnerDashboardLayout /></ProtectedRoute>}>
+          <Route index element={<OwnerDashboard />} />
+          <Route path="view-plan-history" element={<ViewPlanHistory />} />
+          <Route path="childrens-trust-account" element={<ChildrensTrustAccount />} />
+          <Route path="market-volatility-alert" element={<MarketVolatilityAlert />} />
+          <Route path="real-time-volatility" element={<RealTimeVolatility />} />
+          <Route path="main-estate-fund" element={<MainEstateFund />} />
+          <Route path="notifications" element={<Notifications />} />
+          <Route path="owner-dispute-plan-execution" element={<OwnerDisputePlanExecution />} />
+          <Route path="select-jurisdiction" element={<SelectJurisdiction />} />
+          <Route path="compliance-summary" element={<ComplianceSummary />} />
+          <Route path="legal-compliance-check" element={<LegalComplianceCheck />} />
+          <Route path="upload-signed-doc" element={<UploadSignedDoc />} />
+          <Route path="secure-storage" element={<SecureStorage />} />
+          {/* Plan Creation Flow as dashboard children */}
+          <Route path="select-assets" element={<SelectAssets />} />
+          <Route path="beneficiaries" element={<AddBeneficiaries />} />
+          <Route path="choose-plan-type" element={<ChoosePlanType />} />
+          <Route path="staggered-distribution" element={<StaggeredDistribution />} />
+          <Route path="philanthropy-plan" element={<PhilanthropyPlan />} />
+          <Route path="review-plan" element={<ReviewPlan />} />
+          <Route path="plan-activated" element={<PlanActivatedSuccess />} />
+
+          {/* TimeLock */}
+          <Route path="set-time-lock" element={<SetTimeLock />} />
+          <Route path="review-time-lock" element={<ReviewTimeLock />} />
+
+          {/* Inactivity Oracle */}
+          <Route path="set-inactivity-period" element={<SetInactivityPeriod />} />
+          <Route path="choose-proof-of-life" element={<ChooseProofOfLifeMethod />} />
+          <Route path="set-inactivity-grace-period" element={<SetInactivityGracePeriod />} />
+          <Route path="review-inactivity-oracle-plan" element={<ReviewInactivityOraclePlan />} />
+          <Route path="confirm-inactivity-oracle-plan" element={<ConfirmInactivityOraclePlan />} />
+
+          {/* Health/Death Oracle */}
+          <Route path="assign-health-oracle-exec" element={<AssignHealthOracleExec />} />
+          <Route path="select-accepted-docs" element={<SelectAcceptedDocs />} />
+          <Route path="health-oracle-jurisdiction" element={<HealthOracleJurisdiction />} />
+          <Route path="review-health-oracle-plan" element={<ReviewHealthOraclePlan />} />
+          <Route path="confirm-health-oracle-plan" element={<ConfirmHealthOraclePlan />} />
+
+          {/* If MPC Selected */}
+          <Route path="mpc-selected" element={<MPCSelected />} />
+        </Route>
+
+        {/* Legacy top-level owner routes redirect to the new nested paths for backward compatibility */}
+        <Route path="/view-plan-history" element={<Navigate to="/owner-dashboard/view-plan-history" replace />} />
+        <Route path="/childrens-trust-account" element={<Navigate to="/owner-dashboard/childrens-trust-account" replace />} />
+        <Route path="/market-volatility-alert" element={<Navigate to="/owner-dashboard/market-volatility-alert" replace />} />
+        <Route path="/real-time-volatility" element={<Navigate to="/owner-dashboard/real-time-volatility" replace />} />
+        <Route path="/main-estate-fund" element={<Navigate to="/owner-dashboard/main-estate-fund" replace />} />
+        <Route path="/notifications" element={<Navigate to="/owner-dashboard/notifications" replace />} />
+        <Route path="/owner-dispute-plan-execution" element={<Navigate to="/owner-dashboard/owner-dispute-plan-execution" replace />} />
+        <Route path="/select-jurisdiction" element={<Navigate to="/owner-dashboard/select-jurisdiction" replace />} />
+        <Route path="/compliance-summary" element={<Navigate to="/owner-dashboard/compliance-summary" replace />} />
+        <Route path="/legal-compliance-check" element={<Navigate to="/owner-dashboard/legal-compliance-check" replace />} />
+        <Route path="/upload-signed-doc" element={<Navigate to="/owner-dashboard/upload-signed-doc" replace />} />
+        <Route path="/secure-storage" element={<Navigate to="/owner-dashboard/secure-storage" replace />} />
 
         {/* Beneficiary Dashboard Flow */}
         <Route path="/beneficiary-dashboard" element={<BeneficiaryDashboard />} /> 
@@ -267,6 +316,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
       />
     </BrowserRouter>
       </PlanProvider>
+      </ToastProvider>
     </AuthProvider>
   </StrictMode>
 );

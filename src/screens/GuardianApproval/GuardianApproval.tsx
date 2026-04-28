@@ -1,7 +1,7 @@
 import { CircleAlert as AlertCircleIcon, CircleCheck as CheckCircleIcon, ShieldAlert as ShieldAlertIcon, ThumbsUp as ThumbsUpIcon } from "lucide-react";
-import { Button } from "../../components/ui/button";
+import { Button } from "@components/ui/button";
 import { ConnectWalletButton } from "../../components/ConnectWalletButton";
-import { Card, CardContent } from "../../components/ui/card";
+import { Card, CardContent } from "@components/ui/card";
 import logoImg from "@assets/cip-logo.png";
 import { Link } from "react-router-dom";
 import verifiedUsericon from "@assets/verified-user.svg";

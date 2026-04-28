@@ -37,6 +37,12 @@ export interface PlanCreationState {
   healthOracleAddress?: string;
   proofOfLifeMethod?: string;
   gracePeriod?: number;
+  // Health oracle fields
+  executorName?: string;
+  executorEmail?: string;
+  executorWallet?: string;
+  acceptedDocs?: string; // comma-separated list of accepted document identifiers
+  jurisdiction?: string;
   protectedDataAddress?: string;
   createdAt?: string;
 }
@@ -71,7 +77,7 @@ interface PlanProviderProps {
   children: ReactNode;
 }
 
-const mapPlanTypeToDataProtectorType = (planType?: PlanType): string => {
+export const mapPlanTypeToDataProtectorType = (planType?: PlanType): string => {
   if (!planType) return "timelock";
   // for most cases frontend id matches protector id
   switch (planType) {

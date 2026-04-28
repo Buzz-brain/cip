@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent, CardHeader } from "../../components/ui/card";
-import { Badge } from "../../components/ui/badge";
+import { Button } from "@components/ui/button";
+import { Card, CardContent, CardHeader } from "@components/ui/card";
+import { Badge } from "@components/ui/badge";
 import { ConnectWalletButton } from "../../components/ConnectWalletButton";
 import { Link } from "react-router-dom";
 import { Bell, Zap, Settings, CircleHelp as HelpCircle, LogOut, Plus, Eye, EyeOff, Search, ChevronLeft, ChevronRight } from "lucide-react";

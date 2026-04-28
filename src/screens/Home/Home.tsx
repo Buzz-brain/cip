@@ -1,10 +1,10 @@
-import { Badge } from "../../components/ui/badge";
+import { Badge } from "@components/ui/badge";
 
 import { useEffect, useState } from "react";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent, CardHeader } from "../../components/ui/card";
+import { Button } from "@components/ui/button";
+import { Card, CardContent, CardHeader } from "@components/ui/card";
 import { Separator } from "../../components/ui/separator";
-import { Navbar } from "../../components/ui/Navbar";
+import { Navbar } from "@components/ui/Navbar";
 import { useNavigate } from "react-router-dom";
 // import { Link } from "react-router-dom";
 
@@ -27,11 +27,12 @@ import happyFaceIcon from "@assets/happy-face.svg"
 import keyIcon from "@assets/key.svg";
 import checkPinkCircle from "@assets/check-purple-circle.svg";
 import checkGreenCircle from "@assets/check-green-circle.svg";
-import sharpCheckWhite from "@assets/sharp-check-white.svg";
 import sharpCheckSolid from "@assets/sharp-check-solid.svg";
+import sharpUncheckSolid from "@assets/sharp-uncheck-solid.svg";
 import arrowForward from "@assets/arrow-forward.svg";
 
 import { motion } from "framer-motion";
+import { usePlans } from "../../lib/hooks/usePlans";
 
 
 const navigationItems = [
@@ -204,6 +205,16 @@ export const Home = (): JSX.Element => {
     };
   }, []);
 
+  const { plans: backendPlans, loading: plansLoading } = usePlans();
+
+  const toTitleCase = (input?: string) => {
+    if (!input) return "";
+    return input
+      .split(/\s+/)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+  };
+
   return (
     <div className="min-h-screen bg-[#1e1e1e]">
       <div className="bg-black">
@@ -233,13 +244,13 @@ export const Home = (): JSX.Element => {
 
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center space-y-12">
-              <motion.div 
+              <motion.div
                 className="space-y-6"
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                <motion.h2 
+                <motion.h2
                   className="[font-family:'Sora',Helvetica] font-bold text-7xl leading-[72px]"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -264,7 +275,7 @@ export const Home = (): JSX.Element => {
                 </motion.div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="flex items-center justify-center gap-4"
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -317,11 +328,11 @@ export const Home = (): JSX.Element => {
         <section className="bg-[#1c130d] py-8 overflow-hidden">
           <div className="container mx-auto px-4">
             <div className="text-center space-y-4">
-              <motion.p 
+              <motion.p
                 className="[font-family:'Sora',Helvetica] font-bold text-[#8b7664] text-xs"
                 initial={{ y: 30, scale: 0.9 }}
                 whileInView={{ y: 0, scale: 1 }}
-                transition={{ 
+                transition={{
                   duration: 0.6,
                   type: "spring",
                   stiffness: 200,
@@ -336,36 +347,36 @@ export const Home = (): JSX.Element => {
                   <motion.div
                     key={chain.name}
                     className="flex items-center gap-4 cursor-pointer group"
-                    initial={{ 
+                    initial={{
                       y: 80,
                       rotateX: -15,
                       scale: 0.7
                     }}
-                    whileInView={{ 
+                    whileInView={{
                       y: 0,
                       rotateX: 0,
                       scale: 1
                     }}
-                    transition={{ 
-                      duration: 0.8, 
+                    transition={{
+                      duration: 0.8,
                       delay: index * 0.2,
                       type: "spring",
                       stiffness: 150,
                       damping: 25
                     }}
                     viewport={{}}
-                    whileHover={{ 
+                    whileHover={{
                       y: -12,
                       rotateY: index % 2 === 0 ? 5 : -5,
                       scale: 1.1,
-                      transition: { 
-                        duration: 0.3, 
-                        type: "spring", 
+                      transition: {
+                        duration: 0.3,
+                        type: "spring",
                         stiffness: 300,
                         damping: 15
                       }
                     }}
-                    whileTap={{ 
+                    whileTap={{
                       scale: 0.9,
                       rotateX: 10,
                       transition: { duration: 0.1 }
@@ -384,10 +395,10 @@ export const Home = (): JSX.Element => {
                         src={chain.icon}
                         alt={chain.name}
                         className="w-8 h-8 relative z-10"
-                        whileHover={{ 
+                        whileHover={{
                           rotate: [0, -15, 15, -10, 10, 0],
                           scale: 1.2,
-                          transition: { 
+                          transition: {
                             duration: 0.6,
                             ease: "easeInOut"
                           }
@@ -402,9 +413,9 @@ export const Home = (): JSX.Element => {
                         }}
                       />
                     </motion.div>
-                    <motion.span 
+                    <motion.span
                       className="[font-family:'Sora',Helvetica] font-bold text-[#b8a494] text-base"
-                      whileHover={{ 
+                      whileHover={{
                         color: "#ff6600",
                         scale: 1.05,
                         textShadow: "0 0 10px rgba(255, 102, 0, 0.5)",
@@ -423,14 +434,14 @@ export const Home = (): JSX.Element => {
         <section id="core-capabilities" className="py-20 relative overflow-hidden">
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-6xl mx-auto space-y-12">
-              <motion.div 
+              <motion.div
                 className="space-y-5"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
                 viewport={{}}
               >
-                <motion.h2 
+                <motion.h2
                   className="[font-family:'Sora',Helvetica] font-bold text-white text-4xl"
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -439,7 +450,7 @@ export const Home = (): JSX.Element => {
                 >
                   Core Capabilities
                 </motion.h2>
-                <motion.p 
+                <motion.p
                   className="[font-family:'Sora',Helvetica] text-[#b8a494] text-lg max-w-2xl"
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -721,12 +732,12 @@ export const Home = (): JSX.Element => {
                   whileInView={{ opacity: 1, y: 0, scale: 1, rotateY: 0, rotateX: 0 }}
                   transition={{ duration: 1, delay: index * 0.3, type: "spring", stiffness: 80, damping: 15 }}
                   viewport={{}}
-                  whileHover={{ 
-                    y: -20, 
-                    scale: 1.05, 
-                    rotateY: 5, 
+                  whileHover={{
+                    y: -20,
+                    scale: 1.05,
+                    rotateY: 5,
                     rotateX: -5,
-                    boxShadow: "0 30px 60px rgba(0,0,0,0.4), 0 0 30px rgba(255, 102, 0, 0.3)" 
+                    boxShadow: "0 30px 60px rgba(0,0,0,0.4), 0 0 30px rgba(255, 102, 0, 0.3)"
                   }}
                   style={{ perspective: 1000 }}
                 >
@@ -740,35 +751,35 @@ export const Home = (): JSX.Element => {
                         whileInView={{ scale: 1, rotate: 0 }}
                         transition={{ duration: 0.6, delay: index * 0.3 + 0.2, type: "spring", stiffness: 200 }}
                         viewport={{}}
-                        whileHover={{ 
-                          rotate: 360, 
+                        whileHover={{
+                          rotate: 360,
                           scale: 1.2,
                           boxShadow: "0 0 20px rgba(255, 102, 0, 0.5)"
                         }}
                       >
-                        <motion.img 
-                          src={card.icon} 
-                          alt="" 
+                        <motion.img
+                          src={card.icon}
+                          alt=""
                           className="w-6 h-6"
                           whileHover={{ rotate: -360, scale: 1.1 }}
                           transition={{ duration: 0.4 }}
                         />
                       </motion.div>
-                      <motion.h3 
+                      <motion.h3
                         className="[font-family:'Poppins',Helvetica] font-bold text-white text-2xl"
                         initial={{ opacity: 0, x: -50, scale: 0.8 }}
                         whileInView={{ opacity: 1, x: 0, scale: 1 }}
                         transition={{ duration: 0.7, delay: index * 0.3 + 0.4, type: "spring", stiffness: 150 }}
                         viewport={{}}
-                        whileHover={{ 
-                          scale: 1.1, 
+                        whileHover={{
+                          scale: 1.1,
                           textShadow: "0 0 20px rgba(255, 102, 0, 0.8)",
                           color: "#ff6600"
                         }}
                       >
                         {card.title}
                       </motion.h3>
-                      <motion.p 
+                      <motion.p
                         className="[font-family:'Poppins',Helvetica] text-[#b8a494] text-base leading-6"
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -777,16 +788,16 @@ export const Home = (): JSX.Element => {
                       >
                         {card.description}
                       </motion.p>
-                      <motion.div 
+                      <motion.div
                         className="space-y-2"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         transition={{ duration: 0.5, delay: index * 0.3 + 0.8 }}
                         viewport={{}}
                       >
-                        {card.features.map((feature, featureIndex) => (
-                          <motion.div 
-                            key={feature} 
+                        {card.features.map((feature: string, featureIndex: number) => (
+                          <motion.div
+                            key={feature}
                             className="flex items-center gap-2"
                             initial={{ opacity: 0, x: -30, scale: 0.9 }}
                             whileInView={{ opacity: 1, x: 0, scale: 1 }}
@@ -794,16 +805,16 @@ export const Home = (): JSX.Element => {
                             viewport={{}}
                             whileHover={{ scale: 1.05, x: 5 }}
                           >
-                            <motion.img 
-                              src={card.featureIcon} 
-                              alt="" 
+                            <motion.img
+                              src={card.featureIcon}
+                              alt=""
                               initial={{ scale: 0 }}
                               whileInView={{ scale: 1 }}
                               transition={{ duration: 0.3, delay: index * 0.3 + 0.8 + featureIndex * 0.1 + 0.2 }}
                               viewport={{}}
                               whileHover={{ rotate: 360, scale: 1.2 }}
                             />
-                            <motion.span 
+                            <motion.span
                               className="[font-family:'Poppins',Helvetica] text-slate-300 text-sm"
                               whileHover={{ color: "#ff6600", scale: 1.05 }}
                             >
@@ -854,89 +865,120 @@ export const Home = (): JSX.Element => {
                 </motion.p>
               </motion.div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {pricingPlans.map((plan, index) => (
-                  <motion.div
-                    key={plan.name}
-                    initial={{ opacity: 0, y: 80, scale: 0.9, rotateY: 20 }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1, rotateY: 0 }}
-                    transition={{ duration: 0.8, delay: index * 0.15, type: "spring", stiffness: 120, damping: 18 }}
-                    viewport={{}}
-                    whileHover={{ y: -15, scale: 1.03, boxShadow: "0 25px 50px rgba(255, 102, 0, 0.2)" }}
-                  >
-                    <Card
-                      className={`${
-                        plan.highlighted
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                {plansLoading ? (
+                  // Skeletal loading: 3 placeholder cards
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="p-6 rounded-lg bg-[#27231C] border-2 border-[#54493B] animate-pulse">
+                      <div className="h-6 bg-gray-700 rounded mb-4 w-1/3" />
+                      <div className="h-10 bg-gray-700 rounded mb-4 w-1/2" />
+                      <div className="space-y-2">
+                        <div className="h-4 bg-gray-700 rounded w-full" />
+                        <div className="h-4 bg-gray-700 rounded w-3/4" />
+                        <div className="h-4 bg-gray-700 rounded w-2/4" />
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  (backendPlans && backendPlans.length > 0 ? backendPlans : pricingPlans).map((rawPlan: any, index: number) => {
+                  const plan = backendPlans && backendPlans.length > 0 ? {
+                    name: toTitleCase(rawPlan.name),
+                    price: `$${rawPlan.price}`,
+                    period: "/mo",
+                    description: `${toTitleCase(rawPlan.name)} Plan`,
+                    features: [
+                      { text: `Included Plans: ${rawPlan.plans}`, included: true },
+                      { text: `Triggers: ${rawPlan.triggers}`, included: true },
+                      { text: `Supported Chains: ${rawPlan.supported_chain}`, included: true },
+                      { text: rawPlan.storage ? 'Storage Included' : 'No Storage', included: !!rawPlan.storage },
+                      { text: rawPlan.taxcore ? 'TaxCore Enabled' : 'No TaxCore', included: !!rawPlan.taxcore },
+                      { text: rawPlan.secret_ai ? 'Secret AI features' : 'No Secret AI', included: !!rawPlan.secret_ai },
+                      { text: `Plan edits allowed: ${rawPlan.plan_edit}`, included: true },
+                    ],
+                    buttonText: "Get Started",
+                    highlighted: rawPlan.price > 10 && rawPlan.price <= 49 ? true : false,
+                  } : rawPlan;
+                  return (
+                    <motion.div
+                      key={plan.name}
+                      initial={{ opacity: 0, y: 80, scale: 0.9, rotateY: 20 }}
+                      whileInView={{ opacity: 1, y: 0, scale: 1, rotateY: 0 }}
+                      transition={{ duration: 0.8, delay: index * 0.15, type: "spring", stiffness: 120, damping: 18 }}
+                      viewport={{}}
+                      whileHover={{ y: -15, scale: 1.03, boxShadow: "0 25px 50px rgba(255, 102, 0, 0.2)" }}
+                    >
+                      <Card
+                        className={`${plan.highlighted
                           ? "bg-[#332619] border-2 border-[#ff6600]"
                           : "bg-[#221911] border-[#674932]"
-                      } relative`}
-                    >
-                    {plan.badge && (
-                      <div className="absolute top-0 right-0 bg-[#ff6600] px-3 py-1">
-                        <span className="[font-family:'Sora',Helvetica] font-bold text-white text-xs">
-                          {plan.badge}
-                        </span>
-                      </div>
-                    )}
-                    <CardContent className="p-8 space-y-6">
-                      <div className="space-y-2">
-                        <h3 className="[font-family:'Sora',Helvetica] font-bold text-white text-xl">
-                          {plan.name}
-                        </h3>
-                        <p className="[font-family:'Sora',Helvetica] text-[#8b7664] text-sm">
-                          {plan.description}
-                        </p>
-                      </div>
-                      <div className="flex items-baseline gap-1">
-                        <span className="[font-family:'Sora',Helvetica] font-bold text-white text-3xl">
-                          {plan.price}
-                        </span>
-                        <span className="[font-family:'Sora',Helvetica] font-bold text-[#b8a494] text-sm">
-                          {plan.period}
-                        </span>
-                      </div>
-                      <div className="space-y-3">
-                        {plan.features.map((feature, idx) => (
-                          <div key={idx} className="flex items-center gap-2">
-                            <img
-                              src={
-                                plan.highlighted
-                                  ? sharpCheckSolid
-                                  : sharpCheckWhite
-                              }
-                              alt=""
-                              className="w-3.5 h-3.5"
-                            />
-                            <span
-                              className={`[font-family:'Sora',Helvetica] text-sm ${plan.highlighted ? "text-white" : "text-slate-300"}`}
-                            >
-                              {feature.text}
+                          } relative`}
+                      >
+                        {plan.badge && (
+                          <div className="absolute top-0 right-0 bg-[#ff6600] px-3 py-1">
+                            <span className="[font-family:'Sora',Helvetica] font-bold text-white text-xs">
+                              {plan.badge}
                             </span>
                           </div>
-                        ))}
-                      </div>
-                      <motion.div
-                        whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255, 102, 0, 0.3)", transition: { type: "spring", stiffness: 300, damping: 20 } }}
-                        whileTap={{ scale: 0.98, transition: { type: "spring", stiffness: 300, damping: 20 } }}
-                        animate={plan.highlighted ? { scale: [1, 1.2, 1], boxShadow: ["0 0 0 rgba(255, 102, 0, 0)", "0 0 30px rgba(255, 102, 0, 0.8)", "0 0 0 rgba(255, 102, 0, 0)"] } : {}}
-                        transition={plan.highlighted ? { duration: 1, repeat: Infinity, ease: "easeInOut" } : {}}
-                      >
-                        <Button
-                          variant={plan.buttonVariant}
-                          className={`w-full ${
-                            plan.highlighted
-                              ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
-                              : "border-[#674932] bg-transparent "
-                          } [font-family:'Sora',Helvetica] font-bold transition-all duration-300`}
-                          onClick={() => navigate("/pricing")}
-                        >
-                          {plan.buttonText}
-                        </Button>
-                      </motion.div>
-                    </CardContent>
-                  </Card>
-                  </motion.div>
-                ))}
+                        )}
+                        <CardContent className="p-8 space-y-6">
+                          <div className="space-y-2">
+                            <h3 className="[font-family:'Sora',Helvetica] font-bold text-white text-xl">
+                              {plan.name}
+                            </h3>
+                            <p className="[font-family:'Sora',Helvetica] text-[#8b7664] text-sm">
+                              {plan.description}
+                            </p>
+                          </div>
+                          <div className="flex items-baseline gap-1">
+                            <span className="[font-family:'Sora',Helvetica] font-bold text-white text-3xl">
+                              {plan.price}
+                            </span>
+                            <span className="[font-family:'Sora',Helvetica] font-bold text-[#b8a494] text-sm">
+                              {plan.period}
+                            </span>
+                          </div>
+                          <div className="space-y-3">
+                            {plan.features.map((feature: { text: string; included?: boolean }, idx: number) => {
+                              const included = feature.included === undefined ? true : feature.included;
+                              return (
+                                <div key={idx} className="flex items-start gap-4">
+                                  <img
+                                    src={included ? sharpCheckSolid : sharpUncheckSolid}
+                                    alt=""
+                                    className="w-3.5 h-3.5 mt-0.5 flex-shrink-0"
+                                  />
+                                  <div className="flex-1">
+                                    <span className={`[font-family:'Sora',Helvetica] text-sm ${included ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>
+                                      {feature.text}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          <motion.div
+                            whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255, 102, 0, 0.3)", transition: { type: "spring", stiffness: 300, damping: 20 } }}
+                            whileTap={{ scale: 0.98, transition: { type: "spring", stiffness: 300, damping: 20 } }}
+                            animate={plan.highlighted ? { scale: [1, 1.2, 1], boxShadow: ["0 0 0 rgba(255, 102, 0, 0)", "0 0 30px rgba(255, 102, 0, 0.8)", "0 0 0 rgba(255, 102, 0, 0)"] } : {}}
+                            transition={plan.highlighted ? { duration: 1, repeat: Infinity, ease: "easeInOut" } : {}}
+                          >
+                            <Button
+                              variant={plan.buttonVariant}
+                              className={`w-full ${plan.highlighted
+                                ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
+                                : "border border-[#674932] bg-transparent"
+                                } [font-family:'Sora',Helvetica] font-bold transition-all duration-300`}
+                              onClick={() => navigate("/pricing")}
+                            >
+                              {plan.buttonText}
+                            </Button>
+                          </motion.div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  )
+                })
+              )}
               </div>
             </div>
           </div>
