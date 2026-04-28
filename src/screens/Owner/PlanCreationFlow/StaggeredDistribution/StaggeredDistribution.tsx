@@ -24,9 +24,6 @@ import {
     TableHeader,
     TableRow,
 } from "@components/ui/table";
-import logoImg from "../../../assets/cip-logo.svg";
-import { Navbar } from "@components/ui/Navbar";
-
 
 const scheduleData = [
     {
