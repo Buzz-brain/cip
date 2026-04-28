@@ -3,6 +3,7 @@
 
 import React, { createContext, useState, useCallback, ReactNode, useEffect } from "react";
 import * as authAPI from "../lib/api/auth";
+import { normalizeWalletAddress } from "../lib/utils";
 
 const STORAGE_KEY = "cip_auth_user";
 
@@ -69,7 +70,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const getNonce = useCallback(async (publicKey: string): Promise<string> => {
     try {
       setError(null);
-      const nonce = await authAPI.getNonce(publicKey);
+      // Normalize wallet address to lowercase for consistency
+      const normalizedPublicKey = normalizeWalletAddress(publicKey);
+      const nonce = await authAPI.getNonce(normalizedPublicKey);
       return nonce;
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to get nonce";
@@ -84,15 +87,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         setLoading(true);
         setError(null);
-      const loginResponse = await authAPI.login({ publicKey, signature, message });
+        // Normalize wallet address to lowercase for consistency
+        const normalizedPublicKey = normalizeWalletAddress(publicKey);
+        const loginResponse = await authAPI.login({ publicKey: normalizedPublicKey, signature, message });
 
-      // API returns a token string
-      const token = loginResponse as string;
-      if (!token || typeof token !== "string") {
-        throw new Error("Login failed: invalid auth token");
-      }
+        // API returns a token string
+        const token = loginResponse as string;
+        if (!token || typeof token !== "string") {
+          throw new Error("Login failed: invalid auth token");
+        }
 
-        const newUser: User = { publicKey, token };
+        const newUser: User = { publicKey: normalizedPublicKey, token };
         // Optionally fetch user info after login
         try {
           const userInfo = await authAPI.getUserInfo(token);

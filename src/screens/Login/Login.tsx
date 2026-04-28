@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import * as walletUtils from "../../lib/wallet/walletUtils";
+import { normalizeWalletAddress } from "../../lib/utils";
 
 export const Login = (): JSX.Element => {
   const navigate = useNavigate();
@@ -14,7 +15,9 @@ export const Login = (): JSX.Element => {
     try {
       clearError();
       setIsConnectingWallet(true);
-      const account = await walletUtils.requestWalletConnection();
+      let account = await walletUtils.requestWalletConnection();
+      // Normalize wallet address to lowercase for consistency
+      account = normalizeWalletAddress(account);
       setConnectedAccount(account);
     } catch (err) {
       console.error("Wallet connection failed:", err);
@@ -32,14 +35,16 @@ export const Login = (): JSX.Element => {
 
     try {
       clearError();
+      // Ensure wallet is normalized (safety check)
+      const normalizedAccount = normalizeWalletAddress(connectedAccount);
       // Step 1: Get nonce from backend
-      const nonce = await getNonce(connectedAccount);
+      const nonce = await getNonce(normalizedAccount);
 
       // Step 2: Sign nonce with wallet
-      const signature = await walletUtils.signMessage(nonce, connectedAccount);
+      const signature = await walletUtils.signMessage(nonce, normalizedAccount);
 
       // Step 3: Login with signature
-      await loginWithWallet(connectedAccount, signature, nonce);
+      await loginWithWallet(normalizedAccount, signature, nonce);
 
       // Success - redirect to owner dashboard
       navigate("/owner-dashboard");

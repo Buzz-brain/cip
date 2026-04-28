@@ -4,6 +4,7 @@ import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
 import { Input } from "@components/ui/input";
 import { usePlan } from "../../../context/usePlan";
+import { normalizeWalletAddress } from "../../../lib/utils";
 import usersPlusIcon from "@assets/users-plus.svg";
 import bookCheckGreyIcon from "@assets/book-check-grey.svg";
 import pieCircleIcon from "@assets/pie-circle.svg";
@@ -60,7 +61,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                     name: "Alice Smith",
               relationship: "Spouse",
               email: "alice@example.com",
-              walletAddress: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+              walletAddress: normalizeWalletAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F"),
                     allocation: 100,
                     color: BENEFICIARY_COLORS[0],
                     initial: "A",
@@ -88,7 +89,12 @@ export const AddBeneficiaries = (): JSX.Element => {
     };
 
     const handleUpdateBeneficiary = (id: string, field: keyof Beneficiary, value: any) => {
-        const updates: Partial<Beneficiary> = { [field]: value };
+        let updateValue = value;
+        // Normalize wallet addresses to lowercase for consistency
+        if (field === "walletAddress") {
+            updateValue = normalizeWalletAddress(value);
+        }
+        const updates: Partial<Beneficiary> = { [field]: updateValue };
         if (field === "name" && value) {
             updates.initial = value.charAt(0).toUpperCase();
         }

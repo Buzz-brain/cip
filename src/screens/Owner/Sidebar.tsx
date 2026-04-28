@@ -6,6 +6,7 @@ import usersIcon from "@assets/users-grey.svg";
 import walletIcon from "@assets/wallet.svg";
 import settingsIcon from "@assets/settings.svg";
 import helpIcon from "@assets/help-grey.svg";
+import { useAuth } from "../../context/useAuth";
 
 const sidebarMenuItems = [
   { icon: dashboardIcon, label: "Dashboard", id: "dashboard" },
@@ -20,8 +21,13 @@ const systemMenuItems = [
 ];
 
 export const Sidebar = (): JSX.Element => {
+  const { user, isAuthenticated } = useAuth();
 
-    return (
+  const displayName = user?.name || user?.userInfo?.full_name || user?.publicKey || "Guest";
+  const displayEmail = user?.email || user?.userInfo?.email || "";
+  const avatarInitial = displayName ? String(displayName).charAt(0).toUpperCase() : "G";
+
+  return (
         
         <div className="w-56 bg-[#1a1410] border-r border-[#3a2f1e] flex flex-col [font-family:'Manrope',Helvetica]">
             {/* Logo */}
@@ -97,15 +103,18 @@ export const Sidebar = (): JSX.Element => {
           <div className="border-t border-[#3a2f1e] p-4">
             <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#2D241C]">
               <div className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                A
+                {avatarInitial}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-xs truncate">
-                  alex.eth
+                  {displayName}
                 </div>
-                <div className="[font-family:'Noto_Sans',Helvetica] flex items-center gap-1 text-[#B9B09D] text-xs">
-                    <div className="w-2 h-2 bg-[#22C55E] rounded-full animate-pulse"></div>
-                    <p>Online</p>
+                <div className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs truncate">
+                  {displayEmail || (user?.publicKey ? `${user.publicKey.slice(0, 6)}...${user.publicKey.slice(-4)}` : "")}
+                </div>
+                <div className="[font-family:'Noto_Sans',Helvetica] flex items-center gap-1 text-[#B9B09D] text-xs mt-1">
+                    <div className={`w-2 h-2 rounded-full ${isAuthenticated ? "bg-[#22C55E] animate-pulse" : "bg-gray-400"}`}></div>
+                    <p>{isAuthenticated ? "Online" : "Offline"}</p>
                 </div>
               </div>
             </div>

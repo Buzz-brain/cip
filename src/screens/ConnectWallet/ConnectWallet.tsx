@@ -4,6 +4,7 @@ import { useAuth } from "../../context/useAuth";
 import { Button } from "@components/ui/button";
 import { toast } from "react-toastify";
 import * as walletUtils from "../../lib/wallet/walletUtils";
+import { normalizeWalletAddress } from "../../lib/utils";
 import logoImg from "@assets/cip-logo.svg";
 import helpIcon from "@assets/help.svg";
 import connectWalletOrange from "@assets/connect-wallet.-orange.svg";
@@ -92,7 +93,9 @@ export const ConnectWallet = (): JSX.Element => {
 
     try {
       // Always sign through the wallet extension (MetaMask provider path)
-      const account = await walletUtils.requestWalletConnection();
+      let account = await walletUtils.requestWalletConnection();
+      // Normalize wallet address to lowercase for consistency
+      account = normalizeWalletAddress(account);
       const nonce = await getNonce(account);
       let signature = await walletUtils.signMessage(nonce, account);
       signature = signature.startsWith("0x") ? signature.slice(2) : signature;

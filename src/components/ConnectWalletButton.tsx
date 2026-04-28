@@ -12,6 +12,7 @@ import React, { useState } from "react";
 import { Wallet, LogOut, AlertCircle } from "lucide-react";
 import { useAuth } from "../context/useAuth";
 import * as walletUtils from "../lib/wallet/walletUtils";
+import { normalizeWalletAddress } from "../lib/utils";
 import { verifyMessage } from "ethers";
 import { toast } from "react-toastify";
 
@@ -44,7 +45,9 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
       setIsSwitchingNetwork(false);
 
       // Step 2: Prompt wallet connection and always use the returned account
-      const account = await walletUtils.requestWalletConnection();
+      let account = await walletUtils.requestWalletConnection();
+      // Normalize wallet address to lowercase for consistency
+      account = normalizeWalletAddress(account);
       console.log("[Wallet] Selected account from wallet:", account);
 
       // Verify this is actually the active account in MetaMask

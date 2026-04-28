@@ -5,6 +5,7 @@ import shieldUserFullIcon from "@assets/shield-user-full.svg";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { usePlan } from "../../../../context/usePlan";
+import { normalizeWalletAddress } from "../../../../lib/utils";
 
 export const AssignHealthOracleExec = (): JSX.Element => {
 
@@ -26,13 +27,16 @@ export const AssignHealthOracleExec = (): JSX.Element => {
       return;
     }
 
+    // Normalize wallet address to lowercase for consistency
+    const normalizedWallet = normalizeWalletAddress(wallet);
+
     // persist to plan context and log
     setPlanField("executorName" as any, fullName.trim());
     setPlanField("executorEmail" as any, email.trim());
-    setPlanField("executorWallet" as any, wallet.trim());
-    console.log('[AssignHealthOracleExec] executor:', { fullName, email, wallet });
+    setPlanField("executorWallet" as any, normalizedWallet);
+    console.log('[AssignHealthOracleExec] executor:', { fullName, email, wallet: normalizedWallet });
 
-    navigate("/select-accepted-docs", { state: { executor: { fullName, email, wallet } } });
+    navigate("/select-accepted-docs", { state: { executor: { fullName, email, wallet: normalizedWallet } } });
   };
 
   return (

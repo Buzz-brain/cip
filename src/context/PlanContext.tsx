@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState, ReactNode } from "react";
 import { useAuth } from "./useAuth";
+import { normalizeWalletAddress } from "../lib/utils";
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "https://xcip.name.ng";
 
 
@@ -210,9 +211,19 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
 
     const url = `${BACKEND_API_URL}/inherit/create-inheritance`;
 
-    const ownerWallet = plan.ownerWallet || user?.publicKey || "";
+    const ownerWallet = normalizeWalletAddress(plan.ownerWallet || user?.publicKey || "");
+
+    // prefer explicitly assigned executor (used by Health Oracle flow)
+    const executorFromPlan = plan.executorName || plan.executorEmail || plan.executorWallet
+      ? {
+          full_name: plan.executorName || "",
+          email: plan.executorEmail || "",
+          wallet: normalizeWalletAddress(plan.executorWallet || ""),
+        }
+      : null;
+
     const executor = [
-      {
+      executorFromPlan || {
         full_name: plan.ownerName || user?.name || "",
         email: user?.email || "",
         wallet: ownerWallet,
@@ -223,7 +234,7 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
       name: b.name,
       relationship: b.relationship,
       email: b.email || "",
-      wallet: b.walletAddress,
+      wallet: normalizeWalletAddress(b.walletAddress),
       allocation_percentage: b.allocation,
     }));
 
