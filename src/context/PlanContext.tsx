@@ -247,19 +247,24 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
       headers["Authorization"] = `Bearer ${user.token}`;
     }
 
-    const res = await fetch(url, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-      signal,
-    });
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body),
+        signal,
+      });
 
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`Create inheritance failed: ${res.status} ${text}`);
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Create inheritance failed: ${res.status} ${text}`);
+      }
+
+      return res.json();
+    } catch (err) {
+      console.error('[PlanContext] submitPlan error:', err);
+      throw err;
     }
-
-    return res.json();
   }, [plan, user]);
 
   const value = useMemo(

@@ -8,7 +8,7 @@ import { ensureArbitrumSepolia } from "../../../lib/wallet/walletUtils";
 import calculatorWhiteIcon from "@assets/calculator-white.svg";
 import fingerprintIcon from "@assets/fingerprint.svg";
 import flagOrangeIcon from "@assets/flag-orange.svg";
-import { InheritancePlanData } from "../../../lib/api/dataProtector";
+// Using backend create-inheritance directly; DataProtector flow removed.
 
 export const ReviewPlan = (): JSX.Element => {
   const navigate = useNavigate();
@@ -64,7 +64,7 @@ export const ReviewPlan = (): JSX.Element => {
 
       await ensureArbitrumSepolia();
 
-      const payload = getProtectorPayload() as InheritancePlanData;
+      const payload = getProtectorPayload();
       console.log("[ReviewPlan] Payload:", payload);
 
       if (!payload.crypto_asset) {
@@ -96,7 +96,7 @@ export const ReviewPlan = (): JSX.Element => {
       };
       console.log('[ReviewPlan] Backend payload preview:', backendPreview);
 
-      const protectedDataAddress = undefined; // placeholder while DataProtector is skipped
+      const protectedDataAddress = undefined; // backend handles storage; no DataProtector in this flow
 
       // Submit to backend create-inheritance endpoint (abortable)
       abortControllerRef.current = new AbortController();
@@ -133,7 +133,7 @@ export const ReviewPlan = (): JSX.Element => {
         });
       }
     } catch (error) {
-      let message = "Failed to protect or submit the inheritance plan.";
+      let message = "Failed to submit the inheritance plan.";
       if (error instanceof Error) {
         // Try to extract backend error detail if present
         const match = error.message.match(/\{.*\}/);
@@ -153,7 +153,7 @@ export const ReviewPlan = (): JSX.Element => {
         }
       }
       toast.error(message);
-      console.error("DataProtector error:", error);
+      console.error("[ReviewPlan] submit error:", error);
     } finally {
       setIsSaving(false);
     }

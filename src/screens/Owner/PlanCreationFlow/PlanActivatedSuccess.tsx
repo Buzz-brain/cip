@@ -1,14 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Copy } from "lucide-react";
 import { useState } from "react";
-import { useDataProtector } from "../../../lib/hooks/useDataProtector";
 import shieldCheckOrangeIcon from "@assets/shield-check-orange.svg";
 import { toast } from "react-toastify";
 
 export const PlanActivatedSuccess = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { getProtectedData, getGrantedAccess } = useDataProtector();
   const [accessList, setAccessList] = useState<any>(null);
   const [loadingAccess, setLoadingAccess] = useState(false);
   const [grantedAccess, setGrantedAccess] = useState<any>(null);
@@ -48,35 +46,8 @@ export const PlanActivatedSuccess = (): JSX.Element => {
     navigate("/owner-dashboard");
   };
 
-  const handleFetchAccessList = async () => {
-    if (!state?.protectedDataAddress) return;
-    setLoadingAccess(true);
-    try {
-      const details = await getProtectedData(state.protectedDataAddress);
-      setAccessList(details);
-      console.log('Protected Data Details:', details);
-    } catch (error) {
-      console.error('Error fetching access list:', error);
-      setAccessList({ error: 'Failed to fetch access list' });
-    } finally {
-      setLoadingAccess(false);
-    }
-  };
-
-  const handleFetchGrantedAccess = async () => {
-    if (!state?.protectedDataAddress) return;
-    setLoadingGranted(true);
-    try {
-      const granted = await getGrantedAccess(state.protectedDataAddress);
-      setGrantedAccess(granted);
-      console.log('Granted Access:', granted);
-    } catch (error) {
-      console.error('Error fetching granted access:', error);
-      setGrantedAccess({ error: 'Failed to fetch granted access' });
-    } finally {
-      setLoadingGranted(false);
-    }
-  };
+  // DataProtector functionality removed — access list and granted access
+  // are not available in the backend-only flow.
 
   return (
     <div className="flex flex-col [font-family:'Manrope',Helvetica]">
@@ -188,44 +159,11 @@ export const PlanActivatedSuccess = (): JSX.Element => {
                 Protected Data Address
               </div>
               <div className="break-all">{state.protectedDataAddress}</div>
-              <button
-                onClick={handleFetchAccessList}
-                disabled={loadingAccess}
-                className="mt-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 text-white text-xs rounded"
-              >
-                {loadingAccess ? 'Fetching...' : 'Check iApp Access'}
-              </button>
-              <button
-                onClick={handleFetchGrantedAccess}
-                disabled={loadingGranted}
-                className="mt-2 ml-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white text-xs rounded"
-              >
-                {loadingGranted ? 'Fetching...' : 'Check Granted Access'}
-              </button>
+              <div className="text-gray-400 text-xs mt-2">iApp access management is not available in the backend-only flow.</div>
             </div>
           )}
 
-          {accessList && (
-            <div className="bg-[#181411] rounded-lg p-4 mb-6 border border-gray-700 text-sm text-gray-300">
-              <div className="text-[#FFC589] text-xs font-semibold mb-2">
-                Access List
-              </div>
-              <pre className="text-xs break-all whitespace-pre-wrap">
-                {JSON.stringify(accessList, null, 2)}
-              </pre>
-            </div>
-          )}
-
-          {grantedAccess && (
-            <div className="bg-[#181411] rounded-lg p-4 mb-6 border border-gray-700 text-sm text-gray-300">
-              <div className="text-[#FFC589] text-xs font-semibold mb-2">
-                Granted Access List
-              </div>
-              <pre className="text-xs break-all whitespace-pre-wrap">
-                {JSON.stringify(grantedAccess, null, 2)}
-              </pre>
-            </div>
-          )}
+          {/* Access list and granted access UI removed (DataProtector not used). */}
 
           <div className="text-center text-gray-400 text-xs mb-8">
             <div className="flex items-center justify-center gap-2">
