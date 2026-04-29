@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 
-const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "https://xcip.name.ng";
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
 export type BackendPlan = {
   price: number;

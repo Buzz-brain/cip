@@ -5,6 +5,7 @@ import { Card, CardContent } from "@components/ui/card";
 import { Input } from "@components/ui/input";
 import { usePlan } from "../../../context/usePlan";
 import { normalizeWalletAddress } from "../../../lib/utils";
+import { toast } from "react-toastify";
 import usersPlusIcon from "@assets/users-plus.svg";
 import bookCheckGreyIcon from "@assets/book-check-grey.svg";
 import pieCircleIcon from "@assets/pie-circle.svg";
@@ -55,18 +56,36 @@ export const AddBeneficiaries = (): JSX.Element => {
 
     useEffect(() => {
         if (beneficiaries.length === 0) {
-            setBeneficiaries([
-                {
-                    id: "1",
-                    name: "Alice Smith",
-              relationship: "Spouse",
-              email: "alice@example.com",
-              walletAddress: normalizeWalletAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F"),
-                    allocation: 100,
-                    color: BENEFICIARY_COLORS[0],
-                    initial: "A",
-                },
-            ]);
+        try {
+          const checksum = normalizeWalletAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F");
+          setBeneficiaries([
+            {
+              id: "1",
+              name: "Alice Smith",
+            relationship: "Spouse",
+            email: "alice@example.com",
+            walletAddress: checksum,
+              allocation: 100,
+              color: BENEFICIARY_COLORS[0],
+              initial: "A",
+            },
+          ]);
+        } catch (err) {
+          // fallback: set raw if normalization fails
+          console.warn("Default beneficiary address normalization failed", err);
+          setBeneficiaries([
+            {
+              id: "1",
+              name: "Alice Smith",
+            relationship: "Spouse",
+            email: "alice@example.com",
+            walletAddress: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+              allocation: 100,
+              color: BENEFICIARY_COLORS[0],
+              initial: "A",
+            },
+          ]);
+        }
         }
     }, [plan.beneficiaries.length, setBeneficiaries]);
 
@@ -89,15 +108,24 @@ export const AddBeneficiaries = (): JSX.Element => {
     };
 
     const handleUpdateBeneficiary = (id: string, field: keyof Beneficiary, value: any) => {
-        let updateValue = value;
-        // Normalize wallet addresses to lowercase for consistency
-        if (field === "walletAddress") {
-            updateValue = normalizeWalletAddress(value);
-        }
-        const updates: Partial<Beneficiary> = { [field]: updateValue };
-        if (field === "name" && value) {
+        const updates: Partial<Beneficiary> = { [field]: value };
+      if (field === "name" && value) {
             updates.initial = value.charAt(0).toUpperCase();
         }
+      if (field === "walletAddress") {
+        const candidate = (value || "").trim();
+        if (!candidate) {
+          updates.walletAddress = "";
+        } else {
+          try {
+            updates.walletAddress = normalizeWalletAddress(candidate);
+          } catch (err) {
+            // keep raw value but notify user
+            updates.walletAddress = candidate;
+            toast.error("Invalid beneficiary wallet address. Please check the address format.");
+          }
+        }
+      }
         updateBeneficiary(id, updates);
     };
 

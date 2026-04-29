@@ -1,7 +1,7 @@
 // src/lib/api/auth.ts
 // Authentication API utility functions for CIP Portal
 
-const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "https://xcip.name.ng";
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
 export async function getNonce(publicKey: string): Promise<string> {
   const url = `${BACKEND_API_URL}/auth/nonce?public_key=${encodeURIComponent(publicKey)}`;

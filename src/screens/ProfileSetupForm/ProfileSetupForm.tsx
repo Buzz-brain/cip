@@ -17,6 +17,7 @@ import lockWhite from "@assets/lock-white.svg";
 import userIcon from "@assets/user.svg";
 import protocolIcon from "@assets/protocol.svg";
 import { Link } from "react-router-dom";
+import { getDashboardRoute } from "../../lib/utils";
 
 
 const navigationLinks = [
@@ -85,8 +86,17 @@ export const ProfileSetupForm = (): JSX.Element => {
       });
 
       toast.success("Profile saved successfully!");
-      await loadProfile();
-      navigate("/owner-dashboard");
+      // Fetch latest user info to get updated role
+      let latestUserInfo = null;
+      try {
+        latestUserInfo = await authAPI.getUserInfo(user.token);
+        console.log('[ProfileSetupForm] latestUserInfo after save', latestUserInfo);
+      } catch (e) {
+        // fallback: use previous userInfo
+        latestUserInfo = user.userInfo;
+      }
+      const role = latestUserInfo?.role || user?.userInfo?.role;
+      navigate(getDashboardRoute(role));
     } catch (err) {
       console.error("Profile save failed:", err);
       setSaveError(err instanceof Error ? err.message : "Failed to save profile.");

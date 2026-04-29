@@ -36,7 +36,22 @@ export const ReviewPlan = (): JSX.Element => {
       if (inactivityState) {
         console.log('[ReviewPlan] merging incoming inactivityState into plan:', inactivityState);
         if (typeof inactivityState.inactivityDays === 'number') setPlanField('inactivityPeriodDays', inactivityState.inactivityDays);
-        if (Array.isArray(inactivityState.chosenMethods)) setPlanField('proofOfLifeMethod', inactivityState.chosenMethods.join(','));
+        if (Array.isArray(inactivityState.chosenMethods)) {
+          // ensure we persist backend canonical ids (map frontend-friendly ids if present)
+          const mapping: Record<string, string> = {
+            wallet: 'wallet_signature',
+            app: 'app_login',
+            email: 'email',
+            biometric: 'biometric',
+            wallet_signature: 'wallet_signature',
+            app_login: 'app_login',
+            email_sms: 'email',
+            faceid: 'biometric',
+            touchid: 'biometric',
+          };
+          const normalized = inactivityState.chosenMethods.map((m: string) => mapping[m] ?? m);
+          setPlanField('proofOfLifeMethod', normalized.join(','));
+        }
         if (typeof inactivityState.displayedGrace === 'number') setPlanField('gracePeriod', inactivityState.displayedGrace);
       }
     } catch (err) {

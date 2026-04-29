@@ -60,10 +60,7 @@ import { RealTimeVolatility } from "./screens/Owner/OwnerDashboardFlow/RealTimeV
 import { SecureStorage } from "./screens/Owner/OwnerDashboardFlow/SecureStorage"; 
 import { SelectJurisdiction } from "./screens/Owner/OwnerDashboardFlow/SelectJurisdiction"; 
 import { UploadSignedDoc } from "./screens/Owner/OwnerDashboardFlow/UploadSignedDoc"; 
-import { ProofOfLifeConfig } from "./screens/Owner/ProofOfLifeConfig/ProofOfLifeConfig";
-import { ProofOfLifeCheck } from "./screens/Owner/ProofOfLifeConfig/ProofOfLifeCheck";
-import { ProofOfLifeCheckMissed } from "./screens/Owner/ProofOfLifeConfig/ProofOfLifeCheckMissed";
-import { CriticalAlert } from "./screens/Owner/ProofOfLifeConfig/CriticalAlert";
+import { ProofOfLifeConfig } from "./screens/Owner/OwnerDashboardFlow/Dashboard/ProofOfLifeConfig";
 
 import { EnterpriseLogin } from "./screens/EnterpriseFlow/EnterpriseLogin";
 import { EnterpriseDashboard } from "./screens/EnterpriseFlow/EnterpriseDashboard";
@@ -248,9 +245,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
 
         {/* Proof of Life Configuration  */}
         <Route path="/proof-of-life-config" element={<ProofOfLifeConfig />} /> ✅
-        <Route path="/proof-of-life-check" element={<ProofOfLifeCheck />} /> ✅
-        <Route path="/proof-of-life-check-missed" element={<ProofOfLifeCheckMissed />} /> ✅
-        <Route path="/critical-alert" element={<CriticalAlert />} /> ✅
+        {/* proof-of-life flows are modal-driven from the Owner Dashboard */}
 
         {/* Billing and Subscription Flow */}
         <Route path="/billing-and-payment" element={<BillingAndPayment />} /> ✅

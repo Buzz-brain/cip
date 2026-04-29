@@ -18,7 +18,7 @@ import multiSigIcon from "@assets/multi-sig.svg";
 import { Button } from "@components/ui/button";
 // Header removed — layout provides it
 
-const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "https://xcip.name.ng";
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
 interface PlanType {
     id: string;

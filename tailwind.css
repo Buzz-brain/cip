@@ -7,6 +7,25 @@
   }
 }
 
+/* Custom thin scrollbar for modals and scrollable panels */
+.scrollbar-thin-custom {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #554433 transparent; /* Firefox */
+}
+.scrollbar-thin-custom::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-thin-custom::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin-custom::-webkit-scrollbar-thumb {
+  background-color: #554433;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
 :root {
   --animate-spin: spin 1s linear infinite;
 }

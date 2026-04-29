@@ -17,7 +17,7 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
   const { plan, setPlanField } = usePlan();
   const [selectedMethods, setSelectedMethods] = useState<ProofOfLifeMethod[]>([]);
   const [backendTypes, setBackendTypes] = useState<string[] | null>(null);
-  const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "https://xcip.name.ng";
+  const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
   const toggleMethod = (method: ProofOfLifeMethod) => {
     setSelectedMethods((prev) => {
@@ -38,14 +38,30 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
 
   const handleContinue = () => {
     if (selectedMethods.length > 0) {
-      // persist selection and log
-      setPlanField('proofOfLifeMethod', selectedMethods.join(','));
-      console.log('[ChooseProofOfLifeMethod] continuing with:', { inactivityPeriod: inactivityPeriod || plan?.inactivityPeriodDays, daysValue: daysValue || String(plan?.inactivityPeriodDays || ''), selectedMethods });
+      // Map frontend method ids to canonical backend ids before persisting
+      const backendIdsForMethod: Record<ProofOfLifeMethod, string[]> = {
+        wallet: ["wallet_signature"],
+        app: ["app_login"],
+        email: ["email", "email_sms"],
+        biometric: ["biometric", "faceid", "touchid"],
+      };
+
+      const mapToBackend = (m: ProofOfLifeMethod) => {
+        const ids = backendIdsForMethod[m];
+        return ids && ids.length > 0 ? ids[0] : m;
+      };
+      const backendSelected = selectedMethods.map(mapToBackend);
+
+      // persist selection and log (use backend canonical ids in plan)
+      setPlanField('proofOfLifeMethod', backendSelected.join(','));
+      console.log('[ChooseProofOfLifeMethod] continuing with:', { inactivityPeriod: inactivityPeriod || plan?.inactivityPeriodDays, daysValue: daysValue || String(plan?.inactivityPeriodDays || ''), selectedMethods, backendSelected });
+
       navigate("/set-inactivity-grace-period", {
         state: {
           inactivityPeriod,
           daysValue,
-          selectedMethods,
+          // pass backend canonical ids so downstream steps get normalized values
+          selectedMethods: backendSelected,
         },
       });
     }
@@ -113,7 +129,7 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
     };
   }, []);
 
-  // Map frontend method ids to possible backend ids
+  // Map frontend method ids to possible backend ids (used for display filtering)
   const backendIdsForMethod: Record<ProofOfLifeMethod, string[]> = {
     wallet: ["wallet_signature", "wallet"],
     app: ["app_login", "app"],

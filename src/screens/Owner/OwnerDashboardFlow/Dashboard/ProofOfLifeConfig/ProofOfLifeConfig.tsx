@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useAuth } from "../../../../../context/useAuth";
+import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import { Wallet, Mail, MessageSquare, AlertTriangle } from 'lucide-react';
 import { Link } from "react-router-dom";
@@ -12,9 +14,30 @@ import paperEditIcon from "@assets/paper-edit.svg";
 
 export const ProofOfLifeConfig = (): JSX.Element => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const onSaveChanges = () => {
-    navigate("/proof-of-life-check");
+  const [saving, setSaving] = useState(false);
+
+  const onSaveChanges = async () => {
+    // Persist local UI changes if needed (currently UI is client-side only)
+    // Trigger backend proof-of-life activation endpoint
+    if (!user?.token) {
+      toast.error("Not authenticated");
+      return;
+    }
+    setSaving(true);
+    try {
+      const { activateProofOfLife } = await import("../../../../../lib/api/inherit");
+      const data = await activateProofOfLife(user.token);
+      toast.success("Proof-of-Life activated");
+      console.log('[ProofOfLifeConfig] proof-of-life response', data);
+      navigate("/proof-of-life-check");
+    } catch (err) {
+      console.error('ProofOfLifeConfig activate error', err);
+      toast.error('Failed to activate Proof-of-Life');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const [frequency, setFrequency] = useState<'monthly' | 'quarterly' | 'bi-annually'>('monthly');
@@ -65,9 +88,10 @@ export const ProofOfLifeConfig = (): JSX.Element => {
           </div>
           <button
             onClick={onSaveChanges}
-            className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2.5 rounded-lg font-medium transition"
+            disabled={saving}
+            className={`bg-orange-600 ${saving ? 'opacity-60 cursor-not-allowed' : 'hover:bg-orange-700'} text-white px-6 py-2.5 rounded-lg font-medium transition`}
           >
-            Save Changes
+            {saving ? 'Activating...' : 'Save Changes'}
           </button>
         </div>
 

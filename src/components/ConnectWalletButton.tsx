@@ -13,6 +13,9 @@ import { Wallet, LogOut, AlertCircle } from "lucide-react";
 import { useAuth } from "../context/useAuth";
 import * as walletUtils from "../lib/wallet/walletUtils";
 import { normalizeWalletAddress } from "../lib/utils";
+import { getDashboardRoute } from "../lib/utils";
+import * as authAPI from "../lib/api/auth";
+import { useNavigate } from "react-router-dom";
 import { verifyMessage } from "ethers";
 import { toast } from "react-toastify";
 
@@ -29,7 +32,8 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
   compact = false,
   onLoginSuccess,
 }) => {
-  const { user, isAuthenticated, loading, error, getNonce, loginWithWallet, logout, clearError } = useAuth();
+  const { user, isAuthenticated, loading, error, getNonce, loginWithWallet, logout, clearError, fetchUserInfo } = useAuth();
+  const navigate = useNavigate();
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
   const [isSwitchingNetwork, setIsSwitchingNetwork] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -154,10 +158,31 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
       }
 
       // Step 6: Login with raw nonce as message
-      await loginWithWallet(account, signature, nonce);
-
+      const returnedUser = await loginWithWallet(account, signature, nonce);
+      console.log('[ConnectWalletButton] login returnedUser', returnedUser, 'context user before fetch:', user);
       // Show success toast
       toast.success("Wallet connected successfully!");
+      let finalUserInfo = returnedUser?.userInfo ?? null;
+      if (!finalUserInfo && returnedUser?.token) {
+        try {
+          finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
+        } catch (e) {
+          try { await fetchUserInfo(); } catch {}
+          finalUserInfo = returnedUser?.userInfo ?? null;
+        }
+      }
+      const finalUser = { ...(returnedUser || user), userInfo: finalUserInfo || returnedUser?.userInfo || user?.userInfo };
+      // Redirect: if user needs setup, send to profile setup, else to role dashboard
+      const role = ((finalUser?.userInfo?.role ?? (finalUser as any)?.role) || "").toString();
+      const isSetup = finalUser?.userInfo?.is_setup;
+      const shouldRequireSetup = role.toLowerCase() === "user" && isSetup === false;
+      console.log('[ConnectWalletButton] finalUser for redirect', { role, isSetup, shouldRequireSetup, userInfo: finalUser.userInfo });
+      if (shouldRequireSetup) {
+        navigate("/profile-setup");
+      } else {
+        const route = getDashboardRoute(role);
+        navigate(route);
+      }
 
       // Callback
       onLoginSuccess?.();

@@ -3,9 +3,11 @@ import { Card, CardContent } from "@components/ui/card";
 import { Badge } from "@components/ui/badge";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "../../../../context/useAuth";
+import { usePlan } from "../../../../context/usePlan";
 import { toast } from "react-toastify";
+import FundPlanModal from "../../../../components/ui/FundPlanModal";
 
-const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "https://xcip.name.ng";
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
 interface Props {
   showValues: boolean;
@@ -29,9 +31,27 @@ const chainIconFor = (chain?: string) => {
 
 export const AllPlan: React.FC<Props> = ({ showValues }) => {
   const { user } = useAuth();
+  const planCtx = usePlan();
   const [loading, setLoading] = useState(false);
   const [plans, setPlans] = useState<any[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedPlanDetail, setSelectedPlanDetail] = useState<any | null>(null);
+  const [fundModalOpen, setFundModalOpen] = useState(false);
+  const [fundPlanContractId, setFundPlanContractId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [highlightedPlanId, setHighlightedPlanId] = useState<string | null>(null);
+  const highlightTimerRef = React.useRef<number | null>(null);
+
+  const formatTs = (ts?: number | null) => {
+    if (!ts) return "—";
+    try {
+      // backend returns seconds
+      const d = new Date(Number(ts) * 1000);
+      return d.toLocaleString();
+    } catch (e) {
+      return String(ts);
+    }
+  };
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -67,6 +87,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
             chainName: it.crypto_asset ?? "-",
             chainIcon: chainIconFor(it.crypto_asset),
             beneficiary: { name: it.owner_wallet ?? "—", avatar: (it.owner_wallet || "—").slice(2, 4).toUpperCase() },
+            beneficiariesPreview: [],
             assets: it.amount ? String(it.amount) : "—",
             assetsDetail: it.crypto_asset ?? "—",
             status: isReleased ? "Triggered" : isFunded ? "Active" : "Pending",
@@ -76,6 +97,39 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
           };
         });
         setPlans(mapped);
+        // Fetch single inheritance details for each plan to populate beneficiaries preview (non-blocking)
+        (async () => {
+          try {
+            const detailed = await Promise.all(
+              mapped.map(async (p: any) => {
+                const idNum = p.raw?.id ?? p.raw?.contract_plan_id;
+                if (!idNum) return { id: p.id, beneficiariesPreview: [] };
+                try {
+                  const r = await fetch(`${BACKEND_API_URL}/inherit/view-a-inheritances/${idNum}`, {
+                    method: "GET",
+                    headers: {
+                      accept: "application/json",
+                      ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+                    },
+                  });
+                  if (!r.ok) return { id: p.id, beneficiariesPreview: [] };
+                  const j = await r.json();
+                  const bens = Array.isArray(j?.data?.beneficiaries) ? j.data.beneficiaries : [];
+                  return { id: p.id, beneficiariesPreview: bens };
+                } catch (e) {
+                  return { id: p.id, beneficiariesPreview: [] };
+                }
+              })
+            );
+            // merge previews back into state
+            setPlans((prev) => prev.map((pp: any) => {
+              const found = detailed.find((d: any) => String(d.id) === String(pp.id));
+              return found ? { ...pp, beneficiariesPreview: found.beneficiariesPreview } : pp;
+            }));
+          } catch (e) {
+            // ignore preview fetch errors
+          }
+        })();
       } catch (err) {
         const m = err instanceof Error ? err.message : String(err);
         toast.error(`Error loading plans: ${m}`);
@@ -85,6 +139,42 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
       }
     };
     fetchPlans();
+
+    const onConfirmed = async (detail?: any) => {
+      // refresh plans when proof-of-life confirmation occurs
+      try {
+        await fetchPlans();
+      } catch (e) {
+        // ignore
+      }
+      // highlight the updated plan if detail provided
+      try {
+        const payload = detail && (detail as any).detail !== undefined ? (detail as any).detail : detail;
+        const first = Array.isArray(payload) && payload.length > 0 ? payload[0] : payload;
+        const confirmedId = first ? String(first.id ?? first.contract_plan_id ?? first.contract_plan_id ?? "") : "";
+        if (confirmedId) {
+          setHighlightedPlanId(String(confirmedId));
+          if (highlightTimerRef.current) {
+            window.clearTimeout(highlightTimerRef.current);
+          }
+          highlightTimerRef.current = window.setTimeout(() => {
+            setHighlightedPlanId(null);
+            highlightTimerRef.current = null;
+          }, 6000);
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
+    if (planCtx?.subscribePlansUpdated) {
+      const unsubscribe = planCtx.subscribePlansUpdated(onConfirmed);
+      return () => unsubscribe();
+    }
+    // fallback to window event for compatibility
+    window.addEventListener('proofOfLife:confirmed', onConfirmed);
+    return () => {
+      window.removeEventListener('proofOfLife:confirmed', onConfirmed);
+    };
   }, [user?.token]);
 
   const filtered = plans.filter((p) => {
@@ -125,6 +215,148 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
             />
           </div>
         </div>
+        {/* Plan details modal */}
+        {modalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/60" onClick={() => { setModalOpen(false); setSelectedPlanDetail(null); }} />
+            <div className="relative bg-[#1f1915] border border-[#3a2f1e] rounded-lg w-[90%] max-w-2xl p-6 z-60">
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <h3 className="text-white font-bold">Plan Details</h3>
+                <button className="text-[#b8a494]" onClick={() => { setModalOpen(false); setSelectedPlanDetail(null); }}>Close</button>
+              </div>
+              <div className="max-h-[72vh] overflow-auto pr-2 scrollbar-thin-custom">
+                {!selectedPlanDetail ? (
+                  <div className="text-[#b8a494]">Loading...</div>
+                ) : (
+                  <div className="space-y-4 text-sm text-[#d1c3b4]">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Plan ID</div>
+                        <div className="font-mono text-white">{selectedPlanDetail.plan?.id ?? selectedPlanDetail.plan?.contract_plan_id}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Type</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.plan_type}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Owner Wallet</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.owner_wallet}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Asset</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.crypto_asset}</div>
+                      </div>
+
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Contract Plan ID</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.contract_plan_id ?? '—'}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Proof of Life</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.proof_of_life ?? '—'}</div>
+                      </div>
+
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Contract Address</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.contract_address ?? '—'}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Grace Period</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.grace_period ?? '—'}</div>
+                      </div>
+
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Oracle Source</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.oracle_source ?? '—'}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Amount</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.amount ?? '—'}</div>
+                      </div>
+
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Is Funded</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.is_funded ? 'Yes' : 'No'}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Should Release</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.should_release ? 'Yes' : 'No'}</div>
+                      </div>
+
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Release Timestamp</div>
+                        <div className="text-white">{formatTs(selectedPlanDetail.plan?.release_timestamp)}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Is Released</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.is_released ? 'Yes' : 'No'}</div>
+                      </div>
+
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Inactivity Period (days)</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.inactivity_period_days ?? '—'}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Created At</div>
+                        <div className="text-white">{formatTs(selectedPlanDetail.plan?.created_at)}</div>
+                      </div>
+
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Last Active</div>
+                        <div className="text-white">{formatTs(selectedPlanDetail.plan?.last_active_at)}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 mt-4">
+                      {!selectedPlanDetail.plan?.is_funded && (user?.publicKey && String(user.publicKey).toLowerCase() === String(selectedPlanDetail.plan?.owner_wallet).toLowerCase()) && (
+                        <button className="px-4 py-2 rounded bg-[#ff6600] text-white" onClick={() => {
+                          const cid = Number(selectedPlanDetail.plan?.contract_plan_id ?? selectedPlanDetail.plan?.id ?? 0);
+                          console.log('[AllPlan] opening FundPlanModal', { contractPlanId: cid, user: user?.publicKey });
+                          setFundPlanContractId(cid);
+                          setFundModalOpen(true);
+                        }}>Fund Plan</button>
+                      )}
+                      <button className="px-4 py-2 rounded bg-[#393028] text-white" onClick={() => { setModalOpen(false); setSelectedPlanDetail(null); }}>Close</button>
+                    </div>
+
+                    <div>
+                      <div className="text-xs text-[#8b7664]">Beneficiaries</div>
+                      <div className="mt-2 space-y-2">
+                          {fundModalOpen && fundPlanContractId !== null && (
+                          <FundPlanModal
+                            open={fundModalOpen}
+                            onClose={() => { setFundModalOpen(false); setFundPlanContractId(null); }}
+                            contractPlanId={fundPlanContractId}
+                            defaultAmount={String(selectedPlanDetail?.plan?.amount ?? '')}
+                            userToken={user?.token ?? null}
+                            ownerWallet={selectedPlanDetail?.plan?.owner_wallet ?? null}
+                          />
+                        )}
+
+                        {Array.isArray(selectedPlanDetail.beneficiaries) && selectedPlanDetail.beneficiaries.length > 0 ? (
+                          selectedPlanDetail.beneficiaries.map((b: any) => (
+                            <div key={b.id} className="p-3 bg-[#231b16] border border-[#2f241c] rounded">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <div className="text-white font-medium">{b.name || b.wallet}</div>
+                                  <div className="text-xs text-[#8b7664]">{b.relationship ? `${b.relationship} • ` : ''}{b.email ?? b.wallet}</div>
+                                  <div className="text-xs text-[#8b7664]">Wallet: {b.wallet}</div>
+                                </div>
+                                <div className="text-sm text-[#b8a494]">{b.allocation_percentage ? `${b.allocation_percentage}%` : '—'}</div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-[#b8a494]">No beneficiaries found</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Table */}
         <div className="overflow-x-auto">
@@ -148,20 +380,57 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                   <td className="py-4 px-4"><div className="h-4 bg-[#2f241c] rounded w-8" /></td>
                 </tr>
               )) : filtered.map((plan) => (
-                <tr key={plan.id} className="border-b border-[#393028] hover:bg-[#0d0b08] transition-colors">
+                <tr key={plan.id} className={`border-b border-[#393028] hover:bg-[#0d0b08] transition-colors cursor-pointer ${plan.id === highlightedPlanId ? 'ring-2 ring-green-400/40 bg-green-900/5' : ''}`} onClick={async () => {
+                  const idNum = plan.raw?.id ?? plan.raw?.contract_plan_id;
+                  if (!idNum) {
+                    toast.error('Cannot load plan details');
+                    return;
+                  }
+                  setModalOpen(true);
+                  setSelectedPlanDetail(null);
+                  try {
+                    const r = await fetch(`${BACKEND_API_URL}/inherit/view-a-inheritances/${idNum}`, {
+                      method: 'GET',
+                      headers: {
+                        accept: 'application/json',
+                        ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+                      }
+                    });
+                    if (!r.ok) {
+                      const t = await r.text();
+                      toast.error(`Failed to load plan details: ${r.status} ${t}`);
+                      setSelectedPlanDetail(null);
+                      return;
+                    }
+                    const j = await r.json();
+                    setSelectedPlanDetail(j?.data ?? null);
+                  } catch (err) {
+                    const m = err instanceof Error ? err.message : String(err);
+                    toast.error(`Error loading plan details: ${m}`);
+                    setSelectedPlanDetail(null);
+                  }
+                }}>
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-[#332619] rounded-lg flex items-center justify-center text-lg">{plan.chainIcon}</div>
                       <div>
                         <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">{plan.name}</div>
-                        <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">#{plan.id} • {plan.chainName}</div>
+                        <div className="flex items-center gap-2">
+                          <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">#{plan.id} • {plan.chainName}</div>
+                          {plan.id === highlightedPlanId && (
+                            <Badge className="ml-2 bg-green-600 text-white text-xs">Updated</Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </td>
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">{plan.beneficiary.avatar}</div>
-                      <span className="[font-family:'Noto_Sans',Helvetica] text-white text-sm">{plan.beneficiary.name}</span>
+                      <span className="[font-family:'Noto_Sans',Helvetica] text-white text-sm">{(plan.beneficiariesPreview && plan.beneficiariesPreview.length > 0) ? (plan.beneficiariesPreview[0].name || plan.beneficiariesPreview[0].wallet) : plan.beneficiary.name}</span>
+                      {plan.beneficiariesPreview && plan.beneficiariesPreview.length > 1 && (
+                        <span className="ml-2 text-xs text-[#8b7664]">+{plan.beneficiariesPreview.length - 1} more</span>
+                      )}
                     </div>
                   </td>
                   <td className="py-4 px-4">

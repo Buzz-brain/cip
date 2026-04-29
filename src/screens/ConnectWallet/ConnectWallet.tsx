@@ -4,7 +4,8 @@ import { useAuth } from "../../context/useAuth";
 import { Button } from "@components/ui/button";
 import { toast } from "react-toastify";
 import * as walletUtils from "../../lib/wallet/walletUtils";
-import { normalizeWalletAddress } from "../../lib/utils";
+import { normalizeWalletAddress, getDashboardRoute } from "../../lib/utils";
+import * as authAPI from "../../lib/api/auth";
 import logoImg from "@assets/cip-logo.svg";
 import helpIcon from "@assets/help.svg";
 import connectWalletOrange from "@assets/connect-wallet.-orange.svg";
@@ -67,8 +68,8 @@ const wallets = [
 ];
 
 export const ConnectWallet = (): JSX.Element => {
+  const { getNonce, loginWithWallet, fetchUserInfo, user } = useAuth();
   const navigate = useNavigate();
-  const { getNonce, loginWithWallet } = useAuth();
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -100,8 +101,31 @@ export const ConnectWallet = (): JSX.Element => {
       let signature = await walletUtils.signMessage(nonce, account);
       signature = signature.startsWith("0x") ? signature.slice(2) : signature;
 
-      await loginWithWallet(account, signature, nonce);
-      navigate("/profile-setup");
+      const returnedUser = await loginWithWallet(account, signature, nonce);
+      console.log('[ConnectWallet] login returnedUser', returnedUser, 'context user before fetch:', user);
+      // If login didn't include userInfo, fetch it directly using the returned token
+      let finalUserInfo = returnedUser?.userInfo ?? null;
+      if (!finalUserInfo && returnedUser?.token) {
+        try {
+          finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
+        } catch (e) {
+          // fallback: try context fetch
+          try {
+            await fetchUserInfo();
+          } catch {}
+          finalUserInfo = returnedUser?.userInfo ?? null;
+        }
+      }
+      const finalUser = { ...(returnedUser || user), userInfo: finalUserInfo || returnedUser?.userInfo || user?.userInfo };
+      const role = ((finalUser?.userInfo?.role ?? (finalUser as any)?.role) || "").toString();
+      const isSetup = finalUser?.userInfo?.is_setup;
+      const shouldRequireSetup = role.toLowerCase() === "user" && isSetup === false;
+      console.log('[ConnectWallet] finalUser for redirect', { role, isSetup, shouldRequireSetup, userInfo: finalUser.userInfo });
+      if (shouldRequireSetup) {
+        navigate("/profile-setup");
+      } else {
+        navigate(getDashboardRoute(role));
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to connect wallet";
       console.error("ConnectWallet: failed:", err);

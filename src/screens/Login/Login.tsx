@@ -3,11 +3,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import * as walletUtils from "../../lib/wallet/walletUtils";
-import { normalizeWalletAddress } from "../../lib/utils";
+import { normalizeWalletAddress, getDashboardRoute } from "../../lib/utils";
+import * as authAPI from "../../lib/api/auth";
 
 export const Login = (): JSX.Element => {
   const navigate = useNavigate();
-  const { loginWithWallet, getNonce, loading, error, clearError } = useAuth();
+  const { loginWithWallet, getNonce, loading, error, clearError, fetchUserInfo } = useAuth();
+  const { user } = useAuth();
   const [connectedAccount, setConnectedAccount] = useState("");
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
 
@@ -44,10 +46,27 @@ export const Login = (): JSX.Element => {
       const signature = await walletUtils.signMessage(nonce, normalizedAccount);
 
       // Step 3: Login with signature
-      await loginWithWallet(normalizedAccount, signature, nonce);
-
-      // Success - redirect to owner dashboard
-      navigate("/owner-dashboard");
+      const returnedUser = await loginWithWallet(normalizedAccount, signature, nonce);
+      console.log('[Login] login returnedUser', returnedUser, 'context user before fetch:', user);
+      let finalUserInfo = returnedUser?.userInfo ?? null;
+      if (!finalUserInfo && returnedUser?.token) {
+        try {
+          finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
+        } catch (e) {
+          try { await fetchUserInfo(); } catch {}
+          finalUserInfo = returnedUser?.userInfo ?? null;
+        }
+      }
+      const finalUser = { ...(returnedUser || user), userInfo: finalUserInfo || returnedUser?.userInfo || user?.userInfo };
+      const role = ((finalUser?.userInfo?.role ?? (finalUser as any)?.role) || "").toString();
+      const isSetup = finalUser?.userInfo?.is_setup;
+      const shouldRequireSetup = role.toLowerCase() === "user" && isSetup === false;
+      console.log('[Login] finalUser for redirect', { role, isSetup, shouldRequireSetup, userInfo: finalUser.userInfo });
+      if (shouldRequireSetup) {
+        navigate("/profile-setup");
+      } else {
+        navigate(getDashboardRoute(role));
+      }
     } catch (err) {
       console.error("Login failed:", err);
     }

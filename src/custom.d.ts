@@ -13,6 +13,7 @@ interface ImportMetaEnv {
   readonly VITE_BACKEND_WALLET: string;
   readonly VITE_BACKEND_API_URL: string;
   readonly VITE_XCIP_HEADER: string;
+  readonly VITE_CONTRACT_ADDRESS: string;
 }
 
 interface ImportMeta {

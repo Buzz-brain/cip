@@ -7,11 +7,18 @@ import hourGlassUpIcon from "@assets/hour-glass-up.svg";
 import lockIcon from "@assets/lock.svg";
 import thumbprintIcon from "@assets/thumbprint.svg";
 
+export type ProofOfLifeMissedProps = {
+  open?: boolean;
+  onClose?: () => void;
+};
 
-export const ProofOfLifeCheckMissed = (): JSX.Element => {
+export const ProofOfLifeCheckMissed = (props?: ProofOfLifeMissedProps): JSX.Element | null => {
     const navigate = useNavigate();
   
+    if (props && props.open === false) return null;
+  
     const onConfirmLife = () => {
+      if (props?.onClose) return props.onClose();
       navigate("/critical-alert");
     };
   

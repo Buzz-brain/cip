@@ -1,5 +1,5 @@
 import { IExecDataProtector } from "@iexec/dataprotector";
-import { ethers } from "ethers";
+import { BrowserProvider, isAddress, ZeroAddress } from "ethers";
 
 // Environment validation function for runtime safety
 function assertEnv(name: string, value?: string): string {
@@ -98,12 +98,12 @@ export async function initDataProtector(provider?: any): Promise<IExecDataProtec
   }
 
   // Validate address format
-  if (!ethers.isAddress(IAPP_ADDRESS)) {
+  if (!isAddress(IAPP_ADDRESS)) {
     throw new Error("Invalid iExec app address format: VITE_IEXEC_APP_ADDRESS must be a valid Ethereum address");
   }
 
   // Validate that address is not zero address
-  if (IAPP_ADDRESS === ethers.ZeroAddress) {
+  if (IAPP_ADDRESS === ZeroAddress) {
     throw new Error("Invalid iExec app address: VITE_IEXEC_APP_ADDRESS cannot be the zero address");
   }
 
@@ -174,28 +174,28 @@ export async function grantIAppAccess(
 ) {
   const core = (await initDataProtector(_provider)).core;
   const web3Provider = getWeb3Provider(_provider);
-  const browserProvider = new ethers.BrowserProvider(web3Provider);
+  const browserProvider = new BrowserProvider(web3Provider);
   const signer = await browserProvider.getSigner();
   const signerAddress = await signer.getAddress();
 
   // Validation
-  if (!ethers.isAddress(protectedDataAddress)) {
+  if (!isAddress(protectedDataAddress)) {
     throw new Error("Invalid protectedData address");
   }
   if (!authorizedUser) {
     throw new Error("Authorized user not provided");
   }
-  if (!ethers.isAddress(authorizedUser)) {
+  if (!isAddress(authorizedUser)) {
     throw new Error("Invalid owner wallet address");
   }
   if (signerAddress.toLowerCase() !== authorizedUser.toLowerCase()) {
     throw new Error("Connected wallet does not match the owner wallet. Please switch to the owner wallet before granting access.");
   }
-  if (!ethers.isAddress(IAPP_ADDRESS)) {
+  if (!isAddress(IAPP_ADDRESS)) {
     throw new Error("Invalid iApp address");
   }
   // Defensive: ensure we never grant public access
-  if (authorizedUser.toLowerCase() === ethers.ZeroAddress.toLowerCase()) {
+  if (authorizedUser.toLowerCase() === ZeroAddress.toLowerCase()) {
     throw new Error("Refusing to grant public access - owner wallet cannot be zero address");
   }
 

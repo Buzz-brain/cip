@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
 import { Badge } from "@components/ui/badge";
 import { Link } from "react-router-dom";
-// Header removed — layout provides it
 import { AllPlan } from "./AllPlan";
+import { ProofOfLifeCheck } from "./ProofOfLifeConfig/ProofOfLifeCheck";
+import { ProofOfLifeCheckMissed } from "./ProofOfLifeConfig/ProofOfLifeCheckMissed";
+import { CriticalAlert } from "./ProofOfLifeConfig/CriticalAlert";
+import { getActiveProofPlan } from "../../../../lib/api/inherit";
+import { useAuth } from "../../../../context/useAuth";
 import { TrendingUp } from "lucide-react";
-import { Plus, Eye, EyeOff, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Eye, EyeOff } from "lucide-react";
 
 interface Plan {
   id: string;
@@ -107,6 +111,51 @@ export const OwnerDashboard = (): JSX.Element => {
   const navigate = useNavigate();
   const [showValues, setShowValues] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showPoLModal, setShowPoLModal] = useState(false);
+  const [modalType, setModalType] = useState<"check" | "missed" | "critical">("check");
+  const [polStatus, setPolStatus] = useState<null | "active" | "missed" | "critical">(null);
+  const auth = useAuth();
+
+  useEffect(() => {
+    let mounted = true;
+    async function fetchPlan() {
+      try {
+        const plan = await getActiveProofPlan(auth?.user?.token);
+        if (!mounted) return;
+        if (!plan) {
+          setPolStatus(null);
+          return;
+        }
+
+        const now = Date.now();
+        const baseTs = (plan.last_active_at || plan.created_at || plan.updated_at || 0) * 1000;
+        const inactivityDays = Number(plan.inactivity_period_days || plan.inactivity_period || 30);
+        const graceDays = Number(plan.grace_period_days || plan.grace_period || 2);
+
+        const msDay = 24 * 60 * 60 * 1000;
+        const inactivityTs = baseTs + inactivityDays * msDay;
+        const expiryTs = baseTs + (inactivityDays + graceDays) * msDay;
+
+        if (now <= inactivityTs) {
+          setPolStatus("active");
+        } else if (now <= expiryTs) {
+          setPolStatus("missed");
+          setModalType("missed");
+          setShowPoLModal(true);
+        } else {
+          setPolStatus("critical");
+          setModalType("critical");
+          setShowPoLModal(true);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch proof plan", err);
+      }
+    }
+    fetchPlan();
+    return () => {
+      mounted = false;
+    };
+  }, [auth?.user?.token]);
 //   const [currentPage, setCurrentPage] = useState(1);
 
   return (
@@ -277,11 +326,25 @@ export const OwnerDashboard = (): JSX.Element => {
                   </div>
 
                   <Button 
-                    onClick={() => navigate("/proof-of-life-check")}
+                    onClick={() => {
+                      if (polStatus === "missed") setModalType("missed");
+                      else if (polStatus === "critical") setModalType("critical");
+                      else setModalType("check");
+                      setShowPoLModal(true);
+                    }}
                     className="w-full bg-[#393028] hover:bg-[#393028] text-white [font-family:'Noto_Sans',Helvetica] mt-4"
                   >
                     Confirm Now
                   </Button>
+                  {showPoLModal && modalType === "check" && (
+                    <ProofOfLifeCheck open onClose={() => setShowPoLModal(false)} />
+                  )}
+                  {showPoLModal && modalType === "missed" && (
+                    <ProofOfLifeCheckMissed open onClose={() => setShowPoLModal(false)} />
+                  )}
+                  {showPoLModal && modalType === "critical" && (
+                    <CriticalAlert open onClose={() => setShowPoLModal(false)} />
+                  )}
                 </CardContent>
               </Card>
 

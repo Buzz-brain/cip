@@ -27,16 +27,18 @@ export const AssignHealthOracleExec = (): JSX.Element => {
       return;
     }
 
-    // Normalize wallet address to lowercase for consistency
-    const normalizedWallet = normalizeWalletAddress(wallet);
-
-    // persist to plan context and log
-    setPlanField("executorName" as any, fullName.trim());
-    setPlanField("executorEmail" as any, email.trim());
-    setPlanField("executorWallet" as any, normalizedWallet);
-    console.log('[AssignHealthOracleExec] executor:', { fullName, email, wallet: normalizedWallet });
-
-    navigate("/select-accepted-docs", { state: { executor: { fullName, email, wallet: normalizedWallet } } });
+    // normalize wallet to checksum format
+    try {
+      const checksum = normalizeWalletAddress(wallet.trim());
+      setPlanField("executorName" as any, fullName.trim());
+      setPlanField("executorEmail" as any, email.trim());
+      setPlanField("executorWallet" as any, checksum);
+      console.log('[AssignHealthOracleExec] executor:', { fullName, email, wallet: checksum });
+      navigate("/select-accepted-docs", { state: { executor: { fullName, email, wallet: checksum } } });
+    } catch (err) {
+      toast.error("Invalid executor wallet address. Please provide a valid Ethereum address.");
+      return;
+    }
   };
 
   return (

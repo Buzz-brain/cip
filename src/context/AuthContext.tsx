@@ -3,7 +3,6 @@
 
 import React, { createContext, useState, useCallback, ReactNode, useEffect } from "react";
 import * as authAPI from "../lib/api/auth";
-import { normalizeWalletAddress } from "../lib/utils";
 
 const STORAGE_KEY = "cip_auth_user";
 
@@ -20,7 +19,7 @@ export interface AuthContextType {
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
-  loginWithWallet: (publicKey: string, signature: string, message: string) => Promise<void>;
+  loginWithWallet: (publicKey: string, signature: string, message: string) => Promise<User>;
   getNonce: (publicKey: string) => Promise<string>;
   logout: () => void;
   clearError: () => void;
@@ -70,9 +69,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const getNonce = useCallback(async (publicKey: string): Promise<string> => {
     try {
       setError(null);
-      // Normalize wallet address to lowercase for consistency
-      const normalizedPublicKey = normalizeWalletAddress(publicKey);
-      const nonce = await authAPI.getNonce(normalizedPublicKey);
+      const nonce = await authAPI.getNonce(publicKey);
       return nonce;
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to get nonce";
@@ -87,17 +84,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         setLoading(true);
         setError(null);
-        // Normalize wallet address to lowercase for consistency
-        const normalizedPublicKey = normalizeWalletAddress(publicKey);
-        const loginResponse = await authAPI.login({ publicKey: normalizedPublicKey, signature, message });
+      const loginResponse = await authAPI.login({ publicKey, signature, message });
 
-        // API returns a token string
-        const token = loginResponse as string;
-        if (!token || typeof token !== "string") {
-          throw new Error("Login failed: invalid auth token");
-        }
+      // API returns a token string
+      const token = loginResponse as string;
+      if (!token || typeof token !== "string") {
+        throw new Error("Login failed: invalid auth token");
+      }
 
-        const newUser: User = { publicKey: normalizedPublicKey, token };
+        const newUser: User = { publicKey, token };
         // Optionally fetch user info after login
         try {
           const userInfo = await authAPI.getUserInfo(token);
@@ -109,7 +104,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.warn("Failed to fetch user info after login:", err);
         }
 
+        // Debug: log user object right before persisting
+        try { console.log('[AuthContext] loginWithWallet - setting user', { publicKey, token, userInfo: newUser.userInfo }); } catch {}
         setUser(newUser);
+        return newUser;
       } catch (err) {
         const message = err instanceof Error ? err.message : "Login failed";
         setError(message);
@@ -131,6 +129,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(true);
       setError(null);
       const userInfo = await authAPI.getUserInfo(user.token);
+      // Debug: log fetched userInfo
+      try { console.log('[AuthContext] fetchUserInfo - fetched', userInfo); } catch {}
       setUser((prev) =>
         prev
           ? { ...prev, userInfo, name: userInfo?.full_name || userInfo?.name || prev.name, email: userInfo?.email || prev.email }

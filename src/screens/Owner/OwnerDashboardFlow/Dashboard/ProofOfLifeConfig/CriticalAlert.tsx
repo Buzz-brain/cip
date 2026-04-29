@@ -5,8 +5,14 @@ import { Link } from "react-router-dom";
 import logoImg from "@assets/cip-logo.svg";
 import thumbprintIcon from "@assets/thumbprint.svg";
 
-export const CriticalAlert = (): JSX.Element => {
+export type CriticalAlertProps = {
+  open?: boolean;
+  onClose?: () => void;
+};
+
+export const CriticalAlert = (props?: CriticalAlertProps): JSX.Element | null => {
   const navigate = useNavigate();
+  if (props && props.open === false) return null;
   const [timeRemaining, setTimeRemaining] = useState({
     days: 0,
     hours: 23,
@@ -135,7 +141,9 @@ export const CriticalAlert = (): JSX.Element => {
               </div>
 
               <button 
-                onClick={() => navigate("/owner-dashboard")}
+                onClick={() => {
+                  if (props?.onClose) props.onClose(); else navigate("/owner-dashboard");
+                }}
                 className="w-full bg-[#EC1313] hover:bg-red-700 text-white py-4 rounded-lg font-bold text-lg transition mb-4 flex items-center justify-center gap-2"
               >
                                 <img src={thumbprintIcon} className="w-5 h-5" alt="Thumbprint" />

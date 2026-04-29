@@ -1,7 +1,6 @@
-import React, { createContext, useCallback, useEffect, useMemo, useState, ReactNode } from "react";
+import React, { createContext, useCallback, useEffect, useMemo, useState, useRef, ReactNode } from "react";
 import { useAuth } from "./useAuth";
-import { normalizeWalletAddress } from "../lib/utils";
-const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "https://xcip.name.ng";
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
 
 export type BeneficiaryPlan = {
@@ -62,6 +61,14 @@ export interface PlanContextType {
   clearPlan: () => void;
   getProtectorPayload: () => Record<string, string>;
   submitPlan: (opts?: { signal?: AbortSignal }) => Promise<any>;
+  /**
+   * Subscribe to plan-updated events. Returns an unsubscribe function.
+   */
+  subscribePlansUpdated?: (cb: (detail?: any) => void) => () => void;
+  /**
+   * Emit a plans-updated event to all subscribers.
+   */
+  emitPlansUpdated?: (detail?: any) => void;
 }
 
 const STORAGE_KEY = "cip_plan_draft";
@@ -103,6 +110,7 @@ const normalizeBeneficiary = (beneficiary: BeneficiaryPlan, index: number) => ({
 export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
   const { user } = useAuth();
   const [plan, setPlan] = useState<PlanCreationState>(initialState);
+  const listenersRef = useRef<Set<(detail?: any) => void>>(new Set());
 
   useEffect(() => {
     const stored = typeof window !== "undefined" && window.localStorage.getItem(STORAGE_KEY);
@@ -211,14 +219,14 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
 
     const url = `${BACKEND_API_URL}/inherit/create-inheritance`;
 
-    const ownerWallet = normalizeWalletAddress(plan.ownerWallet || user?.publicKey || "");
+    const ownerWallet = plan.ownerWallet || user?.publicKey || "";
 
     // prefer explicitly assigned executor (used by Health Oracle flow)
     const executorFromPlan = plan.executorName || plan.executorEmail || plan.executorWallet
       ? {
           full_name: plan.executorName || "",
           email: plan.executorEmail || "",
-          wallet: normalizeWalletAddress(plan.executorWallet || ""),
+          wallet: plan.executorWallet || "",
         }
       : null;
 
@@ -234,21 +242,49 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
       name: b.name,
       relationship: b.relationship,
       email: b.email || "",
-      wallet: normalizeWalletAddress(b.walletAddress),
+      wallet: b.walletAddress,
       allocation_percentage: b.allocation,
     }));
 
+    // Build payload according to selected plan type (backend expects different shapes)
+    const planType = plan.planType;
     const body: Record<string, any> = {
       crypto_asset: plan.cryptoAsset || "",
-      plan_type: mapPlanTypeToDataProtectorType(plan.planType),
-      beneficiaries: beneficiariesPayload,
-      executor,
+      plan_type: mapPlanTypeToDataProtectorType(planType),
     };
 
-    if (typeof plan.releaseTimestamp === "number") body.release_timestamp = plan.releaseTimestamp;
-    if (typeof plan.inactivityPeriodDays === "number") body.inactivity_period_days = plan.inactivityPeriodDays;
-    if (plan.proofOfLifeMethod) body.proof_of_life = plan.proofOfLifeMethod;
-    if (typeof plan.gracePeriod === "number") body.grace_period = plan.gracePeriod;
+    // common: beneficiaries when present
+    if (beneficiariesPayload && beneficiariesPayload.length > 0) {
+      body.beneficiaries = beneficiariesPayload;
+    }
+
+    switch (planType) {
+      case "timelock":
+        // timelock requires release_timestamp and beneficiaries
+        if (typeof plan.releaseTimestamp === "number") body.release_timestamp = plan.releaseTimestamp;
+        break;
+
+      case "health_oracle":
+        // health oracle requires an executor and beneficiaries
+        if (executor && executor.length > 0) body.executor = executor;
+        break;
+
+      case "inactivity":
+        // inactivity requires inactivity_period_days, proof_of_life, grace_period, beneficiaries
+        if (typeof plan.inactivityPeriodDays === "number") body.inactivity_period_days = plan.inactivityPeriodDays;
+        if (plan.proofOfLifeMethod) body.proof_of_life = plan.proofOfLifeMethod;
+        if (typeof plan.gracePeriod === "number") body.grace_period = plan.gracePeriod;
+        break;
+
+      default:
+        // fallback: include optional fields when present
+        if (typeof plan.releaseTimestamp === "number") body.release_timestamp = plan.releaseTimestamp;
+        if (typeof plan.inactivityPeriodDays === "number") body.inactivity_period_days = plan.inactivityPeriodDays;
+        if (plan.proofOfLifeMethod) body.proof_of_life = plan.proofOfLifeMethod;
+        if (typeof plan.gracePeriod === "number") body.grace_period = plan.gracePeriod;
+        if (executor && executor.length > 0) body.executor = executor;
+        break;
+    }
 
     // log body for debugging / audit trail before sending to backend
     console.log('[PlanContext] submitPlan body:', body);
@@ -293,6 +329,15 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
       clearPlan,
       getProtectorPayload,
       submitPlan,
+      subscribePlansUpdated: (cb: (detail?: any) => void) => {
+        listenersRef.current.add(cb);
+        return () => listenersRef.current.delete(cb);
+      },
+      emitPlansUpdated: (detail?: any) => {
+        listenersRef.current.forEach((cb) => {
+          try { cb(detail); } catch (e) { console.error('plansUpdated listener error', e); }
+        });
+      },
     }),
     [plan, setPlanField, setPlanType, setOwnerInfo, setAssets, setBeneficiaries, addBeneficiary, updateBeneficiary, removeBeneficiary, setProtectedDataAddress, clearPlan, getProtectorPayload, submitPlan],
   );
