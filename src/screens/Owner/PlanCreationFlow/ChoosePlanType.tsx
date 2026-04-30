@@ -16,7 +16,6 @@ import staggeredIcon from "@assets/staggered.svg";
 import groupTogetherIcon from "@assets/group-together.svg";
 import multiSigIcon from "@assets/multi-sig.svg";
 import { Button } from "@components/ui/button";
-// Header removed — layout provides it
 
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
@@ -207,16 +206,16 @@ export const ChoosePlanType = (): JSX.Element => {
                         <section className="flex flex-col items-start gap-3 w-full">
                             <header className="flex items-end justify-between w-full">
                                 <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base tracking-[0] leading-6 whitespace-nowrap">
-                                    Step 1 of 5: Selection
+                                    Step 3 of 5: Choose Plan Type
                                 </h2>
 
                                 <span className="text-right text-orange-600 text-sm font-medium">
-                                    20% Completed
+                                    60% Completed
                                 </span>
                             </header>
 
                             <Progress
-                                value={20}
+                                value={60}
                                 className="w-full h-2 bg-[#54483b]"
                                 indicatorClassName="bg-[#ff6600]"
                             />

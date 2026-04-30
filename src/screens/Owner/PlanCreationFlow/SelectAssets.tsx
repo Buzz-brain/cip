@@ -142,21 +142,21 @@ export const SelectAssets = (): JSX.Element => {
         navigate('/beneficiaries');
     };
     return (
-        <section className="flex-1 flex items-center justify-center px-8 py-12">
+        <section className="flex-1 flex items-center justify-center px-4 py-4">
             <div className="w-full max-w-6xl">
                 <section className="flex flex-col items-start gap-3 w-full">
                     <header className="flex items-end justify-between w-full">
                         <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base tracking-[0] leading-6 whitespace-nowrap">
-                            Step 2 of 5: Select Assets
+                            Step 1 of 5: Select Assets
                         </h2>
 
                         <span className="[font-family:'Manrope',Helvetica] font-normal text-[#afa59c] text-sm leading-5 tracking-[0] whitespace-nowrap">
-                            40% Completed
+                            20% Completed
                         </span>
                     </header>
 
                     <Progress
-                        value={40}
+                        value={20}
                         className="w-full h-2 bg-[#54483b]"
                         indicatorClassName="bg-[#ff6600]"
                     />

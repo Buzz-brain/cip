@@ -76,36 +76,7 @@ const plans: Plan[] = [
   },
 ];
 
-const activities: ActivityItem[] = [
-  {
-    id: "1",
-    icon: "✓",
-    title: "Heartbeat Confirmed",
-    description: "Automated check passed successfully.",
-    timestamp: "2 hours ago",
-  },
-  {
-    id: "2",
-    icon: "📋",
-    title: "Plan #0045 Edited",
-    description: "Beneficiary allocation updated.",
-    timestamp: "1 day ago",
-  },
-  {
-    id: "3",
-    icon: "⛽",
-    title: "Gas Top-up",
-    description: "0.05 ETH added to execution wallet.",
-    timestamp: "3 days ago",
-  },
-  {
-    id: "4",
-    icon: "📦",
-    title: "New Asset Registered",
-    description: "NFT collection added to registry.",
-    timestamp: "5 days ago",
-  },
-];
+const activities: ActivityItem[] = [];
 
 export const OwnerDashboard = (): JSX.Element => {
   const navigate = useNavigate();
@@ -114,6 +85,7 @@ export const OwnerDashboard = (): JSX.Element => {
   const [showPoLModal, setShowPoLModal] = useState(false);
   const [modalType, setModalType] = useState<"check" | "missed" | "critical">("check");
   const [polStatus, setPolStatus] = useState<null | "active" | "missed" | "critical">(null);
+  const [polLoading, setPolLoading] = useState(true);
   const auth = useAuth();
 
   useEffect(() => {
@@ -124,6 +96,7 @@ export const OwnerDashboard = (): JSX.Element => {
         if (!mounted) return;
         if (!plan) {
           setPolStatus(null);
+          setPolLoading(false);
           return;
         }
 
@@ -147,8 +120,11 @@ export const OwnerDashboard = (): JSX.Element => {
           setModalType("critical");
           setShowPoLModal(true);
         }
+        setPolLoading(false);
       } catch (err) {
         console.warn("Failed to fetch proof plan", err);
+        setPolStatus(null);
+        setPolLoading(false);
       }
     }
     fetchPlan();
@@ -165,7 +141,15 @@ export const OwnerDashboard = (): JSX.Element => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl mb-2">
-            Welcome back, igwe.eth
+            Welcome back, {
+              auth.user?.userInfo?.full_name 
+                ? auth.user.userInfo.full_name 
+                : auth.user?.userInfo?.email
+                ? auth.user.userInfo.email
+                : auth.user?.publicKey 
+                ? auth.user.publicKey.slice(0, 6) + "..." + auth.user.publicKey.slice(-4)
+                : "User"
+            }
           </h1>
           <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D]">
             Manage your active inheritance plans and monitor asset security.
@@ -189,7 +173,7 @@ export const OwnerDashboard = (): JSX.Element => {
               </>
             )}
           </button>
-          <Link to="/select-assets">
+          <Link to="/owner-dashboard/select-assets">
             <Button className="px-5 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Noto_Sans',Helvetica] text-md gap-2">
               <Plus className="w-4 h-4" />
               Create New Plan
@@ -286,56 +270,82 @@ export const OwnerDashboard = (): JSX.Element => {
               {/* Proof of Life Section */}
               <Card className="bg-gradient-to-b from-[#2B1E15] to-[#916547] border-[#554433]">
                 <CardContent className="p-6 space-y-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
-                        Proof of Life
-                      </h3>
-                      <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm mt-1">
-                        Your heartbeat status is active. Next confirmation required via wallet signature.
-                      </p>
+                  {polLoading ? (
+                    <div className="space-y-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 space-y-2">
+                          <div className="h-6 bg-[#3a2f28] rounded w-48 animate-pulse"></div>
+                          <div className="h-4 bg-[#3a2f28] rounded w-full animate-pulse"></div>
+                        </div>
+                        <div className="h-6 bg-[#3a2f28] rounded w-24 animate-pulse"></div>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="h-4 bg-[#3a2f28] rounded w-32 animate-pulse"></div>
+                          <div className="h-4 bg-[#3a2f28] rounded w-12 animate-pulse"></div>
+                        </div>
+                        <div className="w-full bg-[#3a2f28] rounded-full h-2 animate-pulse"></div>
+                        <div className="h-3 bg-[#3a2f28] rounded w-40 animate-pulse"></div>
+                      </div>
+                      <div className="h-10 bg-[#3a2f28] rounded animate-pulse"></div>
                     </div>
-                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30 [font-family:'Noto_Sans',Helvetica] text-xs">
-                      {/* ● ONLINE */}
-                         <div className="[font-family:'Noto_Sans',Helvetica] flex items-center gap-1 text-xs">
-                    <div className="w-2 h-2 bg-[#22C55E] rounded-full animate-pulse"></div>
-                    <p>ONLINE</p>
-                </div>
-                    </Badge>
-                    
-                  </div>
+                  ) : (
+                    <>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                            Proof of Life
+                          </h3>
+                          <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm mt-1">
+                            {polStatus === null ? "No active proof-of-life plan. Create a plan to activate." : polStatus === "active" ? "Your heartbeat status is active. Next confirmation required via wallet signature." : polStatus === "missed" ? "Proof-of-life check missed. Immediate action required." : "Critical: Please confirm your status immediately."}
+                          </p>
+                        </div>
+                        {polStatus && (
+                          <Badge className={`${polStatus === "active" ? "bg-green-500/20 text-green-400 border-green-500/30" : polStatus === "missed" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"} [font-family:'Noto_Sans',Helvetica] text-xs`}>
+                            <div className="[font-family:'Noto_Sans',Helvetica] flex items-center gap-1 text-xs">
+                              <div className={`w-2 h-2 rounded-full animate-pulse ${ polStatus === "active" ? "bg-[#22C55E]" : polStatus === "missed" ? "bg-[#EAB308]" : "bg-[#EF4444]"}`}></div>
+                              <p>{polStatus === "active" ? "ONLINE" : polStatus === "missed" ? "MISSED" : "CRITICAL"}</p>
+                            </div>
+                          </Badge>
+                        )}
+                      </div>
 
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm">
-                        Heartbeat Progress
-                      </span>
-                      <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
-                        85%
-                      </span>
-                    </div>
-                    <div className="w-full bg-[#393028] rounded-full h-2 overflow-hidden">
-                      <div
-                        className="bg-[#FF6600] h-full rounded-full"
-                        style={{ width: "85%" }}
-                      />
-                    </div>
-                    <div className="[font-family:'Noto_Sans',Helvetica] text-right text-[#B9B09D] text-xs">
-                      Refreshes in 48 hours
-                    </div>
-                  </div>
+                      {polStatus && (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm">
+                              Heartbeat Progress
+                            </span>
+                            <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                              {polStatus === "active" ? "85%" : polStatus === "missed" ? "45%" : "10%"}
+                            </span>
+                          </div>
+                          <div className="w-full bg-[#393028] rounded-full h-2 overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${ polStatus === "active" ? "bg-[#FF6600]" : polStatus === "missed" ? "bg-[#EAB308]" : "bg-[#EF4444]"}`}
+                              style={{ width: polStatus === "active" ? "85%" : polStatus === "missed" ? "45%" : "10%" }}
+                            />
+                          </div>
+                          <div className="[font-family:'Noto_Sans',Helvetica] text-right text-[#B9B09D] text-xs">
+                            {polStatus === "active" ? "Refreshes in 48 hours" : polStatus === "missed" ? "Action required immediately" : "Critical - action needed now"}
+                          </div>
+                        </div>
+                      )}
 
-                  <Button 
-                    onClick={() => {
-                      if (polStatus === "missed") setModalType("missed");
-                      else if (polStatus === "critical") setModalType("critical");
-                      else setModalType("check");
-                      setShowPoLModal(true);
-                    }}
-                    className="w-full bg-[#393028] hover:bg-[#393028] text-white [font-family:'Noto_Sans',Helvetica] mt-4"
-                  >
-                    Confirm Now
-                  </Button>
+                      <Button 
+                        onClick={() => {
+                          if (polStatus === "missed") setModalType("missed");
+                          else if (polStatus === "critical") setModalType("critical");
+                          else setModalType("check");
+                          setShowPoLModal(true);
+                        }}
+                        className="w-full bg-[#393028] hover:bg-[#393028] text-white [font-family:'Noto_Sans',Helvetica] mt-4"
+                        disabled={!polStatus}
+                      >
+                        {polStatus ? "Confirm Now" : "No Action Required"}
+                      </Button>
+                    </>
+                  )}
                   {showPoLModal && modalType === "check" && (
                     <ProofOfLifeCheck open onClose={() => setShowPoLModal(false)} />
                   )}
@@ -362,30 +372,38 @@ export const OwnerDashboard = (): JSX.Element => {
                   </a>
                 </div>
 
-                <div className="space-y-2" >
-                  {activities.map((activity) => (
-                    <Card
-                      key={activity.id}
-                      className="bg-[#2D241C] border-[#393028] hover:border-[#554433] transition-colors"
-                    >
-                      <CardContent className="p-4 flex items-center gap-4">
-                        <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center text-green-400 text-sm flex-shrink-0">
-                          {activity.icon}
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
-                            {activity.title}
-                          </h4>
-                          <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs mt-1">
-                            {activity.description}
-                          </p>
-                        </div>
-                        <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs flex-shrink-0">
-                          {activity.timestamp}
-                        </span>
+                <div className="space-y-2">
+                  {activities.length > 0 ? (
+                    activities.map((activity) => (
+                      <Card
+                        key={activity.id}
+                        className="bg-[#2D241C] border-[#393028] hover:border-[#554433] transition-colors"
+                      >
+                        <CardContent className="p-4 flex items-center gap-4">
+                          <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center text-green-400 text-sm flex-shrink-0">
+                            {activity.icon}
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
+                              {activity.title}
+                            </h4>
+                            <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs mt-1">
+                              {activity.description}
+                            </p>
+                          </div>
+                          <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs flex-shrink-0">
+                            {activity.timestamp}
+                          </span>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <Card className="bg-[#2D241C] border-[#393028]">
+                      <CardContent className="p-8 flex items-center justify-center">
+                        <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">No recent activity</p>
                       </CardContent>
                     </Card>
-                  ))}
+                  )}
                 </div>
               </div>
       </div>

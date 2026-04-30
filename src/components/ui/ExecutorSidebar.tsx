@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Icon } from 'lucide-react';
 
 export type SidebarItem = {
   id: string;

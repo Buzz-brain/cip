@@ -101,7 +101,7 @@ import { MPCShareManagement } from "./screens/Executor/MPCShareManagement.tsx";
 import { ExecutorPlanXp } from "./screens/Executor/ExecutorPlanXp.tsx";
 import { SettingsAndSecurity } from "./screens/Executor/SettingsAndSecurity.tsx";
 import { ExecutorSecureStorage } from "./screens/Executor/ExecutorSecureStorage.tsx";
-import ExecutorLayout from "./screens/Executor/ExecutorLayout";
+import ExecutorLayout from "./screens/Executor/ExecutorLayout.tsx";
 
 
 import { AdministrativeLogin } from "./screens/AdministrativeFlow/AdministrativeLogin";

@@ -34,14 +34,14 @@ export const SetTimeLock = (): JSX.Element => {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#afa49c] text-sm tracking-[0] leading-5">
-              Step 2 of 5: Trigger Setup
+              Step 4 of 5: Trigger Setup
             </span>
             <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
-              40% Completed
+              80% Completed
             </span>
           </div>
           <div className="w-full h-2 bg-[#27211c] rounded-full overflow-hidden">
-            <div className="h-full w-[40%] bg-[#ff6600]"></div>
+            <div className="h-full w-[80%] bg-[#ff6600]"></div>
           </div>
         </div>
 

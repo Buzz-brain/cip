@@ -30,6 +30,27 @@ const chainIconFor = (chain?: string) => {
   }
 };
 
+const getInitials = (name?: string): string => {
+  if (!name || name === "—") return "—";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length > 1) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return (parts[0][0] + (parts[0][1] || "")).toUpperCase();
+};
+
+const shouldShowField = (planType: string | undefined, fieldName: string): boolean => {
+  const hiddenFieldsByType: Record<string, Set<string>> = {
+    timelock: new Set(["proof_of_life", "grace_period", "inactivity_period_days", "last_active_at"]),
+    health_oracle: new Set(["proof_of_life", "grace_period", "release_timestamp", "inactivity_period_days", "last_active_at"]),
+    inactivity: new Set(["release_timestamp"]),
+  };
+
+  const planTypeKey = (planType || "").toLowerCase();
+  const hiddenFields = hiddenFieldsByType[planTypeKey] || new Set();
+  return !hiddenFields.has(fieldName);
+};
+
 export const AllPlan: React.FC<Props> = ({ showValues }) => {
   const { user } = useAuth();
   const planCtx = usePlan();
@@ -44,7 +65,11 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
   const [deleting, setDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [highlightedPlanId, setHighlightedPlanId] = useState<string | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState<"All Plans" | "Active" | "Pending" | "Triggered">("All Plans");
   const highlightTimerRef = React.useRef<number | null>(null);
+
+  const tabs = ["All Plans", "Active", "Pending", "Triggered"] as const;
+  const tabIndex = tabs.indexOf(selectedFilter);
 
   const formatTs = (ts?: number | null) => {
     if (!ts) return "—";
@@ -241,29 +266,42 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
   };
 
   const filtered = plans.filter((p) => {
+    // Apply status filter
+    if (selectedFilter !== "All Plans" && p.status !== selectedFilter) {
+      return false;
+    }
+    // Apply search filter
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
+    const beneficiaryNames = p.beneficiariesPreview?.map((b: any) => (b.name || b.wallet || "")).join(" ") || "";
     return (
       String(p.id).toLowerCase().includes(q) ||
       String(p.name).toLowerCase().includes(q) ||
-      String(p.beneficiary?.name || "").toLowerCase().includes(q)
+      String(p.beneficiary?.name || "").toLowerCase().includes(q) ||
+      beneficiaryNames.toLowerCase().includes(q)
     );
   });
+
+  const getNoPlansMessage = (): string => {
+    if (selectedFilter === "All Plans") return "No plans";
+    return `No ${selectedFilter.toLowerCase()} plan`;
+  };
 
   return (
     <Card className="bg-[#261D18] border-[#393028]">
       <CardContent className="p-6 space-y-6">
         <div className="flex items-center gap-4">
-          <button className="px-4 py-2 rounded-lg bg-[#393028] border border-[#FF660080] text-white [font-family:'Noto_Sans',Helvetica] font-medium text-sm">
-            All Plans
-          </button>
-          {[
-            "Active",
-            "Pending",
-            "Triggered",
-          ].map((status) => (
-            <button key={status} className="px-4 py-2 rounded-lg text-[#B9B09D] hover:bg-[#2a1f10] [font-family:'Noto_Sans',Helvetica] text-sm">
-              {status}
+          {tabs.map((tab) => (
+            <button 
+              key={tab}
+              onClick={() => setSelectedFilter(tab)}
+              className={`px-4 py-2 rounded-lg [font-family:'Noto_Sans',Helvetica] font-medium text-sm transition-colors ${
+                selectedFilter === tab
+                  ? "bg-[#393028] border border-[#FF660080] text-white"
+                  : "text-[#B9B09D] hover:bg-[#2a1f10] border border-transparent"
+              }`}
+            >
+              {tab}
             </button>
           ))}
 
@@ -303,7 +341,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                       </div>
                       <div>
                         <div className="text-xs text-[#8b7664]">Owner Wallet</div>
-                        <div className="text-white">{selectedPlanDetail.plan?.owner_wallet}</div>
+                        <div className="text-white break-all font-mono text-xs">{selectedPlanDetail.plan?.owner_wallet}</div>
                       </div>
                       <div>
                         <div className="text-xs text-[#8b7664]">Asset</div>
@@ -314,19 +352,23 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                         <div className="text-xs text-[#8b7664]">Contract Plan ID</div>
                         <div className="text-white">{selectedPlanDetail.plan?.contract_plan_id ?? '—'}</div>
                       </div>
+                      {shouldShowField(selectedPlanDetail.plan?.plan_type, 'proof_of_life') && (
                       <div>
                         <div className="text-xs text-[#8b7664]">Proof of Life</div>
                         <div className="text-white">{selectedPlanDetail.plan?.proof_of_life ?? '—'}</div>
                       </div>
+                      )}
 
                       <div>
                         <div className="text-xs text-[#8b7664]">Contract Address</div>
-                        <div className="text-white">{selectedPlanDetail.plan?.contract_address ?? '—'}</div>
+                         <div className="text-white break-all font-mono text-xs">{selectedPlanDetail.plan?.contract_address ?? '—'}</div>
                       </div>
+                      {shouldShowField(selectedPlanDetail.plan?.plan_type, 'grace_period') && (
                       <div>
                         <div className="text-xs text-[#8b7664]">Grace Period</div>
                         <div className="text-white">{selectedPlanDetail.plan?.grace_period ?? '—'}</div>
-                      </div>
+                      </div> 
+                      )}
 
                       <div>
                         <div className="text-xs text-[#8b7664]">Oracle Source</div>
@@ -346,28 +388,34 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                         <div className="text-white">{selectedPlanDetail.plan?.should_release ? 'Yes' : 'No'}</div>
                       </div>
 
+                      {shouldShowField(selectedPlanDetail.plan?.plan_type, 'release_timestamp') && (
                       <div>
                         <div className="text-xs text-[#8b7664]">Release Timestamp</div>
                         <div className="text-white">{formatTs(selectedPlanDetail.plan?.release_timestamp)}</div>
                       </div>
+                      )}
                       <div>
                         <div className="text-xs text-[#8b7664]">Is Released</div>
                         <div className="text-white">{selectedPlanDetail.plan?.is_released ? 'Yes' : 'No'}</div>
                       </div>
 
+                      {shouldShowField(selectedPlanDetail.plan?.plan_type, 'inactivity_period_days') && (
                       <div>
                         <div className="text-xs text-[#8b7664]">Inactivity Period (days)</div>
                         <div className="text-white">{selectedPlanDetail.plan?.inactivity_period_days ?? '—'}</div>
                       </div>
+                      )}
                       <div>
                         <div className="text-xs text-[#8b7664]">Created At</div>
                         <div className="text-white">{formatTs(selectedPlanDetail.plan?.created_at)}</div>
                       </div>
 
+                      {shouldShowField(selectedPlanDetail.plan?.plan_type, 'last_active_at') && (
                       <div>
                         <div className="text-xs text-[#8b7664]">Last Active</div>
                         <div className="text-white">{formatTs(selectedPlanDetail.plan?.last_active_at)}</div>
                       </div>
+                      )}
                     </div>
 
                     <div className="flex gap-2 mt-4">
@@ -458,15 +506,18 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
               </tr>
             </thead>
             <tbody>
-              {(loading ? Array.from({ length: 3 }).map((_, i) => (
-                <tr key={`s-${i}`} className="border-b border-[#393028]">
-                  <td className="py-4 px-4"><div className="h-6 bg-[#2f241c] rounded w-32" /></td>
-                  <td className="py-4 px-4"><div className="h-4 bg-[#2f241c] rounded w-24" /></td>
-                  <td className="py-4 px-4"><div className="h-4 bg-[#2f241c] rounded w-16" /></td>
-                  <td className="py-4 px-4"><div className="h-4 bg-[#2f241c] rounded w-12" /></td>
-                  <td className="py-4 px-4"><div className="h-4 bg-[#2f241c] rounded w-8" /></td>
-                </tr>
-              )) : filtered.map((plan) => (
+              {loading ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <tr key={`s-${i}`} className="border-b border-[#393028]">
+                    <td className="py-4 px-4"><div className="h-6 bg-[#2f241c] rounded w-32" /></td>
+                    <td className="py-4 px-4"><div className="h-4 bg-[#2f241c] rounded w-24" /></td>
+                    <td className="py-4 px-4"><div className="h-4 bg-[#2f241c] rounded w-16" /></td>
+                    <td className="py-4 px-4"><div className="h-4 bg-[#2f241c] rounded w-12" /></td>
+                    <td className="py-4 px-4"><div className="h-4 bg-[#2f241c] rounded w-8" /></td>
+                  </tr>
+                ))
+              ) : filtered.length > 0 ? (
+                filtered.map((plan) => (
                 <tr key={plan.id} className={`border-b border-[#393028] hover:bg-[#0d0b08] transition-colors cursor-pointer ${plan.id === highlightedPlanId ? 'ring-2 ring-green-400/40 bg-green-900/5' : ''}`} onClick={async () => {
                   const idNum = plan.raw?.id ?? plan.raw?.contract_plan_id;
                   if (!idNum) {
@@ -512,13 +563,18 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                     </div>
                   </td>
                   <td className="py-4 px-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">{plan.beneficiary.avatar}</div>
-                      <span className="[font-family:'Noto_Sans',Helvetica] text-white text-sm">{(plan.beneficiariesPreview && plan.beneficiariesPreview.length > 0) ? (plan.beneficiariesPreview[0].name || plan.beneficiariesPreview[0].wallet) : plan.beneficiary.name}</span>
-                      {plan.beneficiariesPreview && plan.beneficiariesPreview.length > 1 && (
-                        <span className="ml-2 text-xs text-[#8b7664]">+{plan.beneficiariesPreview.length - 1} more</span>
-                      )}
-                    </div>
+                    {(() => {
+                      const beneficiaryName = (plan.beneficiariesPreview && plan.beneficiariesPreview.length > 0) ? (plan.beneficiariesPreview[0].name || plan.beneficiariesPreview[0].wallet) : plan.beneficiary.name;
+                      return (
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">{getInitials(beneficiaryName)}</div>
+                          <span className="[font-family:'Noto_Sans',Helvetica] text-white text-sm">{beneficiaryName}</span>
+                          {plan.beneficiariesPreview && plan.beneficiariesPreview.length > 1 && (
+                            <span className="ml-2 text-xs text-[#8b7664]">+{plan.beneficiariesPreview.length - 1} more</span>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </td>
                   <td className="py-4 px-4">
                     <div>
@@ -531,7 +587,14 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                   </td>
                   <td className="py-4 px-4"><span className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">{plan.triggerDays}h</span></td>
                 </tr>
-              )))}
+              ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="py-8 px-4 text-center">
+                    <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D]">{getNoPlansMessage()}</p>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -539,9 +602,28 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
         {/* Pagination */}
         <div className="flex items-center justify-between pt-4">
           <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">Showing {filtered.length > 0 ? `1-${filtered.length}` : '0'} of {plans.length} plans</span>
-          <div className="flex items-center gap-2">
-            <button className="w-8 h-8 rounded border border-[#B9B09D] hover:bg-[#2a1f10] flex items-center justify-center"><ChevronLeft className="w-4 h-4 text-[#B9B09D]" /></button>
-            <button className="w-8 h-8 rounded border border-[#B9B09D] hover:bg-[#2a1f10] flex items-center justify-center"><ChevronRight className="w-4 h-4 text-[#B9B09D]" /></button>
+          <div className="flex items-center gap-4">
+            <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs">{tabIndex + 1} / {tabs.length}</span>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => {
+                  const prevIndex = (tabIndex - 1 + tabs.length) % tabs.length;
+                  setSelectedFilter(tabs[prevIndex]);
+                }}
+                className="w-8 h-8 rounded border border-[#B9B09D] hover:bg-[#2a1f10] flex items-center justify-center transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4 text-[#B9B09D]" />
+              </button>
+              <button 
+                onClick={() => {
+                  const nextIndex = (tabIndex + 1) % tabs.length;
+                  setSelectedFilter(tabs[nextIndex]);
+                }}
+                className="w-8 h-8 rounded border border-[#B9B09D] hover:bg-[#2a1f10] flex items-center justify-center transition-colors"
+              >
+                <ChevronRight className="w-4 h-4 text-[#B9B09D]" />
+              </button>
+            </div>
           </div>
         </div>
       </CardContent>

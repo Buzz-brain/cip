@@ -58,14 +58,14 @@ export const ReviewTimeLock = (): JSX.Element => {
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5">
-                Step 3 of 4: Review Details
+                Step 5 of 5: Review Details
               </span>
               <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
-                75% Completed
+                100% Completed
               </span>
             </div>
             <div className="w-full h-2 bg-[#27211c] rounded-full overflow-hidden">
-              <div className="h-full w-[40%] bg-[#ff6600]"></div>
+              <div className="h-full w-[100%] bg-[#ff6600]"></div>
             </div>
           </div>
 
@@ -106,7 +106,7 @@ export const ReviewTimeLock = (): JSX.Element => {
                 </h3>
               </div>
 
-              <div className="rounded-lg mt-6 border border-gray-800 flex items-start gap-3">
+              <div className="rounded-lg mt-6 border border-gray-800 p-3 flex items-start gap-3">
                 <img src={checkGreenCircle} className="w-4 h-4" alt="Icon" />
                 <div>
                   <div className="text-white font-semibold mb-2">

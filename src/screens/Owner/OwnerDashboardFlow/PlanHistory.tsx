@@ -1,10 +1,8 @@
 import { useState } from "react";
-// Sidebar removed — layout provides it
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
 import { Badge } from "@components/ui/badge";
 import { Link } from "react-router-dom";
-import logoImg from "@assets/cip-logo.svg";
 import {
   ChevronLeft,
   Share2,
@@ -314,6 +312,5 @@ export const PlanHistory = (): JSX.Element => {
           </div>
         </div>
       </div>
-    </div>
   );
 };

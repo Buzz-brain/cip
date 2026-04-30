@@ -161,14 +161,14 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5">
-                Step 2 of 4: Trigger Configuration
+                Step 5 of 5: Trigger Configuration
               </span>
               <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
-                40% Completed
+                100% Completed
               </span>
             </div>
             <div className="w-full h-2 bg-[#27211c] rounded-full overflow-hidden">
-              <div className="h-full w-[40%] bg-[#ff6600]"></div>
+              <div className="h-full w-[100%] bg-[#ff6600]"></div>
             </div>
           </div>
 

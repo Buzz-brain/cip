@@ -56,8 +56,8 @@ export const Sidebar = (): JSX.Element => {
             {sidebarMenuItems.map((item) => {
               let href = "#";
               if (item.id === "dashboard") href = "/owner-dashboard";
-              if (item.id === "create-plan") href = "/select-assets";
-              if (item.id === "asset-registry") href = "/select-assets";
+              if (item.id === "create-plan") href = "/owner-dashboard/select-assets";
+              if (item.id === "asset-registry") href = "/owner-dashboard/select-assets";
 
               return (
                 <Link

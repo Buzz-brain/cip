@@ -55,7 +55,7 @@ export const UploadSignedDoc = (): JSX.Element => {
               className="text-orange-500 hover:text-orange-400 text-sm font-medium transition"
               onClick={() => navigate(-1)}
             >
-              Remind me later
+              Later
             </button>
           </div>
         </div>

@@ -23,13 +23,22 @@ export const ProofOfLifeCheckMissed = (props?: ProofOfLifeMissedProps): JSX.Elem
     };
   
   const [timeRemaining, setTimeRemaining] = useState({
-    days: 7,
+    days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
 
   useEffect(() => {
+    // Initialize with some sample time for demonstration
+    // In production, this would be fetched from backend based on missed check
+    setTimeRemaining({
+      days: 2,
+      hours: 14,
+      minutes: 30,
+      seconds: 0,
+    });
+
     const interval = setInterval(() => {
       setTimeRemaining((prev) => {
         let { days, hours, minutes, seconds } = prev;

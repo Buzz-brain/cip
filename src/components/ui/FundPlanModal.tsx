@@ -224,7 +224,7 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, default
 
           <div className="flex gap-2 mt-4">
             <Button onClick={onClose} className="bg-[#393028]">Cancel</Button>
-            {backendNotifyFailed && status === "error" ? (
+            {backendNotifyFailed && (status === "error" || status === "pending") ? (
               <Button
                 onClick={handleRetryBackend}
                 className="bg-[#ff9933]"

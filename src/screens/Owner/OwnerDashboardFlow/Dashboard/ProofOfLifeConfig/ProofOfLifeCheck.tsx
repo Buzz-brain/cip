@@ -51,21 +51,31 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
   };
 
   const [confirming, setConfirming] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [timeRemaining, setTimeRemaining] = useState({
-    days: 7,
+    days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
+  
+  const [hasActivePlan, setHasActivePlan] = useState(false);
 
   useEffect(() => {
     // Fetch active plan from backend and initialize countdown
     let mounted = true;
     (async () => {
       try {
+        setIsLoading(true);
         const plan = await getActiveProofPlan(user?.token);
-        if (!mounted || !plan) return;
+        if (!mounted) return;
+        
+        if (!plan) {
+          setHasActivePlan(false);
+          setIsLoading(false);
+          return;
+        }
         console.log('[ProofOfLifeCheck] active plan', plan);
         // determine last active timestamp
         const baseTs = Number(plan.last_active_at ?? plan.created_at ?? 0);
@@ -80,14 +90,20 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
             const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
             setTimeRemaining({ days, hours, minutes, seconds });
+            setHasActivePlan(true);
           }
         }
+        setIsLoading(false);
       } catch (err) {
         console.warn('Could not fetch active proof plan', err);
+        setHasActivePlan(false);
+        setIsLoading(false);
       }
     })();
 
     const interval = setInterval(() => {
+      if (!hasActivePlan) return;
+      
       setTimeRemaining((prev) => {
         let { days, hours, minutes, seconds } = prev;
 
@@ -112,7 +128,7 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [hasActivePlan]);
 
   // Handle Escape to close and manage focus trap when modal is open
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -207,41 +223,66 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
             <div className="mb-6">
               <div className="gap-3 bg-[#181411] border border-[#393128] rounded-lg p-4">
                 <p className="text-[#B8A194] text-center mb-3">Time Remaining</p>
-                <div className="grid grid-cols-4 gap-3">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.days).padStart(2, "0")}</div>
-                    <div className="text-sm text-[#B8A194]">Days</div>
+                {isLoading ? (
+                  <div className="grid grid-cols-4 gap-3">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4 animate-pulse h-12"></div>
+                      <div className="text-sm text-[#B8A194]">Days</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4 animate-pulse h-12"></div>
+                      <div className="text-sm text-[#B8A194]">Hours</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4 animate-pulse h-12"></div>
+                      <div className="text-sm text-[#B8A194]">Mins</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4 animate-pulse h-12"></div>
+                      <div className="text-sm text-[#B8A194]">Secs</div>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.hours).padStart(2, "0")}</div>
-                    <div className="text-sm text-[#B8A194]">Hours</div>
+                ) : hasActivePlan ? (
+                  <div className="grid grid-cols-4 gap-3">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.days).padStart(2, "0")}</div>
+                      <div className="text-sm text-[#B8A194]">Days</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.hours).padStart(2, "0")}</div>
+                      <div className="text-sm text-[#B8A194]">Hours</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.minutes).padStart(2, "0")}</div>
+                      <div className="text-sm text-[#B8A194]">Mins</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl text-[#FF6600] font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.seconds).padStart(2, "0")}</div>
+                      <div className="text-sm text-[#B8A194]">Secs</div>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.minutes).padStart(2, "0")}</div>
-                    <div className="text-sm text-[#B8A194]">Mins</div>
+                ) : (
+                  <div className="flex items-center justify-center py-8">
+                    <p className="text-[#B8A194] text-center">No current Proof-of-Life check scheduled.</p>
                   </div>
-                  <div className="text-center">
-                    <div className="text-3xl text-[#FF6600] font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.seconds).padStart(2, "0")}</div>
-                    <div className="text-sm text-[#B8A194]">Secs</div>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 
             <div className="flex gap-3">
               <button
                 onClick={onConfirmLife}
-                disabled={confirming}
-                className={`w-full ${confirming ? 'opacity-60 cursor-not-allowed' : 'bg-[#FF6600] hover:bg-orange-700'} text-white py-3 rounded-lg font-bold transition flex gap-3 items-center justify-center`}
+                disabled={confirming || !hasActivePlan || isLoading}
+                className={`w-full ${confirming || !hasActivePlan || isLoading ? 'opacity-60 cursor-not-allowed' : 'bg-[#FF6600] hover:bg-orange-700'} text-white py-3 rounded-lg font-bold transition flex gap-3 items-center justify-center`}
               >
                 <img src={thumbprintIcon} className="w-5 h-5" alt="Thumbprint" />
-                <span>{confirming ? 'Confirming...' : 'Confirm Life'}</span>
+                <span>{isLoading ? 'Loading...' : confirming ? 'Confirming...' : 'Confirm Life'}</span>
               </button>
               <button
                 onClick={() => onClose ? onClose() : navigate(-1)}
                 className="w-full bg-transparent border border-[#63564B] hover:border-gray-600 text-white py-3 rounded-lg font-medium transition"
               >
-                Remind Me Later
+                Later
               </button>
             </div>
               <p className="text-sm text-[#B8A194] text-center mt-6 flex items-center justify-center gap-4"><span>Secured CIP X TEE</span></p>

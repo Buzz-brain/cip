@@ -1,11 +1,10 @@
-import React from "react";
 import { Outlet } from "react-router-dom";
 import { Sidebar } from "../Sidebar";
 import { Header } from "../Header";
 
 export const OwnerDashboardLayout = (): JSX.Element => {
   return (
-    <div className="min-h-screen bg-[#0d0b08]">
+    <div className="min-h-screen bg-[#0d0b08] [font-family:'Manrope',Helvetica]">
       <div className="flex h-screen bg-[#0d0b08]">
         <Sidebar />
 

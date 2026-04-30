@@ -70,15 +70,15 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
       <div className="mb-12">
         <div className="flex items-center justify-between mb-4">
           <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5">
-            Step 4 of 5: Grace Period
+            Step 5 of 5: Grace Period
           </span>
           <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
-            80% Completed
+            100% Completed
           </span>
         </div>
 
         <div className="w-full h-2 bg-[#54493B] rounded-full overflow-hidden">
-          <div className="h-full w-[80%] bg-[#ff6600]"></div>
+          <div className="h-full w-[100%] bg-[#ff6600]"></div>
         </div>
       </div>
 
