@@ -21,6 +21,25 @@ export function normalizeWalletAddress(address: string): string {
   }
 }
 
+// Extract user-friendly error message from backend response
+// Tries to parse JSON and extract 'detail' field, falls back to plain text
+export async function extractErrorMessage(response: Response): Promise<string> {
+  const defaultMsg = `Error (Status: ${response.status})`;
+  try {
+    const data = await response.json();
+    if (data?.detail) return String(data.detail);
+    if (typeof data === 'string') return data;
+    return defaultMsg;
+  } catch {
+    try {
+      const text = await response.text();
+      return text || defaultMsg;
+    } catch {
+      return defaultMsg;
+    }
+  }
+}
+
 // Map user role to dashboard route. Keeps routing logic in one place.
 export function getDashboardRoute(role?: string | null): string {
   switch ((role || "").toLowerCase()) {

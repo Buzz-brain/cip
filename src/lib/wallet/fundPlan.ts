@@ -16,6 +16,6 @@ export async function fundPlanOnChain(planId: number, amountEth: string, signer:
   const tx = await contract.fundPlan(planId, { value });
   console.log('[fundPlanOnChain] tx sent', { hash: tx.hash });
   const receipt = await tx.wait();
-  console.log('[fundPlanOnChain] tx mined', { transactionHash: receipt.transactionHash, status: receipt.status });
-  return receipt.transactionHash;
+  console.log('[fundPlanOnChain] tx mined', { transactionHash: tx.hash, status: receipt?.status });
+  return tx.hash;
 }

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@components/ui/button";
 import { toast } from "react-toastify";
 import { fundPlanOnChain } from "../../lib/wallet/fundPlan";
+import { extractErrorMessage } from "../../lib/utils";
 import { BrowserProvider } from "ethers";
 
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
@@ -20,6 +21,26 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, default
   const [status, setStatus] = useState<"idle" | "signing" | "pending" | "success" | "error">("idle");
   const [txHash, setTxHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [backendNotifyFailed, setBackendNotifyFailed] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!open) {
+      setAmount(defaultAmount);
+      setStatus("idle");
+      setTxHash(null);
+      setError(null);
+      setBackendNotifyFailed(false);
+    }
+  }, [open, defaultAmount]);
+
+  useEffect(() => {
+    if (status === "success") {
+      const timer = setTimeout(() => {
+        onClose();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [status, onClose]);
 
   console.log('[FundPlanModal] render', { open, contractPlanId, defaultAmount });
 
@@ -113,21 +134,56 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, default
         });
         console.log('[FundPlanModal] backend responded', { status: resp.status });
         if (!resp.ok) {
-          const t = await resp.text();
-          throw new Error(`Backend error: ${resp.status} ${t}`);
+          const errorMsg = await extractErrorMessage(resp);
+          throw new Error(errorMsg);
         }
         setStatus("success");
         toast.success("Plan funded and backend notified.");
       } catch (e: any) {
         setStatus("error");
         setError(e?.message || String(e));
+        setBackendNotifyFailed(true);
         console.error('[FundPlanModal] backend notify failed', e);
-        toast.error("Failed to notify backend about funding.");
+        toast.error("Funding succeeded on-chain, but backend notify failed. Use Retry button to resend.");
       }
     } catch (err: any) {
       setStatus("error");
       setError(err?.message || String(err));
       console.error('[FundPlanModal] fund flow error', err);
+    }
+  };
+
+  const handleRetryBackend = async () => {
+    console.log('[FundPlanModal] handleRetryBackend start', { contractPlanId, txHash });
+    if (!txHash) {
+      setError("No transaction hash stored. Please fund again.");
+      return;
+    }
+    setError(null);
+    setStatus("pending");
+    try {
+      console.log('[FundPlanModal] retrying backend notify', { contract_plan_id: Number(contractPlanId), tx_hash: txHash });
+      const resp = await fetch(`${BACKEND_API_URL}/inherit/fund-inheritance`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          ...(userToken ? { Authorization: `Bearer ${userToken}` } : {}),
+        },
+        body: JSON.stringify({ contract_plan_id: Number(contractPlanId), tx_hash: txHash }),
+      });
+      console.log('[FundPlanModal] backend responded', { status: resp.status });
+      if (!resp.ok) {
+        const errorMsg = await extractErrorMessage(resp);
+        throw new Error(errorMsg);
+      }
+      setStatus("success");
+      setBackendNotifyFailed(false);
+      toast.success("Backend notified successfully!");
+    } catch (e: any) {
+      setStatus("error");
+      setError(e?.message || String(e));
+      console.error('[FundPlanModal] retry backend notify failed', e);
+      toast.error("Retry failed. Check backend response and try again.");
     }
   };
 
@@ -168,13 +224,23 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, default
 
           <div className="flex gap-2 mt-4">
             <Button onClick={onClose} className="bg-[#393028]">Cancel</Button>
-            <Button
-              onClick={handleConfirm}
-              className="bg-[#ff6600]"
-              disabled={status === "signing" || status === "pending" || Boolean(error) || amount.toString().trim() === ''}
-            >
-              {status === "signing" ? "Waiting for signature..." : status === "pending" ? "Pending..." : "Confirm & Fund"}
-            </Button>
+            {backendNotifyFailed && status === "error" ? (
+              <Button
+                onClick={handleRetryBackend}
+                className="bg-[#ff9933]"
+                disabled={status === "pending" || !txHash}
+              >
+                {status === "pending" ? "Retrying..." : "Retry Send to Backend"}
+              </Button>
+            ) : (
+              <Button
+                onClick={handleConfirm}
+                className="bg-[#ff6600]"
+                disabled={status === "signing" || status === "pending" || Boolean(error) || amount.toString().trim() === ''}
+              >
+                {status === "signing" ? "Waiting for signature..." : status === "pending" ? "Pending..." : "Confirm & Fund"}
+              </Button>
+            )}
           </div>
         </div>
       </div>

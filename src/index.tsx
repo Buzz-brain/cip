@@ -29,8 +29,8 @@ import { ReviewPlan } from "./screens/Owner/PlanCreationFlow/ReviewPlan";
 import { PlanActivatedSuccess } from "./screens/Owner/PlanCreationFlow/PlanActivatedSuccess";
 import { SetTimeLock } from "./screens/Owner/PlanCreationFlow/TimeLock/SetTimeLock.tsx";
 import { ReviewTimeLock } from "./screens/Owner/PlanCreationFlow/TimeLock/ReviewTimeLock.tsx";
-import { BeneficiaryDetails } from "./screens/BeneficiaryFlow/BeneficiaryDetails";
-import { BeneficiaryDashboard } from "./screens/BeneficiaryFlow/BeneficiaryDashboard";
+import { BeneficiaryDetails } from "./screens/Beneficiary/BeneficiaryDetails.tsx";
+import { BeneficiaryDashboard } from "./screens/Beneficiary/BeneficiaryDashboard.tsx";
 import { DisputePlanExecution } from "./screens/DisputeResolutionFlow/DisputePlanExecution";
 import { OwnerDashboard } from "./screens/Owner/OwnerDashboardFlow/Dashboard/OwnerDashboard";
 import { EscrowStateVisualization } from "./screens/DisputeResolutionFlow/EscrowStateVisualization"; 
@@ -85,22 +85,23 @@ import { HealthOracleJurisdiction } from "./screens/Owner/PlanCreationFlow/Healt
 import { ReviewHealthOraclePlan } from "./screens/Owner/PlanCreationFlow/HealthOracle/ReviewHealthOraclePlan.tsx";
 import { ConfirmHealthOraclePlan } from "./screens/Owner/PlanCreationFlow/HealthOracle/ConfirmHealthOraclePlan.tsx";
 
-import { ExecutorLogin } from "./screens/ExecutorDashboardFlow/ExecutorLogin";
-import { ExecutorForgotPwd } from "./screens/ExecutorDashboardFlow/ExecutorForgotPwd";
-import { ExecutorSetNewPwd } from "./screens/ExecutorDashboardFlow/ExecutorSetNewPwd";
-import { ExecPwdResetComplete } from "./screens/ExecutorDashboardFlow/ExecPwdResetComplete";
-import { ExecutorDashboard } from "./screens/ExecutorDashboardFlow/ExecutorDashboard";
-import { ExecutorDisputePlan } from "./screens/ExecutorDashboardFlow/ExecutorDisputePlan";
-import { ExecutorAuditLog } from "./screens/ExecutorDashboardFlow/ExecutorAuditLog";
-import { ExecuteInheritancePlan } from "./screens/ExecutorDashboardFlow/ExecuteInheritancePlan";
-import { DocumentVerification } from "./screens/ExecutorDashboardFlow/DocumentVerification";
-import { Compliance } from "./screens/ExecutorDashboardFlow/Compliance";
-import { CommunicationCenter } from "./screens/ExecutorDashboardFlow/CommunicationCenter";
-import { BeneficiaryCoordination } from "./screens/ExecutorDashboardFlow/BeneficiaryCoordination";
-import { MPCShareManagement } from "./screens/ExecutorDashboardFlow/MPCShareManagement";
-import { ExecutorPlanXp } from "./screens/ExecutorDashboardFlow/ExecutorPlanXp";
-import { SettingsAndSecurity } from "./screens/ExecutorDashboardFlow/SettingsAndSecurity";
-import { ExecutorSecureStorage } from "./screens/ExecutorDashboardFlow/ExecutorSecureStorage";
+import { ExecutorLogin } from "./screens/Executor/ExecutorLogin.tsx";
+import { ExecutorForgotPwd } from "./screens/Executor/ExecutorForgotPwd.tsx";
+import { ExecutorSetNewPwd } from "./screens/Executor/ExecutorSetNewPwd.tsx";
+import { ExecPwdResetComplete } from "./screens/Executor/ExecPwdResetComplete.tsx";
+import { ExecutorDashboard } from "./screens/Executor/ExecutorDashboard.tsx";
+import { ExecutorDisputePlan } from "./screens/Executor/ExecutorDisputePlan.tsx";
+import { ExecutorAuditLog } from "./screens/Executor/ExecutorAuditLog.tsx";
+import { ExecuteInheritancePlan } from "./screens/Executor/ExecuteInheritancePlan.tsx";
+import { DocumentVerification } from "./screens/Executor/DocumentVerification.tsx";
+import { Compliance } from "./screens/Executor/Compliance.tsx";
+import { CommunicationCenter } from "./screens/Executor/CommunicationCenter.tsx";
+import { BeneficiaryCoordination } from "./screens/Executor/BeneficiaryCoordination.tsx";
+import { MPCShareManagement } from "./screens/Executor/MPCShareManagement.tsx";
+import { ExecutorPlanXp } from "./screens/Executor/ExecutorPlanXp.tsx";
+import { SettingsAndSecurity } from "./screens/Executor/SettingsAndSecurity.tsx";
+import { ExecutorSecureStorage } from "./screens/Executor/ExecutorSecureStorage.tsx";
+import ExecutorLayout from "./screens/Executor/ExecutorLayout";
 
 
 import { AdministrativeLogin } from "./screens/AdministrativeFlow/AdministrativeLogin";
@@ -263,23 +264,26 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/mediator-all-cases" element={<AllCases />} /> ✅
         <Route path="/mediator-dispute-queue" element={<DisputeQueue />} /> ✅
         
-        {/* Executor Dashboard Flow */}
+        {/* Executor Flow: auth routes remain top-level, dashboard and tools nested under protected layout */}
         <Route path="/executor-login" element={<ExecutorLogin />} /> ✅
         <Route path="/executor-forgot-password" element={<ExecutorForgotPwd />} /> ✅
         <Route path="/executor-set-new-password" element={<ExecutorSetNewPwd />} /> ✅
         <Route path="/executor-password-reset-complete" element={<ExecPwdResetComplete />} /> ✅
-        <Route path="/executor-dashboard" element={<ExecutorDashboard />} />
-        <Route path="/plan-xp" element={<ExecutorPlanXp />} />
-        <Route path="/document-verification" element={<DocumentVerification />} />
-        <Route path="/mpc-share-management" element={<MPCShareManagement />} />
-        <Route path="/compliance" element={<Compliance />} />
-        <Route path="/beneficiary-coordination" element={<BeneficiaryCoordination />} />
-        <Route path="/communication-center" element={<CommunicationCenter />} />
-        <Route path="/executor-inheritance-plan" element={<ExecuteInheritancePlan />} />
-        <Route path="/executor-audit-log" element={<ExecutorAuditLog />} />
-        <Route path="/settings-and-security" element={<SettingsAndSecurity />} />
-        <Route path="/executor-dispute-plan" element={<ExecutorDisputePlan />} />
-        <Route path="/executor-secure-storage" element={<ExecutorSecureStorage />} />
+
+        <Route path="/executor-dashboard" element={<ProtectedRoute><ExecutorLayout /></ProtectedRoute>}>
+          <Route index element={<ExecutorDashboard />} />
+          <Route path="plan-xp" element={<ExecutorPlanXp />} />
+          <Route path="document-verification" element={<DocumentVerification />} />
+          <Route path="mpc-share-management" element={<MPCShareManagement />} />
+          <Route path="compliance" element={<Compliance />} />
+          <Route path="beneficiary-coordination" element={<BeneficiaryCoordination />} />
+          <Route path="communication-center" element={<CommunicationCenter />} />
+          <Route path="executor-inheritance-plan" element={<ExecuteInheritancePlan />} />
+          <Route path="executor-audit-log" element={<ExecutorAuditLog />} />
+          <Route path="settings-and-security" element={<SettingsAndSecurity />} />
+          <Route path="executor-dispute-plan" element={<ExecutorDisputePlan />} />
+          <Route path="executor-secure-storage" element={<ExecutorSecureStorage />} />
+        </Route>
 
         {/* Administrative Flows - 7 of 15 */} ❌
         <Route path="/administrative-login" element={<AdministrativeLogin />} /> ✅

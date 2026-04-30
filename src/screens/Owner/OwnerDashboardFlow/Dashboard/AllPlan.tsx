@@ -5,6 +5,7 @@ import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "../../../../context/useAuth";
 import { usePlan } from "../../../../context/usePlan";
 import { toast } from "react-toastify";
+import { extractErrorMessage } from "../../../../lib/utils";
 import FundPlanModal from "../../../../components/ui/FundPlanModal";
 
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
@@ -38,6 +39,9 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
   const [selectedPlanDetail, setSelectedPlanDetail] = useState<any | null>(null);
   const [fundModalOpen, setFundModalOpen] = useState(false);
   const [fundPlanContractId, setFundPlanContractId] = useState<number | null>(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [pendingDeletePlan, setPendingDeletePlan] = useState<any | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [highlightedPlanId, setHighlightedPlanId] = useState<string | null>(null);
   const highlightTimerRef = React.useRef<number | null>(null);
@@ -53,91 +57,93 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
     }
   };
 
-  useEffect(() => {
-    const fetchPlans = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`${BACKEND_API_URL}/inherit/view-inheritances`, {
-          method: "GET",
-          headers: {
-            accept: "application/json",
-            ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
-          },
-        });
-        if (!res.ok) {
-          const text = await res.text();
-          toast.error(`Failed to load plans: ${res.status} ${text}`);
-          setPlans([]);
-          return;
-        }
-        const json = await res.json();
-        const items = Array.isArray(json?.data) ? json.data : [];
-        const mapped = items.map((it: any) => {
-          const isFunded = !!it.is_funded;
-          const isReleased = !!it.is_released;
-          const releaseTs = it.release_timestamp ? Number(it.release_timestamp) : null;
-          let triggerHours = 0;
-          if (releaseTs) {
-            const ms = releaseTs * 1000 - Date.now();
-            triggerHours = Math.max(0, Math.ceil(ms / (1000 * 60 * 60)));
-          }
-          return {
-            id: String(it.id ?? it.contract_plan_id ?? "-"),
-            name: it.plan_type ? it.plan_type : `Plan #${it.id}`,
-            chainName: it.crypto_asset ?? "-",
-            chainIcon: chainIconFor(it.crypto_asset),
-            beneficiary: { name: it.owner_wallet ?? "—", avatar: (it.owner_wallet || "—").slice(2, 4).toUpperCase() },
-            beneficiariesPreview: [],
-            assets: it.amount ? String(it.amount) : "—",
-            assetsDetail: it.crypto_asset ?? "—",
-            status: isReleased ? "Triggered" : isFunded ? "Active" : "Pending",
-            statusColor: isReleased ? "bg-red-500" : isFunded ? "bg-green-500" : "bg-yellow-500",
-            triggerDays: triggerHours || 0,
-            raw: it,
-          };
-        });
-        setPlans(mapped);
-        // Fetch single inheritance details for each plan to populate beneficiaries preview (non-blocking)
-        (async () => {
-          try {
-            const detailed = await Promise.all(
-              mapped.map(async (p: any) => {
-                const idNum = p.raw?.id ?? p.raw?.contract_plan_id;
-                if (!idNum) return { id: p.id, beneficiariesPreview: [] };
-                try {
-                  const r = await fetch(`${BACKEND_API_URL}/inherit/view-a-inheritances/${idNum}`, {
-                    method: "GET",
-                    headers: {
-                      accept: "application/json",
-                      ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
-                    },
-                  });
-                  if (!r.ok) return { id: p.id, beneficiariesPreview: [] };
-                  const j = await r.json();
-                  const bens = Array.isArray(j?.data?.beneficiaries) ? j.data.beneficiaries : [];
-                  return { id: p.id, beneficiariesPreview: bens };
-                } catch (e) {
-                  return { id: p.id, beneficiariesPreview: [] };
-                }
-              })
-            );
-            // merge previews back into state
-            setPlans((prev) => prev.map((pp: any) => {
-              const found = detailed.find((d: any) => String(d.id) === String(pp.id));
-              return found ? { ...pp, beneficiariesPreview: found.beneficiariesPreview } : pp;
-            }));
-          } catch (e) {
-            // ignore preview fetch errors
-          }
-        })();
-      } catch (err) {
-        const m = err instanceof Error ? err.message : String(err);
-        toast.error(`Error loading plans: ${m}`);
+  // extract fetchPlans so other handlers (delete, refresh) can call it
+  const fetchPlans = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${BACKEND_API_URL}/inherit/view-inheritances`, {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+        },
+      });
+      if (!res.ok) {
+        const errorMsg = await extractErrorMessage(res);
+        toast.error(`Failed to load plans: ${errorMsg}`);
         setPlans([]);
-      } finally {
-        setLoading(false);
+        return;
       }
-    };
+      const json = await res.json();
+      const items = Array.isArray(json?.data) ? json.data : [];
+      const mapped = items.map((it: any) => {
+        const isFunded = !!it.is_funded;
+        const isReleased = !!it.is_released;
+        const releaseTs = it.release_timestamp ? Number(it.release_timestamp) : null;
+        let triggerHours = 0;
+        if (releaseTs) {
+          const ms = releaseTs * 1000 - Date.now();
+          triggerHours = Math.max(0, Math.ceil(ms / (1000 * 60 * 60)));
+        }
+        return {
+          id: String(it.id ?? it.contract_plan_id ?? "-"),
+          name: it.plan_type ? it.plan_type : `Plan #${it.id}`,
+          chainName: it.crypto_asset ?? "-",
+          chainIcon: chainIconFor(it.crypto_asset),
+          beneficiary: { name: it.owner_wallet ?? "—", avatar: (it.owner_wallet || "—").slice(2, 4).toUpperCase() },
+          beneficiariesPreview: [],
+          assets: it.amount ? String(it.amount) : "—",
+          assetsDetail: it.crypto_asset ?? "—",
+          status: isReleased ? "Triggered" : isFunded ? "Active" : "Pending",
+          statusColor: isReleased ? "bg-red-500" : isFunded ? "bg-green-500" : "bg-yellow-500",
+          triggerDays: triggerHours || 0,
+          raw: it,
+        };
+      });
+      setPlans(mapped);
+      // Fetch single inheritance details for each plan to populate beneficiaries preview (non-blocking)
+      (async () => {
+        try {
+          const detailed = await Promise.all(
+            mapped.map(async (p: any) => {
+              const idNum = p.raw?.id ?? p.raw?.contract_plan_id;
+              if (!idNum) return { id: p.id, beneficiariesPreview: [] };
+              try {
+                const r = await fetch(`${BACKEND_API_URL}/inherit/view-a-inheritances/${idNum}`, {
+                  method: "GET",
+                  headers: {
+                    accept: "application/json",
+                    ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+                  },
+                });
+                if (!r.ok) return { id: p.id, beneficiariesPreview: [] };
+                const j = await r.json();
+                const bens = Array.isArray(j?.data?.beneficiaries) ? j.data.beneficiaries : [];
+                return { id: p.id, beneficiariesPreview: bens };
+              } catch (e) {
+                return { id: p.id, beneficiariesPreview: [] };
+              }
+            })
+          );
+          // merge previews back into state
+          setPlans((prev) => prev.map((pp: any) => {
+            const found = detailed.find((d: any) => String(d.id) === String(pp.id));
+            return found ? { ...pp, beneficiariesPreview: found.beneficiariesPreview } : pp;
+          }));
+        } catch (e) {
+          // ignore preview fetch errors
+        }
+      })();
+    } catch (err) {
+      const m = err instanceof Error ? err.message : String(err);
+      toast.error(`Error loading plans: ${m}`);
+      setPlans([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchPlans();
 
     const onConfirmed = async (detail?: any) => {
@@ -176,6 +182,63 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
       window.removeEventListener('proofOfLife:confirmed', onConfirmed);
     };
   }, [user?.token]);
+
+  // Delete a plan via backend API
+  const handleDelete = async (planObj: any) => {
+    const planIdNum = Number(planObj?.plan?.id ?? planObj?.plan?.contract_plan_id ?? 0);
+    if (!planIdNum) {
+      toast.error('Cannot determine plan id for deletion');
+      return;
+    }
+    // open custom confirm modal
+    setPendingDeletePlan(planObj);
+    setConfirmDeleteOpen(true);
+  };
+
+  const performDelete = async () => {
+    if (!pendingDeletePlan) return;
+    const planIdNum = Number(pendingDeletePlan?.plan?.id ?? pendingDeletePlan?.plan?.contract_plan_id ?? 0);
+    setDeleting(true);
+    try {
+      const resp = await fetch(`${BACKEND_API_URL}/inherit/delete-inheritances/${planIdNum}`, {
+        method: 'DELETE',
+        headers: {
+          accept: 'application/json',
+          ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+        }
+      });
+      if (!resp.ok) {
+        let errorMessage = `Error deleting plan (Status: ${resp.status})`;
+        try {
+          const errorData = await resp.json();
+          if (errorData?.detail) {
+            errorMessage = errorData.detail;
+          } else if (typeof errorData === 'string') {
+            errorMessage = errorData;
+          }
+        } catch {
+          // If JSON parsing fails, try to get plain text
+          try {
+            const text = await resp.text();
+            if (text) errorMessage = text;
+          } catch {}
+        }
+        throw new Error(errorMessage);
+      }
+      toast.success('Plan deleted successfully');
+      setModalOpen(false);
+      setSelectedPlanDetail(null);
+      setConfirmDeleteOpen(false);
+      setPendingDeletePlan(null);
+      // refresh plans
+      await fetchPlans();
+    } catch (e) {
+      const m = e instanceof Error ? e.message : String(e);
+      toast.error(m);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const filtered = plans.filter((p) => {
     if (!searchQuery) return true;
@@ -316,6 +379,15 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                           setFundModalOpen(true);
                         }}>Fund Plan</button>
                       )}
+                      {/* Owner-only Delete button */}
+                      {(user?.publicKey && String(user.publicKey).toLowerCase() === String(selectedPlanDetail.plan?.owner_wallet).toLowerCase()) && (
+                        <button
+                          className="px-4 py-2 rounded bg-red-700 text-white"
+                          onClick={() => handleDelete(selectedPlanDetail)}
+                        >
+                          Delete Inheritance
+                        </button>
+                      )}
                       <button className="px-4 py-2 rounded bg-[#393028] text-white" onClick={() => { setModalOpen(false); setSelectedPlanDetail(null); }}>Close</button>
                     </div>
 
@@ -353,6 +425,21 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                     </div>
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Custom confirm delete modal (global) */}
+        {confirmDeleteOpen && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/60 z-[10000]" onClick={() => { if (!deleting) { setConfirmDeleteOpen(false); setPendingDeletePlan(null); } }} />
+            <div className="relative bg-[#1f1915] border border-[#3a2f1e] rounded-lg w-[90%] max-w-md p-6 z-[10001]">
+              <h3 className="text-white font-bold mb-2">Confirm Delete</h3>
+              <div className="text-sm text-[#d1c3b4] mb-4">Are you sure you want to delete this inheritance plan? This action cannot be undone.</div>
+              <div className="flex gap-2 justify-end">
+                <button className="px-4 py-2 rounded bg-[#393028] text-white" onClick={() => { if (!deleting) { setConfirmDeleteOpen(false); setPendingDeletePlan(null); } }}>Cancel</button>
+                <button className="px-4 py-2 rounded bg-red-700 text-white" onClick={() => performDelete()} disabled={deleting}>{deleting ? 'Deleting...' : 'Delete'}</button>
               </div>
             </div>
           </div>
@@ -397,8 +484,8 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                       }
                     });
                     if (!r.ok) {
-                      const t = await r.text();
-                      toast.error(`Failed to load plan details: ${r.status} ${t}`);
+                      const errorMsg = await extractErrorMessage(r);
+                      toast.error(`Failed to load plan details: ${errorMsg}`);
                       setSelectedPlanDetail(null);
                       return;
                     }

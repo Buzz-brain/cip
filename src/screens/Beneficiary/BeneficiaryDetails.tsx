@@ -1,4 +1,4 @@
-import { FileText as FileTextIcon, CircleCheck as CheckCircleIcon, Download as DownloadIcon, Lock as LockIcon, Chrome as HomeIcon, CircleAlert as AlertCircleIcon } from "lucide-react";
+import { FileText as FileTextIcon, CircleCheck as CheckCircleIcon, Download as DownloadIcon, Lock as LockIcon, Chrome as HomeIcon } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";

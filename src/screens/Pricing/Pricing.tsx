@@ -7,6 +7,7 @@ import { usePlans } from "../../lib/hooks/usePlans";
 import { Navbar } from "@components/ui/Navbar";
 import { useAuth } from "../../context/useAuth";
 import { toast } from "react-toastify";
+import { extractErrorMessage } from "../../lib/utils";
 import { ToggleBilling } from "@components/ui/ToggleBilling";
 import logoImg from "@assets/cip-logo.png";
 import sharpCheckSolid from "@assets/sharp-check-solid.svg";
@@ -293,12 +294,8 @@ export const Pricing = (): JSX.Element => {
                     },
                   });
                 } else {
-                  let errText = text;
-                  try {
-                    const parsed = typeof data === 'object' ? data : JSON.parse(text);
-                    errText = parsed.detail ? JSON.stringify(parsed.detail) : JSON.stringify(parsed);
-                  } catch (e) {}
-                  toast.error(`Subscription failed: ${res.status} ${errText}`);
+                  const errorMsg = await extractErrorMessage(res);
+                  toast.error(`Subscription failed: ${errorMsg}`);
                 }
               } catch (err) {
                 const msg = err instanceof Error ? err.message : String(err);

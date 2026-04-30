@@ -9,12 +9,12 @@ import * as authAPI from "../../lib/api/auth";
 import logoImg from "@assets/cip-logo.svg";
 import helpIcon from "@assets/help.svg";
 import connectWalletOrange from "@assets/connect-wallet.-orange.svg";
-import cotiWalletIcon from "@assets/coti-wallet.svg";
+// import cotiWalletIcon from "@assets/coti-wallet.svg";
 import metamask from "@assets/metamask.svg";
 import trustWallet from "@assets/trust-wallet.svg";
 import phantom from "@assets/phantom.svg";
-import coinbaseWallet from "@assets/coinbase-wallet.svg";
-import ledger from "@assets/ledger.svg";
+// import coinbaseWallet from "@assets/coinbase-wallet.svg";
+// import ledger from "@assets/ledger.svg";
 import arrowForward from "@assets/arrow-forward.svg";
 
 const navigationItems = [
@@ -24,13 +24,13 @@ const navigationItems = [
 ];
 
 const wallets = [
-  {
-    id: "coti",
-    name: "COTI Wallet",
-    description: "Native Protocol Support",
-    icon: cotiWalletIcon,
-    badge: "Recommended",
-  },
+  // {
+  //   id: "coti",
+  //   name: "COTI Wallet",
+  //   description: "Native Protocol Support",
+  //   icon: cotiWalletIcon,
+  //   badge: "Recommended",
+  // },
   {
     id: "metamask",
     name: "MetaMask",
@@ -52,19 +52,19 @@ const wallets = [
     category: "Solana",
     icon: phantom,
   },
-  {
-    id: "coinbase",
-    name: "Coinbase Wallet",
-    description: "Exchange Connected",
-    icon: coinbaseWallet,
-  },
-  {
-    id: "ledger",
-    name: "Ledger",
-    description: "Cold Storage",
-    category: "Hardware",
-    icon: ledger,
-  },
+    // {
+    //   id: "coinbase",
+    //   name: "Coinbase Wallet",
+    //   description: "Exchange Connected",
+    //   icon: coinbaseWallet,
+    // },
+  // {
+  //   id: "ledger",
+  //   name: "Ledger",
+  //   description: "Cold Storage",
+  //   category: "Hardware",
+  //   icon: ledger,
+  // },
 ];
 
 export const ConnectWallet = (): JSX.Element => {
@@ -118,9 +118,9 @@ export const ConnectWallet = (): JSX.Element => {
       }
       const finalUser = { ...(returnedUser || user), userInfo: finalUserInfo || returnedUser?.userInfo || user?.userInfo };
       const role = ((finalUser?.userInfo?.role ?? (finalUser as any)?.role) || "").toString();
-      const isSetup = finalUser?.userInfo?.is_setup;
-      const shouldRequireSetup = role.toLowerCase() === "user" && isSetup === false;
-      console.log('[ConnectWallet] finalUser for redirect', { role, isSetup, shouldRequireSetup, userInfo: finalUser.userInfo });
+      const isVerified = finalUser?.userInfo?.is_verified;
+      const shouldRequireSetup = role.toLowerCase() === "user" && isVerified === false;
+      console.log('[ConnectWallet] finalUser for redirect', { role, isVerified, shouldRequireSetup, userInfo: finalUser.userInfo });
       if (shouldRequireSetup) {
         navigate("/profile-setup");
       } else {
@@ -201,11 +201,11 @@ export const ConnectWallet = (): JSX.Element => {
               onClick={() => handleWalletSelect(wallet.id)}
               className="group relative p-6 rounded-2xl bg-[#2d2420] border border-[#3d3530] hover:border-[#ff6600] hover:bg-[#332b22] transition-all duration-200 cursor-pointer flex flex-col items-start gap-3 min-h-[200px] min-w-[280px]"
             >
-              {wallet.badge && (
+              {/* {wallet.badge && (
                 <span className="absolute top-4 right-4 text-[13px] px-3 py-1 rounded-full bg-[#ff660033] border-[#f6b13b33] text-[#ff6600] [font-family:'Manrope',Helvetica]">
                   {wallet.badge}
                 </span>
-              )}
+              )} */}
 
               {wallet.category && (
                 <span className="absolute top-4 right-4 text-[13px] px-3 py-1 rounded-full bg-[#554233] text-gray-300 font-medium [font-family:'Manrope',Helvetica]">

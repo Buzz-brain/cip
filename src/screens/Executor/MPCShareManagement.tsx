@@ -278,7 +278,7 @@ export const MPCShareManagement = (): JSX.Element => {
                 </div>
 
                 <button
-                  onClick={() => navigate("/compliance")}
+                  onClick={() => navigate("/executor-dashboard/compliance")}
                   className="w-full bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 py-2 rounded-lg text-sm font-medium transition mt-4"
                 >
                   View Full Audit Log
