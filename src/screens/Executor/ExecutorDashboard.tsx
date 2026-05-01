@@ -32,7 +32,7 @@ export const ExecutorDashboard = (): JSX.Element => {
             </div>
             <span className="text-green-400 text-xs">+2 New</span>
           </div>
-          <div className="text-3xl font-bold mb-1">12</div>
+          <div className="text-3xl font-bold mb-1">-</div>
           <div className="text-gray-400 text-sm">Active Plans Managed</div>
         </div>
 
@@ -43,7 +43,7 @@ export const ExecutorDashboard = (): JSX.Element => {
             </div>
             <button className="text-gray-400 text-xs">👁️</button>
           </div>
-          <div className="text-3xl font-bold mb-1">~$4.2M</div>
+          <div className="text-3xl font-bold mb-1">~$-M</div>
           <div className="text-gray-400 text-sm">Assets Under Management</div>
         </div>
 
@@ -53,7 +53,7 @@ export const ExecutorDashboard = (): JSX.Element => {
               <AlertTriangle className="w-5 h-5 text-orange-400" />
             </div>
           </div>
-          <div className="text-3xl font-bold mb-1">3</div>
+          <div className="text-3xl font-bold mb-1">-</div>
           <div className="text-gray-400 text-sm">Urgent Tasks Pending</div>
         </div>
 
@@ -62,7 +62,7 @@ export const ExecutorDashboard = (): JSX.Element => {
             <div className="w-10 h-10 bg-[#3a3430] rounded-lg flex items-center justify-center">
               <Activity className="w-5 h-5 text-purple-400" />
             </div>
-            <span className="text-white text-lg font-bold">85%</span>
+            <span className="text-white text-lg font-bold">0%</span>
           </div>
           <div className="w-full bg-[#3a3430] rounded-full h-2 mb-3">
             <div

@@ -245,6 +245,7 @@ const AssignedInheritancePlans: React.FC = () => {
             <input
               type="text"
               placeholder="Search plans..."
+              value=""
               disabled
               className="bg-[#2a2420] border border-[#3a3430] rounded-lg px-4 py-2 text-sm w-64 text-white placeholder-gray-500 opacity-50"
             />
@@ -443,7 +444,19 @@ const AssignedInheritancePlans: React.FC = () => {
 
                       <div>
                         <div className="text-xs text-[#8b7664]">Oracle Source</div>
-                        <div className="text-white">{selectedPlanDetail.plan?.oracle_source ?? '—'}</div>
+                        {selectedPlanDetail.plan?.oracle_source ? (
+                          <a 
+                            href={selectedPlanDetail.plan.oracle_source} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-400 hover:text-blue-300 underline break-all text-xs font-mono"
+                            title={selectedPlanDetail.plan.oracle_source}
+                          >
+                            {selectedPlanDetail.plan.oracle_source.slice(0, 40)}...
+                          </a>
+                        ) : (
+                          <div className="text-white">—</div>
+                        )}
                       </div>
                       <div>
                         <div className="text-xs text-[#8b7664]">Amount</div>
@@ -490,16 +503,23 @@ const AssignedInheritancePlans: React.FC = () => {
                     </div>
 
                     <div className="flex gap-2 mt-6 mb-6">
-                      <label className="flex-1 px-4 py-3 rounded bg-orange-600 text-white cursor-pointer hover:bg-orange-700 transition-colors flex items-center justify-center gap-2 font-medium">
-                        <Upload className="w-4 h-4" />
-                        {fileUploading ? "Uploading..." : "Upload File"}
-                        <input
-                          type="file"
-                          onChange={handleFileUpload}
-                          disabled={fileUploading}
-                          className="hidden"
-                        />
-                      </label>
+                      {!selectedPlanDetail.plan?.oracle_source ? (
+                        <label className="flex-1 px-4 py-3 rounded bg-orange-600 text-white cursor-pointer hover:bg-orange-700 transition-colors flex items-center justify-center gap-2 font-medium">
+                          <Upload className="w-4 h-4" />
+                          {fileUploading ? "Uploading..." : "Upload File"}
+                          <input
+                            type="file"
+                            onChange={handleFileUpload}
+                            disabled={fileUploading}
+                            className="hidden"
+                          />
+                        </label>
+                      ) : (
+                        <div className="flex-1 px-4 py-3 rounded bg-green-600/20 border border-green-600/50 text-green-400 flex items-center justify-center gap-2 font-medium">
+                          <CheckCircle className="w-4 h-4" />
+                          File Uploaded
+                        </div>
+                      )}
                       <button className="px-4 py-2 rounded bg-[#393028] text-white hover:bg-[#4a3830]" onClick={() => { setModalOpen(false); setSelectedPlanDetail(null); }}>Close</button>
                     </div>
 

@@ -16,18 +16,17 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
   return (
     <div className="w-full h-screen bg-[#0d0501] flex">
       <aside className="w-[193px] bg-[#0d0501] border-r border-[#392f28] flex flex-col">
-        <button
-          onClick={() => navigate('/proof-of-life')}
+        <div
           className="p-6 flex items-center gap-2 border-b border-[#392f28] hover:bg-[#27221c] transition-colors"
         >
-          <div className="w-8 h-8 flex items-center justify-center bg-[#ff6600] rounded-lg">
-            <span className="text-white font-bold text-sm">CIP</span>
+          <div className="w-10 h-10 flex items-center justify-center bg-[#ff6600] rounded-lg">
+            <span className="text-white font-bold text-md">CIP</span>
           </div>
           <div className="flex flex-col text-left">
-            <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-xs">CIP</span>
-            <span className="[font-family:'Manrope',Helvetica] font-normal text-[#695a47] text-xs">Inheritance</span>
+            <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-md">CIP</span>
+            <span className="[font-family:'Manrope',Helvetica] font-normal text-[#695a47] text-sm">Inheritance</span>
           </div>
-        </button>
+        </div>
 
         <nav className="flex-1 flex flex-col gap-2 p-4">
           <button
@@ -98,7 +97,7 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
 
       <main className="flex-1 bg-[#0d0501] overflow-auto">
         <header className="sticky top-0 flex items-center justify-between px-8 py-4 bg-[#0d0501] border-b border-[#392f28]">
-          <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">Overview</h1>
+          <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">Welcome to CIP Protocol</h1>
 
           <div className="flex items-center gap-6">
             {/* <div className="relative hidden md:flex">

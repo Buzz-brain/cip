@@ -119,7 +119,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
   return (
     <BeneficiaryLayout>
       <main className="flex-1 bg-[#0d0501] overflow-auto [font-family:'Manrope',Helvetica]">
-        <header className="flex items-center justify-between px-8 py-4 bg-[#0d0501]">
+        <header className="flex items-center justify-between px-4 py-4 bg-[#0d0501]">
           <div className="flex items-center gap-2 text-[#8b7b64]">
             <button onClick={() => navigate("/overview")} className="hover:text-white transition-colors">
               <HomeIcon className="w-4 h-4" />
@@ -131,7 +131,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
           </div>
         </header>
 
-        <div className="p-8 flex flex-col gap-8">
+        <div className="p-4 flex flex-col gap-8">
           <section className="flex flex-col gap-4">
             <div className="flex items-end justify-between">
               <div className="flex flex-col gap-2">

@@ -16,7 +16,7 @@ interface Props {
 export const ExecutorSidebar: React.FC<Props> = ({ items, footer }) => {
   const loc = useLocation();
   return (
-    <aside className="w-64 bg-[#14100d] border-r border-[#3a3430] min-h-screen p-4">
+    <aside className="w-64 bg-[#14100d] border-r border-[#3a3430] min-h-screen p-4 flex flex-col">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
           <span className="text-white font-bold text-sm">C</span>
@@ -43,7 +43,7 @@ export const ExecutorSidebar: React.FC<Props> = ({ items, footer }) => {
         })}
       </nav>
 
-      <div className="mt-6">{footer}</div>
+      <div className="mt-auto">{footer}</div>
     </aside>
   );
 };
