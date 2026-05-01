@@ -82,23 +82,6 @@ export const ExecutorDashboard = (): JSX.Element => {
         </div>
 
         <div className="space-y-6">
-          <div className="bg-gradient-to-br from-[#3a2820] to-[#2a2420] border border-[#4a3830] rounded-xl p-6 relative overflow-hidden">
-            <div className="absolute right-0 top-0 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl"></div>
-            <div className="relative">
-              <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mb-4">
-                <Activity className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="font-semibold mb-2">Need legal guidance?</h3>
-              <p className="text-sm text-gray-400 mb-4">
-                CIP AI can help you understand local inheritance laws and tax
-                implications for your active plans.
-              </p>
-              <button className="text-orange-400 text-sm hover:text-orange-300 flex items-center gap-1">
-                Start Chat →
-              </button>
-            </div>
-          </div>
-
           <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-6">
             <h3 className="font-semibold mb-4">Activity Log</h3>
             <div className="space-y-4">

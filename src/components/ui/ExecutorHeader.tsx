@@ -1,5 +1,4 @@
 import React from 'react';
-import { Activity } from "lucide-react";
 
 export const ExecutorHeader: React.FC = () => {
   return (
@@ -13,13 +12,6 @@ export const ExecutorHeader: React.FC = () => {
             </div>
             
             <div className="flex items-center gap-4">
-              <button className="bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
-                <Activity className="w-4 h-4" />
-                Ask CIP AI
-              </button>
-              <button className="w-8 h-8 bg-[#2a2420] rounded-lg flex items-center justify-center">
-                <span className="text-orange-500">🔔</span>
-              </button>
               <button className="text-gray-400 text-xs bg-[#2a2420] px-3 py-1 rounded">
                 Hi, Jamie
               </button>

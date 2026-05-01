@@ -7,7 +7,7 @@ import { usePlans } from "../../lib/hooks/usePlans";
 import { Navbar } from "@components/ui/Navbar";
 import { useAuth } from "../../context/useAuth";
 import { toast } from "react-toastify";
-import { extractErrorMessage } from "../../lib/utils";
+import { extractErrorMessage, getDashboardRoute } from "../../lib/utils";
 import { ToggleBilling } from "@components/ui/ToggleBilling";
 import logoImg from "@assets/cip-logo.png";
 import sharpCheckSolid from "@assets/sharp-check-solid.svg";
@@ -278,21 +278,13 @@ export const Pricing = (): JSX.Element => {
 
                 if (res.ok) {
                   toast.success("Subscription successful.");
-                  // Navigate to success page with backend response data
-                  navigate("/plan-activated", {
-                    state: {
-                      // map common possible fields from backend to what the success page expects
-                      plan_id_to_fund: data?.plan_id_to_fund ?? data?.plan_id ?? data?.id ?? plan.id,
-                      trx_hex: data?.trx_hex ?? data?.transaction_hex ?? data?.tx_hex ?? data?.tx ?? undefined,
-                      backendMessage: data?.message ?? data?.detail ?? undefined,
-                      protectedDataAddress: data?.protected_data_address ?? data?.protectedDataAddress ?? undefined,
-                      triggerMechanism: data?.triggerMechanism ?? data?.trigger_mechanism ?? undefined,
-                      assetsIncluded: data?.assets ?? data?.assetsIncluded ?? undefined,
-                      mainBeneficiary: data?.mainBeneficiary ?? data?.main_beneficiary ?? undefined,
-                      securityLevel: data?.securityLevel ?? undefined,
-                      creationTimestamp: data?.creationTimestamp ?? data?.created_at ?? undefined,
-                    },
-                  });
+                  // Validate user role and navigate to appropriate dashboard
+                  const role = (user?.userInfo?.role ?? (user as any)?.role ?? "").toString();
+                  if (!role || role.toLowerCase() === "beneficiary") {
+                    toast.error("Beneficiaries cannot subscribe. Please contact support.");
+                    return;
+                  }
+                  navigate(getDashboardRoute(role));
                 } else {
                   const errorMsg = await extractErrorMessage(res);
                   toast.error(`Subscription failed: ${errorMsg}`);
