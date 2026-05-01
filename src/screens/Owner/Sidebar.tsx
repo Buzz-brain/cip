@@ -1,9 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logoImg from "@assets/cip-logo.svg";
 import dashboardIcon from "@assets/dashboard.svg";
 import plusCircleIcon from "@assets/plus-icon-grey.svg";
-import usersIcon from "@assets/users-grey.svg";
-import walletIcon from "@assets/wallet.svg";
+// import usersIcon from "@assets/users-grey.svg";
+// import walletIcon from "@assets/wallet.svg";
 import settingsIcon from "@assets/settings.svg";
 import helpIcon from "@assets/help-grey.svg";
 import { useAuth } from "../../context/useAuth";
@@ -11,8 +11,8 @@ import { useAuth } from "../../context/useAuth";
 const sidebarMenuItems = [
   { icon: dashboardIcon, label: "Dashboard", id: "dashboard" },
   { icon: plusCircleIcon, label: "Create Plan", id: "create-plan" },
-  { icon: usersIcon, label: "Beneficiaries", id: "beneficiaries" },
-  { icon: walletIcon, label: "Asset Registry", id: "asset-registry" },
+  // { icon: usersIcon, label: "Beneficiaries", id: "beneficiaries" },
+  // { icon: walletIcon, label: "Asset Registry", id: "asset-registry" },
 ];
 
 const systemMenuItems = [
@@ -22,6 +22,8 @@ const systemMenuItems = [
 
 export const Sidebar = (): JSX.Element => {
   const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
+  const pathname = location.pathname || "/";
 
   const displayName = user?.name || user?.userInfo?.full_name || user?.publicKey || "Guest";
   const displayEmail = user?.email || user?.userInfo?.email || "";
@@ -59,14 +61,14 @@ export const Sidebar = (): JSX.Element => {
               if (item.id === "create-plan") href = "/owner-dashboard/select-assets";
               if (item.id === "asset-registry") href = "/owner-dashboard/select-assets";
 
+              const isActive = href !== "#" && pathname.startsWith(href);
+
               return (
                 <Link
                   key={item.id}
                   to={href}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors block ${
-                    item.id === "dashboard"
-                      ? "bg-[#332619] text-white"
-                      : "text-[#B9B09D] hover:bg-[#2a1f10] hover:text-white"
+                    isActive ? "bg-[#332619] text-white" : "text-[#B9B09D] hover:bg-[#2a1f10] hover:text-white"
                   }`}
                 >
                   <img src={item.icon} />

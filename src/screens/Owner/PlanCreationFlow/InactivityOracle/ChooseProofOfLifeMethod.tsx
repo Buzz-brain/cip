@@ -4,11 +4,9 @@ import { Button } from "@components/ui/button";
 import { usePlan } from "../../../../context/usePlan";
 import leafLetterIcon from "@assets/leaf-letter.svg";
 import handTouchIcon from "@assets/hand-touch.svg";
-import messageCheckIcon from "@assets/message-check.svg";
-import fingerprintIcon from "@assets/fingerprint.svg";
 
 
-type ProofOfLifeMethod = "wallet" | "app" | "email" | "biometric";
+type ProofOfLifeMethod = "wallet" | "app";
 
 export const ChooseProofOfLifeMethod = (): JSX.Element => {
   const navigate = useNavigate();
@@ -39,8 +37,6 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
       const backendIdsForMethod: Record<ProofOfLifeMethod, string[]> = {
         wallet: ["wallet_signature"],
         app: ["app_login"],
-        email: ["email"],
-        biometric: ["biometric"],
       };
 
       const mapToBackend = (m: ProofOfLifeMethod) => {
@@ -82,23 +78,7 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
       icon: handTouchIcon,
       bgColor: "bg-[#581C8733]",
     },
-    {
-      id: "email",
-      title: "Email/SMS Confirmation",
-      description:
-        "Receive automated periodic check-ins via Email or SMS. Clicking the secure link in the message verifies your proof-of-life.",
-      icon: messageCheckIcon,
-      bgColor: "bg-[#7C2D1233]",
-    },
-    {
-      id: "biometric",
-      title: "Biometric Confirmation",
-      description:
-        "Advanced verification using device sensors (FaceID, TouchID) for cryptographically secure proof of physical presence.",
-      icon: fingerprintIcon,
-      comingSoon: true,
-      bgColor: "bg-[#514837]",
-    },
+    // Only wallet signature and app login options are supported by backend.
   ];
 
   useEffect(() => {
@@ -130,8 +110,6 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
   const backendIdsForMethod: Record<ProofOfLifeMethod, string[]> = {
     wallet: ["wallet_signature", "wallet"],
     app: ["app_login", "app"],
-    email: ["email", "email_sms"],
-    biometric: ["biometric", "faceid", "touchid"],
   };
 
   const displayedMethods =
@@ -172,29 +150,17 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
             {displayedMethods.map((method) => (
               <button
                 key={method.id}
-                onClick={() =>
-                  !method.comingSoon &&
-                  selectMethod(method.id as ProofOfLifeMethod)
-                }
+                onClick={() => selectMethod(method.id as ProofOfLifeMethod)}
                 className={`relative p-6 rounded-lg bg-[#27231C] border-2 transition-all text-left ${selectedMethod === method.id
                   ? "border-orange-600 bg-[#27221C]"
                   : "border-[#54493B] bg-[#27221C] hover:border-gray-600"
-                } ${method.comingSoon ? "opacity-60 cursor-not-allowed" : ""}`}
+                }`}
               >
-                {!method.comingSoon && (
-                  <div className="absolute top-4 right-4 w-5 h-5 rounded-full border-2 border-gray-600 flex items-center justify-center">
-                    {selectedMethod === method.id && (
-                      <div className="w-3 h-3 rounded-full bg-orange-600"></div>
-                    )}
-                  </div>
-                )}
-                {method.comingSoon && (
-                  <div className="absolute top-4 right-4">
-                    <span className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">
-                      Coming Soon
-                    </span>
-                  </div>
-                )}
+                <div className="absolute top-4 right-4 w-5 h-5 rounded-full border-2 border-gray-600 flex items-center justify-center">
+                  {selectedMethod === method.id && (
+                    <div className="w-3 h-3 rounded-full bg-orange-600"></div>
+                  )}
+                </div>
 
                 <div
                   className={`w-12 h-12 ${method.bgColor} rounded-lg flex items-center mb-4 justify-center`}

@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { getAddress } from "ethers";
-import { toast } from "react-toastify";
+// toast should not be used for low-level normalization functions; callers decide UX
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -15,8 +15,7 @@ export function normalizeWalletAddress(address: string): string {
   try {
     return getAddress(trimmed);
   } catch (err) {
-    // Provide user feedback and rethrow for callers to handle
-    toast.error("Invalid wallet address. Please provide a valid Ethereum address.");
+    // Rethrow and let the caller handle user-facing feedback (avoid toasts during typing)
     throw err;
   }
 }

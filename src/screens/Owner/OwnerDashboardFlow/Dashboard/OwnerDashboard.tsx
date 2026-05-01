@@ -160,15 +160,22 @@ export const OwnerDashboard = (): JSX.Element => {
                         🔒
                       </div> */}
                     </div>
-                    <div className="space-y-1 flex gap-2 items-end">
-                      <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
-                        {showValues ? (statsLoading ? '$—' : stats?.totalValueSecuredFormatted ?? '$0.00') : "••••••"}
+                    {(statsLoading || stats == null) ? (
+                      <div className="space-y-2">
+                        <div className="h-8 w-40 bg-[#3a2f1e] rounded animate-pulse" />
+                        <div className="h-4 w-20 bg-[#3a2f1e] rounded animate-pulse mt-2" />
                       </div>
-                      <div className="flex bg-[#0BDA5B1A] px-1 items-center rounded-md w-[70px] gap-1">
-                        <TrendingUp className="w-3 text-[#0BDA5B]" />
-                        <span className="text-[#0BDA5B] text-xs"> +5.2%</span>
+                    ) : (
+                      <div className="space-y-1 flex gap-2 items-end">
+                        <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                          {showValues ? (stats?.totalValueSecuredFormatted ?? '$0.00') : "••••••"}
+                        </div>
+                        <div className="flex bg-[#0BDA5B1A] px-1 items-center rounded-md w-[70px] gap-1">
+                          <TrendingUp className="w-3 text-[#0BDA5B]" />
+                          <span className="text-[#0BDA5B] text-xs"> +5.2%</span>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -182,12 +189,19 @@ export const OwnerDashboard = (): JSX.Element => {
                         📋
                       </div> */}
                     </div>
-                    <div className="space-y-1 flex items-end gap-2">
-                      <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
-                        {statsLoading ? '—' : stats?.activePlansCount ?? 0}
+                    {(statsLoading || stats == null) ? (
+                      <div className="space-y-2">
+                        <div className="h-8 w-12 bg-[#3a2f1e] rounded animate-pulse" />
+                        <div className="h-4 w-24 bg-[#3a2f1e] rounded animate-pulse mt-2" />
                       </div>
-                      <div className="text-[#B9B09D] text-sm">plans monitored</div>
-                    </div>
+                    ) : (
+                      <div className="space-y-1 flex items-end gap-2">
+                        <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                          {stats?.activePlansCount ?? 0}
+                        </div>
+                        <div className="text-[#B9B09D] text-sm">plans monitored</div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -201,16 +215,19 @@ export const OwnerDashboard = (): JSX.Element => {
                         ⏱️
                       </div> */}
                     </div>
-                    <div className="space-y-1 flex gap-2 items-end">
-                      <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
-                        {statsLoading
-                          ? '—'
-                          : (stats == null || stats.nextTriggerDays == null)
-                            ? '—'
-                            : `${stats.nextTriggerDays} Days`}
+                    {(statsLoading || stats == null) ? (
+                      <div className="space-y-2">
+                        <div className="h-8 w-28 bg-[#3a2f1e] rounded animate-pulse" />
+                        <div className="h-4 w-20 bg-[#3a2f1e] rounded animate-pulse mt-2" />
                       </div>
-                      <div className="text-[#EAB308] text-sm">{statsLoading ? '' : stats?.nextTriggerPlanId ? `Plan #${String(stats.nextTriggerPlanId).padStart(4, '0')}` : '—'}</div>
-                    </div>
+                    ) : (
+                      <div className="space-y-1 flex gap-2 items-end">
+                        <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                          {(stats == null || stats.nextTriggerDays == null) ? '—' : `${stats.nextTriggerDays} Days`}
+                        </div>
+                        <div className="text-[#EAB308] text-sm">{stats?.nextTriggerPlanId ? `Plan #${String(stats.nextTriggerPlanId).padStart(4, '0')}` : '—'}</div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -224,12 +241,19 @@ export const OwnerDashboard = (): JSX.Element => {
                         📈
                       </div> */}
                     </div>
-                    <div className="space-y-1">
-                      <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl flex items-center gap-2">
-                        <span className={`w-4 h-4 rounded-full ${statsLoading ? 'bg-gray-400' : stats?.networkStatus === 'Healthy' ? 'bg-[#22C55E]' : stats?.networkStatus === 'Degraded' ? 'bg-[#EAB308]' : 'bg-gray-400'}`}></span>
-                        {statsLoading ? 'Checking' : stats?.networkStatus ?? 'Unknown'}
+                    {(statsLoading || stats == null) ? (
+                      <div className="space-y-2">
+                        <div className="h-6 w-6 bg-[#3a2f1e] rounded-full animate-pulse inline-block mr-3" />
+                        <div className="h-4 w-24 bg-[#3a2f1e] rounded animate-pulse inline-block" />
                       </div>
-                    </div>
+                    ) : (
+                      <div className="space-y-1">
+                        <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl flex items-center gap-2">
+                          <span className={`w-4 h-4 rounded-full ${stats?.networkStatus === 'Healthy' ? 'bg-[#22C55E]' : stats?.networkStatus === 'Degraded' ? 'bg-[#EAB308]' : 'bg-gray-400'}`}></span>
+                          {stats?.networkStatus ?? 'Unknown'}
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>

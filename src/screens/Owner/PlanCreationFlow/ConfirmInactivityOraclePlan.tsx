@@ -246,7 +246,7 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
             on-chain transaction to set your parameters immutably.
           </p>
 
-          <div className="border border-[#54493B] rounded-xl p-4 bg-[#181311]">
+          {/* <div className="border border-[#54493B] rounded-xl p-4 bg-[#181311]">
             <div className="flex gap-4">
               <div className="flex-1 text-xs font-normal">
                 <div className="flex items-center justify-between mb-3">
@@ -267,7 +267,7 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <Button
             onClick={handleConfirm}

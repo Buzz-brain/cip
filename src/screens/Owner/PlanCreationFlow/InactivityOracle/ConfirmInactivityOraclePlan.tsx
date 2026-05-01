@@ -109,12 +109,12 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
                 <h2 className="text-white font-bold text-lg">
                   Configuration Summary
                 </h2>
-                <a
+                {/* <a
                   href="#"
                   className="text-orange-500 hover:text-orange-400 text-sm font-semibold"
                 >
                   Edit
-                </a>
+                </a> */}
               </div>
 
               <div>
@@ -234,7 +234,7 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
             on-chain transaction to set your parameters immutably.
           </p>
 
-          <div className="border border-[#54493B] rounded-xl p-4 bg-[#181311]">
+          {/* <div className="border border-[#54493B] rounded-xl p-4 bg-[#181311]">
             <div className="flex gap-4">
               <div className="flex-1 text-xs font-normal">
                 <div className="flex items-center justify-between mb-3">
@@ -255,12 +255,12 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <Button
             onClick={handleConfirm}
             disabled={isSubmitting}
-            className="inline-flex w-full mt-8 items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            className="inline-flex w-full mt-5 items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
           >
             <img src={paperEditIcon} alt="Icon" />
             {isSubmitting ? 'Signing…' : 'Sign & Create Plan'}

@@ -1,13 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { TriangleAlert as AlertTriangle, Download } from "lucide-react";
 import { toast } from "react-toastify";
 import { usePlan } from "../../../context/usePlan";
 import { mapPlanTypeToDataProtectorType } from "../../../context/PlanContext";
 import { ensureArbitrumSepolia } from "../../../lib/wallet/walletUtils";
-import calculatorWhiteIcon from "@assets/calculator-white.svg";
 import fingerprintIcon from "@assets/fingerprint.svg";
-import flagOrangeIcon from "@assets/flag-orange.svg";
 // Using backend create-inheritance directly; DataProtector flow removed.
 
 export const ReviewPlan = (): JSX.Element => {
@@ -61,6 +58,43 @@ export const ReviewPlan = (): JSX.Element => {
       abortControllerRef.current?.abort();
     };
   }, []);
+
+  // Fetch ETH price and compute USD equivalent for plan amount when applicable
+  const [assetUsdFormatted, setAssetUsdFormatted] = useState<string | null>(null);
+  useEffect(() => {
+    let mounted = true;
+    const fetchPrice = async () => {
+      try {
+        if (!plan?.cryptoAsset || !plan?.amount) {
+          setAssetUsdFormatted(null);
+          return;
+        }
+        const symbol = String(plan.cryptoAsset).toLowerCase();
+        // Only support ETH for now
+        if (symbol !== 'eth' && symbol !== 'eth') {
+          setAssetUsdFormatted(null);
+          return;
+        }
+        const amount = parseFloat(String(plan.amount).replace(/[,\s]/g, ''));
+        if (isNaN(amount)) {
+          setAssetUsdFormatted(null);
+          return;
+        }
+        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+        if (!res.ok) return;
+        const data = await res.json();
+        const price = data?.ethereum?.usd;
+        if (mounted && price) {
+          const usd = amount * Number(price);
+          setAssetUsdFormatted(new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(usd));
+        }
+      } catch (err) {
+        console.error('[ReviewPlan] fetchPrice error', err);
+      }
+    };
+    fetchPrice();
+    return () => { mounted = false; };
+  }, [plan?.cryptoAsset, plan?.amount]);
 
   const handleBack = () => {
     navigate("/philanthropy-plan");
@@ -176,10 +210,6 @@ export const ReviewPlan = (): JSX.Element => {
   return (
     <div className="font-family:'Manrope',Helvetica] flex flex-col w-full px-4 py-4 max-w-[1200px] mx-auto">
       <div className="mb-8">
-        <div className="text-orange-600 font-semibold text-sm mb-3 flex gap-3 items-center">
-          <img src={flagOrangeIcon} alt="" />
-          <span>STEP 4 OF 4</span>
-        </div>
         <h1 className="text-5xl font-bold text-white mb-4 ">
           Review & Confirm Plan
         </h1>
@@ -193,7 +223,7 @@ export const ReviewPlan = (): JSX.Element => {
         <h2 className="text-xl font-bold text-white">
           Plan Configuration Summary
         </h2>
-        <p className="text-orange-600 text-sm">Edit Configuration</p>
+        {/* <p className="text-orange-600 text-sm">Edit Configuration</p> */}
       </div>
 
       <div className="flex justify-between gap-8">
@@ -219,7 +249,7 @@ export const ReviewPlan = (): JSX.Element => {
                     {plan.cryptoAsset}
                   </span>
                   <span className="text-gray-300">{plan.amount || '-'}</span>
-                  <p className="text-gray-400 text-xs">-</p>
+                  <p className="text-gray-400 text-xs">{assetUsdFormatted ?? '-'}</p>
                 </div>
               )}
               {!plan.cryptoAsset && (

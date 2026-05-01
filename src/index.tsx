@@ -208,6 +208,13 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           <Route path="mpc-selected" element={<MPCSelected />} />
         </Route>
 
+          {/* Billing and Subscription inside Owner Dashboard layout */}
+          <Route path="billing-and-payment" element={<BillingAndPayment />} />
+          <Route path="secure-checkout" element={<SecureCheckout />} />
+          <Route path="subscription-renewal" element={<SubscriptionRenewal />} />
+          <Route path="billing-history" element={<BillingHistory />} />
+          <Route path="grace-period-active" element={<GracePeriodActive />} />
+
         {/* Legacy top-level owner routes redirect to the new nested paths for backward compatibility */}
         <Route path="/view-plan-history" element={<Navigate to="/owner-dashboard/view-plan-history" replace />} />
         <Route path="/childrens-trust-account" element={<Navigate to="/owner-dashboard/childrens-trust-account" replace />} />
@@ -244,12 +251,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/proof-of-life-config" element={<ProofOfLifeConfig />} /> ✅
         {/* proof-of-life flows are modal-driven from the Owner Dashboard */}
 
-        {/* Billing and Subscription Flow */}
-        <Route path="/billing-and-payment" element={<BillingAndPayment />} /> ✅
-        <Route path="/secure-checkout" element={<SecureCheckout />} /> ✅
-        <Route path="/subscription-renewal" element={<SubscriptionRenewal />} /> ✅
-        <Route path="/billing-history" element={<BillingHistory />} /> ✅
-        <Route path="/grace-period-active" element={<GracePeriodActive />} /> ✅
+        {/* Billing and Subscription Flow (moved under /owner-dashboard) */}
 
         {/* Mediator Flow */}
         <Route path="/mediator-login" element={<MediatorLogin />} /> ✅

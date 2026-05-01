@@ -51,60 +51,28 @@ const BENEFICIARY_COLORS = [
 
 export const AddBeneficiaries = (): JSX.Element => {
     const navigate = useNavigate();
-    const { plan, addBeneficiary, removeBeneficiary, updateBeneficiary, setBeneficiaries } = usePlan();
+    const { plan, addBeneficiary, removeBeneficiary, updateBeneficiary } = usePlan();
     const beneficiaries = plan.beneficiaries;
 
-    useEffect(() => {
-        if (beneficiaries.length === 0) {
-        try {
-          const checksum = normalizeWalletAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F");
-          setBeneficiaries([
-            {
-              id: "1",
-              name: "Alice Smith",
-            relationship: "Spouse",
-            email: "alice@example.com",
-            walletAddress: checksum,
-              allocation: 100,
-              color: BENEFICIARY_COLORS[0],
-              initial: "A",
-            },
-          ]);
-        } catch (err) {
-          // fallback: set raw if normalization fails
-          console.warn("Default beneficiary address normalization failed", err);
-          setBeneficiaries([
-            {
-              id: "1",
-              name: "Alice Smith",
-            relationship: "Spouse",
-            email: "alice@example.com",
-            walletAddress: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
-              allocation: 100,
-              color: BENEFICIARY_COLORS[0],
-              initial: "A",
-            },
-          ]);
-        }
-        }
-    }, [plan.beneficiaries.length, setBeneficiaries]);
+    // No default/mock beneficiaries; user will input values manually.
 
     const totalAllocated = beneficiaries.reduce((sum, b) => sum + b.allocation, 0);
     const unallocated = 100 - totalAllocated;
 
     const handleAddBeneficiary = () => {
-        const newId = (Math.max(...beneficiaries.map((b) => parseInt(b.id))) + 1).toString();
-        const colorIndex = beneficiaries.length % BENEFICIARY_COLORS.length;
-        const newBeneficiary = {
-            id: newId,
-            name: "",
-            relationship: "",
-            walletAddress: "",
-            allocation: 0,
-            color: BENEFICIARY_COLORS[colorIndex],
-            initial: "?",
-        };
-        addBeneficiary(newBeneficiary);
+      const maxId = beneficiaries.length > 0 ? Math.max(...beneficiaries.map((b) => parseInt(b.id) || 0)) : 0;
+      const newId = (maxId + 1).toString();
+      const colorIndex = beneficiaries.length % BENEFICIARY_COLORS.length;
+      const newBeneficiary = {
+        id: newId,
+        name: "",
+        relationship: "",
+        walletAddress: "",
+        allocation: 0,
+        color: BENEFICIARY_COLORS[colorIndex],
+        initial: "?",
+      };
+      addBeneficiary(newBeneficiary);
     };
 
     const handleUpdateBeneficiary = (id: string, field: keyof Beneficiary, value: any) => {
@@ -118,20 +86,39 @@ export const AddBeneficiaries = (): JSX.Element => {
           updates.walletAddress = "";
         } else {
           try {
+            // normalize to checksum casing when possible
             updates.walletAddress = normalizeWalletAddress(candidate);
           } catch (err) {
-            // keep raw value but notify user
+            // keep raw value; do not show toast here — validation is inline
             updates.walletAddress = candidate;
-            toast.error("Invalid beneficiary wallet address. Please check the address format.");
           }
         }
       }
         updateBeneficiary(id, updates);
     };
 
-    const isValidAddress = (address: string) => {
-        return address.length > 0 && address.startsWith("0x") && address.length === 42;
+    const isChecksumAddress = (address: string) => {
+      if (!address || typeof address !== 'string') return false;
+      try {
+        normalizeWalletAddress(address);
+        return true;
+      } catch (e) {
+        return false;
+      }
     };
+
+    const isValidAddress = (address: string) => {
+        return isChecksumAddress(address);
+    };
+
+    // Ensure at least one empty beneficiary is present so the form is visible
+    useEffect(() => {
+      if (beneficiaries.length === 0) {
+        handleAddBeneficiary();
+      }
+      // run once on mount
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
          <div className="min-h-screen bg-[#0d0b08]">
@@ -269,13 +256,19 @@ export const AddBeneficiaries = (): JSX.Element => {
                             <label className="[font-family:'Manrope',Helvetica] font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
                               Wallet Address (ETH/EVM)
                             </label>
-                            {beneficiary.walletAddress &&
-                              isValidAddress(beneficiary.walletAddress) && (
+                            {beneficiary.walletAddress ? (
+                              isChecksumAddress(beneficiary.walletAddress) ? (
                                 <span className="flex items-center gap-1 text-green-500 text-xs font-medium">
                                   <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
                                   VALID ADDRESS
                                 </span>
-                              )}
+                              ) : (
+                                <span className="flex items-center gap-1 text-red-400 text-xs font-medium">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                                  INVALID ADDRESS
+                                </span>
+                              )
+                            ) : null}
                           </div>
                           <div className="relative">
                             <WalletIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#80796b]" />
@@ -504,6 +497,27 @@ export const AddBeneficiaries = (): JSX.Element => {
 
                 <Button
                   onClick={() => {
+                    // validate beneficiaries: name, relationship, walletAddress required
+                    if (beneficiaries.length === 0) {
+                      toast.error('Please add at least one beneficiary.');
+                      return;
+                    }
+
+                    for (const b of beneficiaries) {
+                      if (!b.name || b.name.trim().length === 0) {
+                        toast.error('Each beneficiary requires a name.');
+                        return;
+                      }
+                      if (!b.relationship || b.relationship.trim().length === 0) {
+                        toast.error('Each beneficiary requires a relationship selection.');
+                        return;
+                      }
+                      if (!b.walletAddress || !isValidAddress(b.walletAddress)) {
+                        toast.error('Each beneficiary requires a valid wallet address (0x...).');
+                        return;
+                      }
+                    }
+
                     // log beneficiaries selected before navigation (backend payload shape)
                     console.log(
                       '[AddBeneficiaries] Beneficiaries:',
@@ -516,7 +530,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                         allocation_percentage: b.allocation,
                       })),
                     );
-                    navigate("/choose-plan-type");
+                    navigate('/choose-plan-type');
                   }}
                   disabled={unallocated !== 0}
                   className="w-full py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 disabled:bg-[#54483b] disabled:text-[#80796b] disabled:cursor-not-allowed rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40]"
@@ -529,7 +543,7 @@ export const AddBeneficiaries = (): JSX.Element => {
 
                 <Button
                   variant="ghost"
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate(-1)}
                   className="w-full text-[#9dabb9] hover:text-white hover:bg-transparent"
                 >
                   Go Back

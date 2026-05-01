@@ -1,157 +1,90 @@
-import {
-  CheckCircle2,
-  Clock,
-  Zap as ZapIcon,
-} from "lucide-react";
+import { useState } from "react";
+
+type NotificationItem = {
+  id: string;
+  title: string;
+  body?: string;
+  type: "alert" | "info";
+  read?: boolean;
+  date?: string;
+};
 
 export const Notifications = (): JSX.Element => {
+  const [tab, setTab] = useState<"all" | "info">("all");
+
+  // No notifications for now — keep structure in place for future data.
+  const notifications: NotificationItem[] = [];
+
+  const filtered =
+    tab === "all" ? notifications : notifications.filter((n) => n.type === "info");
+
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className="min-h-screen text-white">
       <div className="flex min-h-screen">
         <main className="flex-1 flex flex-col">
           <div className="flex-1 p-4">
             <div className="mb-8">
               <h1 className="text-3xl font-bold mb-2">Notifications</h1>
-              <p className="text-gray-400">
-                Manage your protocol alerts and critical actions.
-              </p>
+              <p className="text-gray-400">Manage your protocol alerts and critical actions.</p>
             </div>
 
             <div className="flex items-center gap-4 mb-8">
-              <button className="text-orange-500 font-semibold text-sm border-b-2 border-orange-500 pb-2">
+              <button
+                onClick={() => setTab("all")}
+                className={`text-sm pb-2 ${
+                  tab === "all"
+                    ? "text-orange-500 border-b-2 border-orange-500 pb-2"
+                    : "text-gray-400 hover:text-gray-300 border-b-2 border-transparent hover:border-gray-300"
+                }`}
+              >
                 All Alerts
               </button>
-              <button className="text-gray-400 hover:text-gray-300 text-sm flex items-center gap-1">
-                <span className="w-5 h-5 bg-red-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                  2
-                </span>
-                Action Required
-              </button>
-              <button className="text-gray-400 hover:text-gray-300 text-sm">
+
+              <button
+                onClick={() => setTab("info")}
+                className={`text-sm pb-2 ${
+                  tab === "info" 
+                  ? "text-orange-500 border-b-2 border-orange-500 pb-2" 
+                  : "text-gray-400 hover:text-gray-300 border-b-2 border-transparent hover:border-gray-300"
+                }`}
+              >
                 Informational
               </button>
+
               <div className="ml-auto">
                 <a
                   href="#"
-                  className="text-orange-500 text-sm hover:text-orange-600"
+                  className={`text-orange-500 text-sm hover:text-orange-600 ${filtered.length === 0 ? "opacity-50 pointer-events-none" : ""}`}
                 >
                   Mark all as read
                 </a>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-6 flex items-start justify-between">
-                <div className="flex items-start gap-4 flex-1">
-                  <div className="w-8 h-8 bg-orange-600/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-orange-500 text-sm">≈</span>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-base mb-1">
-                      MPC Approval Request{" "}
-                      <span className="inline-block w-2 h-2 bg-orange-500 rounded-full ml-2"></span>
-                    </h3>
-                    <p className="text-gray-400 text-sm">
-                      Wallet 0x7a...4B21 requires your signature for transaction
-                      #8821 on Ethereum Mainnet.
-                    </p>
-                    <p className="text-gray-600 text-xs mt-2">2 mins ago</p>
-                  </div>
-                </div>
-                <button className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ml-4 transition">
-                  Sign Now
-                </button>
+            {filtered.length === 0 ? (
+              <div className="py-20 text-center text-gray-400">
+                <div className="text-6xl mb-4">🔔</div>
+                <h3 className="text-xl font-semibold mb-2">No notifications</h3>
+                <p className="max-w-lg mx-auto">You have no notifications at the moment. Any future alerts will appear here.</p>
               </div>
-
-              <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-6 flex items-start justify-between">
-                <div className="flex items-start gap-4 flex-1">
-                  <div className="w-8 h-8 bg-orange-600/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <ZapIcon className="w-4 h-4 text-orange-500" />
+            ) : (
+              <div className="space-y-4">
+                {filtered.map((n) => (
+                  <div key={n.id} className="p-4 bg-[#241C16] rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-1">
+                        <div className="font-semibold text-white">{n.title}</div>
+                        {n.body && <div className="text-gray-400 text-sm mt-1">{n.body}</div>}
+                      </div>
+                      <div className="text-xs text-gray-400">{n.date}</div>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-base mb-1">
-                      Inactivity Trigger Activated{" "}
-                      <span className="inline-block w-2 h-2 bg-orange-500 rounded-full ml-2"></span>
-                    </h3>
-                    <p className="text-gray-400 text-sm">
-                      Dead Man's Switch condition met. 24h cooling period
-                      started before plan execution.
-                    </p>
-                    <p className="text-gray-600 text-xs mt-2">4 hours ago</p>
-                  </div>
-                </div>
-                <button className="bg-transparent border border-gray-600 hover:border-gray-500 text-gray-300 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ml-4 transition">
-                  Verify Status
-                </button>
+                ))}
               </div>
-
-              <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-6 flex items-start justify-between">
-                <div className="flex items-start gap-4 flex-1">
-                  <div className="w-8 h-8 bg-green-600/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-base mb-1">
-                      Plan Executed Successfully
-                    </h3>
-                    <p className="text-gray-400 text-sm">
-                      Assets from 'Family Trust' vault transferred to
-                      Beneficiary A (0x93...22ae).
-                    </p>
-                    <p className="text-gray-600 text-xs mt-2">
-                      Yesterday at 5:30 PM
-                    </p>
-                  </div>
-                </div>
-                <button className="text-gray-300 px-4 py-2 text-sm font-medium whitespace-nowrap ml-4">
-                  View Details
-                </button>
-              </div>
-
-              <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-6 flex items-start justify-between">
-                <div className="flex items-start gap-4 flex-1">
-                  <div className="w-8 h-8 bg-gray-700/50 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <Clock className="w-4 h-4 text-gray-400" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-base mb-1">
-                      New Device Login
-                    </h3>
-                    <p className="text-gray-400 text-sm">
-                      Login detected from Mac OS X (Chrome) in Lisbon, Portugal.
-                    </p>
-                    <p className="text-gray-600 text-xs mt-2">2 days ago</p>
-                  </div>
-                </div>
-                <button className="text-gray-400 text-xs hover:text-gray-300 ml-4">
-                  close
-                </button>
-              </div>
-
-              <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-6 flex items-start justify-between">
-                <div className="flex items-start gap-4 flex-1">
-                  <div className="w-8 h-8 bg-purple-600/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-purple-400 text-sm">✦</span>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-base mb-1">
-                      Feature Update: Polygon Support
-                    </h3>
-                    <p className="text-gray-400 text-sm">
-                      You can now create inheritance plans for assets on the
-                      Polygon network.
-                    </p>
-                    <p className="text-gray-600 text-xs mt-2">3 days ago</p>
-                  </div>
-                </div>
-                <button className="text-gray-300 px-4 py-2 text-sm font-medium whitespace-nowrap ml-4">
-                  Learn More
-                </button>
-              </div>
-            </div>
+            )}
           </div>
         </main>
       </div>
     </div>
   );
-}
+};

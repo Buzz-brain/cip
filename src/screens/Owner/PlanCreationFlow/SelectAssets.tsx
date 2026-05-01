@@ -21,17 +21,20 @@ import {
 } from "@components/ui/table";
 import { Progress } from "@components/ui/progress";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { toast } from "react-toastify";
+import { useState, useEffect } from "react";
+import { BrowserProvider, formatEther } from "ethers";
+import { useAuth } from "../../../context/useAuth";
 import { usePlan } from "../../../context/usePlan";
 import filterIcon from "@assets/filter.svg";
 import sortIcon from "@assets/sort.svg";
 import ethIcon from "@assets/eth-icon.svg";
-import solanaIcon from "@assets/solana-icon.svg";
-import hexagonIcon from "@assets/hexagon-icon.svg";
+// import solanaIcon from "@assets/solana-icon.svg";
+// import hexagonIcon from "@assets/hexagon-icon.svg";
 import circlePentagonOrangeIcon from "@assets/circle-pentagon-orange.svg";
 import bitcoinPic from "@assets/bitcoin.svg";
-import womanPic from "@assets/woman-pic.svg";
-import threeSquareIcon from "@assets/three-square.svg";
+// import womanPic from "@assets/woman-pic.svg";
+// import threeSquareIcon from "@assets/three-square.svg";
 import whiteWomanPic from "@assets/white-woman.svg";
 import portalPic from "@assets/portal.svg";
 import ethCoinPic from "@assets/eth-coin.svg";
@@ -118,6 +121,10 @@ export const SelectAssets = (): JSX.Element => {
     const navigate = useNavigate();
     const [selectedAssets, setSelectedAssets] = useState<string[]>(assetData.filter(a => a.checked).map(a => a.id));
     const [searchTerm, setSearchTerm] = useState("");
+    const [ethBalance, setEthBalance] = useState<string | null>(null);
+    const [ethUsdAmount, setEthUsdAmount] = useState<number | null>(null);
+    const [ethUsdFormatted, setEthUsdFormatted] = useState<string | null>(null);
+    const { user } = useAuth();
 
     const toggleAsset = (id: string) => {
         setSelectedAssets(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
@@ -141,10 +148,13 @@ export const SelectAssets = (): JSX.Element => {
     );
     const selectedChainsCount = selectedChainsSet.size;
 
-    // Calculate total value from selected assets
+    // Calculate total value from selected assets (use live ETH USD amount when available)
     const totalSelectedValue = assetData
         .filter(a => selectedAssets.includes(a.id))
         .reduce((sum, asset) => {
+            if (asset.id === 'eth' && ethUsdAmount != null) {
+                return sum + ethUsdAmount;
+            }
             const valueNum = parseFloat(asset.value.replace(/[$,]/g, ''));
             return sum + (isNaN(valueNum) ? 0 : valueNum);
         }, 0);
@@ -154,7 +164,52 @@ export const SelectAssets = (): JSX.Element => {
         minimumFractionDigits: 2 
     }).format(totalSelectedValue);
 
-    const { setAssets, setPlanField } = usePlan();
+    const { setAssets, setPlanField, plan } = usePlan();
+
+    // Fetch ETH balance (from injected provider) and ETH->USD price
+    useEffect(() => {
+        const ownerAddress = plan?.ownerWallet || null;
+        let mounted = true;
+
+        const fetchBalanceAndPrice = async () => {
+            try {
+                const addr = ownerAddress || user?.publicKey || null;
+                if (!addr) return;
+                if ((window as any).ethereum) {
+                    const provider = new BrowserProvider((window as any).ethereum);
+                    const bal = await provider.getBalance(addr);
+                    if (!mounted) return;
+                    const ethStr = formatEther(bal);
+                    setEthBalance(ethStr);
+                }
+            } catch (err) {
+                console.error('[SelectAssets] fetchBalance error', err);
+            }
+
+            try {
+                const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+                if (!res.ok) return;
+                const data = await res.json();
+                const price = data?.ethereum?.usd;
+                if (price && mounted) {
+                    if (ethBalance) {
+                        const usd = parseFloat(ethBalance) * Number(price);
+                        setEthUsdAmount(usd);
+                        setEthUsdFormatted(new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(usd));
+                    } else {
+                        setEthUsdAmount(null);
+                        setEthUsdFormatted(new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price));
+                    }
+                }
+            } catch (err) {
+                console.error('[SelectAssets] fetchPrice error', err);
+            }
+        };
+
+        fetchBalanceAndPrice();
+        const interval = setInterval(fetchBalanceAndPrice, 60_000);
+        return () => { mounted = false; clearInterval(interval); };
+    }, [user?.publicKey, ethBalance]);
 
     const handleNext = () => {
         // Log selected assets for debugging / audit trail
@@ -170,7 +225,9 @@ export const SelectAssets = (): JSX.Element => {
             setPlanField('assets', selectedAssets);
             console.log('[SelectAssets] persisted to PlanContext:', { cryptoAsset: first.symbol || first.id, amount: first.balance, assets: selectedAssets });
         } else {
+            toast.error('Please select at least one asset before continuing.');
             console.warn('[SelectAssets] no assets selected to persist');
+            return;
         }
         // proceed to beneficiaries step
         navigate('/beneficiaries');
@@ -349,12 +406,12 @@ export const SelectAssets = (): JSX.Element => {
                                                     </TableCell>
                                                     <TableCell className="p-4 text-right">
                                                         <span className="[font-family:'Inter',Helvetica] font-normal text-white text-sm">
-                                                            {asset.balance}
+                                                            {asset.id === 'eth' ? (ethBalance ?? asset.balance) : asset.balance}
                                                         </span>
                                                     </TableCell>
                                                     <TableCell className="p-4 text-right">
                                                         <span className="[font-family:'Inter',Helvetica] font-medium text-white text-sm">
-                                                            {asset.value}
+                                                            {asset.id === 'eth' ? (ethUsdFormatted ?? asset.value) : asset.value}
                                                         </span>
                                                     </TableCell>
                                                     <TableCell className="p-4">
@@ -374,7 +431,7 @@ export const SelectAssets = (): JSX.Element => {
                             </CardContent>
                         </Card>
 
-                        <Alert className="bg-[#241f15] border-[#ff66004c] p-8 shadow-[0px_1px_2px_#0000000d] rounded-xl overflow-hidden relative">
+                        {/* <Alert className="bg-[#241f15] border-[#ff66004c] p-8 shadow-[0px_1px_2px_#0000000d] rounded-xl overflow-hidden relative">
                             <div className="absolute top-2 right-8 opacity-10 rotate-12">
                                 <img
                                     className="w-[120px] h-36 -rotate-12"
@@ -432,7 +489,7 @@ export const SelectAssets = (): JSX.Element => {
                                     <ZapIcon className="w-[15.56px] h-[19.44px]" />
                                 </Button>
                             </AlertDescription>
-                        </Alert>
+                        </Alert> */}
                     </div>
 
                     <div className="flex flex-col w-[298.67px] items-start gap-6 relative self-stretch">
@@ -492,7 +549,7 @@ export const SelectAssets = (): JSX.Element => {
                             </CardContent>
                         </Card>
 
-                        <Card className="border-[#ff660033] bg-[linear-gradient(180deg,rgba(255,102,0,0.05)_0%,rgba(255,102,0,0)_100%)] rounded-xl overflow-hidden w-full">
+                        {/* <Card className="border-[#ff660033] bg-[linear-gradient(180deg,rgba(255,102,0,0.05)_0%,rgba(255,102,0,0)_100%)] rounded-xl overflow-hidden w-full">
                             <CardContent className="flex flex-col items-start gap-4 p-6">
                                 <div className="flex items-center gap-3 w-full">
                                     <div className="flex w-8 h-8 items-center justify-center bg-[#ff660033] rounded-lg">
@@ -564,24 +621,25 @@ export const SelectAssets = (): JSX.Element => {
                                     </div>
                                 </div>
                             </CardContent>
-                        </Card>
+                        </Card> */}
                     </div>
                 </div>
 
                 <footer className="items-start pt-14 pb-0 px-0 self-stretch w-full flex-[0_0_auto] flex flex-col relative">
                     <div className="flex items-center justify-between pt-8 pb-12 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
                         <Button
+                            onClick={() => navigate(-1)}
                             className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
                         >
                             Back
                         </Button>
 
                         <div className="inline-flex items-start gap-4 relative flex-[0_0_auto]">
-                            <Button
+                            {/* <Button
                                 className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
                             >
                                 Save as Draft
-                            </Button>
+                            </Button> */}
 
                             <Button
                                 onClick={handleNext}
