@@ -552,7 +552,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-[#332619] rounded-lg flex items-center justify-center text-lg">{plan.chainIcon}</div>
                       <div>
-                        <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">{plan.name}</div>
+                        <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">{plan.name ? `${plan.name.charAt(0).toUpperCase()}${plan.name.slice(1)}` : plan.name}</div>
                         <div className="flex items-center gap-2">
                           <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">#{plan.id} • {plan.chainName}</div>
                           {plan.id === highlightedPlanId && (

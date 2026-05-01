@@ -410,7 +410,7 @@ export const Dashboard = (): JSX.Element => {
                                 </div>
                                 <div>
                                   <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
-                                    {plan.name}
+                                    {plan.name ? `${plan.name.charAt(0).toUpperCase()}${plan.name.slice(1)}` : plan.name}
                                   </div>
                                   <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
                                     #{plan.id} • {plan.chainName}

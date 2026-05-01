@@ -297,7 +297,7 @@ export const Pricing = (): JSX.Element => {
 
                 if (res.ok) {
                   toast.success("Subscription successful.");
-                  navigate(getDashboardRoute(role));
+                  navigate('/owner-dashboard/select-assets');
                 } else {
                   const errorMsg = await extractErrorMessage(res);
                   toast.error(`Subscription failed: ${errorMsg}`);

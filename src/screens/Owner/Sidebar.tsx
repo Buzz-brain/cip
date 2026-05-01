@@ -4,7 +4,7 @@ import dashboardIcon from "@assets/dashboard.svg";
 import plusCircleIcon from "@assets/plus-icon-grey.svg";
 // import usersIcon from "@assets/users-grey.svg";
 // import walletIcon from "@assets/wallet.svg";
-import settingsIcon from "@assets/settings.svg";
+import billingsIcon from "@assets/settings.svg";
 import helpIcon from "@assets/help-grey.svg";
 import { useAuth } from "../../context/useAuth";
 import { useSubscription } from "../../lib/hooks/useSubscription";
@@ -19,7 +19,7 @@ const sidebarMenuItems = [
 ];
 
 const systemMenuItems = [
-  { icon: settingsIcon, label: "Settings", id: "settings" },
+  { icon: billingsIcon, label: "Billing & Payment", id: "billingnpayment" },
   { icon: helpIcon, label: "Support", id: "support" },
 ];
 
@@ -35,7 +35,7 @@ export const Sidebar = (): JSX.Element => {
   // Pre-compute hrefs for system menu items
   const systemWithHrefs = systemMenuItems.map((item) => {
     let href = "#";
-    if (item.id === "settings") href = "/owner-dashboard/billing-and-payment";
+    if (item.id === "billingnpayment") href = "/owner-dashboard/billing-and-payment";
     return { ...item, href };
   });
 
