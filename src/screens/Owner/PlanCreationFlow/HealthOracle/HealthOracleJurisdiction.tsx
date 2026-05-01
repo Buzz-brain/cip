@@ -26,7 +26,7 @@ export const HealthOracleJurisdiction = (): JSX.Element => {
   ];
 
   const handleBack = () => {
-    navigate("/select-accepted-docs");
+    navigate("/assign-health-oracle-exec");
   };
 
   const handleContinue = () => {

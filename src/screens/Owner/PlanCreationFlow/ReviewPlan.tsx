@@ -28,8 +28,7 @@ export const ReviewPlan = (): JSX.Element => {
         if (healthState.executorName) setPlanField('executorName', healthState.executorName);
         if (healthState.executorEmail) setPlanField('executorEmail', healthState.executorEmail);
         if (healthState.executorWallet) setPlanField('executorWallet', healthState.executorWallet);
-        if (healthState.acceptedDocs) setPlanField('acceptedDocs', healthState.acceptedDocs);
-        if (healthState.jurisdiction) setPlanField('jurisdiction', healthState.jurisdiction);
+
       }
 
       const inactivityState = incoming?.inactivityState;
@@ -190,112 +189,7 @@ export const ReviewPlan = (): JSX.Element => {
         </p>
       </div>
 
-      <div className="flex items-center mb-6 gap-3">
-        <h2 className="text-white font-semibold text-xl">TaxCore Analysis</h2>
-        <span className="text-orange-600 bg-[#FF660033] border border-[#FF660033] px-3 py-1 rounded text-xs font-semibold">
-          BETA
-        </span>
-      </div>
-
-      <div className="font-family:'Manrope',Helvetica] flex gap-8">
-        <div className="bg-[#27241C] rounded-lg p-8 border border-[#3B352D] mb-8">
-          <div className="flex flex-col justify-between h-full">
-            <div>
-              <div className="flex flex-col mb-5">
-                <label className="text-gray-400 text-sm mb-3">
-                  Country of Residence
-                </label>
-                <select className="bg-[#211C16] border border-[#3B352D] text-white rounded px-4 py-3 focus:border-orange-600 focus:outline-none">
-                  <option>United States</option>
-                </select>
-              </div>
-
-              <div className="mb-6">
-                <label className="text-gray-400 text-sm">
-                  Beneficiary Countries
-                </label>
-
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="bg-[#FF6600] text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
-                    Germany
-                    <span className="ml-1">×</span>
-                  </span>
-                  <span className="bg-[#FF6600] text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
-                    France
-                    <span className="ml-1">×</span>
-                  </span>
-                  <input
-                    type="text"
-                    placeholder="Add country..."
-                    className="bg-gray-800 border border-gray-700 text-gray-400 rounded px-3 py-1 text-sm focus:border-[#FF6600] focus:outline-none"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <button className="w-full bg-[#FF6600] hover:bg-orange-700 transition-colors text-white font-semibold py-3 rounded-lg mb-6 flex items-center justify-center gap-2">
-              <img src={calculatorWhiteIcon} alt="" />
-              Recalculate Liability
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-[#27241C] rounded-lg p-8 border border-[#3B352D] mb-8">
-          <div className="flex items-start justify-between">
-            <div className="flex flex-col">
-              <label className="text-gray-400 text-sm mb-4">
-                Total Estimated Liability
-              </label>
-              <div className="flex items-baseline gap-2">
-                <span className="text-white text-4xl font-bold">
-                  $14,250.00
-                </span>
-                <span className="text-gray-400 text-sm">USD</span>
-              </div>
-              <span className="text-green-500 text-sm mt-2">
-                ↓ Potential savings found via structure optimization
-              </span>
-            </div>
-            <a
-              href="#"
-              className="flex items-center gap-2 text-orange-600 hover:text-orange-500 transition-colors"
-            >
-              <Download className="w-4 h-4" />
-              <span className="text-sm">Tax Forms (PDF)</span>
-            </a>
-          </div>
-
-          <div className="grid grid-cols-2 gap-8 mb-8"></div>
-
-          <div className="bg-gray-800 rounded-lg p-6 mb-6">
-            <div className="text-sm text-gray-400 mb-2">
-              LIABILITY BREAKDOWN
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-300">US Estate Tax</span>
-                <span className="text-white">$10,450.00</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-300">Beneficiary Tax (FR)</span>
-                <span className="text-white">$3,800.00</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-[#F973161A] border border-[#F9731633] rounded-lg p-4 flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-orange-200">
-              <strong>Disclaimer:</strong> These figures are estimates only
-              based on current market rates and tax laws. This tool does not
-              constitute professional tax advice. Please consult with a
-              certified tax professional before finalizing.
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="font-family:'Manrope',Helvetica] flex justify-between items-center mb-6 mt-6 gap-3">
+      <div className="font-family:'Manrope',Helvetica] flex justify-between items-center mb-6 gap-3">
         <h2 className="text-xl font-bold text-white">
           Plan Configuration Summary
         </h2>
@@ -309,7 +203,7 @@ export const ReviewPlan = (): JSX.Element => {
               <h3 className="text-white text-lg font-semibold">
                 Asset Breakdown
               </h3>
-              <p className="text-gray-400 text-sm">3 Assets Protected</p>
+              <p className="text-gray-400 text-sm">{plan.assets?.length || 1} Asset{(plan.assets?.length || 1) !== 1 ? 's' : ''} Protected</p>
             </div>
 
             <div className="space-y-3">
@@ -319,27 +213,20 @@ export const ReviewPlan = (): JSX.Element => {
                 <p className="text-gray-300">Value (USD)</p>
               </div>
 
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-300 font-bold">
-                  Ethereum <br />{" "}
-                  <span className="text-gray-400 text-xs font-normal ">
-                    Optimism Network{" "}
+              {plan.cryptoAsset && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-300 font-bold">
+                    {plan.cryptoAsset}
                   </span>
-                </span>
-                <span className="text-gray-300">12.5 ETH</span>
-                <p className="text-gray-400 text-xs">$38,250.00</p>
-              </div>
-
-              <div className="flex items-center justify-between text-sm mt-4">
-                <span className="text-gray-300 font-bold">
-                  USDC <br />{" "}
-                  <span className="text-gray-400 text-xs font-normal ">
-                    Polygon{" "}
-                  </span>
-                </span>
-                <span className="text-gray-300">50,000 USDC</span>
-                <p className="text-gray-400 text-xs">$50,000.00</p>
-              </div>
+                  <span className="text-gray-300">{plan.amount || '-'}</span>
+                  <p className="text-gray-400 text-xs">-</p>
+                </div>
+              )}
+              {!plan.cryptoAsset && (
+                <div className="flex items-center justify-between text-sm text-gray-500">
+                  <span>No assets selected</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -349,26 +236,28 @@ export const ReviewPlan = (): JSX.Element => {
             <h3 className="text-white text-lg font-semibold mb-4">
               Beneficiary Allocation
             </h3>
-            <div className="text-gray-400 text-sm mb-4">Total: 100%</div>
+            <div className="text-gray-400 text-sm mb-4">Total: {plan.beneficiaries?.reduce((sum, b) => sum + b.allocation, 0) || 0}%</div>
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-                  <span className="text-gray-300 text-sm">
-                    Sarah Jenkins (Daughter)
-                  </span>
+              {plan.beneficiaries && plan.beneficiaries.length > 0 ? (
+                plan.beneficiaries.map((beneficiary, index) => {
+                  const colors = ['bg-purple-500', 'bg-cyan-500', 'bg-yellow-500', 'bg-green-500', 'bg-pink-500'];
+                  return (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-3 h-3 rounded-full ${colors[index % colors.length]}`}></div>
+                        <span className="text-gray-300 text-sm">
+                          {beneficiary.name} {beneficiary.relationship ? `(${beneficiary.relationship})` : ''}
+                        </span>
+                      </div>
+                      <span className="text-orange-600 font-semibold">{beneficiary.allocation}%</span>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="flex items-center justify-between text-gray-500 text-sm">
+                  <span>No beneficiaries added</span>
                 </div>
-                <span className="text-orange-600 font-semibold">60%</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
-                  <span className="text-gray-300 text-sm">
-                    Michael Jenkins (Son)
-                  </span>
-                </div>
-                <span className="text-orange-600 font-semibold">40%</span>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -379,24 +268,34 @@ export const ReviewPlan = (): JSX.Element => {
           <div className="text-gray-400 text-xs font-semibold mb-2">
             TRIGGER TYPE
           </div>
-          <div className="text-white font-semibold">Dead Man's Switch</div>
+          <div className="text-white font-semibold">
+            {plan.planType === 'timelock' ? 'Time-Lock Trigger' : 
+             plan.planType === 'inactivity' ? 'Dead Man\'s Switch' :
+             plan.planType === 'health_oracle' ? 'Health Oracle' :
+             plan.planType || 'Not Set'}
+          </div>
           <div className="text-gray-400 text-xs mt-1">
-            12 months inactivity
+            {plan.planType === 'timelock' && plan.releaseTimestamp ? 
+              `Unlocks: ${new Date(plan.releaseTimestamp * 1000).toLocaleDateString()}` :
+             plan.planType === 'inactivity' && plan.inactivityPeriodDays ? 
+              `${plan.inactivityPeriodDays} months inactivity` :
+             plan.planType === 'health_oracle' ? 'Verified proof of life' :
+             'Configuration pending'}
           </div>
         </div>
         <div className="bg-[#27241C] rounded-lg p-4 border border-[#3B352D]">
           <div className="text-gray-400 text-xs font-semibold mb-2">
             MPC SECURITY
           </div>
-          <div className="text-white font-semibold">3 of 5 Signers</div>
+          <div className="text-white font-semibold">0 of 0 Signers</div>
           <div className="text-gray-400 text-xs mt-1">Multi-Party Comp</div>
         </div>
         <div className="bg-[#27241C] rounded-lg p-4 border border-[#3B352D]">
           <div className="text-gray-400 text-xs font-semibold mb-2">
             EST. GAS FEES
           </div>
-          <div className="text-white font-semibold">~0.004 ETH</div>
-          <div className="text-gray-400 text-xs mt-1">$12.50 USD</div>
+          <div className="text-white font-semibold">~0.000 ETH</div>
+          <div className="text-gray-400 text-xs mt-1">$00.00 USD</div>
         </div>
         <div className="bg-[#27241C] rounded-lg p-4 border border-[#3B352D]">
           <div className="text-gray-400 text-xs font-semibold mb-2">

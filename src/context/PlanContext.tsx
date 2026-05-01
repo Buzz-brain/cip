@@ -30,6 +30,7 @@ export interface PlanCreationState {
   ownerName?: string;
   cryptoAsset?: string;
   amount?: string;
+  assets?: string[]; // Track all selected assets
   beneficiaries: BeneficiaryPlan[];
   releaseTimestamp?: number;
   inactivityPeriodDays?: number;
@@ -41,8 +42,6 @@ export interface PlanCreationState {
   executorName?: string;
   executorEmail?: string;
   executorWallet?: string;
-  acceptedDocs?: string; // comma-separated list of accepted document identifiers
-  jurisdiction?: string;
   protectedDataAddress?: string;
   createdAt?: string;
 }

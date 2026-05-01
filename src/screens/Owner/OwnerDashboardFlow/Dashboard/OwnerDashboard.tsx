@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
 import { Badge } from "@components/ui/badge";
@@ -10,24 +9,9 @@ import { ProofOfLifeCheckMissed } from "./ProofOfLifeConfig/ProofOfLifeCheckMiss
 import { CriticalAlert } from "./ProofOfLifeConfig/CriticalAlert";
 import { getActiveProofPlan } from "../../../../lib/api/inherit";
 import { useAuth } from "../../../../context/useAuth";
+import getOwnerDashboardStats from "../../../../lib/dashboard/ownerStats";
 import { TrendingUp } from "lucide-react";
 import { Plus, Eye, EyeOff } from "lucide-react";
-
-interface Plan {
-  id: string;
-  name: string;
-  chainName: string;
-  chainIcon: string;
-  beneficiary: {
-    name: string;
-    avatar: string;
-  };
-  assets: string;
-  assetsDetail: string;
-  status: "Active" | "Pending" | "Triggered";
-  statusColor: string;
-  triggerDays: number;
-}
 
 interface ActivityItem {
   id: string;
@@ -37,61 +21,43 @@ interface ActivityItem {
   timestamp: string;
 }
 
-const plans: Plan[] = [
-  {
-    id: "0042",
-    name: "Main Estate Fund",
-    chainName: "Ethereum",
-    chainIcon: "💎",
-    beneficiary: { name: "alice.eth", avatar: "🔴" },
-    assets: "$32,450.00",
-    assetsDetail: "12.5 ETH, 4 NFTs",
-    status: "Active",
-    statusColor: "bg-green-500",
-    triggerDays: 1,
-  },
-  {
-    id: "0045",
-    name: "DeFi Safety Net",
-    chainName: "Polygon",
-    chainIcon: "⭕",
-    beneficiary: { name: "0x4f...a9", avatar: "🟠" },
-    assets: "$4,500.00",
-    assetsDetail: "4500 USDC",
-    status: "Pending",
-    statusColor: "bg-yellow-500",
-    triggerDays: 1,
-  },
-  {
-    id: "0018",
-    name: "Cold Storage Vault",
-    chainName: "Bitcoin",
-    chainIcon: "₿",
-    beneficiary: { name: "sarah.btc", avatar: "🟣" },
-    assets: "$105,550.00",
-    assetsDetail: "1.5 BTC",
-    status: "Active",
-    statusColor: "bg-green-500",
-    triggerDays: 3,
-  },
-];
+// sample plans removed - now driven by backend
 
 const activities: ActivityItem[] = [];
 
 export const OwnerDashboard = (): JSX.Element => {
-  const navigate = useNavigate();
   const [showValues, setShowValues] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
   const [showPoLModal, setShowPoLModal] = useState(false);
   const [modalType, setModalType] = useState<"check" | "missed" | "critical">("check");
   const [polStatus, setPolStatus] = useState<null | "active" | "missed" | "critical">(null);
   const [polLoading, setPolLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [stats, setStats] = useState<any | null>(null);
   const auth = useAuth();
+
+  useEffect(() => {
+    let mounted = true;
+    async function fetchStats() {
+      try {
+        setStatsLoading(true);
+        const s = await getOwnerDashboardStats(auth?.user?.token);
+        if (!mounted) return;
+        setStats(s);
+      } catch (e) {
+        console.warn('Failed to fetch owner dashboard stats', e);
+      } finally {
+        setStatsLoading(false);
+      }
+    }
+    fetchStats();
+    return () => { mounted = false; };
+  }, [auth?.user?.token]);
 
   useEffect(() => {
     let mounted = true;
     async function fetchPlan() {
       try {
+        setPolLoading(true);
         const plan = await getActiveProofPlan(auth?.user?.token);
         if (!mounted) return;
         if (!plan) {
@@ -196,7 +162,7 @@ export const OwnerDashboard = (): JSX.Element => {
                     </div>
                     <div className="space-y-1 flex gap-2 items-end">
                       <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
-                        {showValues ? "$142,500.00" : "••••••"}
+                        {showValues ? (statsLoading ? '$—' : stats?.totalValueSecuredFormatted ?? '$0.00') : "••••••"}
                       </div>
                       <div className="flex bg-[#0BDA5B1A] px-1 items-center rounded-md w-[70px] gap-1">
                         <TrendingUp className="w-3 text-[#0BDA5B]" />
@@ -218,7 +184,7 @@ export const OwnerDashboard = (): JSX.Element => {
                     </div>
                     <div className="space-y-1 flex items-end gap-2">
                       <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
-                        3
+                        {statsLoading ? '—' : stats?.activePlansCount ?? 0}
                       </div>
                       <div className="text-[#B9B09D] text-sm">plans monitored</div>
                     </div>
@@ -237,9 +203,13 @@ export const OwnerDashboard = (): JSX.Element => {
                     </div>
                     <div className="space-y-1 flex gap-2 items-end">
                       <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
-                        12 Days
+                        {statsLoading
+                          ? '—'
+                          : (stats == null || stats.nextTriggerDays == null)
+                            ? '—'
+                            : `${stats.nextTriggerDays} Days`}
                       </div>
-                      <div className="text-[#EAB308] text-sm">Plan #0042</div>
+                      <div className="text-[#EAB308] text-sm">{statsLoading ? '' : stats?.nextTriggerPlanId ? `Plan #${String(stats.nextTriggerPlanId).padStart(4, '0')}` : '—'}</div>
                     </div>
                   </CardContent>
                 </Card>
@@ -256,8 +226,8 @@ export const OwnerDashboard = (): JSX.Element => {
                     </div>
                     <div className="space-y-1">
                       <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl flex items-center gap-2">
-                        <span className="w-4 h-4 bg-[#22C55E] rounded-full"></span>
-                        Healthy
+                        <span className={`w-4 h-4 rounded-full ${statsLoading ? 'bg-gray-400' : stats?.networkStatus === 'Healthy' ? 'bg-[#22C55E]' : stats?.networkStatus === 'Degraded' ? 'bg-[#EAB308]' : 'bg-gray-400'}`}></span>
+                        {statsLoading ? 'Checking' : stats?.networkStatus ?? 'Unknown'}
                       </div>
                     </div>
                   </CardContent>
@@ -273,21 +243,27 @@ export const OwnerDashboard = (): JSX.Element => {
                   {polLoading ? (
                     <div className="space-y-4">
                       <div className="flex items-start justify-between">
-                        <div className="flex-1 space-y-2">
-                          <div className="h-6 bg-[#3a2f28] rounded w-48 animate-pulse"></div>
-                          <div className="h-4 bg-[#3a2f28] rounded w-full animate-pulse"></div>
+                        <div className="flex-1">
+                          <div className="h-6 bg-[#3a2f1e] rounded w-32 mb-2 animate-pulse"></div>
+                          <div className="h-4 bg-[#3a2f1e] rounded w-64 animate-pulse"></div>
                         </div>
-                        <div className="h-6 bg-[#3a2f28] rounded w-24 animate-pulse"></div>
+                        <div className="h-6 bg-[#3a2f1e] rounded w-20 animate-pulse"></div>
                       </div>
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <div className="h-4 bg-[#3a2f28] rounded w-32 animate-pulse"></div>
-                          <div className="h-4 bg-[#3a2f28] rounded w-12 animate-pulse"></div>
+                          <div className="h-4 bg-[#3a2f1e] rounded w-40 animate-pulse"></div>
+                          <div className="h-4 bg-[#3a2f1e] rounded w-12 animate-pulse"></div>
                         </div>
-                        <div className="w-full bg-[#3a2f28] rounded-full h-2 animate-pulse"></div>
-                        <div className="h-3 bg-[#3a2f28] rounded w-40 animate-pulse"></div>
+                        <div className="w-full bg-[#393028] rounded-full h-2 overflow-hidden">
+                          <div className="bg-[#3a2f1e] h-full rounded-full w-1/3 animate-pulse"></div>
+                        </div>
+                        <div className="h-3 bg-[#3a2f1e] rounded w-40 ml-auto animate-pulse"></div>
                       </div>
-                      <div className="h-10 bg-[#3a2f28] rounded animate-pulse"></div>
+                      <div className="h-10 bg-[#3a2f1e] rounded animate-pulse"></div>
+                    </div>
+                  ) : polStatus === null ? (
+                    <div className="text-center py-8">
+                      <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D]">No active proof-of-life plan. Create a plan to activate.</p>
                     </div>
                   ) : (
                     <>
@@ -331,7 +307,7 @@ export const OwnerDashboard = (): JSX.Element => {
                           </div>
                         </div>
                       )}
-
+                      
                       <Button 
                         onClick={() => {
                           if (polStatus === "missed") setModalType("missed");
@@ -340,9 +316,8 @@ export const OwnerDashboard = (): JSX.Element => {
                           setShowPoLModal(true);
                         }}
                         className="w-full bg-[#393028] hover:bg-[#393028] text-white [font-family:'Noto_Sans',Helvetica] mt-4"
-                        disabled={!polStatus}
                       >
-                        {polStatus ? "Confirm Now" : "No Action Required"}
+                        Confirm Now
                       </Button>
                     </>
                   )}

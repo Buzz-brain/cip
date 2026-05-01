@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePlan } from "../../../../context/usePlan";
 import { CircleAlert as AlertCircle } from "lucide-react";
+import { useEffect } from "react";
 import {
   Wallet,
 } from "lucide-react";
@@ -17,17 +18,44 @@ export const ReviewTimeLock = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
   const { unlockDate: stateUnlockDate = "", unlockTime: stateUnlockTime = "00:00" } = location.state || {};
-  const { plan } = usePlan();
+  const { plan, setPlanField } = usePlan();
   const releaseTimestamp = plan?.releaseTimestamp;
-  const unlockDate = stateUnlockDate || (releaseTimestamp ? new Date(releaseTimestamp * 1000).toLocaleDateString('en-GB').replace(/\//g,'/') : '');
+  
+  // Convert YYYY-MM-DD format to display format
+  const unlockDate = stateUnlockDate || (releaseTimestamp ? new Date(releaseTimestamp * 1000).toISOString().split('T')[0] : '');
   const unlockTime = stateUnlockTime || (releaseTimestamp ? new Date(releaseTimestamp * 1000).toISOString().substr(11,5) : '00:00');
 
   const formatDisplayDate = () => {
     if (!unlockDate) return "Not set";
-    const [day, month, year] = unlockDate.split("/");
+    // unlockDate is in YYYY-MM-DD format
+    const [year, month, day] = unlockDate.split("-");
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    return `${months[parseInt(month) - 1]} ${day}, ${year} at ${unlockTime} UTC`;
+    return `${months[parseInt(month) - 1]} ${parseInt(day)}, ${year} at ${unlockTime} UTC`;
   };
+
+  // Persist date to plan context when arriving from SetTimeLock
+  useEffect(() => {
+    if (stateUnlockDate && !releaseTimestamp) {
+      try {
+        const [year, month, day] = stateUnlockDate.split("-");
+        const [hourStr, minuteStr] = (stateUnlockTime || '00:00').split(':');
+        const hour = parseInt(hourStr || '0', 10);
+        const minute = parseInt(minuteStr || '0', 10);
+        const dateUtc = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), hour, minute, 0));
+        const epochSeconds = Math.floor(dateUtc.getTime() / 1000);
+        setPlanField('releaseTimestamp', epochSeconds);
+        console.log('[ReviewTimeLock] Persisted releaseTimestamp from location state:', epochSeconds);
+      } catch (err) {
+        console.warn('[ReviewTimeLock] Failed to persist date:', err);
+      }
+    }
+  }, [stateUnlockDate, stateUnlockTime, releaseTimestamp, setPlanField]);
+
+  // Get actual asset count from plan or default to 1
+  const assetCount = plan?.assets?.length || 1;
+  
+  // Get actual beneficiary count from plan or default to 1
+  const beneficiaryCount = plan?.beneficiaries?.length || 1;
 
   const handleEditPlan = () => {
     navigate("/set-time-lock", {
@@ -138,14 +166,14 @@ export const ReviewTimeLock = (): JSX.Element => {
 
                     <span className="text-gray-300 text-sm">Assets Locked</span>
                   </div>
-                  <span className="text-white font-semibold">4 Tokens</span>
+                  <span className="text-white font-semibold">{assetCount} Token{assetCount !== 1 ? 's' : ''}</span>
                 </div>
                 <div className="flex items-center justify-between bg-[#221810] rounded-lg p-4">
                   <div className="flex items-center gap-2">
                     <img src={usersIcon} className="w-5 h-5" alt="" />
                     <span className="text-gray-300 text-sm">Beneficiaries</span>
                   </div>
-                  <span className="text-white font-semibold">2 Wallets</span>
+                  <span className="text-white font-semibold">{beneficiaryCount} Wallet{beneficiaryCount !== 1 ? 's' : ''}</span>
                 </div>
               </div>
             </div>

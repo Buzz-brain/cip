@@ -15,16 +15,13 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
   const location = useLocation();
   const { inactivityPeriod = "", daysValue = "" } = location.state || {};
   const { plan, setPlanField } = usePlan();
-  const [selectedMethods, setSelectedMethods] = useState<ProofOfLifeMethod[]>([]);
+  const [selectedMethod, setSelectedMethod] = useState<ProofOfLifeMethod | null>(null);
   const [backendTypes, setBackendTypes] = useState<string[] | null>(null);
   const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
-  const toggleMethod = (method: ProofOfLifeMethod) => {
-    setSelectedMethods((prev) => {
-      const next = prev.includes(method) ? prev.filter((m) => m !== method) : [...prev, method];
-      console.log('[ChooseProofOfLifeMethod] selectedMethods:', next);
-      return next;
-    });
+  const selectMethod = (method: ProofOfLifeMethod) => {
+    setSelectedMethod(method);
+    console.log('[ChooseProofOfLifeMethod] selectedMethod:', method);
   };
 
   const handleBack = () => {
@@ -37,31 +34,31 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
   };
 
   const handleContinue = () => {
-    if (selectedMethods.length > 0) {
+    if (selectedMethod) {
       // Map frontend method ids to canonical backend ids before persisting
       const backendIdsForMethod: Record<ProofOfLifeMethod, string[]> = {
         wallet: ["wallet_signature"],
         app: ["app_login"],
-        email: ["email", "email_sms"],
-        biometric: ["biometric", "faceid", "touchid"],
+        email: ["email"],
+        biometric: ["biometric"],
       };
 
       const mapToBackend = (m: ProofOfLifeMethod) => {
         const ids = backendIdsForMethod[m];
         return ids && ids.length > 0 ? ids[0] : m;
       };
-      const backendSelected = selectedMethods.map(mapToBackend);
+      const backendSelected = mapToBackend(selectedMethod);
 
-      // persist selection and log (use backend canonical ids in plan)
-      setPlanField('proofOfLifeMethod', backendSelected.join(','));
-      console.log('[ChooseProofOfLifeMethod] continuing with:', { inactivityPeriod: inactivityPeriod || plan?.inactivityPeriodDays, daysValue: daysValue || String(plan?.inactivityPeriodDays || ''), selectedMethods, backendSelected });
+      // persist selection and log (use backend canonical id in plan)
+      setPlanField('proofOfLifeMethod', backendSelected);
+      console.log('[ChooseProofOfLifeMethod] continuing with:', { inactivityPeriod: inactivityPeriod || plan?.inactivityPeriodDays, daysValue: daysValue || String(plan?.inactivityPeriodDays || ''), selectedMethod, backendSelected });
 
       navigate("/set-inactivity-grace-period", {
         state: {
           inactivityPeriod,
           daysValue,
-          // pass backend canonical ids so downstream steps get normalized values
-          selectedMethods: backendSelected,
+          // pass backend canonical id so downstream steps get normalized value
+          selectedMethod: backendSelected,
         },
       });
     }
@@ -152,9 +149,8 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
               Choose Proof-of-Life Method
             </h1>
             <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b9ac9d] text-base tracking-[0] leading-[26px]">
-              Select one or more methods to verify your activity and reset the
-              Inactivity Oracle. We recommend enabling multiple methods for
-              redundancy and ease of use.
+              Select one method to verify your activity and reset the
+              Inactivity Oracle. Choose the option that works best for your needs.
             </p>
           </div>
 
@@ -174,51 +170,42 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
 
           <div className="grid grid-cols-2 gap-6 mt-12">
             {displayedMethods.map((method) => (
-              <div
+              <button
                 key={method.id}
                 onClick={() =>
                   !method.comingSoon &&
-                  toggleMethod(method.id as ProofOfLifeMethod)
+                  selectMethod(method.id as ProofOfLifeMethod)
                 }
-                className={`p-6 rounded-lg border-2 transition-all cursor-pointer ${
-                  selectedMethods.includes(method.id as ProofOfLifeMethod)
-                    ? "border-orange-600 bg-[#27221C]"
-                    : "border-gray-700 bg-[#27221C] hover:border-gray-600"
+                className={`relative p-6 rounded-lg bg-[#27231C] border-2 transition-all text-left ${selectedMethod === method.id
+                  ? "border-orange-600 bg-[#27221C]"
+                  : "border-[#54493B] bg-[#27221C] hover:border-gray-600"
                 } ${method.comingSoon ? "opacity-60 cursor-not-allowed" : ""}`}
               >
-                <div className="flex items-start justify-between mb-4">
-                    <div
-                  className={`w-14 h-16 ${method.bgColor} rounded-lg flex items-center mb-2 justify-center`}
-                >
-                    <img src={method.icon} className="w-6 h-6" alt="Icon" />
-                  </div>
-                  <div className="flex items-center">
-                    {method.comingSoon ? (
-                      <span className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">
-                        Coming Soon
-                      </span>
-                    ) : (
-                      <div
-                        className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
-                          selectedMethods.includes(
-                            method.id as ProofOfLifeMethod,
-                          )
-                            ? "border-orange-600 bg-orange-600"
-                            : "border-gray-600"
-                        }`}
-                      >
-                        {selectedMethods.includes(
-                          method.id as ProofOfLifeMethod,
-                        ) && <span className="text-white text-sm">✓</span>}
-                      </div>
+                {!method.comingSoon && (
+                  <div className="absolute top-4 right-4 w-5 h-5 rounded-full border-2 border-gray-600 flex items-center justify-center">
+                    {selectedMethod === method.id && (
+                      <div className="w-3 h-3 rounded-full bg-orange-600"></div>
                     )}
                   </div>
+                )}
+                {method.comingSoon && (
+                  <div className="absolute top-4 right-4">
+                    <span className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">
+                      Coming Soon
+                    </span>
+                  </div>
+                )}
+
+                <div
+                  className={`w-12 h-12 ${method.bgColor} rounded-lg flex items-center mb-4 justify-center`}
+                >
+                  <img src={method.icon} className="w-6 h-6" alt="Icon" />
                 </div>
                 <h3 className="text-white font-semibold text-lg mb-2">
                   {method.title}
                 </h3>
                 <p className="text-gray-400 text-sm">{method.description}</p>
-              </div>
+              </button>
             ))}
           </div>
 
@@ -234,7 +221,7 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
               <Button
                 onClick={handleContinue}
                 className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
-                disabled={selectedMethods.length === 0}
+                disabled={selectedMethod === null}
               >
                 Continue
                 <span>→</span>

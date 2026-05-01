@@ -15,8 +15,6 @@ export const ConfirmHealthOraclePlan = (): JSX.Element => {
       executorName: (plan as any)?.executorName,
       executorEmail: (plan as any)?.executorEmail,
       executorWallet: (plan as any)?.executorWallet,
-      acceptedDocs: (plan as any)?.acceptedDocs,
-      jurisdiction: (plan as any)?.jurisdiction,
     };
     console.log('[ConfirmHealthOraclePlan] navigating to Review & Confirm with state:', healthState);
     navigate('/owner-dashboard/review-plan', { state: { healthState } });

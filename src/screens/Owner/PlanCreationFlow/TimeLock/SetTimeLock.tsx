@@ -1,4 +1,4 @@
-import { ArrowRight as ArrowRightIcon, Info as InfoIcon } from "lucide-react";
+import { ArrowRight as ArrowRightIcon, Info as InfoIcon, Calendar as CalendarIcon, Clock as ClockIcon } from "lucide-react";
 import { useState } from "react";
 import { usePlan } from "../../../../context/usePlan";
 import { useNavigate } from "react-router-dom";
@@ -15,8 +15,8 @@ import shieldLockIcon from "@assets/shield-lock.svg";
 export const SetTimeLock = (): JSX.Element => {
   const navigate = useNavigate();
   const { setPlanField } = usePlan();
-  const [unlockDate, setUnlockDate] = useState("");
-  const [unlockTime, setUnlockTime] = useState("00:00");
+  const [unlockDate, setUnlockDate] = useState(""); // YYYY-MM-DD format for date input
+  const [unlockTime, setUnlockTime] = useState("00:00"); // HH:mm format for time input
 
   return (
     <main className="flex-1 flex flex-col items-center px-4 py-4">
@@ -76,15 +76,17 @@ export const SetTimeLock = (): JSX.Element => {
                       <Label className="[font-family:'Manrope',Helvetica] font-semibold text-white text-sm tracking-[0] leading-5">
                         Unlock Date
                       </Label>
-                      <Input
-                        type="text"
-                        placeholder="DD/MM/YYYY"
-                        value={unlockDate}
-                        onChange={(e) => setUnlockDate(e.target.value)}
-                        className="h-12 px-4 [font-family:'Manrope',Helvetica] font-normal text-white text-base bg-[#0f0c09] border border-[#392f28] rounded-xl placeholder:text-white focus-visible:ring-[#ff6600]"
-                      />
+                      <div className="relative">
+                        <CalendarIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#ff6600] pointer-events-none" />
+                        <Input
+                          type="date"
+                          value={unlockDate}
+                          onChange={(e) => setUnlockDate(e.target.value)}
+                          className="h-12 pl-12 pr-4 [font-family:'Manrope',Helvetica] font-normal text-white text-base bg-[#0f0c09] border border-[#392f28] rounded-xl placeholder:text-white focus-visible:ring-[#ff6600] focus-visible:ring-2 cursor-pointer"
+                        />
+                      </div>
                       <p className="[font-family:'Manrope',Helvetica] font-normal text-[#B9AB9D] text-xs tracking-[0] leading-4">
-                        Format: DD/MM/YYYY
+                        Click to open calendar or type date (YYYY-MM-DD)
                       </p>
                     </div>
 
@@ -93,13 +95,15 @@ export const SetTimeLock = (): JSX.Element => {
                         Unlock Time (Optional)
                       </Label>
                       <div className="flex gap-3">
-                        <Input
-                          type="text"
-                          placeholder="00:00"
-                          value={unlockTime}
-                          onChange={(e) => setUnlockTime(e.target.value)}
-                          className="flex-1 h-12 px-4 [font-family:'Manrope',Helvetica] font-normal text-white text-base bg-[#0f0c09] border border-[#392f28] rounded-xl placeholder:text-white focus-visible:ring-[#ff6600]"
-                        />
+                        <div className="relative flex-1">
+                          <ClockIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#ff6600] pointer-events-none" />
+                          <Input
+                            type="time"
+                            value={unlockTime}
+                            onChange={(e) => setUnlockTime(e.target.value)}
+                            className="w-full h-12 pl-12 pr-4 [font-family:'Manrope',Helvetica] font-normal text-white text-base bg-[#0f0c09] border border-[#392f28] rounded-xl placeholder:text-white focus-visible:ring-[#ff6600] focus-visible:ring-2 cursor-pointer"
+                          />
+                        </div>
                         <div className="h-12 px-4 bg-[#0f0c09] border border-[#392f28] rounded-xl flex items-center">
                           <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#afa49c] text-sm tracking-[0] leading-5">
                             UTC
@@ -107,7 +111,7 @@ export const SetTimeLock = (): JSX.Element => {
                         </div>
                       </div>
                       <p className="[font-family:'Manrope',Helvetica] font-normal text-[#B9AB9D] text-xs tracking-[0] leading-4">
-                        Defaults to 00:00 UTC
+                        Click to open time picker or type time (HH:mm format, defaults to 00:00)
                       </p>
                     </div>
                   </div>
@@ -205,20 +209,20 @@ export const SetTimeLock = (): JSX.Element => {
           <Button
             className="h-11 px-6 [font-family:'Manrope',Helvetica] font-bold text-white text-sm bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-xl flex items-center gap-2"
             onClick={() => {
-              // parse DD/MM/YYYY and optional time HH:MM into UTC timestamp (seconds)
+              // Parse YYYY-MM-DD format (from HTML5 date input) and optional time HH:MM into UTC timestamp (seconds)
               if (!unlockDate) {
                 // still navigate but warn
                 console.warn('[SetTimeLock] No unlock date set');
-                navigate('/review-time-lock');
+                navigate('/review-time-lock', { state: { unlockDate: '', unlockTime } });
                 return;
               }
-              const parts = unlockDate.split('/');
+              const parts = unlockDate.split('-');
               if (parts.length !== 3) {
                 console.warn('[SetTimeLock] unlockDate in unexpected format', unlockDate);
-                navigate('/review-time-lock');
+                navigate('/review-time-lock', { state: { unlockDate, unlockTime } });
                 return;
               }
-              const [day, month, year] = parts.map((p) => parseInt(p, 10));
+              const [year, month, day] = parts.map((p) => parseInt(p, 10));
               const [hourStr, minuteStr] = (unlockTime || '00:00').split(':');
               const hour = parseInt(hourStr || '0', 10);
               const minute = parseInt(minuteStr || '0', 10);

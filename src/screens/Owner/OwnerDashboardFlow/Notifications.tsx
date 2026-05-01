@@ -1,6 +1,4 @@
 import {
-  Bell,
-  Search,
   CheckCircle2,
   Clock,
   Zap as ZapIcon,
@@ -10,81 +8,8 @@ export const Notifications = (): JSX.Element => {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
       <div className="flex min-h-screen">
-        <aside className="w-48 bg-[#1a1a1a] border-r border-gray-800 p-6 flex flex-col">
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-orange-600 rounded-md flex items-center justify-center">
-                <span className="text-sm font-bold">C</span>
-              </div>
-              <span className="text-sm font-semibold">CIP Protocol</span>
-            </div>
-            <p className="text-xs text-gray-500">Secure Multi-Chain Legacy</p>
-          </div>
-
-          <nav className="space-y-1 flex-1">
-            <div className="bg-orange-600/10 border-l-2 border-orange-600 px-4 py-2.5 rounded-r">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <span>📊</span>
-                Dashboard
-              </div>
-            </div>
-            <div className="text-gray-500 px-4 py-2.5 hover:text-gray-300 cursor-pointer text-sm flex items-center gap-2">
-              <span>➕</span>
-              Create Plan
-            </div>
-            <div className="text-gray-500 px-4 py-2.5 hover:text-gray-300 cursor-pointer text-sm flex items-center gap-2">
-              <span>👥</span>
-              Beneficiaries
-            </div>
-            <div className="text-gray-500 px-4 py-2.5 hover:text-gray-300 cursor-pointer text-sm flex items-center gap-2">
-              <span>📦</span>
-              Asset Registry
-            </div>
-
-            <div className="pt-6 mt-6 border-t border-gray-800">
-              <p className="text-xs text-gray-600 uppercase tracking-wider mb-3">
-                SYSTEM
-              </p>
-              <div className="text-gray-500 px-4 py-2.5 hover:text-gray-300 cursor-pointer text-sm flex items-center gap-2">
-                <span>⚙️</span>
-                Settings
-              </div>
-              <div className="text-gray-500 px-4 py-2.5 hover:text-gray-300 cursor-pointer text-sm flex items-center gap-2">
-                <span>❓</span>
-                Support
-              </div>
-            </div>
-          </nav>
-
-          <div className="bg-gray-800/50 rounded-lg p-3 flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-full flex items-center justify-center text-xs font-bold text-black">
-              A
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-medium truncate">alex.eth</p>
-              <p className="text-xs text-gray-500 truncate">Online</p>
-            </div>
-          </div>
-        </aside>
-
         <main className="flex-1 flex flex-col">
-          <header className="border-b border-gray-800 px-8 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2 text-gray-400">
-                <Bell className="w-4 h-4" />
-                <span className="text-sm">Alerts</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Search className="w-5 h-5 text-gray-400 cursor-pointer hover:text-gray-300" />
-              <Bell className="w-5 h-5 text-gray-400 cursor-pointer hover:text-gray-300" />
-              <button className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-                New Plan
-              </button>
-            </div>
-          </header>
-
-          <div className="flex-1 p-8">
+          <div className="flex-1 p-4">
             <div className="mb-8">
               <h1 className="text-3xl font-bold mb-2">Notifications</h1>
               <p className="text-gray-400">

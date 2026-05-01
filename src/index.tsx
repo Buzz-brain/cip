@@ -1,4 +1,8 @@
 import { StrictMode } from "react";
+// Web3Modal initialization
+import { initWeb3Modal } from "./lib/wallet/web3modalConfig";
+// Initialize Web3Modal once at app startup
+initWeb3Modal();
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
@@ -58,7 +62,6 @@ import { MarketVolatilityAlert } from "./screens/Owner/OwnerDashboardFlow/Market
 import { Notifications } from "./screens/Owner/OwnerDashboardFlow/Notifications"; 
 import { RealTimeVolatility } from "./screens/Owner/OwnerDashboardFlow/RealTimeVolatility";
 import { SecureStorage } from "./screens/Owner/OwnerDashboardFlow/SecureStorage"; 
-import { SelectJurisdiction } from "./screens/Owner/OwnerDashboardFlow/SelectJurisdiction"; 
 import { UploadSignedDoc } from "./screens/Owner/OwnerDashboardFlow/UploadSignedDoc"; 
 import { ProofOfLifeConfig } from "./screens/Owner/OwnerDashboardFlow/Dashboard/ProofOfLifeConfig";
 
@@ -80,8 +83,6 @@ import { AllCases } from "./screens/MediatorFlow/AllCases";
 import { DisputeQueue } from "./screens/MediatorFlow/DisputeQueue";
 
 import { AssignHealthOracleExec } from "./screens/Owner/PlanCreationFlow/HealthOracle/AssignHealthOracleExec.tsx";
-import { SelectAcceptedDocs } from "./screens/Owner/PlanCreationFlow/HealthOracle/SelectAcceptedDocs.tsx";
-import { HealthOracleJurisdiction } from "./screens/Owner/PlanCreationFlow/HealthOracle/HealthOracleJurisdiction.tsx";
 import { ReviewHealthOraclePlan } from "./screens/Owner/PlanCreationFlow/HealthOracle/ReviewHealthOraclePlan.tsx";
 import { ConfirmHealthOraclePlan } from "./screens/Owner/PlanCreationFlow/HealthOracle/ConfirmHealthOraclePlan.tsx";
 
@@ -159,8 +160,6 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/confirm-inactivity-oracle-plan" element={<Navigate to="/owner-dashboard/confirm-inactivity-oracle-plan" replace />} />
 
         <Route path="/assign-health-oracle-exec" element={<Navigate to="/owner-dashboard/assign-health-oracle-exec" replace />} />
-        <Route path="/select-accepted-docs" element={<Navigate to="/owner-dashboard/select-accepted-docs" replace />} />
-        <Route path="/health-oracle-jurisdiction" element={<Navigate to="/owner-dashboard/health-oracle-jurisdiction" replace />} />
         <Route path="/review-health-oracle-plan" element={<Navigate to="/owner-dashboard/review-health-oracle-plan" replace />} />
         <Route path="/confirm-health-oracle-plan" element={<Navigate to="/owner-dashboard/confirm-health-oracle-plan" replace />} />
 
@@ -176,7 +175,6 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           <Route path="main-estate-fund" element={<MainEstateFund />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="owner-dispute-plan-execution" element={<OwnerDisputePlanExecution />} />
-          <Route path="select-jurisdiction" element={<SelectJurisdiction />} />
           <Route path="compliance-summary" element={<ComplianceSummary />} />
           <Route path="legal-compliance-check" element={<LegalComplianceCheck />} />
           <Route path="upload-signed-doc" element={<UploadSignedDoc />} />
@@ -203,8 +201,6 @@ createRoot(document.getElementById("app") as HTMLElement).render(
 
           {/* Health/Death Oracle */}
           <Route path="assign-health-oracle-exec" element={<AssignHealthOracleExec />} />
-          <Route path="select-accepted-docs" element={<SelectAcceptedDocs />} />
-          <Route path="health-oracle-jurisdiction" element={<HealthOracleJurisdiction />} />
           <Route path="review-health-oracle-plan" element={<ReviewHealthOraclePlan />} />
           <Route path="confirm-health-oracle-plan" element={<ConfirmHealthOraclePlan />} />
 

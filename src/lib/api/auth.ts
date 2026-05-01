@@ -57,9 +57,23 @@ export async function login({
   console.log("   📊 Login endpoint response status:", res.status);
   
   if (!res.ok) {
-    const errorData = await res.json();
+    const errorData = await res.json().catch(() => null);
     console.log("   ❌ Login failed. Error response:", errorData);
-    throw new Error("Login failed: " + JSON.stringify(errorData));
+
+    // Normalize error message for the user
+    let userMessage = "Login failed";
+    if (errorData) {
+      if (typeof errorData === 'string') userMessage = errorData;
+      else if (errorData.detail) userMessage = String(errorData.detail);
+      else if (errorData.message) userMessage = String(errorData.message);
+      else if (errorData.error) userMessage = String(errorData.error);
+      else if (errorData.errors && Array.isArray(errorData.errors)) userMessage = errorData.errors.join(', ');
+      else userMessage = JSON.stringify(errorData);
+    } else {
+      userMessage = res.statusText || userMessage;
+    }
+
+    throw new Error(`Login failed: ${userMessage}`);
   }
   
   const result = await res.json();

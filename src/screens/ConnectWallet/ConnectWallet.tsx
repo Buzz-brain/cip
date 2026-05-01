@@ -4,7 +4,10 @@ import { useAuth } from "../../context/useAuth";
 import { Button } from "@components/ui/button";
 import { toast } from "react-toastify";
 import * as walletUtils from "../../lib/wallet/walletUtils";
+import { initEip6963Discovery, getWalletProviderByRdns, waitForWalletProvider } from "../../lib/wallet/walletUtils";
+import { useWeb3Modal } from "@web3modal/ethers/react";
 import { normalizeWalletAddress, getDashboardRoute } from "../../lib/utils";
+import { verifyMessage } from "ethers";
 import * as authAPI from "../../lib/api/auth";
 import logoImg from "@assets/cip-logo.svg";
 import helpIcon from "@assets/help.svg";
@@ -13,7 +16,6 @@ import connectWalletOrange from "@assets/connect-wallet.-orange.svg";
 import metamask from "@assets/metamask.svg";
 import trustWallet from "@assets/trust-wallet.svg";
 import phantom from "@assets/phantom.svg";
-// import coinbaseWallet from "@assets/coinbase-wallet.svg";
 // import ledger from "@assets/ledger.svg";
 import arrowForward from "@assets/arrow-forward.svg";
 
@@ -52,6 +54,13 @@ const wallets = [
     category: "Solana",
     icon: phantom,
   },
+  // {
+  //   id: "walletconnect",
+  //   name: "WalletConnect",
+  //   description: "Connect mobile wallets via QR or deep link",
+  //   category: "Mobile",
+  //   icon: connectWalletOrange,
+  // },
     // {
     //   id: "coinbase",
     //   name: "Coinbase Wallet",
@@ -71,7 +80,6 @@ export const ConnectWallet = (): JSX.Element => {
   const { getNonce, loginWithWallet, fetchUserInfo, user } = useAuth();
   const navigate = useNavigate();
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleNavigation = (href: string) => {
     if (href === "/") {
@@ -89,17 +97,86 @@ export const ConnectWallet = (): JSX.Element => {
   };
 
   const handleWalletSelect = async (walletId: string) => {
-    setError(null);
     setIsConnectingWallet(true);
+    const { open: openWeb3Modal } = useWeb3Modal();
 
     try {
-      // Always sign through the wallet extension (MetaMask provider path)
-      let account = await walletUtils.requestWalletConnection();
+      // Ensure we discover available injected providers (EIP-6963)
+      initEip6963Discovery();
+
+      // If user selected WalletConnect, open the Web3Modal (WalletConnect) flow
+      if (walletId === 'walletconnect') {
+        try {
+          openWeb3Modal();
+        } finally {
+          setIsConnectingWallet(false);
+        }
+        return;
+      }
+
+      // Map walletId to expected rdns identifiers
+      const rdnsMap: Record<string, string> = {
+        metamask: "io.metamask",
+        trust: "com.trustwallet.app",
+        coinbase: "com.coinbase.wallet",
+      };
+
+      const rdns = rdnsMap[walletId];
+      let provider = null as any;
+
+      if (rdns) {
+        // Try to get provider immediately
+        provider = getWalletProviderByRdns(rdns);
+        if (!provider) {
+          // Wait briefly for announcements
+          provider = await waitForWalletProvider(rdns, 2000);
+        }
+      }
+
+      // (handled above for walletconnect)
+
+      if (!provider) {
+        const walletObj = wallets.find((w) => w.id === walletId);
+        const displayName = walletObj?.name ?? walletId;
+        // Show a single, clear toast suggesting fallback to WalletConnect
+        toast.error(`${displayName} not detected. Install the extension or use WalletConnect.`);
+        // Do not throw here to avoid duplicate toasts from the outer catch
+        return;
+      }
+
+      console.log('[ConnectWallet] Using discovered provider for', walletId, provider);
+
+      // Always sign through the discovered provider
+      let account = await walletUtils.requestWalletConnection(provider);
       // Normalize wallet address to lowercase for consistency
       account = normalizeWalletAddress(account);
       const nonce = await getNonce(account);
-      let signature = await walletUtils.signMessage(nonce, account);
-      signature = signature.startsWith("0x") ? signature.slice(2) : signature;
+      let signature = await walletUtils.signMessage(nonce, account, provider);
+
+      // Log signature and message details for debugging
+      console.log('[ConnectWallet] Signing details:', {
+        account,
+        nonce,
+        signature,
+        signatureLength: signature ? signature.length : 0,
+        providerSummary: {
+          name: provider?.name || provider?.constructor?.name,
+          isMetaMask: !!provider?.isMetaMask,
+          isTrustWallet: !!provider?.isTrustWallet,
+          isCoinbaseWallet: !!provider?.isCoinbaseWallet,
+        },
+      });
+
+      // Client-side recovery check to detect mismatches before backend call
+      try {
+        const recovered = verifyMessage(nonce, signature);
+        console.log('[ConnectWallet] Recovered address from signature:', recovered);
+        if (recovered.toLowerCase() !== account.toLowerCase()) {
+          console.warn('[ConnectWallet] ⚠️ Recovered address does not match connected account');
+        }
+      } catch (recErr) {
+        console.error('[ConnectWallet] Failed to recover address from signature:', recErr);
+      }
 
       const returnedUser = await loginWithWallet(account, signature, nonce);
       console.log('[ConnectWallet] login returnedUser', returnedUser, 'context user before fetch:', user);
@@ -130,7 +207,6 @@ export const ConnectWallet = (): JSX.Element => {
       const errorMessage = err instanceof Error ? err.message : "Failed to connect wallet";
       console.error("ConnectWallet: failed:", err);
       toast.error(errorMessage);
-      setError(null);
     } finally {
       setIsConnectingWallet(false);
     }

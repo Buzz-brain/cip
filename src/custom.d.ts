@@ -14,6 +14,7 @@ interface ImportMetaEnv {
   readonly VITE_BACKEND_API_URL: string;
   readonly VITE_XCIP_HEADER: string;
   readonly VITE_CONTRACT_ADDRESS: string;
+  readonly VITE_WALLETCONNECT_PROJECT_ID: string;
 }
 
 interface ImportMeta {

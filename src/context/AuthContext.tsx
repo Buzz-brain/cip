@@ -12,6 +12,7 @@ export interface User {
   userInfo?: any; // Extended with user info from backend
   name?: string;
   email?: string;
+  role?: string;
 }
 
 export interface AuthContextType {

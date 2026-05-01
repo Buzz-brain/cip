@@ -34,7 +34,7 @@ export const AssignHealthOracleExec = (): JSX.Element => {
       setPlanField("executorEmail" as any, email.trim());
       setPlanField("executorWallet" as any, checksum);
       console.log('[AssignHealthOracleExec] executor:', { fullName, email, wallet: checksum });
-      navigate("/select-accepted-docs", { state: { executor: { fullName, email, wallet: checksum } } });
+      navigate("/review-health-oracle-plan", { state: { executor: { fullName, email, wallet: checksum } } });
     } catch (err) {
       toast.error("Invalid executor wallet address. Please provide a valid Ethereum address.");
       return;

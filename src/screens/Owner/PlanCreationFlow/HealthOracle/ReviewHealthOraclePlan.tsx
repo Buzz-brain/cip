@@ -54,7 +54,7 @@ export const ReviewHealthOraclePlan = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-8 mb-12">
+      <div className="grid grid-cols-1 gap-8 mb-12">
         <div className="border border-[#54453B] rounded-2xl p-8 bg-[#27221C] ">
           <div className="flex items-center gap-3 mb-8 pb-6 border-b border-[#54453B] ">
             <div className="w-12 h-12 rounded-lg bg-green-600/20 flex items-center justify-center">
@@ -105,44 +105,6 @@ export const ReviewHealthOraclePlan = (): JSX.Element => {
                 KYC Checked
               </span>
             </Badge>
-          </div>
-        </div>
-
-        <div className="border border-[#54453B] rounded-2xl p-8 bg-[#27221C]">
-          <div className="flex items-center gap-3 mb-8 pb-6 border-b border-gray-800">
-            <div className="w-8 h-8 rounded-lg bg-purple-600/20 flex items-center justify-center">
-              <span className="text-lg">📋</span>
-            </div>
-            <h2 className="text-white font-bold">Verification Criteria</h2>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-gray-400 text-xs font-medium mb-2">
-                Selected Jurisdiction
-              </label>
-              <button className="w-full bg-gray-950 border border-gray-800 rounded-lg px-4 py-3 text-left text-white text-sm focus:outline-none focus:border-orange-600 flex items-center justify-between hover:border-gray-700 transition">
-                <span className="flex items-center gap-2">
-                  <span>⚖️</span>
-                  {plan?.jurisdiction ?? 'United States (California)'}
-                </span>
-                <span className="text-gray-600">▼</span>
-              </button>
-            </div>
-
-            <div>
-              <label className="block text-gray-400 text-xs font-medium mb-3">
-                Chosen Accepted Documents
-              </label>
-              <div className="space-y-2">
-                {((plan as any)?.acceptedDocs ? (plan as any).acceptedDocs.split(',') : []).map((d: string) => (
-                  <div key={d} className="bg-orange-600/10 border border-orange-600/30 rounded-lg px-4 py-3 flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                    <span className="text-white text-sm font-medium">{d}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>

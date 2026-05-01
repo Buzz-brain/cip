@@ -117,12 +117,44 @@ const aiGuardianChecks = [
 export const SelectAssets = (): JSX.Element => {
     const navigate = useNavigate();
     const [selectedAssets, setSelectedAssets] = useState<string[]>(assetData.filter(a => a.checked).map(a => a.id));
+    const [searchTerm, setSearchTerm] = useState("");
 
     const toggleAsset = (id: string) => {
         setSelectedAssets(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
     };
 
-    const { setAssets } = usePlan();
+    // Filter assets based on search term
+    const filteredAssets = assetData.filter(asset => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+            asset.name.toLowerCase().includes(searchLower) ||
+            asset.symbol.toLowerCase().includes(searchLower) ||
+            asset.chain.toLowerCase().includes(searchLower)
+        );
+    });
+
+    // Calculate unique chains from selected assets
+    const selectedChainsSet = new Set(
+        assetData
+            .filter(a => selectedAssets.includes(a.id))
+            .map(a => a.chain.split('\n')[0])
+    );
+    const selectedChainsCount = selectedChainsSet.size;
+
+    // Calculate total value from selected assets
+    const totalSelectedValue = assetData
+        .filter(a => selectedAssets.includes(a.id))
+        .reduce((sum, asset) => {
+            const valueNum = parseFloat(asset.value.replace(/[$,]/g, ''));
+            return sum + (isNaN(valueNum) ? 0 : valueNum);
+        }, 0);
+    const totalValueFormatted = new Intl.NumberFormat('en-US', { 
+        style: 'currency', 
+        currency: 'USD',
+        minimumFractionDigits: 2 
+    }).format(totalSelectedValue);
+
+    const { setAssets, setPlanField } = usePlan();
 
     const handleNext = () => {
         // Log selected assets for debugging / audit trail
@@ -134,7 +166,9 @@ export const SelectAssets = (): JSX.Element => {
             const first = chosen[0];
             // amount: use the balance string (caller can edit later)
             setAssets(first.symbol || first.id, first.balance || '0');
-            console.log('[SelectAssets] persisted to PlanContext:', { cryptoAsset: first.symbol || first.id, amount: first.balance });
+            // persist all selected asset IDs
+            setPlanField('assets', selectedAssets);
+            console.log('[SelectAssets] persisted to PlanContext:', { cryptoAsset: first.symbol || first.id, amount: first.balance, assets: selectedAssets });
         } else {
             console.warn('[SelectAssets] no assets selected to persist');
         }
@@ -186,6 +220,8 @@ export const SelectAssets = (): JSX.Element => {
                                     <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-[17.5px] h-[17.5px] text-[#80796b]" />
                                     <Input
                                         placeholder="Search assets (e.g. ETH, USDC)..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
                                         className="pl-10 pr-4 py-5 bg-[#2c231a] border-[#54483b] text-[#80796b] [font-family:'Manrope',Helvetica] font-normal text-sm rounded-lg"
                                     />
                                 </div>
@@ -260,12 +296,13 @@ export const SelectAssets = (): JSX.Element => {
                                         </TableHeader>
 
                                         <TableBody>
-                                            {assetData.map((asset) => (
+                                            {filteredAssets.map((asset) => (
                                                 <TableRow
                                                     key={asset.id}
-                                                    className={`border-t border-[#49382f] hover:bg-transparent ${asset.highlighted
-                                                        ? "bg-[#ff66000d] border-l-4 border-l-[#ff6600]"
-                                                        : ""
+                                                    className={`border-t border-[#49382f] hover:bg-[#3a3228] cursor-pointer transition-colors ${
+                                                        selectedAssets.includes(asset.id)
+                                                            ? "bg-[#ff66000d] border-l-4 border-l-[#ff6600]"
+                                                            : ""
                                                         }`}
                                                 >
                                                     <TableCell className="p-4">
@@ -407,7 +444,7 @@ export const SelectAssets = (): JSX.Element => {
                                     </p>
                                     <div className="flex items-baseline gap-2">
                                         <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-3xl tracking-[-0.75px] leading-9">
-                                            $88,449.37
+                                            {totalValueFormatted}
                                         </h2>
                                         <span className="[font-family:'Manrope',Helvetica] font-medium text-[#afa59c] text-xs">
                                             USD
@@ -440,7 +477,7 @@ export const SelectAssets = (): JSX.Element => {
                                             Selected Assets
                                         </span>
                                         <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">
-                                            2
+                                            {selectedAssets.length}
                                         </span>
                                     </div>
                                     <div className="flex flex-col flex-1">
@@ -448,7 +485,7 @@ export const SelectAssets = (): JSX.Element => {
                                             Chains
                                         </span>
                                         <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">
-                                            2
+                                            {selectedChainsCount}
                                         </span>
                                     </div>
                                 </div>

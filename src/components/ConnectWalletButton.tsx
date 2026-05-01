@@ -1,23 +1,18 @@
 // src/components/ConnectWalletButton.tsx
-// Reusable wallet connection and login component for navbars and pages
+// Multi-wallet connection component using Web3Modal v2
 
-// Type declaration for window.ethereum
-declare global {
-  interface Window {
-    ethereum?: any;
-  }
-}
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Wallet, LogOut, AlertCircle } from "lucide-react";
 import { useAuth } from "../context/useAuth";
-import * as walletUtils from "../lib/wallet/walletUtils";
 import { normalizeWalletAddress } from "../lib/utils";
 import { getDashboardRoute } from "../lib/utils";
-import * as authAPI from "../lib/api/auth";
 import { useNavigate } from "react-router-dom";
-import { verifyMessage } from "ethers";
+import { verifyMessage, BrowserProvider } from "ethers";
+import { ensureArbitrumSepolia } from "../lib/wallet/walletUtils";
 import { toast } from "react-toastify";
+import { useWeb3Modal } from "@web3modal/ethers/react";
+import { useWeb3ModalAccount } from "@web3modal/ethers/react";
+import { useWeb3ModalProvider } from "@web3modal/ethers/react";
 
 interface ConnectWalletButtonProps {
   variant?: "default" | "outline" | "ghost";
@@ -34,252 +29,251 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
 }) => {
   const { user, isAuthenticated, loading, error, getNonce, loginWithWallet, logout, clearError, fetchUserInfo } = useAuth();
   const navigate = useNavigate();
+  const { open: openWeb3Modal } = useWeb3Modal();
+  const { address, isConnected } = useWeb3ModalAccount();
+  const { walletProvider } = useWeb3ModalProvider();
+
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
-  const [isSwitchingNetwork, setIsSwitchingNetwork] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
+  // Handle connection and login
   const handleConnectAndLogin = async () => {
     try {
+      console.log('[ConnectWalletButton] handleConnectAndLogin called');
       clearError();
       setIsConnectingWallet(true);
 
-      // Step 1: Ensure user is on Ethereum mainnet
-      setIsSwitchingNetwork(true);
-      await walletUtils.ensureEthereumNetwork();
-      setIsSwitchingNetwork(false);
-
-      // Step 2: Prompt wallet connection and always use the returned account
-      let account = await walletUtils.requestWalletConnection();
-      // Normalize wallet address to lowercase for consistency
-      account = normalizeWalletAddress(account);
-      console.log("[Wallet] Selected account from wallet:", account);
-
-      // Verify this is actually the active account in MetaMask
-      if (window.ethereum && window.ethereum.selectedAddress) {
-        const selectedAddress = window.ethereum.selectedAddress;
-        console.log("[Wallet] MetaMask selectedAddress:", selectedAddress);
-        if (selectedAddress.toLowerCase() !== account.toLowerCase()) {
-          console.warn("[Wallet] WARNING: MetaMask selectedAddress differs from requested account!");
-          console.warn("[Wallet] Using requested account:", account);
-          console.warn("[Wallet] MetaMask selectedAddress:", selectedAddress);
-        }
+      if (!address) {
+        toast.error("No wallet address found");
+        console.error('[ConnectWalletButton] No wallet address found');
+        return;
       }
 
-      // Additional check: ensure ethers can get the correct signer
+      if (!walletProvider) {
+        toast.error("Wallet provider not available");
+        console.error('[ConnectWalletButton] Wallet provider not available');
+        return;
+      }
+
+      // Detect which wallet provider is being used
+      const walletName = (walletProvider as any)?.provider?.isMetaMask
+        ? 'MetaMask'
+        : (walletProvider as any)?.provider?.isTrustWallet
+        ? 'Trust Wallet'
+        : (walletProvider as any)?.provider?.isCoinbaseWallet
+        ? 'Coinbase Wallet'
+        : (walletProvider as any)?.isMetaMask
+        ? 'MetaMask'
+        : (walletProvider as any)?.isTrustWallet
+        ? 'Trust Wallet'
+        : (walletProvider as any)?.isCoinbaseWallet
+        ? 'Coinbase Wallet'
+        : 'Unknown Wallet';
+
+      console.log('[ConnectWalletButton] 🎯 WALLET SELECTED:', walletName);
+      console.log('[ConnectWalletButton] Provider details:', {
+        hasIsMetaMask: !!(walletProvider as any)?.isMetaMask,
+        hasIsTrustWallet: !!(walletProvider as any)?.isTrustWallet,
+        hasIsCoinbaseWallet: !!(walletProvider as any)?.isCoinbaseWallet,
+        providerName: (walletProvider as any)?.name,
+      });
+
+      // Ensure wallet is on Arbitrum Sepolia before proceeding
       try {
-        const ethers = await import("ethers");
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner(account);
-        const signerAddress = await signer.getAddress();
-        console.log("[Wallet] Ethers signer address:", signerAddress);
-        if (signerAddress.toLowerCase() !== account.toLowerCase()) {
-          console.warn("[Wallet] WARNING: Ethers signer address differs from requested account!");
-        }
-      } catch (ethersCheckError) {
-        console.warn("[Wallet] Could not verify ethers signer:", ethersCheckError);
+        await ensureArbitrumSepolia(walletProvider);
+      } catch (switchErr) {
+        toast.error('Please approve network switch to Arbitrum Sepolia in your wallet.');
+        setIsConnectingWallet(false);
+        return;
       }
 
-      // Step 3: Get nonce for this account
+      const account = normalizeWalletAddress(address);
+      console.log('[ConnectWalletButton] Connected account:', account);
+
+      // Step 1: Get nonce for this account
       const nonce = await getNonce(account);
-      console.log("[Wallet] Nonce to sign:", nonce);
+      console.log('[ConnectWalletButton] Nonce to sign:', nonce);
 
-      // Step 4: Sign the raw nonce (no formatting)
-      let signature = await walletUtils.signMessage(nonce, account);
-      console.log("[Wallet] Signature from personal_sign:", signature);
+      // Step 2: Sign the message using Web3Modal provider
+      const provider = new BrowserProvider(walletProvider);
+      const signer = await provider.getSigner();
+      console.log('[ConnectWalletButton] Signer obtained from wallet:', walletName);
+      
+      let signature = await signer.signMessage(nonce);
+      console.log('[ConnectWalletButton] ✅ Signature received from:', walletName);
+      console.log('[ConnectWalletButton] Signature:', signature);
 
-      // Step 5: Remove 0x prefix from signature if present (backend could expect without prefix)
-      signature = signature.startsWith("0x") ? signature.slice(2) : signature;
+      // Step 3: Remove 0x prefix if present
+      if (signature.startsWith('0x')) {
+        signature = signature.slice(2);
+        console.log('[ConnectWalletButton] Stripped 0x from signature');
+      }
 
-      // Client-side recovery check: try to recover address from signature before sending
+      // Step 4: Client-side recovery check
       try {
-        let recoveredAddress: string | null = null;
+        const recoveredAddress = verifyMessage(nonce, '0x' + signature);
+        console.log('[ConnectWalletButton] ✅ Signature verified - Recovered address:', recoveredAddress);
 
-        // Use ethers verifyMessage for reliable recovery
-        try {
-          recoveredAddress = verifyMessage(nonce, '0x' + signature);
-          console.log('[Wallet] Using ethers verifyMessage recovery');
-        } catch (e) {
-          console.warn('[Wallet] ethers verifyMessage failed:', e);
+        if (recoveredAddress.toLowerCase() !== account.toLowerCase()) {
+          console.warn('[ConnectWalletButton] WARNING: Recovered address does not match account!');
+          throw new Error('Signature verification failed');
         }
-
-        // Fallback: try provider-level recovery if available
-        if (!recoveredAddress && window.ethereum && typeof window.ethereum.request === 'function') {
-          try {
-            // Some providers implement personal_ecRecover
-            // params: [message, signature]
-            // signature must include 0x prefix
-            const rec = await window.ethereum.request({
-              method: 'personal_ecRecover',
-              params: [nonce, '0x' + signature],
-            });
-            if (rec) {
-              recoveredAddress = rec;
-              console.log('[Wallet] Using provider personal_ecRecover');
-            }
-          } catch (err) {
-            console.warn('[Wallet] Provider recovery failed:', err);
-          }
-        }
-
-        console.log('[Wallet] Recovered address from signature:', recoveredAddress);
-        if (recoveredAddress && recoveredAddress.toLowerCase() !== account.toLowerCase()) {
-          console.warn('[Wallet] CRITICAL: Recovered address does not match connected account!');
-          console.warn('[Wallet] Expected account:', account);
-          console.warn('[Wallet] Recovered address:', recoveredAddress);
-          console.warn('[Wallet] Nonce used:', nonce);
-          console.warn('[Wallet] Signature used for recovery:', '0x' + signature);
-
-          // Try manual verification with different approaches
-          try {
-            // Check if the signature is valid for the expected account
-            const expectedSigner = verifyMessage(nonce, '0x' + signature);
-            console.warn('[Wallet] Manual verification result:', expectedSigner);
-
-            // If they don't match, this indicates the signature is from a different account
-            if (expectedSigner.toLowerCase() !== account.toLowerCase()) {
-              console.error('[Wallet] SIGNATURE VERIFICATION FAILED: Signature is not from the expected account!');
-              console.error('[Wallet] This usually means:');
-              console.error('[Wallet] 1. MetaMask signed with a different account');
-              console.error('[Wallet] 2. The user switched accounts during signing');
-              console.error('[Wallet] 3. There\'s a bug in account selection');
-
-              // Stop the process and show error to user
-              throw new Error('Signature verification failed. Please ensure you\'re using the correct MetaMask account and try again.');
-            }
-          } catch (manualErr) {
-            console.error('[Wallet] Manual verification failed:', manualErr);
-            throw new Error('Unable to verify signature. Please try again.');
-          }
-        } else if (recoveredAddress) {
-          console.log('[Wallet] ✓ Signature verification successful');
-        }
-      } catch (err) {
-        console.warn('[Wallet] Client-side signature recovery failed:', err);
+      } catch (recoveryError) {
+        console.error('[ConnectWalletButton] Signature recovery failed:', recoveryError);
+        throw new Error('Failed to verify signature');
       }
 
-      // Step 6: Login with raw nonce as message
-      const returnedUser = await loginWithWallet(account, signature, nonce);
-      console.log('[ConnectWalletButton] login returnedUser', returnedUser, 'context user before fetch:', user);
-      // Show success toast
-      toast.success("Wallet connected successfully!");
-      let finalUserInfo = returnedUser?.userInfo ?? null;
-      if (!finalUserInfo && returnedUser?.token) {
-        try {
-          finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
-        } catch (e) {
-          try { await fetchUserInfo(); } catch {}
-          finalUserInfo = returnedUser?.userInfo ?? null;
-        }
-      }
-      const finalUser = { ...(returnedUser || user), userInfo: finalUserInfo || returnedUser?.userInfo || user?.userInfo };
-      // Redirect: if user needs setup, send to profile setup, else to role dashboard
-      const role = ((finalUser?.userInfo?.role ?? (finalUser as any)?.role) || "").toString();
-      const isSetup = finalUser?.userInfo?.is_setup;
-      const shouldRequireSetup = role.toLowerCase() === "user" && isSetup === false;
-      console.log('[ConnectWalletButton] finalUser for redirect', { role, isSetup, shouldRequireSetup, userInfo: finalUser.userInfo });
-      if (shouldRequireSetup) {
-        navigate("/profile-setup");
+      // Step 5: Send signature to backend for authentication
+      const loginResponse = await loginWithWallet(account, '0x' + signature, nonce);
+      console.log('[ConnectWalletButton] Login response:', loginResponse);
+
+      // Step 6: Fetch user info to update context
+      if (loginResponse?.token) {
+        await fetchUserInfo();
+        const dashboardRoute = getDashboardRoute(user?.userInfo?.role);
+        console.log('[ConnectWalletButton] Navigating to dashboard:', dashboardRoute);
+        navigate(dashboardRoute);
+        toast.success('Successfully connected and logged in!');
+        if (onLoginSuccess) onLoginSuccess();
       } else {
-        const route = getDashboardRoute(role);
-        navigate(route);
+        console.warn('[ConnectWalletButton] Login response did not contain token');
       }
-
-      // Callback
-      onLoginSuccess?.();
     } catch (err) {
-      console.error("Wallet connection and login failed:", err);
+      console.error('[ConnectWalletButton] Connection/login error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to connect wallet';
+      toast.error(errorMessage);
     } finally {
       setIsConnectingWallet(false);
-      setIsSwitchingNetwork(false);
+      console.log('[ConnectWalletButton] Connection process finished');
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    setShowDropdown(false);
+  // Auto-login when wallet connects (includes WalletConnect)
+  useEffect(() => {
+    const attemptAutoLogin = async () => {
+      if (!isConnected) {
+        console.log('[ConnectWalletButton] ❌ Wallet is not connected or disconnected');
+        return;
+      }
+
+      if (!address) {
+        console.log('[ConnectWalletButton] ❌ Connected but no address available yet');
+        return;
+      }
+
+      if (!walletProvider) {
+        console.log('[ConnectWalletButton] ⏳ Waiting for wallet provider to be ready');
+        return;
+      }
+
+      if (isAuthenticated || isConnectingWallet) {
+        console.log('[ConnectWalletButton] Skipping auto-login: already authenticated or in-progress');
+        return;
+      }
+
+      console.log('[ConnectWalletButton] 🔌 Wallet detected as connected:', address);
+      console.log('[ConnectWalletButton] Provider available, ensuring network and triggering auto-login');
+
+      try {
+        // Ensure wallet is on Arbitrum Sepolia (prompts wallet to switch/add if needed)
+        await ensureArbitrumSepolia(walletProvider);
+      } catch (err) {
+        console.warn('[ConnectWalletButton] User declined or failed network switch:', err);
+        toast.error('Please switch your wallet to Arbitrum Sepolia to continue.');
+        return;
+      }
+
+      // Proceed with the existing connect-and-login flow
+      handleConnectAndLogin();
+    };
+
+    attemptAutoLogin();
+  }, [isConnected, address, walletProvider, isAuthenticated, isConnectingWallet]);
+
+  const handleLogout = async () => {
+    try {
+      console.log('[ConnectWalletButton] Logging out...');
+      await logout();
+      setShowDropdown(false);
+      toast.success('Logged out successfully');
+      console.log('[ConnectWalletButton] Logout successful');
+    } catch (err) {
+      console.error('[ConnectWalletButton] Logout error:', err);
+      toast.error('Failed to logout');
+    }
   };
 
-  const baseStyles =
-    "relative inline-flex items-center gap-2 rounded-lg font-bold text-sm transition-all";
-
-  const variantStyles = {
-    default: "bg-[#ff6600] hover:bg-[#ff6600]/90 text-white px-4 py-2",
-    outline: "border border-[#ff6600] bg-transparent hover:bg-[#ff6600]/10 text-[#ff6600] px-4 py-2",
-    ghost: "bg-transparent hover:bg-gray-100/10 text-gray-400 hover:text-white px-3 py-2",
-  };
-
-  // Not authenticated - show connect wallet button
-  if (!isAuthenticated) {
+  // Render based on authentication state
+  if (isAuthenticated) {
     return (
       <div className="relative">
-        {error && (
-          <div className="absolute bottom-full mb-2 bg-red-900/30 border border-red-600 rounded-lg p-2 whitespace-nowrap text-xs text-red-300 flex items-center gap-1">
-            <AlertCircle className="w-3 h-3" />
-            {error}
-          </div>
-        )}
         <button
-          onClick={handleConnectAndLogin}
-          disabled={isConnectingWallet || loading}
-          className={`${baseStyles} ${variantStyles[variant]} disabled:opacity-50 disabled:cursor-not-allowed`}
+          onClick={() => setShowDropdown(!showDropdown)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+            variant === "ghost"
+              ? "hover:bg-gray-700"
+              : "bg-orange-600 hover:bg-orange-700 text-white"
+          }`}
         >
           <Wallet className="w-4 h-4" />
-          <span>
-            {isSwitchingNetwork
-              ? "Switching to Ethereum..."
-              : isConnectingWallet
-              ? "Connecting..."
-              : loading
-              ? "Signing..."
-              : compact
-              ? "Connect"
-              : "Connect Wallet"}
-          </span>
+          {showAddress && !compact && (
+            <span className="text-sm">
+              {user?.publicKey
+                ? `${user.publicKey.substring(0, 6)}...${user.publicKey.substring(
+                    user.publicKey.length - 4
+                  )}`
+                : "Connected"}
+            </span>
+          )}
         </button>
+
+        {showDropdown && (
+          <div className="absolute right-0 mt-2 w-64 bg-[#2a2420] border border-[#3a3430] rounded-lg shadow-lg z-50">
+            <div className="p-3 border-b border-[#3a3430]">
+              <p className="text-xs text-[#8b7664]">Connected Account</p>
+              <p className="text-sm text-white font-mono break-all">{user?.publicKey}</p>
+            </div>
+
+            {user?.userInfo && (
+              <div className="p-3 border-b border-[#3a3430]">
+                <p className="text-xs text-[#8b7664]">Name</p>
+                <p className="text-sm text-white">{user.userInfo.full_name || "Not set"}</p>
+              </div>
+            )}
+
+            <button
+              onClick={handleLogout}
+              className="w-full text-left px-3 py-2 hover:bg-[#3a3430] flex items-center gap-2 text-red-400 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              Disconnect
+            </button>
+          </div>
+        )}
       </div>
     );
   }
 
-  // Authenticated - show user info and logout
   return (
-    <div className="relative">
-      <button
-        onClick={() => setShowDropdown(!showDropdown)}
-        className={`${baseStyles} ${variantStyles[variant]}`}
-      >
-        <Wallet className="w-4 h-4" />
-        <span>
-          {compact
-            ? user?.publicKey?.slice(-4)
-            : showAddress
-              ? `${user?.publicKey?.slice(0, 6)}...${user?.publicKey?.slice(-4)}`
-              : "Wallet"}
-        </span>
-      </button>
-
-      {showDropdown && (
-        <div className="absolute right-0 top-full mt-2 bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg z-50">
-          <div className="p-3 border-b border-zinc-700">
-            <p className="text-xs text-gray-400">Connected Account</p>
-            <p className="text-sm text-white font-mono break-all">{user?.publicKey}</p>
-          </div>
-
-          {user?.userInfo && (
-            <div className="p-3 border-b border-zinc-700">
-              <p className="text-xs text-gray-400">Name</p>
-              <p className="text-sm text-white">{user.userInfo.full_name || "Not set"}</p>
-            </div>
-          )}
-
-          <button
-            onClick={handleLogout}
-            className="w-full px-3 py-2 text-sm text-red-400 hover:bg-red-900/20 flex items-center gap-2 transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            Logout
-          </button>
-        </div>
-      )}
-    </div>
+    <button
+      onClick={() => {
+        console.log('[ConnectWalletButton] 🔓 Opening Web3Modal to select wallet...');
+        openWeb3Modal();
+      }}
+      disabled={loading || isConnectingWallet}
+      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+        variant === "outline"
+          ? "border border-orange-600 text-orange-600 hover:bg-orange-600/10"
+          : variant === "ghost"
+          ? "text-gray-300 hover:text-white hover:bg-gray-700"
+          : "bg-orange-600 hover:bg-orange-700 text-white"
+      }`}
+    >
+      {error && <AlertCircle className="w-4 h-4" />}
+      <Wallet className="w-4 h-4" />
+      <span className={compact ? "hidden" : ""}>
+        {loading || isConnectingWallet ? "Connecting..." : "Connect Wallet"}
+      </span>
+    </button>
   );
 };
