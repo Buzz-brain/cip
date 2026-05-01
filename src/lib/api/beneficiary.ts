@@ -1,4 +1,4 @@
-const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "https://xcip.name.ng";
 
 export async function getBeneficiaryInheritances(token?: string): Promise<{ plans: any[]; beneficiaries: any[] } | null> {
   const url = `${BACKEND_API_URL}/bf/inheritances`;

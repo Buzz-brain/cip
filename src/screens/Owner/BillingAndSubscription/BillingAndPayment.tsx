@@ -1,6 +1,6 @@
 import { Download, CreditCard, Wallet, Link as LinkIcon, FileText, MessageCircle } from 'lucide-react';
-import { Header } from "./Header";
-import checkOrangeCircle from "@assets/check-orange-circle.svg"
+import { useAuth } from '../../../context/useAuth';
+// import checkOrangeCircle from "@assets/check-orange-circle.svg"
 
 
 interface BillingPaymentPageProps {
@@ -8,27 +8,28 @@ interface BillingPaymentPageProps {
 }
 
 export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.Element => {
+  const { user } = useAuth();
+  const walletAddress = user?.publicKey || '0x0000...0000';
+  const displayAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+  
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#221710] text-white [font-family:'Manrope',Helvetica]">
-
-      <Header />
-
-      <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="flex flex-col w-full min-h-screen text-white [font-family:'Manrope',Helvetica]">
+      <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="mb-8">
           <div className="text-sm text-[#AFA89C] mb-6">
-            Settings / 
+            Settings /
             <span className="text-white"> Billing & Payments</span>
-            </div> 
+          </div>
 
           <div className="flex items-center justify-between">
             <div>
-            <p className="text-3xl font-semibold mb-2">Billing & Payments</p>
-            <p className="text-[#AFA89C]">Manage your subscription tier, payment methods, and view transaction history for your inheritance vaults.</p>
+              <p className="text-3xl font-semibold mb-2">Billing & Payments</p>
+              <p className="text-[#AFA89C]">Manage your subscription tier, payment methods, and view transaction history for your inheritance vaults.</p>
             </div>
-            <button className="bg-[#FF6600] hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 font-medium transition">
+            {/* <button className="bg-[#FF6600] hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 font-medium transition">
               <Download className="w-4 h-4" />
               Download All Invoices
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -40,12 +41,12 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
 
                 <div>
                   <div className="flex items-center gap-3 mb-2">
-                    <h2 className="text-white text-xl font-semibold">Current Plan: Shield Plus</h2>
+                    <h2 className="text-white text-xl font-semibold">Current Plan: Sovereign</h2>
                     <span className="bg-green-500/20 text-green-400 px-2.5 py-1 rounded text-xs font-medium">Active</span>
                   </div>
-                  <p className="text-[#AFA89C] text-sm">Next billing date: November 1, 2023</p>
+                  <p className="text-[#AFA89C] text-sm">Next billing date: June 1, 2026</p>
                 </div>
-                <div className="flex gap-3">
+                {/* <div className="flex gap-3">
                   <button className="text-white hover:text-white px-4 py-2 rounded-lg border border-[#63574B] hover:border-neutral-500 transition">
                     Cancel Plan
                   </button>
@@ -55,7 +56,7 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                   >
                     Upgrade Plan
                   </button>
-                </div>
+                </div> */}
               </div>
 
               <div className="grid grid-cols-3">
@@ -67,7 +68,7 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                     </svg>
                   </div>
                   <div className="text-[#AFA89C] text-sm mb-1">Plan Cost</div>
-                  <div className="text-white text-2xl font-semibold">$29.00 <span className="text-[#AFA89C] text-base font-normal">/ mo</span></div>
+                  <div className="text-white text-2xl font-semibold">49.00 <span className="text-[#AFA89C] text-base font-normal">/ mo</span></div>
                 </div>
 
                 <div className='border-t border-[#514437] border-r p-5'>
@@ -92,7 +93,7 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
               </div>
             </div>
 
-            <div className="bg-[#33261A] rounded-xl p-6 border border-[#B5927B]">
+            {/* <div className="bg-[#33261A] rounded-xl p-6 border border-[#B5927B]">
               <h3 className="text-white text-lg font-semibold mb-4">Vault Utilization</h3>
 
               <div className="space-y-4">
@@ -117,72 +118,16 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <div className="bg-[#33261A] rounded-xl p-6 border border-[#B5927B]">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-white text-lg font-semibold">Billing History</h3>
-                <button className="text-[#FF6600] hover:text-orange-400 text-sm font-medium">View All</button>
               </div>
 
-              <div className="space-y-3">
-
-                  <div className="flex items-center justify-between py-3 border-b border-neutral-700 last:border-0">
-                    
-                    <div className="flex flex-col items-center gap-8 pr-16">
-                      <span className="text-[#AFA89C] text-sm w-20">Invoice</span>
-                    </div>
-
-                    <div className="flex flex-col items-center gap-8 ">
-                      <span className="text-[#AFA89C] text-sm w-20">Date</span>
-                    </div>
-
-                    <div className="flex flex-col items-center gap-8 pl-10">
-                      <span className="text-[#AFA89C] text-sm w-20">Amount</span>
-                    </div>
-
-                    <div className="flex flex-col items-center gap-8">
-                      <span className="text-[#AFA89C] text-sm w-20">Status</span>
-                    </div>
-
-                    <div className="flex flex-col items-center gap-8">
-                      <span className="text-[#AFA89C] text-sm w-20">Action</span>
-                    </div>
-
-                  </div>
-
-</div>
-
-              <div className="space-y-3">
-                {[
-                  { id: '#CIP-2023-10', date: 'Oct 01, 2023', amount: '$29.00' },
-                  { id: '#CIP-2023-09', date: 'Sep 01, 2023', amount: '$29.00' },
-                  { id: '#CIP-2023-08', date: 'Aug 01, 2023', amount: '$29.00' }
-                ].map((invoice) => (
-                  <div key={invoice.id} className="flex items-center justify-between py-3 border-b border-[#514437] last:border-0">
-                    <div className="flex flex-col items-center gap-8">
-                      <span className="text-white font-medium">{invoice.id}</span>
-                    </div>
-
-                    <div className="flex flex-col items-center gap-8">
-                      <span className="text-white w-32">{invoice.date}</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-8">
-                      <span className="text-white w-20">{invoice.amount}</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-8">
-                      <div className="flex items-center gap-2 bg-[#14532D4D] w-15 px-3 py-1 rounded-lg">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-green-400 text-sm">Paid</span>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-center gap-8">
-                      <button className="text-[#AFA89C] hover:text-white pr-10">
-                      <Download className="w-4 h-4" />
-                    </button>
-                    </div>
-                  </div>
-                ))}
+              <div className="py-12 text-center text-[#AFA89C]">
+                <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p className="text-sm">No billing history available at this time.</p>
               </div>
             </div>
           </div>
@@ -192,7 +137,7 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
               <h3 className="text-white text-lg font-semibold mb-4">Payment Methods</h3>
 
               <div className="space-y-3 mb-4">
-                <div className="bg-[#8A5D1E1A] border-2 border-orange-500 rounded-lg p-4">
+                {/* <div className="bg-[#8A5D1E1A] border-2 border-orange-500 rounded-lg p-4">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center">
                       <Wallet className="w-5 h-5 text-orange-500" />
@@ -201,6 +146,7 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                       <div className="text-white font-semibold">COTI Wallet</div>
                       <div className="text-neutral-400 text-sm">0x2828...09</div>
                     </div>
+                    
                     <div className="flex flex-col gap-2">
                       <button className="text-[#AFA89C] hover:text-orange-400">
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -212,7 +158,7 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                       </button>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="bg-[#33261A] border border-[#514437] rounded-lg p-4">
                   <div className="flex items-center gap-3">
@@ -221,14 +167,14 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                     </div>
                     <div className="flex-1">
                       <div className="text-white font-semibold">MetaMask Wallet</div>
-                      <div className="text-[#AFA89C] text-sm">0x12...8394</div>
+                      <div className="text-[#AFA89C] text-sm">{displayAddress}</div>
                     </div>
                     <span className="bg-[#FF6600] text-white text-xs px-2 py-1 rounded">Default</span>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              {/* <div className="grid grid-cols-2 gap-3">
                 <button className="border border-[#63574B] border-dashed hover:border-neutral-600 rounded-lg p-4 text-[#AFA89C] hover:text-white transition flex flex-col items-center gap-2">
                   <CreditCard className="w-5 h-5" />
                   <span className="text-sm">Add Card</span>
@@ -237,7 +183,7 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                   <LinkIcon className="w-5 h-5" />
                   <span className="text-sm">Connect Wallet</span>
                 </button>
-              </div>
+              </div> */}
             </div>
 
             <div className="bg-[#8A5D1E33] border border-[#AF531E] rounded-xl p-4">
@@ -249,7 +195,7 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                 </div>
                 <div>
                   <div className="text-white font-medium mb-1">Upcoming Charge</div>
-                  <div className="text-[#AFA89C] text-sm">Your next payment of $29.00 will be processed on November 1, 2023</div>
+                  <div className="text-[#AFA89C] text-sm">Your next payment of $29.00 will be processed on June 1, 2026</div>
                 </div>
               </div>
             </div>

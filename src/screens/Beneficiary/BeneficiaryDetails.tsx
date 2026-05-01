@@ -148,7 +148,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
+              {/* <div className="flex items-center gap-3">
                 <Button className="flex items-center gap-2 bg-transparent border border-[#392f28] text-white hover:bg-[#27221c] [font-family:'Manrope',Helvetica] font-bold text-sm px-4 py-2">
                   <DownloadIcon className="w-4 h-4" />
                   Export PDF
@@ -156,7 +156,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
                 <Button className="flex items-center gap-2 bg-transparent border border-[#392f28] text-white hover:bg-[#27221c] [font-family:'Manrope',Helvetica] font-bold text-sm px-4 py-2">
                   History
                 </Button>
-              </div>
+              </div> */}
             </div>
           </section>
 

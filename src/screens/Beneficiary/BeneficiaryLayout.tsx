@@ -38,30 +38,30 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
             <span className={`[font-family:'Manrope',Helvetica] ${isActive('/beneficiary-dashboard') ? 'font-bold text-[#0d0501]' : 'font-normal text-[#8b7b64]'} text-sm`}>Dashboard</span>
           </button>
 
-          <button
+          {/* <button
             onClick={() => navigate('/beneficiary-dashboard#approvals')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-[#27221c] transition-colors group ${isActive('/beneficiary-dashboard') && location.hash === '#approvals' ? 'bg-[#2ccd2c]' : ''}`}
           >
             <CheckCircleIcon className={`w-5 h-5 ${isActive('/beneficiary-dashboard') && location.hash === '#approvals' ? 'text-white' : 'text-[#8b7b64]'}`} />
             <span className={`[font-family:'Manrope',Helvetica] ${isActive('/beneficiary-dashboard') && location.hash === '#approvals' ? 'font-bold text-white' : 'font-normal text-[#8b7b64]'} group-hover:text-white text-sm`}>Approvals</span>
             <span className="ml-auto bg-[#ff6600] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">2</span>
-          </button>
+          </button> */}
 
-          <button
+          {/* <button
             onClick={() => navigate('/beneficiary-dashboard#tax-reports')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-[#27221c] transition-colors group ${location.hash === '#tax-reports' ? 'bg-[#2ccd2c]' : ''}`}
           >
             <FileTextIcon className={`w-5 h-5 ${location.hash === '#tax-reports' ? 'text-white' : 'text-[#8b7b64]'}`} />
             <span className={`[font-family:'Manrope',Helvetica] ${location.hash === '#tax-reports' ? 'font-bold text-white' : 'font-normal text-[#8b7b64]'} group-hover:text-white text-sm`}>Tax Reports</span>
-          </button>
+          </button> */}
 
-          <button
+          {/* <button
             onClick={() => navigate('/beneficiary-details')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-[#27221c] transition-colors group ${isActive('/beneficiary-details') ? 'bg-[#27221c]' : ''}`}
           >
             <BarChart3Icon className={`w-5 h-5 ${isActive('/beneficiary-details') ? 'text-white' : 'text-[#8b7b64]'}`} />
             <span className={`[font-family:'Manrope',Helvetica] ${isActive('/beneficiary-details') ? 'font-bold text-white' : 'font-normal text-[#8b7b64]'} group-hover:text-white text-sm`}>Assets</span>
-          </button>
+          </button> */}
         </nav>
 
         <div className="border-t border-[#392f28] p-4">
@@ -86,7 +86,7 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
               } catch (e) {
                 // ignore
               }
-              navigate('/');
+              navigate('/connect-wallet');
             }}
             className="w-full flex items-center gap-2 px-3 py-2 text-[#2ccd2c] hover:bg-[#27221c] rounded-lg transition-colors"
           >
@@ -101,23 +101,22 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
           <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">Overview</h1>
 
           <div className="flex items-center gap-6">
-            <div className="relative hidden md:flex">
+            {/* <div className="relative hidden md:flex">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8b7b64]" />
               <input
                 type="text"
                 placeholder="Search plans..."
                 className="pl-10 pr-4 py-2 bg-[#27221c] border border-[#392f28] rounded-lg [font-family:'Manrope',Helvetica] text-white placeholder-[#8b7b64] focus:outline-none focus:border-[#ff6600]"
               />
-            </div>
+            </div> */}
 
             <button className="relative" onClick={() => setShowNotifications(v => !v)} aria-expanded={showNotifications} aria-controls="notifications-panel">
               <BellIcon className={`w-5 h-5 ${showNotifications ? 'text-white' : 'text-[#8b7b64]'} transition-colors`} />
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#2ccd2c] rounded-full flex items-center justify-center text-white text-xs font-bold">3</span>
             </button>
 
-            <button className="hover:text-white transition-colors">
+            {/* <button className="hover:text-white transition-colors">
               <SettingsIcon className="w-5 h-5 text-[#8b7b64]" />
-            </button>
+            </button> */}
           </div>
         </header>
 
@@ -130,45 +129,15 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
 
         <aside id="notifications-panel" role="dialog" aria-label="Notifications" className={`absolute right-0 top-0 h-full w-[320px] bg-[#0d0501] border-l border-[#392f28] transform transition-transform duration-300 ${showNotifications ? 'translate-x-0' : 'translate-x-full'}`}>
           <div className="p-6 border-b border-[#392f28]">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base">Notifications</h3>
-              <span className="bg-[#2ccd2c] text-[#0d0501] [font-family:'Manrope',Helvetica] font-bold text-xs px-2 py-1 rounded-full">3</span>
-            </div>
-            <p className="text-[#8b7b64] text-xs">Recent alerts about your plans and approvals.</p>
+            <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base">Notifications</h3>
+            <p className="text-[#8b7b64] text-xs mt-2">Recent alerts about your plans and approvals.</p>
           </div>
 
-          <div className="flex-1 flex flex-col divide-y divide-[#392f28] overflow-auto">
-            <div className="p-4 hover:bg-[#27221c] transition-colors cursor-pointer">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-[#ff3b30] mt-1.5 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm mb-1">MPC Signature Required</p>
-                  <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs leading-5">Grandmother's Trust requires your approval immediately.</p>
-                  <p className="[font-family:'Manrope',Helvetica] font-normal text-[#695a47] text-xs mt-2">2 hours ago</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 hover:bg-[#27221c] transition-colors cursor-pointer">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-[#2ccd2c] mt-1.5 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm mb-1">Plan Execution Ready</p>
-                  <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs leading-5">"Family Estate Plan" is now 80% through the monitoring phase.</p>
-                  <p className="[font-family:'Manrope',Helvetica] font-normal text-[#695a47] text-xs mt-2">Yesterday</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 hover:bg-[#27221c] transition-colors cursor-pointer">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-[#2ccd2c] mt-1.5 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm mb-1">Tax Summary Updated</p>
-                  <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs leading-5">New tax implications calculated based on recent crypto volatility.</p>
-                  <p className="[font-family:'Manrope',Helvetica] font-normal text-[#695a47] text-xs mt-2">2 days ago</p>
-                </div>
-              </div>
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center px-6 py-12">
+              <BellIcon className="w-12 h-12 text-[#392f28] mx-auto mb-4" />
+              <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">No notifications yet</p>
+              <p className="[font-family:'Manrope',Helvetica] font-normal text-[#695a47] text-xs mt-2">You'll see alerts here when there are updates about your plans.</p>
             </div>
           </div>
         </aside>

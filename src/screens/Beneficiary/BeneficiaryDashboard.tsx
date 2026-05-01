@@ -1,13 +1,42 @@
 import { LayoutGrid as LayoutGridIcon, ChartPie as PieChartIcon, Search as SearchIcon, TrendingUp as TrendingUpIcon, CircleCheck as CheckCircleIcon } from "lucide-react";
 import { useAuth } from "../../context/useAuth";
-import { Button } from "@components/ui/button";
+// import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
-import padlockImg from "@assets/padlock-img.svg";
+// import padlockImg from "@assets/padlock-img.svg";
 import YourInheritances from "./YourInheritances";
 import BeneficiaryLayout from "./BeneficiaryLayout";
+import { useEffect, useState } from "react";
+import { getBeneficiaryInheritances } from "../../lib/api/beneficiary";
+import { getBeneficiaryStats, BeneficiaryDashboardStats } from "../../lib/dashboard/beneficiaryStats";
 
 export const BeneficiaryDashboard = (): JSX.Element => {
   const { user } = useAuth();
+  const [stats, setStats] = useState<BeneficiaryDashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function fetchStats() {
+      if (!user?.token) return;
+      setLoading(true);
+      try {
+        const data = await getBeneficiaryInheritances(user.token);
+        if (!mounted) return;
+        if (data) {
+          const computed = getBeneficiaryStats({ data });
+          setStats(computed);
+        }
+      } catch (err) {
+        console.error('Failed to load beneficiary stats:', err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    fetchStats();
+    return () => { mounted = false; };
+  }, [user?.token]);
 
   return (
     <BeneficiaryLayout>
@@ -17,9 +46,9 @@ export const BeneficiaryDashboard = (): JSX.Element => {
             <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-[32px] leading-10">
               Welcome back, {user?.name ?? user?.email ?? (user?.userInfo?.wallet ? `${user.userInfo.wallet.slice(0,6)}...${user.userInfo.wallet.slice(-4)}` : (user?.publicKey ? `${user.publicKey.slice(0,6)}...${user.publicKey.slice(-4)}` : 'User'))}
             </h2>
-            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-base">
+            {/* <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-base">
               You have <span className="font-bold text-white">3 active inheritance plans</span> and <span className="font-bold text-[#ff3b30]">1 urgent approval</span> pending.
-            </p>
+            </p> */}
           </div>
         </div>
 
@@ -30,11 +59,11 @@ export const BeneficiaryDashboard = (): JSX.Element => {
                 <div className="flex items-center justify-center w-12 h-12 bg-[#27221c] rounded-lg">
                   <TrendingUpIcon className="w-6 h-6 text-[#2ccd2c]" />
                 </div>
-                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#2ccd2c] text-sm">+5.2%</span>
+                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#2ccd2c] text-sm">{loading ? '—' : stats?.percentChange ?? '+0%'}</span>
               </div>
               <div className="flex flex-col gap-1">
                 <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">Total Inherited Value</p>
-                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">$1,240,500</p>
+                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">{loading ? '—' : stats?.totalInheritedValueUsd ?? '$0'}</p>
               </div>
             </CardContent>
           </Card>
@@ -49,7 +78,7 @@ export const BeneficiaryDashboard = (): JSX.Element => {
               </div>
               <div className="flex flex-col gap-1">
                 <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">Pending Approvals</p>
-                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">2 requests</p>
+                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">{loading ? '—' : stats?.pendingApprovals ?? 0} {(stats?.pendingApprovals ?? 0) === 1 ? 'request' : 'requests'}</p>
               </div>
             </CardContent>
           </Card>
@@ -63,14 +92,14 @@ export const BeneficiaryDashboard = (): JSX.Element => {
                 <span className="[font-family:'Manrope',Helvetica] font-bold text-[#007aff] text-sm">Est. Liability</span>
               </div>
               <div className="flex flex-col gap-1">
-                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">Tax Summary (2024)</p>
-                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">~15% <span className="text-base text-[#8b7b64]">average</span></p>
+                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">Tax Summary (2026)</p>
+                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">{loading ? '—' : stats?.taxSummary ?? '~0% average'}</p>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <section className="flex flex-col gap-4">
+        {/* <section className="flex flex-col gap-4">
           <h3 className="[font-family:'Manrope',Helvetica] font-bold text-[#ff3b30] text-base">⚠ Action Required</h3>
 
           <Card className="bg-gradient-to-r from-[#27221c] to-[#181511] border border-[#ff6600] rounded-xl overflow-hidden">
@@ -97,20 +126,18 @@ export const BeneficiaryDashboard = (): JSX.Element => {
               </div>
             </CardContent>
           </Card>
-        </section>
+        </section> */}
 
         <section className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-xl">Your Inheritance Plans</h3>
             <div className="flex items-center gap-2">
-              <button className="p-2 hover:bg-[#27221c] rounded-lg transition-colors"><SearchIcon className="w-5 h-5 text-[#8b7b64]" /></button>
+              {/* <button className="p-2 hover:bg-[#27221c] rounded-lg transition-colors"><SearchIcon className="w-5 h-5 text-[#8b7b64]" /></button> */}
               <button className="p-2 hover:bg-[#27221c] rounded-lg transition-colors"><LayoutGridIcon className="w-5 h-5 text-[#8b7b64]" /></button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-6">
             <YourInheritances />
-          </div>
         </section>
         </section>
       </BeneficiaryLayout>

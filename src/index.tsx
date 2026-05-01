@@ -206,7 +206,6 @@ createRoot(document.getElementById("app") as HTMLElement).render(
 
           {/* If MPC Selected */}
           <Route path="mpc-selected" element={<MPCSelected />} />
-        </Route>
 
           {/* Billing and Subscription inside Owner Dashboard layout */}
           <Route path="billing-and-payment" element={<BillingAndPayment />} />
@@ -214,6 +213,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           <Route path="subscription-renewal" element={<SubscriptionRenewal />} />
           <Route path="billing-history" element={<BillingHistory />} />
           <Route path="grace-period-active" element={<GracePeriodActive />} />
+        </Route>
 
         {/* Legacy top-level owner routes redirect to the new nested paths for backward compatibility */}
         <Route path="/view-plan-history" element={<Navigate to="/owner-dashboard/view-plan-history" replace />} />

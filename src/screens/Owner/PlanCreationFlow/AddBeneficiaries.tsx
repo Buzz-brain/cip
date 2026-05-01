@@ -6,8 +6,6 @@ import { Input } from "@components/ui/input";
 import { usePlan } from "../../../context/usePlan";
 import { normalizeWalletAddress } from "../../../lib/utils";
 import { toast } from "react-toastify";
-import usersPlusIcon from "@assets/users-plus.svg";
-import bookCheckGreyIcon from "@assets/book-check-grey.svg";
 import pieCircleIcon from "@assets/pie-circle.svg";
 import { useNavigate } from "react-router-dom";
 import {
@@ -23,7 +21,7 @@ interface Beneficiary {
     id: string;
     name: string;
     relationship: string;
-  email?: string;
+    email?: string;
     walletAddress: string;
     allocation: number;
     color: string;
@@ -51,19 +49,23 @@ const BENEFICIARY_COLORS = [
 
 export const AddBeneficiaries = (): JSX.Element => {
     const navigate = useNavigate();
-    const { plan, addBeneficiary, removeBeneficiary, updateBeneficiary } = usePlan();
+    const { plan, addBeneficiary, removeBeneficiary, updateBeneficiary, setBeneficiaries } = usePlan();
     const beneficiaries = plan.beneficiaries;
-
-    // No default/mock beneficiaries; user will input values manually.
-
     const totalAllocated = beneficiaries.reduce((sum, b) => sum + b.allocation, 0);
     const unallocated = 100 - totalAllocated;
 
     const handleAddBeneficiary = () => {
-      const maxId = beneficiaries.length > 0 ? Math.max(...beneficiaries.map((b) => parseInt(b.id) || 0)) : 0;
+      // Generate a unique ID by finding the max numeric ID and incrementing
+      let maxId = 0;
+      beneficiaries.forEach((b) => {
+        const numId = parseInt(b.id, 10);
+        if (!isNaN(numId) && numId > maxId) {
+          maxId = numId;
+        }
+      });
       const newId = (maxId + 1).toString();
       const colorIndex = beneficiaries.length % BENEFICIARY_COLORS.length;
-      const newBeneficiary = {
+      const newBeneficiary: Beneficiary = {
         id: newId,
         name: "",
         relationship: "",
@@ -114,11 +116,68 @@ export const AddBeneficiaries = (): JSX.Element => {
     // Ensure at least one empty beneficiary is present so the form is visible
     useEffect(() => {
       if (beneficiaries.length === 0) {
-        handleAddBeneficiary();
+        // No beneficiaries - add one empty
+        setBeneficiaries([
+          {
+            id: "1",
+            name: "",
+            relationship: "",
+            walletAddress: "",
+            allocation: 0,
+            color: BENEFICIARY_COLORS[0],
+            initial: "?",
+          },
+        ]);
+      } else {
+        // If all are empty and there's more than one, keep only the first one
+        const allEmpty = beneficiaries.every(
+          (b) => !b.name && !b.relationship && !b.walletAddress && b.allocation === 0
+        );
+        if (allEmpty && beneficiaries.length > 1) {
+          setBeneficiaries([
+            {
+              ...beneficiaries[0],
+              id: "1",
+            },
+          ]);
+        }
       }
-      // run once on mount
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [beneficiaries.length]);
+
+    const handleRemoveBeneficiary = (id: string) => {
+      if (beneficiaries.length === 1) {
+        // Don't allow removing the last beneficiary, just clear its fields
+        setBeneficiaries([
+          {
+            ...beneficiaries[0],
+            id: "1",
+            name: "",
+            relationship: "",
+            walletAddress: "",
+            allocation: 0,
+            initial: "?",
+          },
+        ]);
+      } else {
+        const filtered = beneficiaries.filter((b) => b.id !== id);
+        if (filtered.length === 0) {
+          setBeneficiaries([
+            {
+              id: "1",
+              name: "",
+              relationship: "",
+              walletAddress: "",
+              allocation: 0,
+              color: BENEFICIARY_COLORS[0],
+              initial: "?",
+            },
+          ]);
+        } else {
+          setBeneficiaries(filtered);
+        }
+      }
+    };
 
     return (
          <div className="min-h-screen bg-[#0d0b08]">
@@ -126,26 +185,6 @@ export const AddBeneficiaries = (): JSX.Element => {
         <div className="flex-1 flex items-center justify-center px-4 py-4">
           <div className="w-full max-w-6xl">
             <div className="mb-8">
-              <div className="flex items-center gap-3 text-sm mb-10">
-                <a
-                  href="/"
-                  className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] hover:text-white transition-colors flex items-center gap-2"
-                >
-                  <WalletIcon className="w-4 h-4 text-[#9DABB9]" />
-                  Assets
-                </a>
-                <ChevronRightIcon className="w-4 h-4 text-[#9dabb9]" />
-                <span className="[font-family:'Manrope',Helvetica] font-medium text-[#ff6600] flex items-center gap-2">
-                  <img src={usersPlusIcon} alt="" />
-                  Beneficiaries
-                </span>
-                <ChevronRightIcon className="w-4 h-4 text-[#9dabb9]" />
-                <span className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] flex items-center gap-2">
-                  <img src={bookCheckGreyIcon} alt="" />
-                  Review
-                </span>
-              </div>
-
               <div className="flex flex-col gap-2">
                 <h1 className="[font-family:'Manrope',Helvetica] font-extrabold text-white text-[35.7px] tracking-[-1.19px] leading-10">
                   Add Beneficiaries
@@ -190,7 +229,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => removeBeneficiary(beneficiary.id)}
+                            onClick={() => handleRemoveBeneficiary(beneficiary.id)}
                             className="text-[#80796b] hover:text-red-500 hover:bg-transparent"
                           >
                             <TrashIcon className="w-5 h-5" />

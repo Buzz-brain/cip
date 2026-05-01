@@ -29,6 +29,33 @@ export const Sidebar = (): JSX.Element => {
   const displayEmail = user?.email || user?.userInfo?.email || "";
   const avatarInitial = displayName ? String(displayName).charAt(0).toUpperCase() : "G";
 
+  // Pre-compute hrefs for system menu items
+  const systemWithHrefs = systemMenuItems.map((item) => {
+    let href = "#";
+    if (item.id === "settings") href = "/owner-dashboard/billing-and-payment";
+    return { ...item, href };
+  });
+
+  // Pre-compute hrefs and select the most specific matching href for active state
+  const menuWithHrefs = sidebarMenuItems.map((item) => {
+    let href = "#";
+    if (item.id === "dashboard") href = "/owner-dashboard";
+    if (item.id === "create-plan") href = "/owner-dashboard/select-assets";
+    if (item.id === "asset-registry") href = "/owner-dashboard/select-assets";
+    return { ...item, href };
+  });
+
+  // Combine all menu items to find the most specific match
+  const allMenuItems = [...menuWithHrefs, ...systemWithHrefs];
+  const activeHref = allMenuItems.reduce((best: string, item) => {
+    if (item.href === "#") return best;
+    // exact match wins
+    if (pathname === item.href) return item.href;
+    // prefer longest prefix match (more specific)
+    if (pathname.startsWith(item.href) && item.href.length > (best?.length || 0)) return item.href;
+    return best;
+  }, "");
+
   return (
         
         <div className="w-56 bg-[#1a1410] border-r border-[#3a2f1e] flex flex-col [font-family:'Manrope',Helvetica]">
@@ -55,18 +82,13 @@ export const Sidebar = (): JSX.Element => {
 
           {/* Main Menu */}
           <div className="flex-1 overflow-y-auto p-4 space-y-2">
-            {sidebarMenuItems.map((item) => {
-              let href = "#";
-              if (item.id === "dashboard") href = "/owner-dashboard";
-              if (item.id === "create-plan") href = "/owner-dashboard/select-assets";
-              if (item.id === "asset-registry") href = "/owner-dashboard/select-assets";
-
-              const isActive = href !== "#" && pathname.startsWith(href);
+            {menuWithHrefs.map((item) => {
+              const isActive = item.href === activeHref;
 
               return (
                 <Link
                   key={item.id}
-                  to={href}
+                  to={item.href}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors block ${
                     isActive ? "bg-[#332619] text-white" : "text-[#B9B09D] hover:bg-[#2a1f10] hover:text-white"
                   }`}
@@ -82,15 +104,16 @@ export const Sidebar = (): JSX.Element => {
 
           {/* System Menu */}
           <div className="border-t border-[#3a2f1e] p-4 space-y-2">
-            {systemMenuItems.map((item) => {
-              let href = "#";
-              if (item.id === "settings") href = "/billing-and-payment";
-              
+            {systemWithHrefs.map((item) => {
+              const isActive = item.href === activeHref;
+
               return (
                 <Link
                   key={item.id}
-                  to={href}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[#B9B09D] hover:bg-[#2a1f10] hover:text-white transition-colors"
+                  to={item.href}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive ? "bg-[#332619] text-white" : "text-[#B9B09D] hover:bg-[#2a1f10] hover:text-white"
+                  }`}
                 >
                   <img src={item.icon} />
                   <span className="[font-family:'Noto_Sans',Helvetica] font-medium text-sm">

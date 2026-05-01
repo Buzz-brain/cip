@@ -111,6 +111,16 @@ export const ProfileSetupForm = (): JSX.Element => {
       return;
     }
 
+    // Redirect if user is already verified
+    const isVerified = user?.userInfo?.is_verified;
+    if (isVerified === true) {
+      const roleRaw = user?.userInfo?.role;
+      const fallbackRole = (user as any)?.role;
+      const role = (roleRaw ?? fallbackRole ?? "user").toString();
+      navigate(getDashboardRoute(role), { replace: true });
+      return;
+    }
+
     loadProfile();
   }, [user, navigate]);
 

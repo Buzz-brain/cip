@@ -64,9 +64,9 @@ export const SetTimeLock = (): JSX.Element => {
                         </p>
                       </div>
                     </div>
-                    <button className="[font-family:'Manrope',Helvetica] font-semibold text-[#B9AB9D] text-xs tracking-[0] leading-4 hover:text-[#ff6600]/80 transition-colors">
+                    {/* <button className="[font-family:'Manrope',Helvetica] font-semibold text-[#B9AB9D] text-xs tracking-[0] leading-4 hover:text-[#ff6600]/80 transition-colors">
                       Change Type
-                    </button>
+                    </button> */}
                   </div>
                 </div>
 

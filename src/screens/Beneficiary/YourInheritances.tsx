@@ -9,8 +9,8 @@ import { toast } from "react-toastify";
 
 export const YourInheritances = (): JSX.Element => {
   const { user } = useAuth();
-  const [plans, setPlans] = useState<any[]>([]);
-  const [beneficiaries, setBeneficiaries] = useState<any[]>([]);
+  const [plans, setPlans] = useState<any[] | null>([]);
+  const [beneficiaries, setBeneficiaries] = useState<any[] | null>([]);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const navigate = useNavigate();
@@ -92,7 +92,7 @@ export const YourInheritances = (): JSX.Element => {
   }
 
   return (
-    <div className={`grid grid-cols-1 gap-6 transition-all duration-300 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+    <div className={`grid grid-cols-2 gap-6 transition-all duration-300 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
       {plans.map((p: any) => {
         const planBeneficiaries = beneficiariesByPlan.get(Number(p.id)) ?? [];
         const created = p.created_at ? new Date(Number(p.created_at) * 1000) : null;
