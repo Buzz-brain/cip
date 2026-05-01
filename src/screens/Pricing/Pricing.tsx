@@ -100,6 +100,17 @@ const pricingPlansAlt = [
 
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
+function getSubscriptionDeniedMessage(role?: string) {
+  if (!role) return "Please connect wallet or log in with an owner account.";
+  const r = String(role).trim();
+  if (!r) return "Please connect wallet or log in with an owner account.";
+  const title = r
+    .split(/[_\s-]+/)
+    .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : w))
+    .join(' ');
+  return `You're signed in as ${title}. Only owners can subscribe, please switch to an owner account.`;
+}
+
 const auditors = [
   { name: "CertiK", icon: verifiedUser },
   { name: "Hacken", icon: shield },
@@ -254,6 +265,14 @@ export const Pricing = (): JSX.Element => {
                 navigate("/onboarding/step-one");
                 return;
               }
+
+              // If user role is present and is not 'user', prevent calling backend
+              const role = (user?.userInfo?.role ?? (user as any)?.role ?? "").toString();
+              if (role && role.toLowerCase() !== "user") {
+                toast.error(getSubscriptionDeniedMessage(role));
+                return;
+              }
+
               const key = String(plan.id);
               if (subscribing[key]) return;
               setSubscribing((s) => ({ ...s, [key]: true }));
@@ -278,12 +297,6 @@ export const Pricing = (): JSX.Element => {
 
                 if (res.ok) {
                   toast.success("Subscription successful.");
-                  // Validate user role and navigate to appropriate dashboard
-                  const role = (user?.userInfo?.role ?? (user as any)?.role ?? "").toString();
-                  if (!role || role.toLowerCase() === "beneficiary") {
-                    toast.error("Beneficiaries cannot subscribe. Please contact support.");
-                    return;
-                  }
                   navigate(getDashboardRoute(role));
                 } else {
                   const errorMsg = await extractErrorMessage(res);

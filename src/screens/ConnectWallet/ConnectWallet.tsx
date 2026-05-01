@@ -196,7 +196,12 @@ export const ConnectWallet = (): JSX.Element => {
       const finalUser = { ...(returnedUser || user), userInfo: finalUserInfo || returnedUser?.userInfo || user?.userInfo };
       const role = ((finalUser?.userInfo?.role ?? (finalUser as any)?.role) || "").toString();
       const isFullyRegistered = finalUser?.userInfo?.full_reg;
-      const shouldRequireSetup = role.toLowerCase() === "user" && isFullyRegistered !== true;
+      const isSetup = finalUser?.userInfo?.is_setup;
+      // Require profile setup when the account is a standard `user` and registration/setup flags are incomplete.
+      // Also treat missing role as needing setup if registration flags are incomplete (new users).
+      const roleLower = role.toLowerCase();
+      const likelyUser = roleLower === "user" || roleLower === "";
+      const shouldRequireSetup = likelyUser && (isFullyRegistered !== true || isSetup === false);
       console.log('[ConnectWallet] finalUser for redirect', { role, isFullyRegistered, shouldRequireSetup, userInfo: finalUser.userInfo });
       if (shouldRequireSetup) {
         navigate("/profile-setup");

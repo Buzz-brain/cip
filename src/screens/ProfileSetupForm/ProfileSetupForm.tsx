@@ -211,27 +211,6 @@ export const ProfileSetupForm = (): JSX.Element => {
                     />
                   </div>
                 </div>
-
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-[7px]">
-                    <Label
-                      htmlFor="backupContact"
-                      className="[font-family:'Manrope',Helvetica] font-medium text-white text-sm tracking-[0] leading-[21px]"
-                    >
-                      Backup Contact
-                    </Label>
-                    <InfoIcon className="w-4 h-4 text-[#80756b]" />
-                  </div>
-                  <div className="relative">
-                    <Input
-                      id="backupContact"
-                      value={profile.backupContact}
-                      onChange={(e) => setProfile((prev) => ({ ...prev, backupContact: e.target.value }))}
-                      placeholder="Email or phone number for emergency contact"
-                      className="bg-[#181411] border-[#54463b] text-white [font-family:'Manrope',Helvetica] font-normal text-sm"
-                    />
-                  </div>
-                </div>
               </div>
 
               <Separator className="bg-[#392f28]" />

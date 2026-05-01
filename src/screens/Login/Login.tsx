@@ -59,9 +59,12 @@ export const Login = (): JSX.Element => {
       }
       const finalUser = { ...(returnedUser || user), userInfo: finalUserInfo || returnedUser?.userInfo || user?.userInfo };
       const role = ((finalUser?.userInfo?.role ?? (finalUser as any)?.role) || "").toString();
+      const isFullyRegistered = finalUser?.userInfo?.full_reg;
       const isSetup = finalUser?.userInfo?.is_setup;
-      const shouldRequireSetup = role.toLowerCase() === "user" && isSetup === false;
-      console.log('[Login] finalUser for redirect', { role, isSetup, shouldRequireSetup, userInfo: finalUser.userInfo });
+      const roleLower = role.toLowerCase();
+      const likelyUser = roleLower === "user" || roleLower === "";
+      const shouldRequireSetup = likelyUser && (isFullyRegistered !== true || isSetup === false);
+      console.log('[Login] finalUser for redirect', { role, isFullyRegistered, isSetup, shouldRequireSetup, userInfo: finalUser.userInfo });
       if (shouldRequireSetup) {
         navigate("/profile-setup");
       } else {

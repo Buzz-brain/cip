@@ -156,9 +156,6 @@ export const OwnerDashboard = (): JSX.Element => {
                       <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
                         Total Value Secured
                       </span>
-                      {/* <div className="w-8 h-8 bg-[#ff66001a] rounded flex items-center justify-center">
-                        🔒
-                      </div> */}
                     </div>
                     {(statsLoading || stats == null) ? (
                       <div className="space-y-2">
@@ -168,11 +165,7 @@ export const OwnerDashboard = (): JSX.Element => {
                     ) : (
                       <div className="space-y-1 flex gap-2 items-end">
                         <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
-                          {showValues ? (stats?.totalValueSecuredFormatted ?? '$0.00') : "••••••"}
-                        </div>
-                        <div className="flex bg-[#0BDA5B1A] px-1 items-center rounded-md w-[70px] gap-1">
-                          <TrendingUp className="w-3 text-[#0BDA5B]" />
-                          <span className="text-[#0BDA5B] text-xs"> +5.2%</span>
+                          {showValues ? (stats?.userTotalInheritanceFormatted ?? stats?.totalValueSecuredFormatted ?? '$0.00') : "••••••"}
                         </div>
                       </div>
                     )}
@@ -183,11 +176,8 @@ export const OwnerDashboard = (): JSX.Element => {
                   <CardContent className="p-6 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
-                        Active Plans
+                        All Inheritance Plans
                       </span>
-                      {/* <div className="w-8 h-8 bg-[#135bec1a] rounded flex items-center justify-center">
-                        📋
-                      </div> */}
                     </div>
                     {(statsLoading || stats == null) ? (
                       <div className="space-y-2">
@@ -195,11 +185,13 @@ export const OwnerDashboard = (): JSX.Element => {
                         <div className="h-4 w-24 bg-[#3a2f1e] rounded animate-pulse mt-2" />
                       </div>
                     ) : (
-                      <div className="space-y-1 flex items-end gap-2">
+                      <div className="space-y-1 flex items-start gap-2">
                         <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
-                          {stats?.activePlansCount ?? 0}
+                          {showValues ? Number(stats?.totalPlansCount ?? stats?.plansCount ?? stats?.globalTotalInheritance ?? 0) : '••••'}
                         </div>
-                        <div className="text-[#B9B09D] text-sm">plans monitored</div>
+                        <Badge className="bg-green-500/10 text-green-300 border-green-500/20 [font-family:'Noto_Sans',Helvetica] text-sm px-2">
+                          {`${stats?.activePlansCount ?? 0} active`}
+                        </Badge>
                       </div>
                     )}
                   </CardContent>
@@ -211,9 +203,6 @@ export const OwnerDashboard = (): JSX.Element => {
                       <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
                         Next Trigger Check
                       </span>
-                      {/* <div className="w-8 h-8 bg-[#f6a83b1a] rounded flex items-center justify-center">
-                        ⏱️
-                      </div> */}
                     </div>
                     {(statsLoading || stats == null) ? (
                       <div className="space-y-2">
@@ -221,7 +210,7 @@ export const OwnerDashboard = (): JSX.Element => {
                         <div className="h-4 w-20 bg-[#3a2f1e] rounded animate-pulse mt-2" />
                       </div>
                     ) : (
-                      <div className="space-y-1 flex gap-2 items-end">
+                      <div className="space-y-1 gap-2 items-end">
                         <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
                           {(stats == null || stats.nextTriggerDays == null) ? '—' : `${stats.nextTriggerDays} Days`}
                         </div>
@@ -235,11 +224,8 @@ export const OwnerDashboard = (): JSX.Element => {
                   <CardContent className="p-6 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
-                        Network Status
+                        Subscription
                       </span>
-                      {/* <div className="w-8 h-8 bg-[#22c55e1a] rounded flex items-center justify-center">
-                        📈
-                      </div> */}
                     </div>
                     {(statsLoading || stats == null) ? (
                       <div className="space-y-2">
@@ -248,9 +234,20 @@ export const OwnerDashboard = (): JSX.Element => {
                       </div>
                     ) : (
                       <div className="space-y-1">
-                        <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl flex items-center gap-2">
-                          <span className={`w-4 h-4 rounded-full ${stats?.networkStatus === 'Healthy' ? 'bg-[#22C55E]' : stats?.networkStatus === 'Degraded' ? 'bg-[#EAB308]' : 'bg-gray-400'}`}></span>
-                          {stats?.networkStatus ?? 'Unknown'}
+                        <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                          {(() => {
+                            const name = stats?.latestSubscription?.name ?? (stats?.latestSubscription?.pricing_id ? `Plan #${stats.latestSubscription.pricing_id}` : null);
+                            if (!name) return 'No subscription';
+                            return String(name).charAt(0).toUpperCase() + String(name).slice(1);
+                          })()}
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge className={`${stats?.latestSubscription?.is_active ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-gray-700/20 text-gray-300 border-gray-600/30'} [font-family:'Noto_Sans',Helvetica] text-xs`}>
+                            {stats?.latestSubscription?.is_active ? 'ACTIVE' : 'INACTIVE'}
+                          </Badge>
+                          {stats?.latestSubscription?.duration_months && (
+                            <div className="text-[#B9B09D] text-sm">{`${stats.latestSubscription.duration_months} month${stats.latestSubscription.duration_months > 1 ? 's' : ''}`}</div>
+                          )}
                         </div>
                       </div>
                     )}

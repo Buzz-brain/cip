@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logoImg from "@assets/cip-logo.svg";
 import dashboardIcon from "@assets/dashboard.svg";
 import plusCircleIcon from "@assets/plus-icon-grey.svg";
@@ -7,6 +7,9 @@ import plusCircleIcon from "@assets/plus-icon-grey.svg";
 import settingsIcon from "@assets/settings.svg";
 import helpIcon from "@assets/help-grey.svg";
 import { useAuth } from "../../context/useAuth";
+import { useSubscription } from "../../lib/hooks/useSubscription";
+import SubscriptionModal from "@components/SubscriptionModal";
+import { useState } from "react";
 
 const sidebarMenuItems = [
   { icon: dashboardIcon, label: "Dashboard", id: "dashboard" },
@@ -56,6 +59,31 @@ export const Sidebar = (): JSX.Element => {
     return best;
   }, "");
 
+  const navigate = useNavigate();
+  const { isSubscribed, loading: checkingSubscription } = useSubscription();
+  const [showModal, setShowModal] = useState(false);
+
+  const handleCreatePlanClick = async (href: string) => {
+    if (!isAuthenticated) {
+      navigate('/connect-wallet');
+      return;
+    }
+
+    // if subscription check hasn't finished, open modal as precaution
+    if (checkingSubscription || isSubscribed === false) {
+      setShowModal(true);
+      return;
+    }
+
+    if (isSubscribed === true) {
+      navigate(href);
+      return;
+    }
+
+    // default fallback: open modal
+    setShowModal(true);
+  };
+
   return (
         
         <div className="w-56 bg-[#1a1410] border-r border-[#3a2f1e] flex flex-col [font-family:'Manrope',Helvetica]">
@@ -85,6 +113,24 @@ export const Sidebar = (): JSX.Element => {
             {menuWithHrefs.map((item) => {
               const isActive = item.href === activeHref;
 
+              // Render a guarded button for Create Plan so we can check subscription
+              if (item.id === 'create-plan') {
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleCreatePlanClick(item.href)}
+                    className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg transition-colors block ${
+                      isActive ? "bg-[#332619] text-white" : "text-[#B9B09D] hover:bg-[#2a1f10] hover:text-white"
+                    }`}
+                  >
+                    <img src={item.icon} />
+                    <span className="[font-family:'Noto_Sans',Helvetica] font-medium text-sm">
+                      {item.label}
+                    </span>
+                  </button>
+                );
+              }
+
               return (
                 <Link
                   key={item.id}
@@ -100,6 +146,7 @@ export const Sidebar = (): JSX.Element => {
                 </Link>
               );
             })}
+            {showModal && <SubscriptionModal open={showModal} onClose={() => setShowModal(false)} />}
           </div>
 
           {/* System Menu */}
