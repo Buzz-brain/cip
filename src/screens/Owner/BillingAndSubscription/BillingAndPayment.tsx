@@ -1,5 +1,8 @@
 import { Download, CreditCard, Wallet, Link as LinkIcon, FileText, MessageCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../../context/useAuth';
+import { usePlans } from '../../../lib/hooks/usePlans';
+import AvailablePlans from './AvailablePlans';
 // import checkOrangeCircle from "@assets/check-orange-circle.svg"
 
 
@@ -11,6 +14,40 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
   const { user } = useAuth();
   const walletAddress = user?.publicKey || '0x0000...0000';
   const displayAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+  const { plans: backendPlans } = usePlans();
+
+  const [dashLoading, setDashLoading] = useState(false);
+  const [dashboard, setDashboard] = useState<any | null>(null);
+  const [dashError, setDashError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    async function fetchDashboard() {
+      setDashLoading(true);
+      setDashError(null);
+      try {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/inherit/dashboard`, {
+          headers: { Accept: 'application/json', ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}) },
+        });
+        if (!mounted) return;
+        if (!res.ok) {
+          setDashboard(null);
+          setDashError(`Failed to load dashboard: ${res.status}`);
+          return;
+        }
+        const json = await res.json().catch(() => null);
+        setDashboard(json ?? null);
+      } catch (err: any) {
+        if (!mounted) return;
+        setDashError(err?.message ?? String(err));
+      } finally {
+        if (!mounted) return;
+        setDashLoading(false);
+      }
+    }
+    fetchDashboard();
+    return () => { mounted = false; };
+  }, [user?.token]);
   
   return (
     <div className="flex flex-col w-full min-h-screen text-white [font-family:'Manrope',Helvetica]">
@@ -41,10 +78,28 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
 
                 <div>
                   <div className="flex items-center gap-3 mb-2">
-                    <h2 className="text-white text-xl font-semibold">Current Plan: Sovereign</h2>
-                    <span className="bg-green-500/20 text-green-400 px-2.5 py-1 rounded text-xs font-medium">Active</span>
+                    <h2 className="text-white text-xl font-semibold">Current Plan: {(() => {
+                      const subs = Array.isArray(dashboard?.all_subscriptions) ? dashboard.all_subscriptions : [];
+                      const active = subs.find((s: any) => s?.is_active === true) ?? null;
+                      if (active && backendPlans) {
+                        const planInfo = backendPlans.find((p: any) => Number(p.id) === Number(active.pricing_id));
+                        return (planInfo?.name ?? `Plan #${active.pricing_id}`);
+                      }
+                      return 'None';
+                    })()}</h2>
+                    {(() => {
+                      const subs = Array.isArray(dashboard?.all_subscriptions) ? dashboard.all_subscriptions : [];
+                      const active = subs.find((s: any) => s?.is_active === true) ?? null;
+                      if (active) return <span className="bg-green-500/20 text-green-400 px-2.5 py-1 rounded text-xs font-medium">Active</span>;
+                      return <span className="bg-gray-700/20 text-gray-300 px-2.5 py-1 rounded text-xs font-medium">Inactive</span>;
+                    })()}
                   </div>
-                  <p className="text-[#AFA89C] text-sm">Next billing date: June 1, 2026</p>
+                  <p className="text-[#AFA89C] text-sm">Next billing date: {(() => {
+                    const subs = Array.isArray(dashboard?.all_subscriptions) ? dashboard.all_subscriptions : [];
+                    const active = subs.find((s: any) => s?.is_active === true) ?? subs.sort((a: any,b:any)=> new Date(b.start_date).getTime()-new Date(a.start_date).getTime())[0];
+                    if (active && active.end_date) return new Date(active.end_date).toLocaleString();
+                    return '—';
+                  })()}</p>
                 </div>
                 {/* <div className="flex gap-3">
                   <button className="text-white hover:text-white px-4 py-2 rounded-lg border border-[#63574B] hover:border-neutral-500 transition">
@@ -93,6 +148,12 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
               </div>
             </div>
 
+            {/* Available Plans placed above Billing History for clarity */}
+            <div className="mt-6">
+              <h3 className="text-white text-lg font-semibold mb-4">Available Plans</h3>
+              <AvailablePlans onSubscribe={() => { /* refresh dashboard after subscribe */ }} />
+            </div>
+
             {/* <div className="bg-[#33261A] rounded-xl p-6 border border-[#B5927B]">
               <h3 className="text-white text-lg font-semibold mb-4">Vault Utilization</h3>
 
@@ -125,10 +186,34 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                 <h3 className="text-white text-lg font-semibold">Billing History</h3>
               </div>
 
-              <div className="py-12 text-center text-[#AFA89C]">
-                <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p className="text-sm">No billing history available at this time.</p>
-              </div>
+              {dashLoading ? (
+                <div className="py-12 text-center text-[#AFA89C]">Loading billing history...</div>
+              ) : (!dashboard || !Array.isArray(dashboard.all_subscriptions) || dashboard.all_subscriptions.length === 0) ? (
+                <div className="py-12 text-center text-[#AFA89C]">
+                  <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p className="text-sm">No billing history available at this time.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {dashboard.all_subscriptions.map((sub: any) => (
+                    <div key={sub.id} className="bg-[#2d241a] p-4 rounded">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-white font-semibold">{(() => {
+                            const planInfo = backendPlans?.find((p: any) => Number(p.id) === Number(sub.pricing_id));
+                            return planInfo?.name ?? `Plan #${sub.pricing_id}`;
+                          })()}</div>
+                          <div className="text-sm text-[#AFA89C]">{sub.start_date ? new Date(sub.start_date).toLocaleString() : '—'}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm text-[#AFA89C]">{sub.is_active ? <span className="text-green-300">Active</span> : <span className="text-gray-400">Ended</span>}</div>
+                          <div className="text-sm text-[#AFA89C]">Ends: {sub.end_date ? new Date(sub.end_date).toLocaleString() : '—'}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -214,6 +299,12 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Available Plans Section (merged pricing) */}
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <h2 className="text-white text-xl font-semibold mb-4">Available Plans</h2>
+          <AvailablePlans onSubscribe={() => { /* TODO: refresh billing info if needed */ }} />
         </div>
       </div>
     </div>

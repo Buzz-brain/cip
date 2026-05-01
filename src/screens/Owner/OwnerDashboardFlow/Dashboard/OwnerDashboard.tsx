@@ -2,15 +2,15 @@ import { useState, useEffect } from "react";
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
 import { Badge } from "@components/ui/badge";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AllPlan } from "./AllPlan";
 import { ProofOfLifeCheck } from "./ProofOfLifeConfig/ProofOfLifeCheck";
 import { ProofOfLifeCheckMissed } from "./ProofOfLifeConfig/ProofOfLifeCheckMissed";
 import { CriticalAlert } from "./ProofOfLifeConfig/CriticalAlert";
 import { getActiveProofPlan } from "../../../../lib/api/inherit";
+import SubscriptionModal from "@components/SubscriptionModal";
 import { useAuth } from "../../../../context/useAuth";
 import getOwnerDashboardStats from "../../../../lib/dashboard/ownerStats";
-import { TrendingUp } from "lucide-react";
 import { Plus, Eye, EyeOff } from "lucide-react";
 
 interface ActivityItem {
@@ -33,7 +33,9 @@ export const OwnerDashboard = (): JSX.Element => {
   const [polLoading, setPolLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
   const [stats, setStats] = useState<any | null>(null);
+  const [showSubscribeModal, setShowSubscribeModal] = useState(false);
   const auth = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     let mounted = true;
@@ -139,12 +141,22 @@ export const OwnerDashboard = (): JSX.Element => {
               </>
             )}
           </button>
-          <Link to="/owner-dashboard/select-assets">
-            <Button className="px-5 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Noto_Sans',Helvetica] text-md gap-2">
-              <Plus className="w-4 h-4" />
-              Create New Plan
-            </Button>
-          </Link>
+          <Button
+            onClick={() => {
+              if (statsLoading) return;
+              const hasActiveSubscription = !!(stats?.latestSubscription?.is_active === true);
+              if (hasActiveSubscription) {
+                navigate('/owner-dashboard/select-assets');
+                return;
+              }
+              setShowSubscribeModal(true);
+            }}
+            disabled={statsLoading}
+            className="px-5 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Noto_Sans',Helvetica] text-md gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Create New Plan
+          </Button>
         </div>
       </div>
 
@@ -257,6 +269,11 @@ export const OwnerDashboard = (): JSX.Element => {
 
               {/* Plans Table Section */}
               <AllPlan showValues={showValues} />
+
+              {/* Subscribe Modal */}
+              {showSubscribeModal && (
+                <SubscriptionModal open={showSubscribeModal} onClose={() => setShowSubscribeModal(false)} />
+              )}
 
               {/* Proof of Life Section */}
               <Card className="bg-gradient-to-b from-[#2B1E15] to-[#916547] border-[#554433]">

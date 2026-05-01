@@ -30,12 +30,33 @@ export function useSubscription() {
         }
       }
 
-      // Fallback: call backend endpoint to check subscription status
+      // Fallback: try dashboard endpoint which includes all_subscriptions
       if (!user?.token) {
         setIsSubscribed(false);
         return;
       }
 
+      try {
+        const dashRes = await fetch(`${BACKEND_API_URL}/inherit/dashboard`, {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
+        if (dashRes.ok) {
+          const dashJson = await dashRes.json().catch(() => null);
+          if (dashJson && Array.isArray(dashJson.all_subscriptions)) {
+            const hasActive = dashJson.all_subscriptions.some((s: any) => s && (s.is_active === true || s.active === true));
+            setIsSubscribed(Boolean(hasActive));
+            return;
+          }
+        }
+      } catch (e) {
+        // ignore and fall back to subscription-status endpoint
+      }
+
+      // Final fallback: call /auth/subscription-status
       const res = await fetch(`${BACKEND_API_URL}/auth/subscription-status`, {
         method: 'GET',
         headers: {
@@ -45,7 +66,6 @@ export function useSubscription() {
       });
 
       if (!res.ok) {
-        // if 404 or no endpoint, treat as not subscribed
         setIsSubscribed(false);
         return;
       }
@@ -56,7 +76,6 @@ export function useSubscription() {
         return;
       }
 
-      // Expect { subscribed: true } or { active: true }
       const subscribed = json.subscribed ?? json.active ?? json.is_subscribed ?? false;
       setIsSubscribed(Boolean(subscribed));
     } catch (err: any) {
