@@ -111,9 +111,9 @@ export const ProfileSetupForm = (): JSX.Element => {
       return;
     }
 
-    // Redirect if user is already verified
-    const isVerified = user?.userInfo?.is_verified;
-    if (isVerified === true) {
+    // Redirect if user is already fully registered
+    const isFullyRegistered = user?.userInfo?.full_reg;
+    if (isFullyRegistered === true) {
       const roleRaw = user?.userInfo?.role;
       const fallbackRole = (user as any)?.role;
       const role = (roleRaw ?? fallbackRole ?? "user").toString();

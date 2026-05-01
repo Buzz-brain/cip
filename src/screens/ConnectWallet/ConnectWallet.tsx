@@ -195,9 +195,9 @@ export const ConnectWallet = (): JSX.Element => {
       }
       const finalUser = { ...(returnedUser || user), userInfo: finalUserInfo || returnedUser?.userInfo || user?.userInfo };
       const role = ((finalUser?.userInfo?.role ?? (finalUser as any)?.role) || "").toString();
-      const isVerified = finalUser?.userInfo?.is_verified;
-      const shouldRequireSetup = role.toLowerCase() === "user" && isVerified === false;
-      console.log('[ConnectWallet] finalUser for redirect', { role, isVerified, shouldRequireSetup, userInfo: finalUser.userInfo });
+      const isFullyRegistered = finalUser?.userInfo?.full_reg;
+      const shouldRequireSetup = role.toLowerCase() === "user" && isFullyRegistered !== true;
+      console.log('[ConnectWallet] finalUser for redirect', { role, isFullyRegistered, shouldRequireSetup, userInfo: finalUser.userInfo });
       if (shouldRequireSetup) {
         navigate("/profile-setup");
       } else {
