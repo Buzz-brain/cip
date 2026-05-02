@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../../context/useAuth';
 import { usePlans } from '../../../lib/hooks/usePlans';
 import AvailablePlans from './AvailablePlans';
+import { SkeletonCard } from '@components/ui/skeleton-card';
 // import checkOrangeCircle from "@assets/check-orange-circle.svg"
 
 
@@ -53,10 +54,6 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
     <div className="flex flex-col w-full min-h-screen text-white [font-family:'Manrope',Helvetica]">
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="mb-8">
-          <div className="text-sm text-[#AFA89C] mb-6">
-            Settings /<span className="text-white"> Billing & Payments</span>
-          </div>
-
           <div className="flex items-center justify-between">
             <div>
               <p className="text-3xl font-semibold mb-2">Billing & Payments</p>
@@ -168,15 +165,11 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                   <div className="text-[#AFA89C] text-sm mb-1">Plan Cost</div>
                   <div className="text-white text-2xl font-semibold">
                     {(() => {
-                      const subs = Array.isArray(dashboard?.all_subscriptions)
-                        ? dashboard.all_subscriptions
-                        : [];
+                      const subs = Array.isArray(dashboard?.all_subscriptions) ? dashboard.all_subscriptions : [];
                       const active = subs.find((s: any) => s?.is_active === true) ?? null;
                       if (active && backendPlans) {
                         const planInfo = backendPlans.find((p: any) => Number(p.id) === Number(active.pricing_id));
-                        if (planInfo && typeof planInfo.price === 'number') {
-                          return planInfo.price.toFixed(2);
-                        }
+                        if (planInfo && typeof planInfo.price === 'number') return planInfo.price.toFixed(2);
                       }
                       return "—";
                     })()} 
@@ -200,12 +193,8 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                       />
                     </svg>
                   </div>
-                  <div className="text-[#AFA89C] text-sm mb-1">
-                    Renewal Type
-                  </div>
-                  <div className="text-white text-lg font-medium">
-                    Auto-Renewal
-                  </div>
+                  <div className="text-[#AFA89C] text-sm mb-1">Renewal Type</div>
+                  <div className="text-white text-lg font-medium">Auto-Renewal</div>
                 </div>
 
                 <div className="border-t border-[#514437] p-5">
@@ -224,12 +213,8 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                       />
                     </svg>
                   </div>
-                  <div className="text-[#AFA89C] text-sm mb-1">
-                    Security Level
-                  </div>
-                  <div className="text-white text-lg font-medium">
-                    Multi-Sig
-                  </div>
+                  <div className="text-[#AFA89C] text-sm mb-1">Security Level</div>
+                  <div className="text-white text-lg font-medium">Multi-Sig</div>
                 </div>
               </div>
             </div>
@@ -314,8 +299,10 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
           </div>
 
           {dashLoading ? (
-            <div className="py-12 text-center text-[#AFA89C]">
-              Loading billing history...
+            <div className="space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <SkeletonCard key={`billing-skel-${i}`} />
+              ))}
             </div>
           ) : !dashboard ||
             !Array.isArray(dashboard.all_subscriptions) ||
@@ -328,43 +315,42 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
             </div>
           ) : (
             <div className="space-y-3">
-              {dashboard.all_subscriptions.map((sub: any) => (
-                <div key={sub.id} className="bg-[#2d241a] p-4 rounded">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-white font-semibold">
-                        {(() => {
-                          const planInfo = backendPlans?.find(
-                            (p: any) => Number(p.id) === Number(sub.pricing_id),
-                          );
-                          const name = planInfo?.name ?? `Plan #${sub.pricing_id}`;
-                          return `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
-                        })()}
+              {Array.isArray(dashboard?.all_subscriptions)
+                ? [...dashboard.all_subscriptions]
+                    .sort((a: any, b: any) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())
+                    .map((sub: any) => (
+                      <div key={sub.id} className="bg-[#2d241a] p-4 rounded">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-white font-semibold">
+                              {(() => {
+                                const planInfo = backendPlans?.find(
+                                  (p: any) => Number(p.id) === Number(sub.pricing_id),
+                                );
+                                const name = planInfo?.name ?? `Plan #${sub.pricing_id}`;
+                                return `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
+                              })()}
+                            </div>
+                            <div className="text-sm text-[#AFA89C]">
+                              {sub.start_date ? new Date(sub.start_date).toLocaleString() : "—"}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm text-[#AFA89C]">
+                              {sub.is_active ? (
+                                <span className="text-green-300">Active</span>
+                              ) : (
+                                <span className="text-gray-400">Ended</span>
+                              )}
+                            </div>
+                            <div className="text-sm text-[#AFA89C]">
+                              Ends: {sub.end_date ? new Date(sub.end_date).toLocaleString() : "—"}
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-sm text-[#AFA89C]">
-                        {sub.start_date
-                          ? new Date(sub.start_date).toLocaleString()
-                          : "—"}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm text-[#AFA89C]">
-                        {sub.is_active ? (
-                          <span className="text-green-300">Active</span>
-                        ) : (
-                          <span className="text-gray-400">Ended</span>
-                        )}
-                      </div>
-                      <div className="text-sm text-[#AFA89C]">
-                        Ends:{" "}
-                        {sub.end_date
-                          ? new Date(sub.end_date).toLocaleString()
-                          : "—"}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                    ))
+                : null}
             </div>
           )}
         </div>

@@ -4,7 +4,7 @@ import dashboardIcon from "@assets/dashboard.svg";
 import plusCircleIcon from "@assets/plus-icon-grey.svg";
 // import usersIcon from "@assets/users-grey.svg";
 // import walletIcon from "@assets/wallet.svg";
-import billingsIcon from "@assets/settings.svg";
+import billingsIcon from "@assets/wallet.svg";
 import helpIcon from "@assets/help-grey.svg";
 import { useAuth } from "../../context/useAuth";
 import { useSubscription } from "../../lib/hooks/useSubscription";

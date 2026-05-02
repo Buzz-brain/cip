@@ -7,6 +7,7 @@ import { useAuth } from '../../../context/useAuth';
 import { useNavigate } from 'react-router-dom';
 import sharpCheckSolid from '@assets/sharp-check-solid.svg';
 import sharpUncheckSolid from '@assets/sharp-uncheck-solid.svg';
+import { SkeletonCard } from '@components/ui/skeleton-card';
 import { toast } from 'react-toastify';
 
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
@@ -63,7 +64,13 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
     }
   };
 
-  if (plansLoading) return <div className="p-6">Loading plans...</div>;
+  if (plansLoading) return (
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <SkeletonCard key={`skeleton-${i}`} />
+      ))}
+    </div>
+  );
   if (!backendPlans || backendPlans.length === 0) return <div className="p-6">No plans available.</div>;
 
   return (

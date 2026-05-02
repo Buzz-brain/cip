@@ -10,34 +10,41 @@ import thumbprintIcon from "@assets/thumbprint.svg";
 export type ProofOfLifeMissedProps = {
   open?: boolean;
   onClose?: () => void;
+  timeRemaining?: { days: number; hours: number; minutes: number; seconds: number };
+  missedCheckCount?: number;
 };
 
 export const ProofOfLifeCheckMissed = (props?: ProofOfLifeMissedProps): JSX.Element | null => {
     const navigate = useNavigate();
-  
+    const open = !!props?.open;
+    const onClose = props?.onClose;
+
     if (props && props.open === false) return null;
-  
+
     const onConfirmLife = () => {
-      if (props?.onClose) return props.onClose();
+      if (onClose) return onClose();
       navigate("/critical-alert");
     };
   
-  const [timeRemaining, setTimeRemaining] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
+  const [timeRemaining, setTimeRemaining] = useState(
+    props?.timeRemaining || {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    }
+  );
 
   useEffect(() => {
-    // Initialize with some sample time for demonstration
-    // In production, this would be fetched from backend based on missed check
-    setTimeRemaining({
-      days: 2,
-      hours: 14,
-      minutes: 30,
-      seconds: 0,
-    });
+    // Update state if props change
+    if (props?.timeRemaining) {
+      setTimeRemaining(props.timeRemaining);
+    }
+  }, [props?.timeRemaining]);
+
+  useEffect(() => {
+    // Only countdown if modal is open
+    if (!open) return;
 
     const interval = setInterval(() => {
       setTimeRemaining((prev) => {
@@ -64,11 +71,125 @@ export const ProofOfLifeCheckMissed = (props?: ProofOfLifeMissedProps): JSX.Elem
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [open]);
+
+  const inner = (
+    <div className="w-full max-w-md">
+      <div className="mt-3 border-b border-[#F2930D33]">
+        <div className="flex justify-center mb-5">
+          <div className="w-12 h-12 bg-amber-600/30 rounded-full flex items-center justify-center">
+            <AlertTriangle className="w-5 h-5 text-amber-500" />
+          </div>
+        </div>
+
+        <h1 className="text-2xl font-bold text-center mb-1">
+          Proof-of-Life Check Missed
+        </h1>
+        <p className="text-[#A0A0A0] text-center mb-5 font-medium text-sm">
+          Critical Attention Required
+        </p>
+      </div>
+
+      <div className="bg-[#181511] p-5 rounded-lg">
+        <div className="px-3 mb-4">
+          <p className="text-white text-left leading-relaxed mb-2 text-xs">
+            You've missed{" "}
+            <span className="text-[#F2930D] font-semibold">
+              {props?.missedCheckCount ?? 0} check-in
+              {(props?.missedCheckCount ?? 0) !== 1 ? "s" : ""}
+            </span>
+            . To prevent the activation of your Cross-Chain Inheritance
+            Protocol, please verify your status immediately.
+          </p>
+          <p className="text-[#888888] text-left text-[10px]">
+            Your inheritance plan will enter{" "}
+            <span className="text-white">
+              pre-execution review
+            </span>{" "}
+            automatically if the timer reaches zero.
+          </p>
+        </div>
+
+        <div className="mb-5">
+          <div className=" bg-[#221D16] border border-[#393228] rounded-lg p-4">
+            <p className="text-[#A0A0A0] text-center mb-4 font-semibold flex items-center justify-center gap-2 text-xs">
+              <img src={hourGlassUpIcon} className="w-4 h-4" alt="" />
+              Time Remaining Before Pre-Execution
+            </p>
+
+            <div className="grid grid-cols-7 gap-2">
+              <div className="text-center">
+                <div className="text-2xl flex items-center justify-center h-14 border border-[#393228] bg-[#2A241C] rounded-lg font-bold text-[#F2930D] mb-2">
+                  {String(timeRemaining.days).padStart(2, "0")}
+                </div>
+                <div className="text-xs font-semibold text-[#888888]">Days</div>
+              </div>
+
+              <div className="flex items-center text-3xl justify-center text-[#9CA3AF]">
+                :
+              </div>
+
+              <div className="text-center">
+                <div className="text-2xl flex items-center justify-center h-14 border border-[#393228] bg-[#2A241C] rounded-lg font-bold mb-2">
+                  {String(timeRemaining.hours).padStart(2, "0")}
+                </div>
+                <div className="text-xs font-semibold text-[#888888]">
+                  Hours
+                </div>
+              </div>
+
+              <div className="flex items-center text-3xl justify-center text-[#9CA3AF]">
+                :
+              </div>
+
+              <div className="text-center">
+                <div className="text-2xl flex items-center justify-center h-14 border border-[#393228] bg-[#2A241C] rounded-lg font-bold mb-2">
+                  {String(timeRemaining.minutes).padStart(2, "0")}
+                </div>
+                <div className="text-xs font-semibold text-[#888888]">Mins</div>
+              </div>
+
+              <div className="flex items-center text-3xl justify-center text-[#9CA3AF]">
+                :
+              </div>
+
+              <div className="text-center">
+                <div className="text-2xl flex items-center justify-center h-14 border border-[#393228] bg-[#2A241C] rounded-lg font-bold mb-2">
+                  {String(timeRemaining.seconds).padStart(2, "0")}
+                </div>
+                <div className="text-xs font-semibold text-[#888888]">Secs</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={onConfirmLife}
+          className="w-full bg-[#F2930D] hover:bg-[#F2930D] text-white py-3 rounded-lg font-bold transition flex items-center justify-center gap-2 text-sm"
+        >
+          <img src={thumbprintIcon} className="w-5 h-5" alt="Thumbprint" />
+          Confirm I'm Alive
+        </button>
+      </div>
+    </div>
+  );
+
+  if (open) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center text-white [font-family:'Manrope',Helvetica]">
+        <div className="absolute inset-0 bg-black/60" />
+        <div className="relative w-full max-w-md mx-4 pointer-events-auto">
+          <div className="border-t-4 border-[#F2930D] rounded-lg p-5 bg-[#2E261C] relative">
+            <button aria-label="Close" onClick={() => onClose && onClose()} className="absolute top-3 right-3 text-[#B9B09D] hover:text-white">✕</button>
+            {inner}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-[#221810] text-white [font-family:'Manrope',Helvetica]">
-      
       <header className="w-full h-[61px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#393028]">
         <div className="flex items-center gap-3">
           <Link to="/dashboard">
@@ -90,133 +211,7 @@ export const ProofOfLifeCheckMissed = (props?: ProofOfLifeMissedProps): JSX.Elem
       </header>
 
       <main className="relative z-10 flex items-center justify-center min-h-[calc(100vh-73px)] mt-20">
-
-        <div className="w-full max-w-2xl">
-          <div className="border border-[#F2930D] rounded-lg bg-[#F2930D1A]">
-
-            <div className="mt-10 border-b border-[#F2930D33]">
-              <div className="flex justify-center mb-8">
-                <div className="w-16 h-16 bg-amber-600/30 rounded-full flex items-center justify-center">
-                  <AlertTriangle className="w-7 h-7 text-amber-500" />
-                </div>
-              </div>
-
-              <h1 className="text-4xl font-bold text-center mb-2">
-                Proof-of-Life Check Missed
-              </h1>
-              <p className="text-[#A0A0A0] text-center mb-8 font-medium">
-                Critical Attention Required
-              </p>
-
-            </div>
-
-
-
-
-            <div className="bg-[#181511] p-8 rounded-lg">
-              <div className="px-10 mb-7">
-
-                <p className="text-white text-left font-bold leading-relaxed mb-4">
-                  You've missed{" "}
-                  <span className="text-[#F2930D] font-semibold">
-                    2 check-ins
-                  </span>
-                  . To prevent the activation of your Cross-Chain Inheritance
-                  Protocol, please verify your status immediately.
-                </p>
-                <p className="text-[#888888] text-left text-sm">
-                  Your inheritance plan will enter{" "}
-                  <span className="text-white font-semibold">
-                    pre-execution review
-                  </span>{" "}
-                  automatically if the timer reaches zero.
-                </p>
-
-              </div>
-
-
-              <div className="mb-8">
-                <div className=" bg-[#221D16] border border-[#393228] rounded-lg p-6">
-                  <p className="text-[#A0A0A0] text-center mb-8 font-semibold flex items-center justify-center gap-2">
-                    <img src={hourGlassUpIcon} className="w-4 h-4" alt="" />
-                    Time Remaining Before Pre-Execution
-                  </p>
-
-                  <div className="grid grid-cols-7 gap-3">
-
-                    <div className="text-center">
-                      <div className="text-4xl flex items-center justify-center h-20 border border-[#393228] bg-[#2A241C] rounded-lg font-bold text-[#F2930D] mb-2">
-                        {String(timeRemaining.days).padStart(2, "0")}
-                      </div>
-                      <div className="text-xs font-semibold text-[#888888]">Days</div>
-                    </div>
-
-                    <div className="flex items-center text-5xl justify-center text-[#9CA3AF]">
-                      :
-                    </div>
-
-                    <div className="text-center">
-                      <div className="text-4xl flex items-center justify-center h-20 border border-[#393228] bg-[#2A241C] rounded-lg font-bold mb-2">
-                        {String(timeRemaining.hours).padStart(2, "0")}
-                      </div>
-                      <div className="text-xs font-semibold text-[#888888]">Hours</div>
-                    </div>
-
-                    <div className="flex items-center text-5xl justify-center text-[#9CA3AF]">
-                      :
-                    </div>
-
-                    <div className="text-center">
-                      <div className="text-4xl flex items-center justify-center h-20 border border-[#393228] bg-[#2A241C] rounded-lg font-bold mb-2">
-                        {String(timeRemaining.minutes).padStart(2, "0")}
-                      </div>
-                      <div className="text-xs font-semibold text-[#888888]">Mins</div>
-                    </div>
-
-                    <div className="flex items-center text-5xl justify-center text-[#9CA3AF]">
-                      :
-                    </div>
-
-                    <div className="text-center">
-                      <div className="text-4xl flex items-center justify-center h-20 border border-[#393228] bg-[#2A241C] rounded-lg font-bold mb-2">
-                        {String(timeRemaining.seconds).padStart(2, "0")}
-                      </div>
-                      <div className="text-xs font-semibold text-[#888888]">Secs</div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-              <button
-                onClick={onConfirmLife}
-                className="w-full bg-[#F2930D] hover:bg-[#F2930D] text-white py-4 rounded-lg font-bold transition mb-6 flex items-center justify-center gap-2"
-              >
-                <img src={thumbprintIcon} className="w-5 h-5" alt="Thumbprint" />
-
-                Confirm I'm Alive
-              </button>
-
-              <div className="text-xs text-gray-300 text-center mt-6 flex items-center justify-between gap-4">
-                <div className="flex gap-1 items-center">
-                  <img src={lockIcon} className="w-3 h-3" alt="Lock" />
-                  <span>Secured by Multi-sig Protocol</span>
-                </div>
-                <span>
-                  Something is wrong? Contact Support
-                </span>
-              </div>
-
-            </div>
-          </div>
-
-          <p className="text-center text-gray-600 text-xs mt-8 mb-20 [font-family:'Manrope',Helvetica]">
-            CIP Protocol ID: #B82-591-A • Status:{" "}
-            <span className="text-[#F2930D]">
-              AWAITING CONFIRMATION
-            </span>
-          </p>
-        </div>
+        {inner}
       </main>
     </div>
   );

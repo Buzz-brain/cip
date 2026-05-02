@@ -33,6 +33,9 @@ export const OwnerDashboard = (): JSX.Element => {
   const [polLoading, setPolLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
   const [stats, setStats] = useState<any | null>(null);
+  const [polPlan, setPolPlan] = useState<any | null>(null);
+  const [polTimeRemaining, setPolTimeRemaining] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
+  const [missedCheckCount, setMissedCheckCount] = useState(0);
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
   const auth = useAuth();
   const navigate = useNavigate();
@@ -77,16 +80,30 @@ export const OwnerDashboard = (): JSX.Element => {
         const inactivityTs = baseTs + inactivityDays * msDay;
         const expiryTs = baseTs + (inactivityDays + graceDays) * msDay;
 
+        setPolPlan(plan);
+
         if (now <= inactivityTs) {
           setPolStatus("active");
         } else if (now <= expiryTs) {
           setPolStatus("missed");
-          setModalType("missed");
-          setShowPoLModal(true);
+          // Calculate time remaining before execution
+          const remainingMs = expiryTs - now;
+          const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
+          setPolTimeRemaining({ days, hours, minutes, seconds });
+          setMissedCheckCount((plan.missed_checks || 2));
         } else {
           setPolStatus("critical");
-          setModalType("critical");
-          setShowPoLModal(true);
+          // Calculate time remaining (should be minimal)
+          const remainingMs = Math.max(0, expiryTs - now);
+          const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
+          setPolTimeRemaining({ days, hours, minutes, seconds });
+          setMissedCheckCount((plan.missed_checks || 3));
         }
         setPolLoading(false);
       } catch (err) {
@@ -363,7 +380,7 @@ export const OwnerDashboard = (): JSX.Element => {
                     <ProofOfLifeCheck open onClose={() => setShowPoLModal(false)} />
                   )}
                   {showPoLModal && modalType === "missed" && (
-                    <ProofOfLifeCheckMissed open onClose={() => setShowPoLModal(false)} />
+                    <ProofOfLifeCheckMissed open onClose={() => setShowPoLModal(false)} timeRemaining={polTimeRemaining || undefined} missedCheckCount={missedCheckCount} />
                   )}
                   {showPoLModal && modalType === "critical" && (
                     <CriticalAlert open onClose={() => setShowPoLModal(false)} />
