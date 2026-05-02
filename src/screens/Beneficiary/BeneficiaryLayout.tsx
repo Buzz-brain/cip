@@ -37,6 +37,14 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
             <span className={`[font-family:'Manrope',Helvetica] ${isActive('/beneficiary-dashboard') ? 'font-bold text-[#0d0501]' : 'font-normal text-[#8b7b64]'} text-sm`}>Dashboard</span>
           </button>
 
+          <button
+            onClick={() => navigate('/beneficiary-dashboard/activity-logs')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-[#27221c] transition-colors ${isActive('/beneficiary-dashboard/activity-logs') ? 'bg-[#2ccd2c]' : ''}`}
+          >
+            <FileTextIcon className={`w-5 h-5 ${isActive('/beneficiary-dashboard/activity-logs') ? 'text-[#0d0501]' : 'text-[#8b7b64]'}`} />
+            <span className={`[font-family:'Manrope',Helvetica] ${isActive('/beneficiary-dashboard/activity-logs') ? 'font-bold text-[#0d0501]' : 'font-normal text-[#8b7b64]'} text-sm`}>Activity Logs</span>
+          </button>
+
           {/* <button
             onClick={() => navigate('/beneficiary-dashboard#approvals')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-[#27221c] transition-colors group ${isActive('/beneficiary-dashboard') && location.hash === '#approvals' ? 'bg-[#2ccd2c]' : ''}`}

@@ -4,7 +4,6 @@ import { useAuth } from "../../context/useAuth";
 import { Card, CardContent } from "@components/ui/card";
 // import padlockImg from "@assets/padlock-img.svg";
 import YourInheritances from "./YourInheritances";
-import BeneficiaryLayout from "./BeneficiaryLayout";
 import { useEffect, useState } from "react";
 import { getBeneficiaryInheritances } from "../../lib/api/beneficiary";
 import { getBeneficiaryStats, BeneficiaryDashboardStats } from "../../lib/dashboard/beneficiaryStats";
@@ -39,7 +38,6 @@ export const BeneficiaryDashboard = (): JSX.Element => {
   }, [user?.token]);
 
   return (
-    <BeneficiaryLayout>
       <section className="flex flex-col gap-4">
         <div className="flex items-end justify-between">
           <div className="flex flex-col gap-2">
@@ -140,6 +138,5 @@ export const BeneficiaryDashboard = (): JSX.Element => {
             <YourInheritances />
         </section>
         </section>
-      </BeneficiaryLayout>
   );
 };

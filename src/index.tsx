@@ -36,6 +36,7 @@ import { ReviewTimeLock } from "./screens/Owner/PlanCreationFlow/TimeLock/Review
 import { BeneficiaryDetails } from "./screens/Beneficiary/BeneficiaryDetails.tsx";
 import { BeneficiaryDashboard } from "./screens/Beneficiary/BeneficiaryDashboard.tsx";
 import BeneficiaryActivityLogs from "./screens/Beneficiary/BeneficiaryActivityLogs";
+import BeneficiaryRoutes from "./screens/Beneficiary/BeneficiaryRoutes";
 import { DisputePlanExecution } from "./screens/DisputeResolutionFlow/DisputePlanExecution";
 import { OwnerDashboard } from "./screens/Owner/OwnerDashboardFlow/Dashboard/OwnerDashboard";
 import { EscrowStateVisualization } from "./screens/DisputeResolutionFlow/EscrowStateVisualization"; 
@@ -233,10 +234,12 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/upload-signed-doc" element={<Navigate to="/owner-dashboard/upload-signed-doc" replace />} />
         <Route path="/secure-storage" element={<Navigate to="/owner-dashboard/secure-storage" replace />} />
 
-        {/* Beneficiary Dashboard Flow */}
-        <Route path="/beneficiary-dashboard" element={<BeneficiaryDashboard />} /> 
+        {/* Beneficiary Dashboard Flow (nested under layout) */}
+        <Route path="/beneficiary-dashboard" element={<BeneficiaryRoutes />}>
+          <Route index element={<BeneficiaryDashboard />} />
+          <Route path="activity-logs" element={<BeneficiaryActivityLogs />} />
+        </Route>
         <Route path="/beneficiary-details" element={<BeneficiaryDetails />} />
-        <Route path="/beneficiary-dashboard/activity-logs" element={<BeneficiaryActivityLogs />} />
 
         {/* Dispute Resolution Flow */}
         <Route path="/dispute-plan-execution" element={<DisputePlanExecution />} /> ✅

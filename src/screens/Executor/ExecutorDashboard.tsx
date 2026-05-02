@@ -1,13 +1,41 @@
-import {
-  FolderOpen,
-  DollarSign,
-  AlertTriangle,
-  Activity,
-  CheckCircle,
-} from "lucide-react";
+import { FolderOpen, DollarSign, CheckCircle } from "lucide-react";
 import AssignedInheritancePlans from "./ExecutorDashboardFlow/AssignedInheritancePlans";
+import { useEffect, useState } from "react";
+import { useAuth } from "../../context/useAuth";
+
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
 export const ExecutorDashboard = (): JSX.Element => {
+  const { user } = useAuth();
+  const [totalPlans, setTotalPlans] = useState<number | null>(null);
+  const [totalAmount, setTotalAmount] = useState<number | string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    async function fetchStats() {
+      if (!user?.token) return;
+      try {
+        const res = await fetch(`${BACKEND_API_URL}/exec/dashboard`, {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+            ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+          },
+        });
+        if (!res.ok) throw new Error("Failed to fetch executor stats");
+        const data = await res.json();
+        if (!mounted) return;
+        setTotalPlans(typeof data.total_plans === 'number' ? data.total_plans : null);
+        setTotalAmount(typeof data.total_amount === 'number' ? data.total_amount : (data.total_amount ?? null));
+      } catch (err) {
+        console.error('Failed to load executor dashboard stats', err);
+      }
+    }
+
+    fetchStats();
+    return () => { mounted = false; };
+  }, [user?.token]);
+
   return (
     <main className="p-8">
       <div className="flex items-start justify-between mb-8">
@@ -24,53 +52,25 @@ export const ExecutorDashboard = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-4 mb-8">
-        <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-5 relative">
-          <div className="flex items-start justify-between mb-4">
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-5">
+          <div className="flex items-start justify-start mb-4">
             <div className="w-10 h-10 bg-[#3a3430] rounded-lg flex items-center justify-center">
               <FolderOpen className="w-5 h-5 text-orange-400" />
             </div>
-            <span className="text-green-400 text-xs">+2 New</span>
           </div>
-          <div className="text-3xl font-bold mb-1">-</div>
-          <div className="text-gray-400 text-sm">Active Plans Managed</div>
+          <div className="text-3xl font-bold mb-1">{totalPlans ?? '-'}</div>
+          <div className="text-gray-400 text-sm">Total Plans Managed</div>
         </div>
 
         <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-5">
-          <div className="flex items-start justify-between mb-4">
+          <div className="flex items-start justify-start mb-4">
             <div className="w-10 h-10 bg-[#3a3430] rounded-lg flex items-center justify-center">
               <DollarSign className="w-5 h-5 text-green-400" />
             </div>
-            <button className="text-gray-400 text-xs">👁️</button>
           </div>
-          <div className="text-3xl font-bold mb-1">~$-M</div>
+          <div className="text-3xl font-bold mb-1">{typeof totalAmount === 'number' ? `$${totalAmount}` : (totalAmount ?? '~$0')}</div>
           <div className="text-gray-400 text-sm">Assets Under Management</div>
-        </div>
-
-        <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-5">
-          <div className="flex items-start justify-between mb-4">
-            <div className="w-10 h-10 bg-[#3a3430] rounded-lg flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5 text-orange-400" />
-            </div>
-          </div>
-          <div className="text-3xl font-bold mb-1">-</div>
-          <div className="text-gray-400 text-sm">Urgent Tasks Pending</div>
-        </div>
-
-        <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-5">
-          <div className="flex items-start justify-between mb-4">
-            <div className="w-10 h-10 bg-[#3a3430] rounded-lg flex items-center justify-center">
-              <Activity className="w-5 h-5 text-purple-400" />
-            </div>
-            <span className="text-white text-lg font-bold">0%</span>
-          </div>
-          <div className="w-full bg-[#3a3430] rounded-full h-2 mb-3">
-            <div
-              className="bg-purple-500 h-2 rounded-full"
-              style={{ width: "85%" }}
-            ></div>
-          </div>
-          <div className="text-gray-400 text-sm">Compliance Health</div>
         </div>
       </div>
 
@@ -87,13 +87,12 @@ export const ExecutorDashboard = (): JSX.Element => {
             <div className="space-y-4">
             <div className="text-gray-400 text-sm text-center py-8">No activity log</div>
 
-              {/* Skeleton loading */}
-              {/* {[1, 2, 3].map((i) => (
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="animate-pulse">
                   <div className="h-3 bg-[#3a3430] rounded w-16 mb-2"></div>
                   <div className="h-4 bg-[#3a3430] rounded w-3/4"></div>
                 </div>
-              ))} */}
+              ))}
             </div>
           </div>
         </div>

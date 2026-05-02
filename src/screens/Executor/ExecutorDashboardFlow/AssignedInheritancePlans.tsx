@@ -119,27 +119,32 @@ const AssignedInheritancePlans: React.FC = () => {
       if (data?.plan) {
         // Single plan returned from API
         const apiPlan: ApiInheritancePlan = data;
-        const ownerName = apiPlan.plan.owner_id ? `Owner #${apiPlan.plan.owner_id}` : "Unknown Owner";
+        const rawName = apiPlan.plan.name?.toString()?.trim();
+        const displayName = rawName && rawName.length > 0 ? rawName : `Plan #${apiPlan.plan.id}`;
         const status = apiPlan.plan.is_released ? "Released" : apiPlan.plan.is_funded ? "Funded" : "Pending";
-        
+
         plansList = [{
           id: apiPlan.plan.id,
-          owner_name: ownerName,
+          owner_name: displayName,
           plan_type: apiPlan.plan.plan_type,
           status: status,
           assets: apiPlan.beneficiaries.length > 0 ? `${apiPlan.beneficiaries.length} beneficiary(ies)` : "No beneficiaries",
-          owner_initials: ownerName.split(" ").map(n => n[0]).join("").toUpperCase()
+          owner_initials: displayName.split(" ").map(n => n[0]).join("").toUpperCase()
         }];
       } else if (Array.isArray(data?.data)) {
         // Multiple plans returned (for future compatibility)
-        plansList = data.data.map((item: any) => ({
-          id: item.plan?.id || item.id,
-          owner_name: item.owner_name || `Owner #${item.owner_id}`,
-          plan_type: item.plan_type,
-          status: item.is_released ? "Released" : item.is_funded ? "Funded" : "Pending",
-          assets: item.assets || "N/A",
-          owner_initials: (item.owner_name || `Owner #${item.owner_id}`).split(" ").map((n: string) => n[0]).join("").toUpperCase()
-        }));
+        plansList = data.data.map((item: any) => {
+          const rawName = item.plan?.name?.toString()?.trim();
+          const displayName = rawName && rawName.length > 0 ? rawName : `Plan #${item.plan?.id ?? item.id}`;
+          return {
+            id: item.plan?.id || item.id,
+            owner_name: displayName,
+            plan_type: item.plan?.plan_type || item.plan_type,
+            status: item.plan?.is_released ? "Released" : item.plan?.is_funded ? "Funded" : item.is_funded ? "Funded" : "Pending",
+            assets: item.beneficiaries?.length ? `${item.beneficiaries.length} beneficiary(ies)` : item.assets || "N/A",
+            owner_initials: displayName.split(" ").map((n: string) => n[0]).join("").toUpperCase()
+          };
+        });
       }
       
       setPlans(plansList);
@@ -259,7 +264,7 @@ const AssignedInheritancePlans: React.FC = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-[#3a3430] text-sm text-gray-400">
-                <th className="text-left p-4 font-medium">Owner Name</th>
+                <th className="text-left p-4 font-medium">Plan Name</th>
                 <th className="text-left p-4 font-medium">Plan Type</th>
                 <th className="text-left p-4 font-medium">Status</th>
                 <th className="text-left p-4 font-medium">Assets</th>
@@ -322,7 +327,7 @@ const AssignedInheritancePlans: React.FC = () => {
         <table className="w-full">
           <thead>
             <tr className="border-b border-[#3a3430] text-sm text-gray-400">
-              <th className="text-left p-4 font-medium">Owner Name</th>
+              <th className="text-left p-4 font-medium">Plan Name</th>
               <th className="text-left p-4 font-medium">Plan Type</th>
               <th className="text-left p-4 font-medium">Status</th>
               <th className="text-left p-4 font-medium">Assets</th>
