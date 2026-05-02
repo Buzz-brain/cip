@@ -123,3 +123,20 @@ export async function updateAccountInfo(
   }
   return res.json();
 }
+
+export async function getActivityLogs(token?: string): Promise<any[]> {
+  const url = `${BACKEND_API_URL}/auth/activity-logs`;
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  if (!res.ok) {
+    console.warn('auth.getActivityLogs: failed', res.status);
+    return [];
+  }
+  const json = await res.json().catch(() => []);
+  return Array.isArray(json) ? json : (Array.isArray(json?.data) ? json.data : []);
+}

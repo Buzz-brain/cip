@@ -10,6 +10,7 @@ const ExecutorLayout = (): JSX.Element => {
     
     const sidebarItems = [
         { id: "dashboard", label: "Dashboard", href: "/executor-dashboard" },
+        { id: "activity-logs", label: "Activity Logs", href: "/executor-dashboard/activity-logs" },
         // { id: "plans", label: "Plans", href: "/executor-dashboard/executor-inheritance-plan" },
         // { id: "compliance", label: "Compliance", href: "/executor-dashboard/compliance" },
         // { id: "audit", label: "Audit", href: "/executor-dashboard/executor-audit-log" },

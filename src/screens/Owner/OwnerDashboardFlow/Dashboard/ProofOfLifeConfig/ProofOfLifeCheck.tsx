@@ -236,7 +236,7 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
               </div>
             </div>
 
-            <h2 id="pol-title" className="text-2xl font-bold text-center mb-2">Proof-of-Life Check</h2>
+            <h2 id="pol-title" className="text-2xl font-bold text-center mb-2">Proof-of-Life Check{props?.plan?.name ? `: ${props.plan.name}` : props?.plan?.id ? ` - Plan #${props.plan.id}` : ""}</h2>
 
             <div className="rounded-lg p-3 mb-4">
               <p className="text-[#CBD5E1] leading-relaxed text-sm text-center">

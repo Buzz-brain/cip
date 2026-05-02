@@ -3,6 +3,7 @@ import { Card, CardContent } from "@components/ui/card";
 import { Badge } from "@components/ui/badge";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "../../../../context/useAuth";
+import useActivityLogs from "../../../../lib/hooks/useActivityLogs";
 import { usePlan } from "../../../../context/usePlan";
 import { toast } from "react-toastify";
 import { extractErrorMessage } from "../../../../lib/utils";
@@ -49,6 +50,33 @@ const shouldShowField = (planType: string | undefined, fieldName: string): boole
   const planTypeKey = (planType || "").toLowerCase();
   const hiddenFields = hiddenFieldsByType[planTypeKey] || new Set();
   return !hiddenFields.has(fieldName);
+};
+
+const ActivityLogsList: React.FC<{ selectedPlan?: any; userToken?: string | null }> = ({ selectedPlan, userToken }) => {
+  const { logs, loading, error } = useActivityLogs(userToken ?? undefined);
+  if (!selectedPlan) return <div className="text-[#b8a494]">Select a plan to view logs</div>;
+  const planId = selectedPlan.id ?? selectedPlan.contract_plan_id ?? selectedPlan?.plan_id ?? selectedPlan?.inherit_id;
+  const filtered = Array.isArray(logs)
+    ? logs.filter((l: any) => String(l.plan_id ?? l.inherit_id ?? l.inheritance_id ?? l.id ?? '') === String(planId))
+    : [];
+  if (loading) return <div className="text-[#b8a494]">Loading activity...</div>;
+  if (error) return <div className="text-[#b8a494]">Error loading activity</div>;
+  if (!filtered.length) return <div className="text-[#b8a494]">No activity logs</div>;
+  return (
+    <div className="space-y-2">
+      {filtered.slice(0, 12).map((item: any, idx: number) => {
+        const ts = item.timestamp ?? item.created_at ?? item.createdAt ?? item.time ?? null;
+        const when = ts ? (Number(ts) > 1e12 ? new Date(Number(ts)).toLocaleString() : new Date(Number(ts) * 1000).toLocaleString()) : '';
+        const msg = item.message ?? item.msg ?? item.event ?? JSON.stringify(item);
+        return (
+          <div key={idx} className="p-2 bg-[#231b16] border border-[#2f241c] rounded text-xs text-[#d1c3b4]">
+            <div className="text-sm text-white">{msg}</div>
+            <div className="text-[#8b7664] text-xs mt-1">{when}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
 };
 
 export const AllPlan: React.FC<Props> = ({ showValues }) => {
@@ -112,7 +140,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
         }
         return {
           id: String(it.id ?? it.contract_plan_id ?? "-"),
-          name: it.plan_type ? it.plan_type : `Plan #${it.id}`,
+          name: it.name ?? `Plan #${it.id}`,
           chainName: it.crypto_asset ?? "-",
           chainIcon: chainIconFor(it.crypto_asset),
           beneficiary: { name: it.owner_wallet ?? "—", avatar: (it.owner_wallet || "—").slice(2, 4).toUpperCase() },
@@ -329,8 +357,12 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                 {!selectedPlanDetail ? (
                   <div className="text-[#b8a494]">Loading...</div>
                 ) : (
-                  <div className="space-y-4 text-sm text-[#d1c3b4]">
+                    <div className="space-y-4 text-sm text-[#d1c3b4]">
                     <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Plan Name</div>
+                        <div className="font-mono text-white">{selectedPlanDetail.plan?.name ?? `Plan #${selectedPlanDetail.plan?.id}`}</div>
+                      </div>
                       <div>
                         <div className="text-xs text-[#8b7664]">Plan ID</div>
                         <div className="font-mono text-white">{selectedPlanDetail.plan?.id ?? selectedPlanDetail.plan?.contract_plan_id}</div>
@@ -469,6 +501,13 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                         ) : (
                           <div className="text-[#b8a494]">No beneficiaries found</div>
                         )}
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <div className="text-xs text-[#8b7664]">Activity Logs</div>
+                      <div className="mt-2 space-y-2">
+                        {/* Use centralized activity logs hook */}
+                        <ActivityLogsList selectedPlan={selectedPlanDetail?.plan} userToken={user?.token} />
                       </div>
                     </div>
                   </div>

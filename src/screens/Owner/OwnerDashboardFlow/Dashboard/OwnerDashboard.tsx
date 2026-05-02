@@ -360,7 +360,8 @@ export const OwnerDashboard = (): JSX.Element => {
                       {polStatus && (
                         <div className="space-y-3">
                           {(() => {
-                            const progressPct = polPlan ? Math.min(100, Math.max(0, Math.round(((Date.now() - ((polPlan.last_active_at ?? polPlan.created_at ?? 0) * 1000)) / ((Number(polPlan.inactivity_period_days ?? 30)) * 86400000)) * 100))) : 0;
+                            const baseTs = (polPlan?.last_active_at ?? polPlan?.created_at ?? 0) * 1000;
+                            const progressPct = polPlan && baseTs ? Math.min(100, Math.max(0, Math.round(((Date.now() - baseTs) / ((Number(polPlan.inactivity_period_days ?? 30)) * 86400000)) * 100))) : 0;
                             return (
                               <>
                                 <div className="flex items-center justify-between">
@@ -401,7 +402,7 @@ export const OwnerDashboard = (): JSX.Element => {
                       </Button>
                     </>
                   )}
-                  {showPoLModal && modalType === "check" && (
+                  {showPoLModal && modalType === "check" && polDeadlineTs !== null && (
                     <ProofOfLifeCheck open onClose={() => setShowPoLModal(false)} plan={polPlan} deadlineTs={polDeadlineTs ?? undefined} />
                   )}
                   {showPoLModal && modalType === "missed" && (

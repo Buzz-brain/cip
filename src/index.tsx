@@ -35,6 +35,7 @@ import { SetTimeLock } from "./screens/Owner/PlanCreationFlow/TimeLock/SetTimeLo
 import { ReviewTimeLock } from "./screens/Owner/PlanCreationFlow/TimeLock/ReviewTimeLock.tsx";
 import { BeneficiaryDetails } from "./screens/Beneficiary/BeneficiaryDetails.tsx";
 import { BeneficiaryDashboard } from "./screens/Beneficiary/BeneficiaryDashboard.tsx";
+import BeneficiaryActivityLogs from "./screens/Beneficiary/BeneficiaryActivityLogs";
 import { DisputePlanExecution } from "./screens/DisputeResolutionFlow/DisputePlanExecution";
 import { OwnerDashboard } from "./screens/Owner/OwnerDashboardFlow/Dashboard/OwnerDashboard";
 import { EscrowStateVisualization } from "./screens/DisputeResolutionFlow/EscrowStateVisualization"; 
@@ -64,6 +65,7 @@ import { RealTimeVolatility } from "./screens/Owner/OwnerDashboardFlow/RealTimeV
 import { SecureStorage } from "./screens/Owner/OwnerDashboardFlow/SecureStorage"; 
 import { UploadSignedDoc } from "./screens/Owner/OwnerDashboardFlow/UploadSignedDoc"; 
 import { ProofOfLifeConfig } from "./screens/Owner/OwnerDashboardFlow/Dashboard/ProofOfLifeConfig";
+import OwnerActivityLogs from "./screens/Owner/OwnerDashboardFlow/OwnerActivityLogs";
 
 import { EnterpriseLogin } from "./screens/EnterpriseFlow/EnterpriseLogin";
 import { EnterpriseDashboard } from "./screens/EnterpriseFlow/EnterpriseDashboard";
@@ -91,6 +93,7 @@ import { ExecutorForgotPwd } from "./screens/Executor/ExecutorForgotPwd.tsx";
 import { ExecutorSetNewPwd } from "./screens/Executor/ExecutorSetNewPwd.tsx";
 import { ExecPwdResetComplete } from "./screens/Executor/ExecPwdResetComplete.tsx";
 import { ExecutorDashboard } from "./screens/Executor/ExecutorDashboard.tsx";
+import ExecutorActivityLogs from "./screens/Executor/ExecutorActivityLogs";
 import { ExecutorDisputePlan } from "./screens/Executor/ExecutorDisputePlan.tsx";
 import { ExecutorAuditLog } from "./screens/Executor/ExecutorAuditLog.tsx";
 import { ExecuteInheritancePlan } from "./screens/Executor/ExecuteInheritancePlan.tsx";
@@ -168,6 +171,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         {/* Owner Dashboard Flow - protected layout with nested routes */}
         <Route path="/owner-dashboard" element={<ProtectedRoute><OwnerDashboardLayout /></ProtectedRoute>}>
           <Route index element={<OwnerDashboard />} />
+          <Route path="activity-logs" element={<OwnerActivityLogs />} />
           <Route path="view-plan-history" element={<ViewPlanHistory />} />
           <Route path="childrens-trust-account" element={<ChildrensTrustAccount />} />
           <Route path="market-volatility-alert" element={<MarketVolatilityAlert />} />
@@ -232,6 +236,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         {/* Beneficiary Dashboard Flow */}
         <Route path="/beneficiary-dashboard" element={<BeneficiaryDashboard />} /> 
         <Route path="/beneficiary-details" element={<BeneficiaryDetails />} />
+        <Route path="/beneficiary-dashboard/activity-logs" element={<BeneficiaryActivityLogs />} />
 
         {/* Dispute Resolution Flow */}
         <Route path="/dispute-plan-execution" element={<DisputePlanExecution />} /> ✅
@@ -270,6 +275,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
 
         <Route path="/executor-dashboard" element={<ProtectedRoute><ExecutorLayout /></ProtectedRoute>}>
           <Route index element={<ExecutorDashboard />} />
+          <Route path="activity-logs" element={<ExecutorActivityLogs />} />
           <Route path="plan-xp" element={<ExecutorPlanXp />} />
           <Route path="document-verification" element={<DocumentVerification />} />
           <Route path="mpc-share-management" element={<MPCShareManagement />} />
