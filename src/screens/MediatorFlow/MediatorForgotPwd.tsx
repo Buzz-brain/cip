@@ -1,7 +1,7 @@
 import { ArrowLeft, Lock } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logoImg from "@assets/cip-logo.svg";
+import logoImg from "@assets/cip-logo.png";
 
 export const MediatorForgotPwd = (): JSX.Element => {
   const navigate = useNavigate();
@@ -29,9 +29,6 @@ export const MediatorForgotPwd = (): JSX.Element => {
           <Link to="/dashboard">
             <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
           </Link>
-          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
-            CIP&nbsp;&nbsp;Secure Protocol
-          </span>
         </div>
 <nav className="flex items-center gap-8">
           <a href="#" className="text-[#DBD8D1] hover:text-gray-300 text-sm">

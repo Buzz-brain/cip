@@ -59,7 +59,34 @@ export async function getBeneficiaryInheritanceById(token: string | undefined, i
   return { plan, beneficiary };
 }
 
+export async function getBeneficiaryDashboard(token?: string): Promise<{ beneficiary_wallet?: string; total_plans_benefit?: number; total_amount?: number } | null> {
+  const url = `${BACKEND_API_URL}/bf/dashboard`;
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  if (!res.ok) {
+    if (res.status === 404) return null;
+    const txt = await res.text().catch(() => '');
+    throw new Error(`getBeneficiaryDashboard failed: ${res.status} ${txt}`);
+  }
+  const json = await res.json().catch(() => null);
+  if (!json) return null;
+
+  // Prefer envelope: { status, data: { ... } }
+  const payload = json.data ?? json;
+  return {
+    beneficiary_wallet: payload?.beneficiary_wallet,
+    total_plans_benefit: typeof payload?.total_plans_benefit === 'number' ? payload.total_plans_benefit : (payload?.total_plans ?? null),
+    total_amount: typeof payload?.total_amount === 'number' ? payload.total_amount : (payload?.totalAmount ?? null),
+  };
+}
+
 export default {
   getBeneficiaryInheritances,
   getBeneficiaryInheritanceById,
+  getBeneficiaryDashboard,
 };

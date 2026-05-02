@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AlertTriangle, HelpCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import logoImg from "@assets/cip-logo.svg";
+import logoImg from "@assets/cip-logo.png";
 import hourGlassUpIcon from "@assets/hour-glass-up.svg";
 import lockIcon from "@assets/lock.svg";
 import thumbprintIcon from "@assets/thumbprint.svg";
@@ -195,9 +195,6 @@ export const ProofOfLifeCheckMissed = (props?: ProofOfLifeMissedProps): JSX.Elem
           <Link to="/dashboard">
             <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
           </Link>
-          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
-            CIP&nbsp;&nbsp;Protocol
-          </span>
         </div>
         <nav className="flex items-center gap-8">
           <div className="px-3 py-1.5 bg-[#2A241C] border border-[#2A241C] flex items-center rounded text-white text-sm">

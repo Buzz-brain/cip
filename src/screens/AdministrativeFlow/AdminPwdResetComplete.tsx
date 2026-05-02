@@ -1,6 +1,6 @@
 import { CheckCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import logoImg from "@assets/cip-logo.svg";
+import logoImg from "@assets/cip-logo.png";
 
 
 export const AdminPwdResetComplete = (): JSX.Element => {
@@ -17,9 +17,6 @@ export const AdminPwdResetComplete = (): JSX.Element => {
           <Link to="/dashboard">
             <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
           </Link>
-          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
-            Inheritance Protocol
-          </span>
         </div>
         <div className="w-6 h-6 rounded-full border border-white flex items-center justify-center">
           <span className="text-lg text-white font-bold hover:border-gray-500 transition-colors">?</span>

@@ -5,7 +5,7 @@ import {
   Settings,
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
-import logoImg from "@assets/cip-logo.svg";
+import logoImg from "@assets/cip-logo.png";
 
 export const Header = (): JSX.Element => {
   const navigate = useNavigate();
@@ -22,9 +22,6 @@ export const Header = (): JSX.Element => {
             <Link to="/dashboard">
               <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
             </Link>
-            <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
-              CIP Protocol
-            </span>
           </div>
         </div>
 

@@ -9,7 +9,7 @@ import { useWeb3Modal } from "@web3modal/ethers/react";
 import { normalizeWalletAddress, getDashboardRoute } from "../../lib/utils";
 import { verifyMessage } from "ethers";
 import * as authAPI from "../../lib/api/auth";
-import logoImg from "@assets/cip-logo.svg";
+import logoImg from "@assets/cip-logo.png";
 import helpIcon from "@assets/help.svg";
 import connectWalletOrange from "@assets/connect-wallet.-orange.svg";
 // import cotiWalletIcon from "@assets/coti-wallet.svg";
@@ -221,10 +221,7 @@ export const ConnectWallet = (): JSX.Element => {
     <div className="w-full min-h-screen bg-[#221810] flex flex-col">
       <header className="w-full h-[65px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#392f28]">
         <div className="flex items-center gap-2">
-          <img src={logoImg} alt="Logo" />
-          <div className="[font-family:'Manrope',Helvetica] font-bold text-white text-[17.6px] leading-[22px]">
-            CIP
-          </div>
+          <img src={logoImg} className="h-[45px] object-cover" alt="Logo" />
         </div>
 
         <nav className="flex items-center gap-[35px]">

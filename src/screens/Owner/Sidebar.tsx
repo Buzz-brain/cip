@@ -1,11 +1,9 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logoImg from "@assets/cip-logo.svg";
+import logoImg from "@assets/cip-logo-full.png";
 import dashboardIcon from "@assets/dashboard.svg";
 import plusCircleIcon from "@assets/plus-icon-grey.svg";
-// import usersIcon from "@assets/users-grey.svg";
-// import walletIcon from "@assets/wallet.svg";
+import fileTextIcon from "@assets/doc-grey.svg";
 import billingsIcon from "@assets/wallet.svg";
-import helpIcon from "@assets/help-grey.svg";
 import { useAuth } from "../../context/useAuth";
 import { useSubscription } from "../../lib/hooks/useSubscription";
 import SubscriptionModal from "@components/SubscriptionModal";
@@ -14,14 +12,11 @@ import { useState } from "react";
 const sidebarMenuItems = [
   { icon: dashboardIcon, label: "Dashboard", id: "dashboard" },
   { icon: plusCircleIcon, label: "Create Plan", id: "create-plan" },
-  { icon: dashboardIcon, label: "Activity Logs", id: "activity-logs" },
-  // { icon: usersIcon, label: "Beneficiaries", id: "beneficiaries" },
-  // { icon: walletIcon, label: "Asset Registry", id: "asset-registry" },
+  { icon: fileTextIcon, label: "Activity Logs", id: "activity-logs" },
 ];
 
 const systemMenuItems = [
-  { icon: billingsIcon, label: "Billing & Payment", id: "billingnpayment" },
-  { icon: helpIcon, label: "Support", id: "support" },
+  { icon: billingsIcon, label: "Billing & Payments", id: "billingnpayments" },
 ];
 
 export const Sidebar = (): JSX.Element => {
@@ -36,7 +31,7 @@ export const Sidebar = (): JSX.Element => {
   // Pre-compute hrefs for system menu items
   const systemWithHrefs = systemMenuItems.map((item) => {
     let href = "#";
-    if (item.id === "billingnpayment") href = "/owner-dashboard/billing-and-payment";
+    if (item.id === "billingnpayments") href = "/owner-dashboard/billing-and-payments";
     return { ...item, href };
   });
 
@@ -46,7 +41,6 @@ export const Sidebar = (): JSX.Element => {
     if (item.id === "dashboard") href = "/owner-dashboard";
     if (item.id === "create-plan") href = "/owner-dashboard/select-assets";
     if (item.id === "activity-logs") href = "/owner-dashboard/activity-logs";
-    if (item.id === "asset-registry") href = "/owner-dashboard/select-assets";
     return { ...item, href };
   });
 
@@ -94,17 +88,11 @@ export const Sidebar = (): JSX.Element => {
                 <div className="flex items-center gap-2">
                     <div>
                         <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-3 mb-2">
+                            <div className="flex items-center gap-3">
                                 <Link to="/dashboard">
-                                    <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+                                    <img src={logoImg} alt="Logo" className="object-cover" />
                                 </Link>
-                                <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
-                                    CIP Protocol
-                                </span>
                             </div>
-                        </div>
-                        <div className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs text-center">
-                            Secure Multi-Chain Legacy
                         </div>
                     </div>
                 </div>

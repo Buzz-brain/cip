@@ -23,7 +23,7 @@ export const SubscriptionModal: React.FC<Props> = ({ open, onClose }) => {
             className="bg-[#ff6600] hover:bg-[#ff6600]/90"
             onClick={() => {
               onClose();
-              navigate('/owner-dashboard/billing-and-payment');
+              navigate('/owner-dashboard/billing-and-payments');
             }}
           >
             View Pricing

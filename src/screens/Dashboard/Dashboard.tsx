@@ -116,7 +116,6 @@ const systemMenuItems = [
 export const Dashboard = (): JSX.Element => {
   const [showValues, setShowValues] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
 
   return (
     <div className="min-h-screen bg-[#0d0b08]">
@@ -129,14 +128,6 @@ export const Dashboard = (): JSX.Element => {
                        <Link to="/dashboard">
                             <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
                           </Link>
-              <div>
-                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
-                  CIP Protocol
-                </div>
-                <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
-                  Secure Multi-Chain Legacy
-                </div>
-              </div>
             </div>
           </div>
 

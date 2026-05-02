@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@components/ui/button";
-import logoImg from "@assets/cip-logo.svg";
+import logoImg from "@assets/cip-logo.png";
 import forwardPlayBtn from "@assets/forward-play-btn.svg";
 import shareButton from "@assets/share-button.svg";
 import militaryGradeShield from "@assets/military-grade-shield.svg";
@@ -22,9 +22,6 @@ export const StepTwo = (): JSX.Element => {
           <Link to="/dashboard">
             <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
           </Link>
-          <div className="[font-family:'Manrope',Helvetica] font-bold text-white text-[17.6px] leading-[22px]">
-            CIP Protocol
-          </div>
         </div>
 
         <button

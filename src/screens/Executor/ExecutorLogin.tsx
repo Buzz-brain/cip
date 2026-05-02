@@ -1,7 +1,7 @@
 import { User, EyeOff, Eye, Lock } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logoImg from "@assets/cip-logo.svg";
+import logoImg from "@assets/cip-logo.png";
 import loginBgImg from "@assets/login-bg.svg";
 import shieldPadlockIcon from "@assets/shield-padlock-orange.svg";
 import loginArrowIcon from "@assets/login-arrow.svg";
@@ -40,9 +40,6 @@ export const ExecutorLogin = (): JSX.Element => {
           <Link to="/dashboard">
             <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
           </Link>
-          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
-            CIP&nbsp;&nbsp;Portal
-          </span>
         </div>
         <button className="px-4 py-2 font-bold  rounded-lg border border-gray-600 text-white text-sm hover:border-gray-500 transition-colors flex items-center gap-2">
           <div className="w-4 h-4 rounded-full border border-white flex items-center justify-center">

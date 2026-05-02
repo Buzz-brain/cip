@@ -213,7 +213,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           <Route path="mpc-selected" element={<MPCSelected />} />
 
           {/* Billing and Subscription inside Owner Dashboard layout */}
-          <Route path="billing-and-payment" element={<BillingAndPayment />} />
+          <Route path="billing-and-payments" element={<BillingAndPayment />} />
           <Route path="secure-checkout" element={<SecureCheckout />} />
           <Route path="subscription-renewal" element={<SubscriptionRenewal />} />
           <Route path="billing-history" element={<BillingHistory />} />

@@ -1,7 +1,8 @@
 import React, { PropsWithChildren, useState } from 'react';
-import { ChartBar as BarChart3Icon, Bell as BellIcon, FileText as FileTextIcon, LayoutGrid as LayoutGridIcon, LogOut as LogOutIcon, Search as SearchIcon, Settings as SettingsIcon, CheckCircle as CheckCircleIcon } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Bell as BellIcon, FileText as FileTextIcon, LayoutGrid as LayoutGridIcon, LogOut as LogOutIcon } from 'lucide-react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
+import logoImg from '@assets/cip-logo-full.png';
 
 export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   const navigate = useNavigate();
@@ -16,15 +17,18 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
   return (
     <div className="w-full h-screen bg-[#0d0501] flex">
       <aside className="w-[193px] bg-[#0d0501] border-r border-[#392f28] flex flex-col">
-        <div
-          className="p-6 flex items-center gap-2 border-b border-[#392f28] hover:bg-[#27221c] transition-colors"
-        >
-          <div className="w-10 h-10 flex items-center justify-center bg-[#ff6600] rounded-lg">
-            <span className="text-white font-bold text-md">CIP</span>
-          </div>
-          <div className="flex flex-col text-left">
-            <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-md">CIP</span>
-            <span className="[font-family:'Manrope',Helvetica] font-normal text-[#695a47] text-sm">Inheritance</span>
+        {/* Logo */}
+        <div className="p-6 border-b border-[#3a2f1e]">
+          <div className="flex items-center gap-2">
+            <div>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3">
+                  <Link to="/beneficiary-dashboard">
+                    <img src={logoImg} alt="Logo" className="object-cover" />
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -44,31 +48,6 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
             <FileTextIcon className={`w-5 h-5 ${isActive('/beneficiary-dashboard/activity-logs') ? 'text-[#0d0501]' : 'text-[#8b7b64]'}`} />
             <span className={`[font-family:'Manrope',Helvetica] ${isActive('/beneficiary-dashboard/activity-logs') ? 'font-bold text-[#0d0501]' : 'font-normal text-[#8b7b64]'} text-sm`}>Activity Logs</span>
           </button>
-
-          {/* <button
-            onClick={() => navigate('/beneficiary-dashboard#approvals')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-[#27221c] transition-colors group ${isActive('/beneficiary-dashboard') && location.hash === '#approvals' ? 'bg-[#2ccd2c]' : ''}`}
-          >
-            <CheckCircleIcon className={`w-5 h-5 ${isActive('/beneficiary-dashboard') && location.hash === '#approvals' ? 'text-white' : 'text-[#8b7b64]'}`} />
-            <span className={`[font-family:'Manrope',Helvetica] ${isActive('/beneficiary-dashboard') && location.hash === '#approvals' ? 'font-bold text-white' : 'font-normal text-[#8b7b64]'} group-hover:text-white text-sm`}>Approvals</span>
-            <span className="ml-auto bg-[#ff6600] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">2</span>
-          </button> */}
-
-          {/* <button
-            onClick={() => navigate('/beneficiary-dashboard#tax-reports')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-[#27221c] transition-colors group ${location.hash === '#tax-reports' ? 'bg-[#2ccd2c]' : ''}`}
-          >
-            <FileTextIcon className={`w-5 h-5 ${location.hash === '#tax-reports' ? 'text-white' : 'text-[#8b7b64]'}`} />
-            <span className={`[font-family:'Manrope',Helvetica] ${location.hash === '#tax-reports' ? 'font-bold text-white' : 'font-normal text-[#8b7b64]'} group-hover:text-white text-sm`}>Tax Reports</span>
-          </button> */}
-
-          {/* <button
-            onClick={() => navigate('/beneficiary-details')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-[#27221c] transition-colors group ${isActive('/beneficiary-details') ? 'bg-[#27221c]' : ''}`}
-          >
-            <BarChart3Icon className={`w-5 h-5 ${isActive('/beneficiary-details') ? 'text-white' : 'text-[#8b7b64]'}`} />
-            <span className={`[font-family:'Manrope',Helvetica] ${isActive('/beneficiary-details') ? 'font-bold text-white' : 'font-normal text-[#8b7b64]'} group-hover:text-white text-sm`}>Assets</span>
-          </button> */}
         </nav>
 
         <div className="border-t border-[#392f28] p-4">
@@ -78,7 +57,7 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
             </div>
             <div className="flex-1 min-w-0">
               <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-xs truncate">
-                {user?.name ?? user?.email ?? (user?.userInfo?.wallet ? `${user.userInfo.wallet.slice(0,6)}...${user.userInfo.wallet.slice(-4)}` : (user?.publicKey ? `${user.publicKey.slice(0,6)}...${user.publicKey.slice(-4)}` : 'User'))}
+                {user?.name ?? user?.email ?? (user?.userInfo?.wallet ? `${user.userInfo.wallet.slice(0, 6)}...${user.userInfo.wallet.slice(-4)}` : (user?.publicKey ? `${user.publicKey.slice(0, 6)}...${user.publicKey.slice(-4)}` : 'User'))}
               </p>
               <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs truncate">
                 {user?.email ?? user?.userInfo?.wallet ?? user?.publicKey ?? ''}
@@ -105,25 +84,19 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
 
       <main className="flex-1 bg-[#0d0501] overflow-auto">
         <header className="sticky top-0 flex items-center justify-between px-8 py-4 bg-[#0d0501] border-b border-[#392f28]">
-          <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">Welcome to CIP Protocol</h1>
-
+          <div className="flex items-center gap-2 text-[#B9B09D]">
+            <span className="[font-family:'Manrope',Helvetica] text-sm">
+              Protocol
+            </span>
+            <span>&gt;</span>
+            <span className="[font-family:'Manrope',Helvetica] text-white text-sm">
+              Dashboard
+            </span>
+          </div>
           <div className="flex items-center gap-6">
-            {/* <div className="relative hidden md:flex">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8b7b64]" />
-              <input
-                type="text"
-                placeholder="Search plans..."
-                className="pl-10 pr-4 py-2 bg-[#27221c] border border-[#392f28] rounded-lg [font-family:'Manrope',Helvetica] text-white placeholder-[#8b7b64] focus:outline-none focus:border-[#ff6600]"
-              />
-            </div> */}
-
             <button className="relative" onClick={() => setShowNotifications(v => !v)} aria-expanded={showNotifications} aria-controls="notifications-panel">
               <BellIcon className={`w-5 h-5 ${showNotifications ? 'text-white' : 'text-[#8b7b64]'} transition-colors`} />
             </button>
-
-            {/* <button className="hover:text-white transition-colors">
-              <SettingsIcon className="w-5 h-5 text-[#8b7b64]" />
-            </button> */}
           </div>
         </header>
 

@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import { Wallet, Mail, MessageSquare, AlertTriangle } from 'lucide-react';
 import { Link } from "react-router-dom";
-import logoImg from "@assets/cip-logo.svg";
+import logoImg from "@assets/cip-logo.png";
 import alarmBuzzIcon from "@assets/alarm-buzz.svg";
 import facialBiometricIcon from "@assets/facial-biometric.svg";
 import passphraseIcon from "@assets/passphrase.svg";
@@ -55,9 +55,6 @@ export const ProofOfLifeConfig = (): JSX.Element => {
           <Link to="/dashboard">
             <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
           </Link>
-          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
-            CIP&nbsp;&nbsp;Protocol
-          </span>
         </div>
         <nav className="flex items-center gap-8">
           <a href="#" className="text-gray-400 hover:text-gray-300 text-sm">
