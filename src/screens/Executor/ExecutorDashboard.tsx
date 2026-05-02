@@ -2,6 +2,8 @@ import { FolderOpen, DollarSign, CheckCircle } from "lucide-react";
 import AssignedInheritancePlans from "./ExecutorDashboardFlow/AssignedInheritancePlans";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/useAuth";
+import useActivityLogs from "../../lib/hooks/useActivityLogs";
+import { formatWhen } from "../../components/ActivityLogs/ActivityLogs";
 
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
@@ -9,6 +11,7 @@ export const ExecutorDashboard = (): JSX.Element => {
   const { user } = useAuth();
   const [totalPlans, setTotalPlans] = useState<number | null>(null);
   const [totalAmount, setTotalAmount] = useState<number | string | null>(null);
+  const { logs, loading: logsLoading } = useActivityLogs(user?.token);
 
   useEffect(() => {
     let mounted = true;
@@ -85,14 +88,30 @@ export const ExecutorDashboard = (): JSX.Element => {
           <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-6">
             <h3 className="font-semibold mb-4">Activity Log</h3>
             <div className="space-y-4">
-            <div className="text-gray-400 text-sm text-center py-8">No activity log</div>
-
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="h-3 bg-[#3a3430] rounded w-16 mb-2"></div>
-                  <div className="h-4 bg-[#3a3430] rounded w-3/4"></div>
-                </div>
-              ))}
+              {logsLoading ? (
+                <div className="text-gray-400 text-sm text-center py-8">Loading activity...</div>
+              ) : (!Array.isArray(logs) || logs.length === 0) ? (
+                <div className="text-gray-400 text-sm text-center py-8">No activity log</div>
+              ) : (
+                // show latest 3 logs
+                [...logs]
+                  .sort((a: any, b: any) => Number(b.timestamp ?? b.created_at ?? b.time ?? 0) - Number(a.timestamp ?? a.created_at ?? a.time ?? 0))
+                  .slice(0, 3)
+                  .map((it: any, idx: number) => (
+                    <div key={idx} className="p-3 bg-[#241C16] rounded border border-[#392f28]">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="font-semibold text-white text-sm">{it.title ?? it.message ?? it.event ?? it.msg ?? 'Activity'}</div>
+                          {(it.body || it.details || it.data) && (
+                            <div className="text-gray-400 text-sm mt-1">{it.body ?? it.details ?? JSON.stringify(it.data)}</div>
+                          )}
+                          <div className="text-xs text-[#b8a494] mt-2">{String(it.user ?? it.actor ?? '')} • <span className="ml-1">Plan: {String(it.plan_id ?? it.inherit_id ?? it.inheritance_id ?? '—')}</span></div>
+                        </div>
+                        <div className="text-xs text-[#8b7664] whitespace-nowrap">{formatWhen(it.timestamp ?? it.created_at ?? it.time)}</div>
+                      </div>
+                    </div>
+                  ))
+              )}
             </div>
           </div>
         </div>

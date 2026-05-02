@@ -12,6 +12,7 @@ interface ApiInheritancePlan {
     contract_plan_id: number;
     owner_wallet: string;
     owner_id: number;
+    name?: string | null;
     plan_type: string;
     is_funded: boolean;
     is_released: boolean;
@@ -129,7 +130,7 @@ const AssignedInheritancePlans: React.FC = () => {
           plan_type: apiPlan.plan.plan_type,
           status: status,
           assets: apiPlan.beneficiaries.length > 0 ? `${apiPlan.beneficiaries.length} beneficiary(ies)` : "No beneficiaries",
-          owner_initials: displayName.split(" ").map(n => n[0]).join("").toUpperCase()
+          owner_initials: displayName.split(" ").map((n: string) => n[0]).join("").toUpperCase()
         }];
       } else if (Array.isArray(data?.data)) {
         // Multiple plans returned (for future compatibility)
@@ -376,10 +377,6 @@ const AssignedInheritancePlans: React.FC = () => {
                     <td className="p-4 text-sm">{plan.assets}</td>
                     <td className="p-4">
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate("/executor-dashboard/mpc-share-management");
-                        }}
                         className="text-orange-400 text-sm hover:text-orange-300"
                       >
                         Manage
