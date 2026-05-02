@@ -6,6 +6,7 @@ import { activateProofOfLife, getActiveProofPlan } from '../../../../../lib/api/
 import { usePlan } from '../../../../../context/usePlan';
 import alarmBuzzOrangeIcon from "@assets/alarm-buzz-orange.svg";
 import thumbprintIcon from "@assets/thumbprint.svg";
+import heartVideo from "@assets/video/heart-video.mp4";
 
 export type ProofOfLifeModalProps = {
   open?: boolean;
@@ -227,7 +228,7 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
       {/* backdrop does not capture pointer events so background can still be scrolled */}
       <div className="absolute inset-0 bg-black/60 pointer-events-none" />
       <div className="relative w-full max-w-2xl mx-4 pointer-events-auto">
-        <div ref={modalRef} role="dialog" aria-labelledby="pol-title" aria-modal="false" tabIndex={-1} className="border-t-4 border-[#EC7813] rounded-lg p-8 bg-[#2E261C] relative">
+        <div ref={modalRef} role="dialog" aria-labelledby="pol-title" aria-modal="false" tabIndex={-1} className="border-t-4 border-[#EC7813] rounded-lg p-6 bg-[#2E261C] relative">
           {/* close button */}
           <button aria-label="Close proof of life modal" onClick={() => onClose && onClose()} className="absolute top-3 right-3 text-[#B9B09D] hover:text-white">✕</button>
             <div className="flex justify-center mb-6">
@@ -236,78 +237,102 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
               </div>
             </div>
 
-            <h2 id="pol-title" className="text-2xl font-bold text-center mb-2">Proof-of-Life Check{props?.plan?.name ? `: ${props.plan.name}` : props?.plan?.id ? ` - Plan #${props.plan.id}` : ""}</h2>
+            <h2 id="pol-title" className="text-2xl font-bold text-center">Proof-of-Life Check{props?.plan?.name ? `: ${props.plan.name}` : props?.plan?.id ? ` - Plan #${props.plan.id}` : ""}</h2>
 
-            <div className="rounded-lg p-3 mb-4">
+            <div className="rounded-lg p-3 mb-1">
               <p className="text-[#CBD5E1] leading-relaxed text-sm text-center">
                 Please confirm that you are active. Failure to respond within the deadline below will initiate your inheritance protocol.
               </p>
             </div>
 
-            <div className="mb-6">
-              <div className="gap-3 bg-[#181411] border border-[#393128] rounded-lg p-4">
-                <p className="text-[#B8A194] text-center mb-3">Time Remaining</p>
-                {isLoading ? (
-                  <div className="grid grid-cols-4 gap-3">
-                    <div className="text-center">
-                      <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4 animate-pulse h-12"></div>
-                      <div className="text-sm text-[#B8A194]">Days</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4 animate-pulse h-12"></div>
-                      <div className="text-sm text-[#B8A194]">Hours</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4 animate-pulse h-12"></div>
-                      <div className="text-sm text-[#B8A194]">Mins</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4 animate-pulse h-12"></div>
-                      <div className="text-sm text-[#B8A194]">Secs</div>
-                    </div>
+            <div className="mb-6 rounded-lg overflow-hidden bg-black border border-[#393128]">
+              <div className="grid grid-cols-1 md:grid-cols-[45%_55%]">
+                {/* Left: Video */}
+                <div className="w-full bg-black">
+                  <div className="relative" style={{ paddingTop: '100.25%' }}>
+                    <video
+                      src={heartVideo}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      aria-hidden="true"
+                    />
+                    <div className="absolute inset-0 bg-black/10 pointer-events-none" />
                   </div>
-                ) : hasActivePlan ? (
-                  <div className="grid grid-cols-4 gap-3">
-                    <div className="text-center">
-                      <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.days).padStart(2, "0")}</div>
-                      <div className="text-sm text-[#B8A194]">Days</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.hours).padStart(2, "0")}</div>
-                      <div className="text-sm text-[#B8A194]">Hours</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.minutes).padStart(2, "0")}</div>
-                      <div className="text-sm text-[#B8A194]">Mins</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl text-[#FF6600] font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.seconds).padStart(2, "0")}</div>
-                      <div className="text-sm text-[#B8A194]">Secs</div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center py-8">
-                    <p className="text-[#B8A194] text-center">No current Proof-of-Life check scheduled.</p>
-                  </div>
-                )}
-              </div>
-            </div>
+                </div>
 
-            <div className="flex gap-3">
-              <button
-                onClick={onConfirmLife}
-                disabled={confirming || !hasActivePlan || isLoading}
-                className={`w-full ${confirming || !hasActivePlan || isLoading ? 'opacity-60 cursor-not-allowed' : 'bg-[#FF6600] hover:bg-orange-700'} text-white py-3 rounded-lg font-bold transition flex gap-3 items-center justify-center`}
-              >
-                <img src={thumbprintIcon} className="w-5 h-5" alt="Thumbprint" />
-                <span>{isLoading ? 'Loading...' : confirming ? 'Confirming...' : 'Confirm Life'}</span>
-              </button>
-              <button
-                onClick={() => onClose ? onClose() : navigate(-1)}
-                className="w-full bg-transparent border border-[#63564B] hover:border-gray-600 text-white py-3 rounded-lg font-medium transition"
-              >
-                Later
-              </button>
+                {/* Right: Time + Actions */}
+                <div className="pr-6 py-6 flex flex-col h-full justify-between">
+                  <div>
+                    <p className="text-[#B8A194] text-center mb-3">Time Remaining</p>
+                    {isLoading ? (
+                      <div className="grid grid-cols-4 gap-3">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4 animate-pulse h-12"></div>
+                          <div className="text-sm text-[#B8A194]">Days</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4 animate-pulse h-12"></div>
+                          <div className="text-sm text-[#B8A194]">Hours</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4 animate-pulse h-12"></div>
+                          <div className="text-sm text-[#B8A194]">Mins</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4 animate-pulse h-12"></div>
+                          <div className="text-sm text-[#B8A194]">Secs</div>
+                        </div>
+                      </div>
+                    ) : hasActivePlan ? (
+                      <div className="grid grid-cols-4 gap-3 mb-4">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.days).padStart(2, "0")}</div>
+                          <div className="text-sm text-[#B8A194]">Days</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.hours).padStart(2, "0")}</div>
+                          <div className="text-sm text-[#B8A194]">Hours</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.minutes).padStart(2, "0")}</div>
+                          <div className="text-sm text-[#B8A194]">Mins</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-3xl text-[#FF6600] font-bold mb-1 bg-[#393128] rounded-lg p-4">{String(timeRemaining.seconds).padStart(2, "0")}</div>
+                          <div className="text-sm text-[#B8A194]">Secs</div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center py-8">
+                        <p className="text-[#B8A194] text-center">No current Proof-of-Life check scheduled.</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Actions (confirm / later) placed at bottom of right column */}
+                  <div className="mt-4">
+                    <div className="flex gap-3">
+                      <button
+                        onClick={onConfirmLife}
+                        disabled={confirming || !hasActivePlan || isLoading}
+                        className={`flex-1 ${confirming || !hasActivePlan || isLoading ? 'opacity-60 cursor-not-allowed' : 'bg-[#FF6600] hover:bg-orange-700'} text-white py-3 rounded-lg font-bold transition text-md flex gap-2 items-center justify-center`}
+                      >
+                        <img src={thumbprintIcon} className="w-5 h-5" alt="Thumbprint" />
+                        <span>{isLoading ? 'Loading...' : confirming ? 'Confirming...' : 'Confirm Life'}</span>
+                      </button>
+                      <button
+                        onClick={() => onClose ? onClose() : navigate(-1)}
+                        className="flex-1 w-full bg-transparent border border-[#63564B] text-md hover:border-gray-600 text-white py-3 rounded-lg font-medium transition"
+                      >
+                        Later
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
               <p className="text-sm text-[#B8A194] text-center mt-6 flex items-center justify-center gap-4"><span>Secured CIP X TEE</span></p>
 
