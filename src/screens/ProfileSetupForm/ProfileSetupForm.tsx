@@ -1,6 +1,3 @@
-import {
-  InfoIcon,
-} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
@@ -8,6 +5,13 @@ import * as authAPI from "../../lib/api/auth";
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
 import { Input } from "@components/ui/input";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@components/ui/select";
 import { Label } from "@components/ui/label";
 import { Separator } from "../../components/ui/separator";
 import { ConnectWalletButton } from "../../components/ConnectWalletButton";
@@ -34,8 +38,8 @@ export const ProfileSetupForm = (): JSX.Element => {
     fullName: "",
     emailAddress: "",
     backupContact: "",
-    preferredChain: "",
-    taxResidence: "",
+    preferredChain: "ETH",
+    taxResidence: "Nigeria",
   });
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
@@ -57,8 +61,10 @@ export const ProfileSetupForm = (): JSX.Element => {
         fullName: payload.full_name || payload.fullName || "",
         emailAddress: payload.email || payload.emailAddress || "",
         backupContact: payload.backup_contact || payload.backupContact || "",
-        preferredChain: payload.preferred_chain || payload.preferredChain || "",
-        taxResidence: payload.country || payload.tax_residence || payload.taxResidence || "",
+        preferredChain:
+          payload.preferred_chain || payload.preferredChain || "ETH",
+        taxResidence:
+          payload.country || payload.tax_residence || payload.taxResidence || "Nigeria",
       });
     } catch (error) {
       console.warn("Failed to auto-fill profile from API:", error);
@@ -231,13 +237,16 @@ export const ProfileSetupForm = (): JSX.Element => {
                     >
                       Preferred Chain
                     </Label>
-                    <Input
-                      id="preferredChain"
-                      value={profile.preferredChain}
-                      onChange={(e) => setProfile((prev) => ({ ...prev, preferredChain: e.target.value }))}
-                      placeholder="eg: ETH"
-                      className="bg-[#27211c] border-[#54463b] text-white [font-family:'Manrope',Helvetica] font-normal text-sm"
-                    />
+                    <Select
+                      defaultValue={profile.preferredChain}
+                      onValueChange={(val) => setProfile((prev) => ({ ...prev, preferredChain: val }))}
+                    >
+                      <SelectTrigger className="bg-[#27211c] border-[#54463b] text-white [font-family:'Manrope',Helvetica] font-normal text-sm h-10" />
+                      <SelectValue placeholder="Select chain" />
+                      <SelectContent>
+                        <SelectItem value="ETH">ETH</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <p className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] text-[11.9px] tracking-[0] leading-4">
                       Gas fees for plan execution will be paid on this chain.
                     </p>
@@ -250,13 +259,16 @@ export const ProfileSetupForm = (): JSX.Element => {
                     >
                       Tax Residence (Country)
                     </Label>
-                    <Input
-                      id="taxResidence"
-                      value={profile.taxResidence}
-                      onChange={(e) => setProfile((prev) => ({ ...prev, taxResidence: e.target.value }))}
-                      placeholder="Nigeria"
-                      className="bg-[#27211c] border-[#54463b] text-white [font-family:'Manrope',Helvetica] font-normal text-sm"
-                    />
+                    <Select
+                      defaultValue={profile.taxResidence}
+                      onValueChange={(val) => setProfile((prev) => ({ ...prev, taxResidence: val }))}
+                    >
+                      <SelectTrigger className="bg-[#27211c] border-[#54463b] text-white [font-family:'Manrope',Helvetica] font-normal text-sm h-10" />
+                      <SelectValue placeholder="Select country" />
+                      <SelectContent>
+                        <SelectItem value="Nigeria">Nigeria</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <p className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] text-xs tracking-[0] leading-4">
                       Used to calculate potential inheritance tax implications.
                     </p>
