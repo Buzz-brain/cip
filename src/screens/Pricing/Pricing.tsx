@@ -159,31 +159,12 @@ export const Pricing = (): JSX.Element => {
     window.scrollTo(0, 0);
   }, []);
   
-  const navItems = [
-    { label: "Features", href: "#" },
-    { label: "Security", href: "#" },
-    { label: "Pricing", href: "/pricing" },
-    { label: "Resources", href: "#" },
-  ];
-
-  const rightActions = (
-    <div className="flex items-center gap-2">
-      <Link to="/login">
-        <Button
-          variant="default"
-          className="bg-[#554233] hover:bg-[#554233]/90 [font-family:'Manrope',Helvetica] font-bold text-sm"
-        >
-          Log In
-        </Button>
-      </Link>
-      <Button 
-        className="bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Manrope',Helvetica] font-bold text-sm"
-        onClick={() => navigate("/onboarding/step-one")}
-      >
-        Get Started
-      </Button>
-    </div>
-  );
+const navigationItems = [
+  { label: "How it Works", href: "#core-capabilities" },
+  { label: "TaxCore", href: "#taxcore-intelligence" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "Enterprise", href: "/login" },
+];
 
   const auditorElements = auditors.map((auditor) => (
     <div key={auditor.name} className="flex items-center gap-2">
@@ -396,12 +377,19 @@ export const Pricing = (): JSX.Element => {
 
   return (
     <div className="min-h-screen bg-black">
-      <Navbar
-        logo={logoImg}
-        brand="CIP"
-        navItems={navItems}
-        rightActions={rightActions}
-      />
+        <Navbar
+          logo={logoImg}
+          navItems={navigationItems}
+          logoHref="/"
+          rightActions={
+            <Button
+              className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 [font-family:'Sora',Helvetica] font-bold text-sm"
+              onClick={() => navigate("/onboarding/step-one")}
+            >
+              Launch App
+            </Button>
+          }
+        />
 
       <section className="py-16">
         <div className="container mx-auto px-4">

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Info, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import logoImg from "@assets/cip-logo.svg";
+import logoImg from "@assets/cip-logo.png";
 import thumbprintIcon from "@assets/thumbprint.svg";
 
 export type CriticalAlertProps = {
@@ -163,9 +163,6 @@ export const CriticalAlert = (props?: CriticalAlertProps): JSX.Element | null =>
           <Link to="/dashboard">
             <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
           </Link>
-          <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
-            CIP&nbsp;&nbsp;Protocol
-          </span>
         </div>
         <nav className="flex items-center gap-8">
           <a href="#" className="text-gray-400 hover:text-gray-300 text-sm">

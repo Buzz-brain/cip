@@ -24,6 +24,9 @@ export function normalizeWalletAddress(address: string): string {
 // Tries to parse JSON and extract 'detail' field, falls back to plain text
 export async function extractErrorMessage(response: Response): Promise<string> {
   const defaultMsg = `Error (Status: ${response.status})`;
+  // Handle common status codes with friendlier UX messages
+  if (response.status === 401) return 'Not authenticated. Please connect your wallet or log in.';
+  if (response.status === 403) return 'Access denied. Your account does not have permission.';
   try {
     const data = await response.json();
     if (data?.detail) return String(data.detail);

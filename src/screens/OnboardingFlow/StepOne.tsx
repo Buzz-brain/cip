@@ -2,8 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@components/ui/badge";
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
-import { ConnectWalletButton } from "../../components/ConnectWalletButton";
-import logoImg from "@assets/cip-logo.svg";
+import logoImg from "@assets/cip-logo.png";
 import plusIcon from "@assets/plus-icon.svg";
 import playIcon from "@assets/play-icon.svg";
 import shieldIconOrange from "@assets/shield-orange.svg";
@@ -68,9 +67,6 @@ export const StepOne = (): JSX.Element => {
                                     <Link to="/dashboard">
                             <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
                           </Link>
-              <span className="text-lg font-bold leading-[22.5px] tracking-[-0.45px] text-white [font-family:'Manrope',Helvetica]">
-                CIP&nbsp;&nbsp;Protocol
-              </span>
             </div>
 
             <nav className="flex items-center gap-8">

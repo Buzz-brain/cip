@@ -8,7 +8,8 @@ import { Navbar } from "@components/ui/Navbar";
 import { useNavigate } from "react-router-dom";
 // import { Link } from "react-router-dom";
 
-import logoImg from "@assets/cip-logo.svg";
+import logoImg from "@assets/cip-logo.png";
+import logoImgFull from "@assets/cip-logo-full.png";
 import homeBgImg from "@assets/home-bg.svg";
 import shieldCheckImg from "@assets/shield-check.svg";
 import divIcon from "@assets/ethereum.svg";
@@ -1069,17 +1070,11 @@ export const Home = (): JSX.Element => {
             <div className="max-w-6xl mx-auto space-y-12">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 bg-[#ff6600] rounded-lg flex items-center justify-center">
+                  <div className="flex items-center padding 3 gap-2">
                       <img
-                        src={logoImg}
+                        src={logoImgFull}
                         alt="Logo"
-                        className="w-5 h-6 object-cover"
                       />
-                    </div>
-                    <span className="[font-family:'Sora',Helvetica] font-bold text-white text-lg">
-                      CIP
-                    </span>
                   </div>
                   <p className="[font-family:'Sora',Helvetica] text-[#8b7664] text-sm leading-[22px]">
                     The standard for sovereign digital inheritance. Securing the

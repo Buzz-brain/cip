@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+// import { useAuth } from '../../context/useAuth';
 
 export type SidebarItem = {
   id: string;
@@ -27,6 +28,7 @@ export const ExecutorSidebar: React.FC<Props> = ({ items, footer }) => {
         </div>
       </div>
 
+
       <nav className="space-y-1">
         {items.map((it) => {
           const active = loc.pathname === it.href;
@@ -43,7 +45,9 @@ export const ExecutorSidebar: React.FC<Props> = ({ items, footer }) => {
         })}
       </nav>
 
-      <div className="mt-auto">{footer}</div>
+      <div className="mt-auto space-y-4">
+        <div>{footer}</div>
+      </div>
     </aside>
   );
 };

@@ -1,7 +1,5 @@
 import { AlertCircle } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Link } from "react-router-dom";
-import logoImg from "@assets/cip-logo.svg";
 import timerWhiteIcon from "@assets/timer-white.svg";
 import hourGlassUpIcon from "@assets/hour-glass-up.svg";
 import leafLetterIcon from "@assets/leaf-letter.svg";

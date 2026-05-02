@@ -43,7 +43,7 @@ export const ExecutorDashboard = (): JSX.Element => {
     <main className="p-8">
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Executor Dashboard</h1>
+          <h1 className="text-3xl font-bold mb-2">{`Welcome, ${user?.name ?? user?.email ?? (user?.publicKey ? `${user.publicKey.slice(0,6)}...${user.publicKey.slice(-4)}` : 'User')}`}</h1>
           <p className="text-gray-400">
             Manage your assigned inheritance plans, verify documents, and
             handle MPC approvals.

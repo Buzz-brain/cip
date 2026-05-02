@@ -50,9 +50,6 @@ export const GuardianApproval = (): JSX.Element => {
                     <Link to="/dashboard">
                         <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
                     </Link>
-                    <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-[17.8px] tracking-[0] leading-[22px]">
-                        Inheritance Protocol
-                    </span>
                 </div>
 
                 <nav className="flex items-center gap-8">

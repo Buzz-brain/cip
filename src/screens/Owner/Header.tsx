@@ -13,12 +13,12 @@ export const Header = (): JSX.Element => {
     <header className="bg-[#0D0501] border-b border-[#393028] px-8 py-4 [font-family:'Manrope',Helvetica]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-[#B9B09D]">
-          <span className="[font-family:'Noto_Sans',Helvetica] text-sm">
+          <span className="text-sm">
             Protocol
           </span>
           <span>&gt;</span>
-          <span className="[font-family:'Noto_Sans',Helvetica] text-white text-sm">
-            Dashboard
+          <span className="text-white text-sm">
+            Owner Dashboard
           </span>
         </div>
 
