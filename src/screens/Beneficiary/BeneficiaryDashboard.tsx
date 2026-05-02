@@ -5,12 +5,12 @@ import { Card, CardContent } from "@components/ui/card";
 // import padlockImg from "@assets/padlock-img.svg";
 import YourInheritances from "./YourInheritances";
 import { useEffect, useState } from "react";
-import { getBeneficiaryInheritances } from "../../lib/api/beneficiary";
-import { getBeneficiaryStats, BeneficiaryDashboardStats } from "../../lib/dashboard/beneficiaryStats";
+import { getBeneficiaryDashboard } from "../../lib/api/beneficiary";
 
 export const BeneficiaryDashboard = (): JSX.Element => {
   const { user } = useAuth();
-  const [stats, setStats] = useState<BeneficiaryDashboardStats | null>(null);
+  const [totalPlans, setTotalPlans] = useState<number | null>(null);
+  const [totalAmount, setTotalAmount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,11 +20,11 @@ export const BeneficiaryDashboard = (): JSX.Element => {
       if (!user?.token) return;
       setLoading(true);
       try {
-        const data = await getBeneficiaryInheritances(user.token);
+        const data = await getBeneficiaryDashboard(user.token);
         if (!mounted) return;
         if (data) {
-          const computed = getBeneficiaryStats({ data });
-          setStats(computed);
+          setTotalPlans(typeof data.total_plans_benefit === 'number' ? data.total_plans_benefit : null);
+          setTotalAmount(typeof data.total_amount === 'number' ? data.total_amount : null);
         }
       } catch (err) {
         console.error('Failed to load beneficiary stats:', err);
@@ -50,18 +50,18 @@ export const BeneficiaryDashboard = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 gap-6">
           <Card className="bg-[#181511] border border-[#392f28] rounded-xl">
             <CardContent className="p-6 flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center justify-center w-12 h-12 bg-[#27221c] rounded-lg">
                   <TrendingUpIcon className="w-6 h-6 text-[#2ccd2c]" />
                 </div>
-                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#2ccd2c] text-sm">{loading ? '—' : stats?.percentChange ?? '+0%'}</span>
+                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#2ccd2c] text-sm">Total Inheritance Plans</span>
               </div>
               <div className="flex flex-col gap-1">
-                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">Total Inherited Value</p>
-                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">{loading ? '—' : stats?.totalInheritedValueUsd ?? '$0'}</p>
+                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">Total Plans</p>
+                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">{loading ? '—' : (totalPlans ?? 0)}</p>
               </div>
             </CardContent>
           </Card>
@@ -72,26 +72,11 @@ export const BeneficiaryDashboard = (): JSX.Element => {
                 <div className="flex items-center justify-center w-12 h-12 bg-[#27221c] rounded-lg">
                   <CheckCircleIcon className="w-6 h-6 text-[#ff3b30]" />
                 </div>
-                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#ff3b30] text-sm">Action Required</span>
+                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#ff3b30] text-sm">Total Amount</span>
               </div>
               <div className="flex flex-col gap-1">
-                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">Pending Approvals</p>
-                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">{loading ? '—' : stats?.pendingApprovals ?? 0} {(stats?.pendingApprovals ?? 0) === 1 ? 'request' : 'requests'}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-[#181511] border border-[#392f28] rounded-xl">
-            <CardContent className="p-6 flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center justify-center w-12 h-12 bg-[#27221c] rounded-lg">
-                  <PieChartIcon className="w-6 h-6 text-[#007aff]" />
-                </div>
-                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#007aff] text-sm">Est. Liability</span>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">Tax Summary (2026)</p>
-                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">{loading ? '—' : stats?.taxSummary ?? '~0% average'}</p>
+                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">Total Inherited Value (ETH)</p>
+                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">{loading ? '—' : (totalAmount !== null ? String(totalAmount) : '0')}</p>
               </div>
             </CardContent>
           </Card>
