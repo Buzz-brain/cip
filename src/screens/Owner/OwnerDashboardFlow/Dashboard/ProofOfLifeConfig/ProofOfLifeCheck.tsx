@@ -10,6 +10,8 @@ import thumbprintIcon from "@assets/thumbprint.svg";
 export type ProofOfLifeModalProps = {
   open?: boolean;
   onClose?: () => void;
+  plan?: any;
+  deadlineTs?: number;
 };
 
 export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | null => {
@@ -52,6 +54,7 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
 
   const [confirming, setConfirming] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const expiryRef = useRef<number | null>(null);
 
   const [timeRemaining, setTimeRemaining] = useState({
     days: 0,
@@ -62,12 +65,30 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
   
   const [hasActivePlan, setHasActivePlan] = useState(false);
 
+  // Fetch plan and initialize deadline
   useEffect(() => {
-    // Fetch active plan from backend and initialize countdown
     let mounted = true;
     (async () => {
       try {
         setIsLoading(true);
+        
+        // If deadlineTs is provided via props, use it directly
+        if (props?.deadlineTs) {
+          const remainingMs = props.deadlineTs - Date.now();
+          if (remainingMs > 0) {
+            const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
+            setTimeRemaining({ days, hours, minutes, seconds });
+            expiryRef.current = props.deadlineTs;
+            setHasActivePlan(true);
+          }
+          setIsLoading(false);
+          return;
+        }
+        
+        // Otherwise, fetch from API
         const plan = await getActiveProofPlan(user?.token);
         if (!mounted) return;
         
@@ -77,19 +98,24 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
           return;
         }
         console.log('[ProofOfLifeCheck] active plan', plan);
-        // determine last active timestamp
+        
+        // Use correct field names from backend
         const baseTs = Number(plan.last_active_at ?? plan.created_at ?? 0);
-        const inactivityDays = Number(plan.inactivity_period_days ?? plan.inactivityPeriodDays ?? 0);
-        const graceDays = Number(plan.grace_period ?? plan.gracePeriod ?? 0);
+        const inactivityDays = Number(plan.inactivity_period_days ?? 0);
+        const graceDays = Number(plan.grace_period ?? 0);
+        
         if (baseTs && (inactivityDays || graceDays)) {
-          const expirySec = baseTs + (inactivityDays + graceDays) * 24 * 60 * 60;
-          const remainingMs = expirySec * 1000 - Date.now();
+          const expirySec = baseTs + (inactivityDays + graceDays) * 86400;
+          const expiryMs = expirySec * 1000;
+          const remainingMs = expiryMs - Date.now();
+          
           if (remainingMs > 0) {
             const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
             const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
             setTimeRemaining({ days, hours, minutes, seconds });
+            expiryRef.current = expiryMs;
             setHasActivePlan(true);
           }
         }
@@ -101,30 +127,28 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
       }
     })();
 
+    return () => { mounted = false; };
+  }, []); // Only run on mount
+
+  // Separate countdown interval
+  useEffect(() => {
+    if (!hasActivePlan || !expiryRef.current) return;
+    
     const interval = setInterval(() => {
-      if (!hasActivePlan) return;
+      if (!expiryRef.current) return;
       
-      setTimeRemaining((prev) => {
-        let { days, hours, minutes, seconds } = prev;
-
-        if (seconds > 0) {
-          seconds--;
-        } else if (minutes > 0) {
-          minutes--;
-          seconds = 59;
-        } else if (hours > 0) {
-          hours--;
-          minutes = 59;
-          seconds = 59;
-        } else if (days > 0) {
-          days--;
-          hours = 23;
-          minutes = 59;
-          seconds = 59;
-        }
-
-        return { days, hours, minutes, seconds };
-      });
+      const remainingMs = expiryRef.current - Date.now();
+      if (remainingMs <= 0) {
+        clearInterval(interval);
+        setTimeRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+      
+      const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
+      setTimeRemaining({ days, hours, minutes, seconds });
     }, 1000);
 
     return () => clearInterval(interval);

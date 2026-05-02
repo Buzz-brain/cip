@@ -35,6 +35,7 @@ export const OwnerDashboard = (): JSX.Element => {
   const [stats, setStats] = useState<any | null>(null);
   const [polPlan, setPolPlan] = useState<any | null>(null);
   const [polTimeRemaining, setPolTimeRemaining] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
+  const [polDeadlineTs, setPolDeadlineTs] = useState<number | null>(null);
   const [missedCheckCount, setMissedCheckCount] = useState(0);
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
   const auth = useAuth();
@@ -82,28 +83,43 @@ export const OwnerDashboard = (): JSX.Element => {
 
         setPolPlan(plan);
 
-        if (now <= inactivityTs) {
+        // Only show missed/critical status if backend says should_release is true
+        // If should_release is false, the plan has not been triggered yet
+        const isTriggered = plan.should_release === true || plan.is_released === true;
+
+        if (!isTriggered) {
+          // Plan not yet triggered by backend
           setPolStatus("active");
+          // Compute deadline and time remaining for dashboard display
+          const deadlineTs = baseTs + (inactivityDays + graceDays) * 86400000;
+          setPolDeadlineTs(deadlineTs);
+          const remainingMs = Math.max(0, deadlineTs - now);
+          const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
+          setPolTimeRemaining({ days, hours, minutes, seconds });
         } else if (now <= expiryTs) {
+          // Triggered and within grace period
           setPolStatus("missed");
-          // Calculate time remaining before execution
           const remainingMs = expiryTs - now;
           const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
           const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
           const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
           const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
           setPolTimeRemaining({ days, hours, minutes, seconds });
-          setMissedCheckCount((plan.missed_checks || 2));
+          // Only use missed_checks from backend if it exists; don't default to hardcoded value
+          setMissedCheckCount(plan.missed_checks || 0);
         } else {
+          // Past grace period expiry
           setPolStatus("critical");
-          // Calculate time remaining (should be minimal)
           const remainingMs = Math.max(0, expiryTs - now);
           const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
           const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
           const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
           const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
           setPolTimeRemaining({ days, hours, minutes, seconds });
-          setMissedCheckCount((plan.missed_checks || 3));
+          setMissedCheckCount(plan.missed_checks || 0);
         }
         setPolLoading(false);
       } catch (err) {
@@ -343,22 +359,31 @@ export const OwnerDashboard = (): JSX.Element => {
 
                       {polStatus && (
                         <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <span className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm">
-                              Heartbeat Progress
-                            </span>
-                            <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
-                              {polStatus === "active" ? "85%" : polStatus === "missed" ? "45%" : "10%"}
-                            </span>
-                          </div>
-                          <div className="w-full bg-[#393028] rounded-full h-2 overflow-hidden">
-                            <div
-                              className={`h-full rounded-full ${ polStatus === "active" ? "bg-[#FF6600]" : polStatus === "missed" ? "bg-[#EAB308]" : "bg-[#EF4444]"}`}
-                              style={{ width: polStatus === "active" ? "85%" : polStatus === "missed" ? "45%" : "10%" }}
-                            />
-                          </div>
+                          {(() => {
+                            const progressPct = polPlan ? Math.min(100, Math.max(0, Math.round(((Date.now() - ((polPlan.last_active_at ?? polPlan.created_at ?? 0) * 1000)) / ((Number(polPlan.inactivity_period_days ?? 30)) * 86400000)) * 100))) : 0;
+                            return (
+                              <>
+                                <div className="flex items-center justify-between">
+                                  <span className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm">
+                                    Heartbeat Progress
+                                  </span>
+                                  <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                                    {progressPct}%
+                                  </span>
+                                </div>
+                                <div className="w-full bg-[#393028] rounded-full h-2 overflow-hidden">
+                                  <div
+                                    className={`h-full rounded-full ${ polStatus === "active" ? "bg-[#FF6600]" : polStatus === "missed" ? "bg-[#EAB308]" : "bg-[#EF4444]"}`}
+                                    style={{ width: `${progressPct}%` }}
+                                  />
+                                </div>
+                              </>
+                            );
+                          })()}
                           <div className="[font-family:'Noto_Sans',Helvetica] text-right text-[#B9B09D] text-xs">
-                            {polStatus === "active" ? "Refreshes in 48 hours" : polStatus === "missed" ? "Action required immediately" : "Critical - action needed now"}
+                            {polStatus === "active" ? (
+                              polPlan ? `Next check in ${Number(polPlan.inactivity_period_days ?? 30)} day${Number(polPlan.inactivity_period_days ?? 30) !== 1 ? 's' : ''}` : "No active plan"
+                            ) : polStatus === "missed" ? "Action required immediately" : "Critical - action needed now"}
                           </div>
                         </div>
                       )}
@@ -377,7 +402,7 @@ export const OwnerDashboard = (): JSX.Element => {
                     </>
                   )}
                   {showPoLModal && modalType === "check" && (
-                    <ProofOfLifeCheck open onClose={() => setShowPoLModal(false)} />
+                    <ProofOfLifeCheck open onClose={() => setShowPoLModal(false)} plan={polPlan} deadlineTs={polDeadlineTs ?? undefined} />
                   )}
                   {showPoLModal && modalType === "missed" && (
                     <ProofOfLifeCheckMissed open onClose={() => setShowPoLModal(false)} timeRemaining={polTimeRemaining || undefined} missedCheckCount={missedCheckCount} />
