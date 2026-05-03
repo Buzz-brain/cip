@@ -1,5 +1,9 @@
 /* Dark theme customization for react-datepicker in SetTimeLock */
-
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 .datepicker-wrapper-dark .react-datepicker-wrapper {
   width: 100%;
 }
@@ -30,23 +34,23 @@
   border-bottom: 1px solid #392f28;
   padding: 12px;
   border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: white;
 }
 
-/* Month/year text */
+/* Hide redundant combined Month Year label when using dropdowns */
 .datepicker-popper-dark .react-datepicker__current-month,
 .datepicker-popper-dark .react-datepicker__current-month-time {
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 14px;
+  display: none;
 }
 
 /* Navigation buttons - equal padding */
 .datepicker-popper-dark .react-datepicker__navigation {
   background-color: transparent;
-  top: 12px;
-  width: 32px;
-  height: 32px;
-  padding: 0;
+  top: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -58,14 +62,48 @@
 }
 
 .datepicker-popper-dark .react-datepicker__navigation--previous {
-  left: 12px;
+  left: 20px;
   border-color: #ff6600;
+  padding-top: 8px;
+  padding-right: 6px;
 }
 
 .datepicker-popper-dark .react-datepicker__navigation--next {
-  right: 12px;
+  right: 20px;
   border-color: #ff6600;
+    padding-top: 8px;
+  padding-left: 6px;
 }
+
+
+/* Make arrow triangles white and centered */
+.datepicker-popper-dark .react-datepicker__navigation--previous::before,
+.datepicker-popper-dark .react-datepicker__navigation--next::before {
+  border-color: transparent;
+}
+.datepicker-popper-dark .react-datepicker__navigation--previous::before {
+  border-right-color: #ffffff;
+}
+.datepicker-popper-dark .react-datepicker__navigation--next::before {
+  border-left-color: #ffffff;
+}
+
+/* Increase clickable area and equal padding for arrows */
+.datepicker-popper-dark .react-datepicker__navigation {
+  width: 30px;
+  height: 40px;
+}
+
+.datepicker-popper-dark .react-datepicker__navigation::before {
+  /* make triangle slightly larger and crisp */
+  border-width: 7px !important;
+}
+
+
+
+
+
+
 
 /* Day of week labels */
 .datepicker-popper-dark .react-datepicker__day-name {
@@ -111,7 +149,7 @@
 }
 
 .datepicker-popper-dark .react-datepicker__day--outside-month {
-  color: #54463b;
+  color: #d4ccc6;
   opacity: 0.5;
 }
 
@@ -121,11 +159,12 @@
   cursor: not-allowed;
 }
 
-/* Today highlight - improved contrast */
+/* Today highlight - white text instead of orange */
 .datepicker-popper-dark .react-datepicker__day--today {
-  color: #ff6600;
+  color: #ffffff;
   font-weight: 700;
   border: 2px solid #ff6600;
+  background-color: #392f28;
 }
 
 /* Time input section */
@@ -136,6 +175,7 @@
 
 .datepicker-popper-dark .react-datepicker__time-container--time {
   border-left: 1px solid #392f28;
+  
 }
 
 .datepicker-popper-dark .react-datepicker__time-header {
@@ -143,6 +183,7 @@
   font-weight: 600;
   font-size: 13px;
   background-color: transparent;
+  
 }
 
 /* Time list - improved format with better spacing and contrast */
@@ -155,15 +196,18 @@
 
 .datepicker-popper-dark .react-datepicker__time-list::-webkit-scrollbar {
   width: 6px;
+  
 }
 
 .datepicker-popper-dark .react-datepicker__time-list::-webkit-scrollbar-track {
   background: #0f0c09;
+  
 }
 
 .datepicker-popper-dark .react-datepicker__time-list::-webkit-scrollbar-thumb {
   background: #392f28;
   border-radius: 3px;
+  
 }
 
 .datepicker-popper-dark .react-datepicker__time-list-item {
@@ -204,7 +248,7 @@
 /* Year/month dropdown - clickable selectors for easy navigation */
 .datepicker-popper-dark .react-datepicker__year-read-view,
 .datepicker-popper-dark .react-datepicker__month-read-view {
-  color: #ff6600;
+  color: #ffffff;
   font-weight: 600;
   cursor: pointer;
   padding: 4px 8px;
@@ -216,7 +260,7 @@
 .datepicker-popper-dark .react-datepicker__year-read-view:hover,
 .datepicker-popper-dark .react-datepicker__month-read-view:hover {
   background-color: #392f28;
-  color: #ffaa33;
+  color: #ff6600;
 }
 
 .datepicker-popper-dark .react-datepicker__year-dropdown,
@@ -230,7 +274,7 @@
 .datepicker-popper-dark .react-datepicker__year-option,
 .datepicker-popper-dark .react-datepicker__month-option {
   background-color: #0f0c09;
-  color: #d4ccc6;
+  color: #ffffff;
   padding: 8px 12px;
   transition: all 0.2s ease;
 }
@@ -246,4 +290,46 @@
   background-color: #ff6600;
   color: #ffffff;
   font-weight: 600;
+}
+.datepicker-popper-dark .react-datepicker__year-dropdown,
+.datepicker-popper-dark .react-datepicker__month-dropdown {
+  background-color: #1a1410; /* dark dropdown background */
+  border: 1px solid #392f28;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.datepicker-popper-dark .react-datepicker__year-option,
+.datepicker-popper-dark .react-datepicker__month-option {
+  background-color: #0f0c09;
+  color: #ffffff;
+  padding: 8px 12px;
+  transition: all 0.12s ease;
+}
+.datepicker-popper-dark .react-datepicker__year-option:hover,
+.datepicker-popper-dark .react-datepicker__month-option:hover {
+  background-color: #392f28;
+  color: #ff6600;
+}
+
+/* When dropdownMode="select" react-datepicker renders native <select>
+   elements with these classes — style them too (option styling is
+   limited by browsers, but select background/border/text can be set). */
+.datepicker-popper-dark .react-datepicker__month-select,
+.datepicker-popper-dark .react-datepicker__year-select,
+.datepicker-popper-dark .react-datepicker__month-year-select {
+  background-color: #0f0c09; /* dark select background */
+  color: #ffffff;
+  border: 1px solid #392f28;
+  border-radius: 8px;
+  padding: 6px 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* Option styling (note: some browsers limit <option> styling) */
+.datepicker-popper-dark .react-datepicker__month-select option,
+.datepicker-popper-dark .react-datepicker__year-select option,
+.datepicker-popper-dark .react-datepicker__month-year-select option {
+  background-color: #0f0c09;
+  color: #ffffff;
 }

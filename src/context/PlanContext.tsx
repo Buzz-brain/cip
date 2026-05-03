@@ -25,6 +25,7 @@ export type PlanType =
   | "testamentary-dao";
 
 export interface PlanCreationState {
+  name?: string;
   planType?: PlanType;
   ownerWallet?: string;
   ownerName?: string;
@@ -248,6 +249,8 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
     // Build payload according to selected plan type (backend expects different shapes)
     const planType = plan.planType;
     const body: Record<string, any> = {
+      // include plan name (backend now expects `name`)
+      name: plan.name || "",
       crypto_asset: plan.cryptoAsset || "",
       plan_type: mapPlanTypeToDataProtectorType(planType),
     };

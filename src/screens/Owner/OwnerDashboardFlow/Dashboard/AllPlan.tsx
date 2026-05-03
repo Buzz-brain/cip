@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@components/ui/card";
 import { Badge } from "@components/ui/badge";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../../../context/useAuth";
 import useActivityLogs from "../../../../lib/hooks/useActivityLogs";
 import { usePlan } from "../../../../context/usePlan";
@@ -93,11 +94,12 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
   const [deleting, setDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [highlightedPlanId, setHighlightedPlanId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 4;
   const [selectedFilter, setSelectedFilter] = useState<"All Plans" | "Active" | "Pending" | "Triggered">("All Plans");
   const highlightTimerRef = React.useRef<number | null>(null);
 
   const tabs = ["All Plans", "Active", "Pending", "Triggered"] as const;
-  const tabIndex = tabs.indexOf(selectedFilter);
 
   const formatTs = (ts?: number | null) => {
     if (!ts) return "—";
@@ -310,6 +312,13 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
     );
   });
 
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  useEffect(() => {
+    if (currentPage > pageCount) setCurrentPage(pageCount);
+  }, [pageCount]);
+
+  const paginated = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   const getNoPlansMessage = (): string => {
     if (selectedFilter === "All Plans") return "No plans";
     return `No ${selectedFilter.toLowerCase()} plan`;
@@ -322,7 +331,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
           {tabs.map((tab) => (
             <button 
               key={tab}
-              onClick={() => setSelectedFilter(tab)}
+              onClick={() => { setSelectedFilter(tab); setCurrentPage(1); }}
               className={`px-4 py-2 rounded-lg [font-family:'Noto_Sans',Helvetica] font-medium text-sm transition-colors ${
                 selectedFilter === tab
                   ? "bg-[#393028] border border-[#FF660080] text-white"
@@ -333,22 +342,24 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
             </button>
           ))}
 
-          <div className="ml-auto relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B9B09D]" />
-            <input
-              type="text"
-              placeholder="Search plans..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-[#2D241C] border border-[#393028] rounded-lg pl-10 pr-4 py-2 text-[#b8a494] placeholder-[#706758] [font-family:'Noto_Sans',Helvetica] text-sm focus:outline-none focus:border-[#ff6600]"
-            />
+          <div className="ml-auto relative flex items-center gap-3">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B9B09D]" />
+              <input
+                type="text"
+                placeholder="Search plans..."
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                className="bg-[#2D241C] border border-[#393028] rounded-lg pl-10 pr-4 py-2 text-[#b8a494] placeholder-[#706758] [font-family:'Noto_Sans',Helvetica] text-sm focus:outline-none focus:border-[#ff6600]"
+              />
+            </div>
+            <Link to="/owner-dashboard/plans" className="text-sm text-[#ff6600] hover:underline">View all</Link>
           </div>
         </div>
-        {/* Plan details modal */}
-        {modalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/60" onClick={() => { setModalOpen(false); setSelectedPlanDetail(null); }} />
-            <div className="relative bg-[#1f1915] border border-[#3a2f1e] rounded-lg w-[90%] max-w-2xl p-6 z-60">
+          {modalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/60" onClick={() => { setModalOpen(false); setSelectedPlanDetail(null); }} />
+              <div className="relative bg-[#1f1915] border border-[#3a2f1e] rounded-lg w-[90%] max-w-2xl p-6 z-60">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <h3 className="text-white font-bold">Plan Details</h3>
                 <button className="text-[#b8a494]" onClick={() => { setModalOpen(false); setSelectedPlanDetail(null); }}>Close</button>
@@ -402,10 +413,12 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                       </div> 
                       )}
 
+                      {selectedPlanDetail.plan?.plan_type === 'health_oracle' && (
                       <div>
                         <div className="text-xs text-[#8b7664]">Oracle Source</div>
                         <div className="text-white">{selectedPlanDetail.plan?.oracle_source ?? '—'}</div>
                       </div>
+                      )}
                       <div>
                         <div className="text-xs text-[#8b7664]">Amount</div>
                         <div className="text-white">{selectedPlanDetail.plan?.amount ?? '—'}</div>
@@ -546,7 +559,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
             </thead>
             <tbody>
               {loading ? (
-                Array.from({ length: 3 }).map((_, i) => (
+                Array.from({ length: pageSize }).map((_, i) => (
                   <tr key={`s-${i}`} className="border-b border-[#393028]">
                     <td className="py-4 px-4"><div className="h-6 bg-[#2f241c] rounded w-32" /></td>
                     <td className="py-4 px-4"><div className="h-4 bg-[#2f241c] rounded w-24" /></td>
@@ -555,8 +568,8 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                     <td className="py-4 px-4"><div className="h-4 bg-[#2f241c] rounded w-8" /></td>
                   </tr>
                 ))
-              ) : filtered.length > 0 ? (
-                filtered.map((plan) => (
+              ) : paginated.length > 0 ? (
+                paginated.map((plan) => (
                 <tr key={plan.id} className={`border-b border-[#393028] hover:bg-[#0d0b08] transition-colors cursor-pointer ${plan.id === highlightedPlanId ? 'ring-2 ring-green-400/40 bg-green-900/5' : ''}`} onClick={async () => {
                   const idNum = plan.raw?.id ?? plan.raw?.contract_plan_id;
                   if (!idNum) {
@@ -640,25 +653,21 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
 
         {/* Pagination */}
         <div className="flex items-center justify-between pt-4">
-          <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">Showing {filtered.length > 0 ? `1-${filtered.length}` : '0'} of {plans.length} plans</span>
+          <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">Showing {(filtered.length === 0) ? 0 : ((currentPage - 1) * pageSize + 1)} - {Math.min(currentPage * pageSize, filtered.length)} of {filtered.length} plans</span>
           <div className="flex items-center gap-4">
-            <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs">{tabIndex + 1} / {tabs.length}</span>
+            <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs">{currentPage} / {pageCount}</span>
             <div className="flex items-center gap-2">
               <button 
-                onClick={() => {
-                  const prevIndex = (tabIndex - 1 + tabs.length) % tabs.length;
-                  setSelectedFilter(tabs[prevIndex]);
-                }}
-                className="w-8 h-8 rounded border border-[#B9B09D] hover:bg-[#2a1f10] flex items-center justify-center transition-colors"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className={`w-8 h-8 rounded border border-[#B9B09D] ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[#2a1f10]'} flex items-center justify-center transition-colors`}
               >
                 <ChevronLeft className="w-4 h-4 text-[#B9B09D]" />
               </button>
               <button 
-                onClick={() => {
-                  const nextIndex = (tabIndex + 1) % tabs.length;
-                  setSelectedFilter(tabs[nextIndex]);
-                }}
-                className="w-8 h-8 rounded border border-[#B9B09D] hover:bg-[#2a1f10] flex items-center justify-center transition-colors"
+                onClick={() => setCurrentPage((p) => Math.min(pageCount, p + 1))}
+                disabled={currentPage === pageCount}
+                className={`w-8 h-8 rounded border border-[#B9B09D] ${currentPage === pageCount ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[#2a1f10]'} flex items-center justify-center transition-colors`}
               >
                 <ChevronRight className="w-4 h-4 text-[#B9B09D]" />
               </button>

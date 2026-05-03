@@ -67,6 +67,8 @@ import { SecureStorage } from "./screens/Owner/OwnerDashboardFlow/SecureStorage"
 import { UploadSignedDoc } from "./screens/Owner/OwnerDashboardFlow/UploadSignedDoc"; 
 import { ProofOfLifeConfig } from "./screens/Owner/OwnerDashboardFlow/Dashboard/ProofOfLifeConfig";
 import OwnerActivityLogs from "./screens/Owner/OwnerDashboardFlow/OwnerActivityLogs";
+import AllPlansPage from "./screens/Owner/OwnerDashboardFlow/AllPlansPage";
+import PlanDetail from "./screens/Owner/OwnerDashboardFlow/PlanDetail";
 
 import { EnterpriseLogin } from "./screens/EnterpriseFlow/EnterpriseLogin";
 import { EnterpriseDashboard } from "./screens/EnterpriseFlow/EnterpriseDashboard";
@@ -192,6 +194,8 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           <Route path="philanthropy-plan" element={<PhilanthropyPlan />} />
           <Route path="review-plan" element={<ReviewPlan />} />
           <Route path="plan-activated" element={<PlanActivatedSuccess />} />
+          <Route path="plans" element={<AllPlansPage />} />
+          <Route path="plans/:planId" element={<PlanDetail />} />
 
           {/* TimeLock */}
           <Route path="set-time-lock" element={<SetTimeLock />} />

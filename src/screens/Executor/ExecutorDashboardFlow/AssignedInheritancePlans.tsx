@@ -444,6 +444,7 @@ const AssignedInheritancePlans: React.FC = () => {
                       </div>
                       )}
 
+                      {selectedPlanDetail.plan?.plan_type === 'health_oracle' && (
                       <div>
                         <div className="text-xs text-[#8b7664]">Oracle Source</div>
                         {selectedPlanDetail.plan?.oracle_source ? (
@@ -460,6 +461,7 @@ const AssignedInheritancePlans: React.FC = () => {
                           <div className="text-white">—</div>
                         )}
                       </div>
+                      )}
                       <div>
                         <div className="text-xs text-[#8b7664]">Amount</div>
                         <div className="text-white">{selectedPlanDetail.plan?.amount ?? '—'}</div>
