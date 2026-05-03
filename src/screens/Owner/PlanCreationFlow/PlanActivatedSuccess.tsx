@@ -1,237 +1,212 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Copy } from "lucide-react";
-import { useState } from "react";
 import shieldCheckOrangeIcon from "@assets/shield-check-orange.svg";
 import { toast } from "react-toastify";
 
-export const PlanActivatedSuccess = (): JSX.Element => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [accessList, setAccessList] = useState<any>(null);
-  const [loadingAccess, setLoadingAccess] = useState(false);
-  const [grantedAccess, setGrantedAccess] = useState<any>(null);
-  const [loadingGranted, setLoadingGranted] = useState(false);
-  const state = location.state as {
-    referenceId?: string;
-    triggerMechanism?: string;
-    assetsIncluded?: string;
-    mainBeneficiary?: string;
-    securityLevel?: string;
-    protectedDataAddress?: string;
-    plan_id_to_fund?: number;
-    trx_hex?: string;
-    backendMessage?: string;
-  } | null;
+const Confetti: React.FC = () => {
+  const pieces = Array.from({ length: 50 }).map((_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 0.5,
+    duration: 2 + Math.random() * 1,
+    color: ['#FF6600', '#FFC589', '#FFE4B5', '#FF8C00'][Math.floor(Math.random() * 4)],
+  }));
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      {pieces.map((p) => (
+        <div
+          key={p.id}
+          className="absolute w-2 h-2"
+          style={{
+            left: `${p.left}%`,
+            top: '-10px',
+            background: p.color,
+            borderRadius: '50%',
+            animation: `fall ${p.duration}s linear ${p.delay}s forwards`,
+          }}
+        />
+      ))}
+      <style>{`
+        @keyframes fall {
+          to {
+            transform: translateY(100vh) rotateZ(360deg);
+            opacity: 0;
+          }
+        }
+      `}</style>
+    </div>
+  );
+};
 
-  const formatTimestamp = (ts?: string | number) => {
+export const PlanActivatedSuccess: React.FC = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [planIdToFund, setPlanIdToFund] = useState<number | null>(null);
+  const [trxHex, setTrxHex] = useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = useState(true);
+
+  useEffect(() => {
+    const planId = searchParams.get('planId');
+    const trx = searchParams.get('trx');
+    setPlanIdToFund(planId ? Number(planId) : null);
+    setTrxHex(trx && trx.length > 0 ? trx : null);
+    setTimeout(() => setShowConfetti(false), 2500);
+  }, []);
+  
+  // Refs for copying plans details (optional, kept for potential features)
+  const stateRef = React.useRef({ planId: null, trx: null });
+  React.useEffect(() => {
+    stateRef.current = { planId: planIdToFund, trx: trxHex };
+  }, [planIdToFund, trxHex]);
+  
+
+  const copy = async (text: string, success = "Copied") => {
     try {
-      if (!ts) return null;
-      let d: Date;
-      if (typeof ts === "number") d = new Date(ts * 1000);
-      else d = new Date(ts);
-      if (isNaN(d.getTime())) return null;
-      const date = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' });
-      const time = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-      return { date, time };
+      await navigator.clipboard.writeText(text);
+      toast.success(success);
     } catch (e) {
-      return null;
+      toast.error("Copy failed");
     }
   };
 
-  const handleViewPlans = () => {
-    navigate("/view-plan-history");
-  };
-
-  const handleReturnDashboard = () => {
-    navigate("/owner-dashboard");
-  };
-
-  // DataProtector functionality removed — access list and granted access
-  // are not available in the backend-only flow.
-
   return (
-    <div className="flex flex-col [font-family:'Manrope',Helvetica]">
-      <div className="flex-1 flex items-center justify-center px-4 py-4">
-        <div className="max-w-3xl w-full bg-[#3D2E21] rounded-xl p-12 shadow-2xl">
-          <div className="flex justify-center mb-8">
-            <div className="w-28 h-28 rounded-full border-2 border-[#FF6600] flex items-center justify-center bg-[#FF660033]">
-              <img src={shieldCheckOrangeIcon} alt="" />
+    <div className="min-h-[72vh] flex items-center justify-center bg-gradient-to-b from-[#080706] to-[#0f0d0b] py-12">
+      {showConfetti && <Confetti />}
+      <div className="w-full max-w-4xl bg-[#0f0d0b] border border-[#2b2419] rounded-2xl p-8 shadow-2xl">
+        <div className="flex items-start gap-6">
+          <div className="relative w-36 h-36 flex-shrink-0">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-400 to-amber-400 opacity-10 filter blur-2xl animate-pulse" />
+            <div className="absolute -inset-2 rounded-full border-2 border-orange-400/20 animate-ping" />
+            <div className="relative w-full h-full rounded-full bg-[#2c1f17] flex items-center justify-center border border-[#3b2e23]">
+              <img
+                src={shieldCheckOrangeIcon}
+                alt="success"
+                className="w-20 h-20 drop-shadow-lg"
+              />
             </div>
           </div>
 
-          <h1 className="text-4xl font-bold text-white text-center mb-4">
-            Plan Activated Successfully
-          </h1>
+          <div className="flex-1">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-white">
+              Plan Activated Successfully
+            </h1>
+            <p className="mt-2 text-sm text-[#cdb89a]">
+              Your inheritance plan has been created successfully. Save the
+              details below and fund the plan to enable asset transfers.
+            </p>
 
-          <p className="text-[#FFC589] text-center text-md mb-8">
-            Your inheritance plan has been secured on-chain. The smart contract
-            has been deployed and assets are now monitored.
-          </p>
-
-          <div style={{ width: "55%", margin: "20px auto" }} className="bg-[#181411] rounded-lg p-4 flex flex-col gap-2 items-center">
-            <div className="flex w-full justify-between items-center">
-              <p className="text-gray-400 text-xl">PLAN ID</p>
-              <p className="text-white text-xl font-semibold">{state?.plan_id_to_fund ?? "—"}</p>
+            <div className="mt-4 flex flex-wrap gap-3">
               <button
-                className="text-orange-600 hover:text-orange-500 transition-colors"
-                onClick={async () => {
-                  const toCopy = state?.plan_id_to_fund?.toString() ?? "";
-                  try {
-                    await navigator.clipboard.writeText(toCopy);
-                    toast.success("Plan ID copied to clipboard");
-                  } catch (e) {
-                    toast.error("Failed to copy Plan ID");
-                  }
-                }}
+                onClick={() =>
+                  planIdToFund &&
+                  navigate(`/owner-dashboard/plans/${planIdToFund}`)
+                }
+                className="px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-500 text-black font-semibold rounded-md shadow hover:scale-105 transform"
               >
-                <Copy className="w-5 h-5" />
+                Open Plan
+              </button>
+              <button
+                onClick={() => navigate("/owner-dashboard/plans")}
+                className="px-4 py-2 border border-[#3b2e23] text-[#d1c3b4] rounded-md hover:bg-[#1b1714]"
+              >
+                All Plans
               </button>
             </div>
-            {state?.trx_hex && (
-              <div className="w-full mt-2">
-                <div className="text-gray-400 text-xs mb-1">Transaction Hex</div>
+          </div>
+        </div>
+
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-[#12100e] border border-[#2a241b] rounded-lg p-5 flex flex-col">
+            <div className="text-xs text-[#9b855f]">Plan ID to Fund</div>
+            <div className="mt-2 flex items-center gap-3">
+              <div className="text-2xl font-bold text-white truncate">
+                {planIdToFund ? String(planIdToFund) : "—"}
+              </div>
+              {planIdToFund != null && (
                 <div className="flex items-center gap-2">
-                  <span className="text-white text-xs break-all">{state.trx_hex}</span>
                   <button
-                    className="text-orange-600 hover:text-orange-500 transition-colors"
-                    onClick={async () => {
-                      try {
-                        await navigator.clipboard.writeText(state.trx_hex!);
-                        toast.success("Transaction hex copied");
-                      } catch (e) {
-                        toast.error("Failed to copy transaction hex");
-                      }
-                    }}
+                    onClick={() => copy(String(planIdToFund), "Plan ID copied")}
+                    className="text-[#d1c3b4] hover:text-white"
                   >
                     <Copy className="w-4 h-4" />
                   </button>
                 </div>
-              </div>
-            )}
-            {state?.backendMessage && (
-              <div className="w-full mt-2 text-green-400 text-xs text-center">{state.backendMessage}</div>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            <div className="bg-[#181411] rounded-lg p-6 border border-gray-700">
-                <div className="text-[#FFC589] text-sm font-semibold mb-2">
-                  Trigger Mechanism
-                </div>
-                <div className="text-white font-semibold text-sm mb-1">
-                  {state?.triggerMechanism || "Inactivity Monitor (12 Months)"}
-                </div>
+              )}
             </div>
-            <div className="bg-[#181411] rounded-lg p-6 border border-gray-700">
-              <div className="text-[#FFC589] text-sm font-semibold mb-2">
-                Assets Included
-              </div>
-                <div className="text-white font-semibold text-sm mb-1">
-                  {state?.assetsIncluded || '12 Assets'} {state?.assetsIncluded ? null : (
-                    <span className="text-[#FFC589] text-xs font-light">(ETH, SOL, USDC)</span>
-                  )}
-                </div>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            <div className="bg-[#181411] rounded-lg p-6 border border-gray-700">
-              <div className="text-[#FFC589] text-sm font-semibold mb-2">
-                Main Beneficiary
-              </div>
-              <div className="text-white font-semibold text-sm font-mono break-all">
-                {state?.mainBeneficiary || "0x71c...9a21"}
-              </div>
+            <div className="mt-4 text-xs text-[#b59b7d]">Next step</div>
+            <div className="mt-1 text-sm text-[#d1c3b4]">
+              Fund this plan on-chain to enable distribution to beneficiaries.
             </div>
-            <div className="bg-[#181411] rounded-lg p-6 border border-gray-700">
-              <div className="text-[#FFC589] text-sm font-semibold mb-2">
-                Security Level
-              </div>
-              <div className="text-white font-semibold text-sm">
-                {state?.securityLevel || "AES-256 ENCRYPTED"}
-              </div>
-            </div>
-          </div>
 
-          {state?.protectedDataAddress && (
-            <div className="bg-[#181411] rounded-lg p-4 mb-6 border border-gray-700 text-sm text-gray-300">
-              <div className="text-[#FFC589] text-xs font-semibold mb-2">
-                Protected Data Address
-              </div>
-              <div className="break-all">{state.protectedDataAddress}</div>
-              <div className="text-gray-400 text-xs mt-2">iApp access management is not available in the backend-only flow.</div>
-            </div>
-          )}
-
-          {/* Access list and granted access UI removed (DataProtector not used). */}
-
-          <div className="text-center text-gray-400 text-xs mb-8">
-            <div className="flex items-center justify-center gap-2">
-              <span>Creation Timestamp</span>
-              {(() => {
-                const formatted = formatTimestamp((state as any)?.creationTimestamp);
-                if (formatted) {
-                  return (<>
-                    <span className="text-orange-600">{formatted.date}</span>
-                    <span className="text-orange-600">{formatted.time} UTC</span>
-                  </>);
+            {planIdToFund != null && (
+              <button
+                onClick={() =>
+                  navigate(`/owner-dashboard/plans/${planIdToFund}?action=fund`)
                 }
-                const now = new Date();
-                const date = now.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' });
-                const time = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-                return (<>
-                  <span className="text-orange-600">{date}</span>
-                  <span className="text-orange-600">{time} UTC</span>
-                </>);
-              })()}
-            </div>
+                className="mt-4 w-full py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded"
+              >
+                Fund Now
+              </button>
+            )}
           </div>
 
-          <div className="flex gap-4">
-            <button
-              onClick={handleViewPlans}
-              className="flex-1 bg-orange-600 hover:bg-orange-700 transition-colors text-white font-semibold py-4 rounded-lg"
-            >
-              View my Plans
-            </button>
-            <button
-              onClick={handleReturnDashboard}
-              className="flex-1 border border-[#84461C] text-white hover:bg-orange-700 transition-colors font-semibold py-4 rounded-lg"
-            >
-              Return to Dashboard
-            </button>
+          <div className="bg-[#12100e] border border-[#2a241b] rounded-lg p-5 flex flex-col">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="text-xs text-[#9b855f]">Transaction</div>
+                <div className="text-sm text-[#d1c3b4]">
+                  {trxHex
+                    ? "Deployment transaction created"
+                    : "No on-chain transaction available"}
+                </div>
+              </div>
+              {trxHex && <div className="text-xs text-[#9b855f]">Hash</div>}
+            </div>
+
+            {trxHex && (
+              <div className="mt-3 flex flex-col gap-4">
+                <div className="flex gap-4">
+                  <pre className="text-xs text-[#e6d9c6] break-words text-wrap max-w-xs bg-[#0b0a09] p-2 rounded">
+                    {trxHex}
+                  </pre>
+
+                  <button
+                    onClick={() => copy(trxHex, "Transaction hex copied")}
+                    className="text-[#d1c3b4] hover:text-white flex items-center gap- 2"
+                  >
+                    <Copy className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <a
+                    className="text-sm text-[#d1c3b4] hover:underline ml-auto"
+                    target="_blank"
+                    rel="noreferrer"
+                    href={`https://sepolia.arbiscan.io/tx/${trxHex}`}
+                  >
+                    View on Arbiscan →
+                  </a>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-4 text-xs text-[#b59b7d]">Status</div>
+            <div className="mt-1 text-sm text-green-400 font-semibold">
+              SUCCESS
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="bg-[#1B1613] px-8 py-6">
-        <div className="flex items-center justify-center flex-col gap-4 text-gray-400 text-xs">
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-white transition-colors">
-              Privacy Policy
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              Terms of Service
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              Smart Contract Audit
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              Documentation
-            </a>
-          </div>
-
-          <div className="flex items-center gap-2"  >
-            <div className="relative flex h-2 w-2 items-start">
-              <div className="absolute inset-0 rounded-full bg-green-400" />
-              <div className="relative h-2 w-2 rounded-full bg-green-500" />
-            </div>
-            <span>
-              AI Systems Operational
-            </span>
-          </div>
-
-          <p>2025 Multi-Chain Inheritance Protocol. All rights reserved.</p>
+        <div className="mt-6 flex items-center justify-between">
+          <button
+            onClick={() => navigate("/owner-dashboard")}
+            className="px-4 py-2 bg-transparent border border-[#4a3a2b] text-[#d1c3b4] rounded"
+          >
+            Return to Dashboard
+          </button>
         </div>
       </div>
     </div>

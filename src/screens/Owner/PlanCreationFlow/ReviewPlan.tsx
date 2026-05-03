@@ -166,19 +166,14 @@ export const ReviewPlan = (): JSX.Element => {
 
       // Navigate only if submission succeeded
       if (submitResponse) {
-        navigate("/plan-activated", {
-          state: {
-            referenceId: submitResponse?.id || submitResponse?.plan_id || "#CIP-8354-JD",
-            plan_id_to_fund: submitResponse?.plan_id_to_fund ?? submitResponse?.plan_id ?? submitResponse?.id,
-            trx_hex: submitResponse?.trx_hex ?? submitResponse?.transaction_hex ?? null,
-            backendMessage: submitResponse?.message ?? submitResponse?.detail ?? null,
-            triggerMechanism: payload.plan_type || "Inactivity Monitor (12 Months)",
-            assetsIncluded: `${payload.crypto_asset} ${payload.amount}`,
-            mainBeneficiary: payload.beneficiary_1_wallet || payload.owner_wallet,
-            securityLevel: "AES-256 ENCRYPTED",
-            protectedDataAddress: submitResponse?.protected_data_address ?? protectedDataAddress,
-          },
-        });
+        // Extract from .data layer where backend puts it
+        const responseData = submitResponse?.data || submitResponse;
+        const planId = responseData?.plan_id_to_fund ?? responseData?.plan_id ?? submitResponse?.id;
+        const trx = responseData?.trx_hex ?? responseData?.transaction_hex ?? '';
+
+        navigate(
+          `/owner-dashboard/plan-activated?planId=${planId ?? ''}&trx=${trx ?? ''}`
+        );
       }
     } catch (error) {
       let message = "Failed to submit the inheritance plan.";
