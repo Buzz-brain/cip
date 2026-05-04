@@ -51,7 +51,6 @@ import { ConfirmInactivityOraclePlan } from "./screens/Owner/PlanCreationFlow/In
 
 import { ChooseProofOfLifeMethod } from "./screens/Owner/PlanCreationFlow/InactivityOracle/ChooseProofOfLifeMethod.tsx";
 import { BillingAndPayment } from "./screens/Owner/BillingAndSubscription/BillingAndPayment";
-import { SecureCheckout } from "./screens/Owner/BillingAndSubscription/SecureCheckout";
 import { SubscriptionRenewal } from "./screens/Owner/BillingAndSubscription/SubscriptionRenewal";
 import { BillingHistory } from "./screens/Owner/BillingAndSubscription/BillingHistory";
 import { GracePeriodActive } from "./screens/Owner/BillingAndSubscription/GracePeriodActive";
@@ -218,7 +217,6 @@ createRoot(document.getElementById("app") as HTMLElement).render(
 
           {/* Billing and Subscription inside Owner Dashboard layout */}
           <Route path="billing-and-payments" element={<BillingAndPayment />} />
-          <Route path="secure-checkout" element={<SecureCheckout />} />
           <Route path="subscription-renewal" element={<SubscriptionRenewal />} />
           <Route path="billing-history" element={<BillingHistory />} />
           <Route path="grace-period-active" element={<GracePeriodActive />} />

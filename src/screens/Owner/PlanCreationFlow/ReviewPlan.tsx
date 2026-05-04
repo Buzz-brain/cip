@@ -144,8 +144,6 @@ export const ReviewPlan = (): JSX.Element => {
       };
       console.log('[ReviewPlan] Backend payload preview:', backendPreview);
 
-      const protectedDataAddress = undefined; // backend handles storage; no DataProtector in this flow
-
       // Submit to backend create-inheritance endpoint (abortable)
       abortControllerRef.current = new AbortController();
       let submitResponse: any = null;
