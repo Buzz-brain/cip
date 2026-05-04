@@ -61,8 +61,32 @@ export async function fundPlanOnChain(
     gasLimit.toString(),
     "\n  ⬆️ gasLimit is set in CODE — MetaMask will use this value automatically",
   );
+
+  // ── FETCH FRESH FEE DATA AND ADD BUFFER ────────────────────────────────────
+  const provider = signer.provider;
+  let feeOverrides: { maxFeePerGas?: bigint; maxPriorityFeePerGas?: bigint } = {};
+
   try {
-    const tx = await contract.fundPlan(planId, { value, gasLimit });
+    if (provider) {
+      const feeData = await provider.getFeeData();
+      if (feeData.maxFeePerGas) {
+        // +25% buffer over current maxFeePerGas to absorb block-to-block baseFee fluctuation
+        feeOverrides.maxFeePerGas = (feeData.maxFeePerGas * 125n) / 100n;
+      }
+      if (feeData.maxPriorityFeePerGas) {
+        feeOverrides.maxPriorityFeePerGas = (feeData.maxPriorityFeePerGas * 125n) / 100n;
+      }
+      console.log('[fundPlanOnChain] fee data fetched', {
+        maxFeePerGas: feeOverrides.maxFeePerGas?.toString(),
+        maxPriorityFeePerGas: feeOverrides.maxPriorityFeePerGas?.toString(),
+      });
+    }
+  } catch (feeErr) {
+    console.warn('[fundPlanOnChain] could not fetch fee data, letting ethers decide', feeErr);
+  }
+
+  try {
+    const tx = await contract.fundPlan(planId, { value, gasLimit, ...feeOverrides });
 
     console.log(
       "[fundPlanOnChain] ✅ tx sent — MetaMask signed without manual gas override",

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent } from '@components/ui/card';
 import { Badge } from '@components/ui/badge';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../../context/useAuth';
+import { usePlan } from '../../../context/usePlan';
 import { extractErrorMessage } from '../../../lib/utils';
 import FundPlanModal from '@components/ui/FundPlanModal';
 import useActivityLogs from '../../../lib/hooks/useActivityLogs';
+import { SkeletonCard } from '@components/ui/skeleton-card';
+import { Copy } from "lucide-react";
 
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
@@ -35,12 +38,16 @@ const shouldShowField = (planType: string | undefined, fieldName: string): boole
 export const PlanDetail: React.FC = () => {
   const { planId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [detail, setDetail] = useState<any | null>(null);
   const [fundModalOpen, setFundModalOpen] = useState(false);
   const [fundPlanContractId, setFundPlanContractId] = useState<number | null>(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const { logs, loading: logsLoading, error: logsError } = useActivityLogs(user?.token);
+  const planCtx = usePlan();
 
   const fetchDetail = async () => {
     if (!planId) return;
@@ -72,6 +79,98 @@ export const PlanDetail: React.FC = () => {
     fetchDetail();
   }, [planId, user?.token]);
 
+  // Subscribe to plan updates (e.g., funded) and refetch when this plan is updated
+  useEffect(() => {
+    const onUpdated = (detail?: any) => {
+      try {
+        const payload = detail && (detail as any).detail !== undefined ? (detail as any).detail : detail;
+        const first = Array.isArray(payload) && payload.length > 0 ? payload[0] : payload;
+        const updatedId = first ? String(first.id ?? first.contract_plan_id ?? first.plan?.id ?? '') : '';
+        const currentId = String(planId ?? '');
+        if (updatedId && currentId && (updatedId === currentId || String(Number(updatedId)) === String(Number(currentId)))) {
+          fetchDetail();
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
+    if (planCtx?.subscribePlansUpdated) {
+      const unsub = planCtx.subscribePlansUpdated(onUpdated);
+      return () => unsub();
+    }
+    // fallback: listen to window event
+    window.addEventListener('plans:updated', onUpdated as any);
+    return () => window.removeEventListener('plans:updated', onUpdated as any);
+  }, [planId, user?.token, planCtx]);
+
+  // Auto-open fund modal if ?action=fund is in the URL and plan details are loaded
+  useEffect(() => {
+    if (searchParams.get('action') === 'fund' && detail?.plan && !fundModalOpen) {
+      const cid = Number(detail.plan.contract_plan_id ?? detail.plan.id ?? 0);
+      if (cid) {
+        setFundPlanContractId(cid);
+        setFundModalOpen(true);
+        // Remove the action param from URL to avoid re-opening on re-renders
+        navigate(`/owner-dashboard/plans/${planId}`, { replace: true });
+      }
+    }
+  }, [detail, searchParams, fundModalOpen, planId, navigate]);
+
+  const handleDelete = () => {
+    setConfirmDeleteOpen(true);
+  };
+
+  const performDelete = async () => {
+    if (!detail?.plan?.id && !detail?.plan?.contract_plan_id) {
+      toast.error('Cannot determine plan id for deletion');
+      return;
+    }
+    const planIdNum = Number(detail?.plan?.id ?? detail?.plan?.contract_plan_id ?? 0);
+    setDeleting(true);
+    try {
+      const resp = await fetch(`${BACKEND_API_URL}/inherit/delete-inheritances/${planIdNum}`, {
+        method: 'DELETE',
+        headers: {
+          accept: 'application/json',
+          ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+        }
+      });
+      if (!resp.ok) {
+        let errorMessage = `Error deleting plan (Status: ${resp.status})`;
+        try {
+          const errorData = await resp.json();
+          if (errorData?.detail) {
+            errorMessage = errorData.detail;
+          } else if (typeof errorData === 'string') {
+            errorMessage = errorData;
+          }
+        } catch {
+          // If JSON parsing fails, try to get plain text
+          try {
+            const text = await resp.text();
+            if (text) errorMessage = text;
+          } catch {}
+        }
+        throw new Error(errorMessage);
+      }
+      toast.success('Plan deleted successfully');
+      setConfirmDeleteOpen(false);
+      // Navigate back to plans list immediately (before emitting update to avoid 404 fetch)
+      navigate('/owner-dashboard/plans');
+      // Notify other parts of the app that plans changed
+      try {
+        planCtx?.emitPlansUpdated?.({ id: planIdNum, deleted: true });
+      } catch (e) {
+        // ignore
+      }
+    } catch (e) {
+      const m = e instanceof Error ? e.message : String(e);
+      toast.error(m);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div className="p-6">
       <div className="flex items-start justify-between mb-6 gap-4">
@@ -94,7 +193,7 @@ export const PlanDetail: React.FC = () => {
             )}
 
             {(user?.publicKey && String(user.publicKey).toLowerCase() === String(detail?.plan?.owner_wallet).toLowerCase()) && (
-              <button className="px-4 py-2 rounded bg-red-700 text-white" onClick={() => toast.info('Use dashboard to delete this plan')}>Delete</button>
+              <button className="px-4 py-2 rounded bg-red-700 text-white" onClick={handleDelete}>Delete</button>
             )}
           </div>
         </div>
@@ -104,8 +203,10 @@ export const PlanDetail: React.FC = () => {
         {/* Left summary */}
         <Card className="bg-[#15120f] border-[#2e281f]">
           <CardContent className="p-6">
-            {!detail ? (
-              <div className="text-[#b8a494]">{loading ? 'Loading...' : 'No plan details found'}</div>
+            {loading ? (
+              <SkeletonCard />
+            ) : !detail ? (
+              <div className="text-[#b8a494]">No plan details found</div>
             ) : (
               <div className="space-y-4">
                 <div>
@@ -119,7 +220,9 @@ export const PlanDetail: React.FC = () => {
                   <div className="text-white break-all font-mono text-sm flex items-center gap-2">
                     <span>{detail.plan?.owner_wallet ?? '—'}</span>
                     {detail.plan?.owner_wallet && (
-                      <button className="text-xs text-[#b8a494] px-2 py-1 border border-[#2f241c] rounded" onClick={async () => { try { await navigator.clipboard.writeText(detail.plan.owner_wallet); toast.success('Copied owner wallet'); } catch (e) { toast.error('Copy failed'); } }}>Copy</button>
+                      <button className="text-xs text-[#b8a494] px-2 py-1 border border-[#2f241c] rounded" onClick={async () => { try { await navigator.clipboard.writeText(detail.plan.owner_wallet); toast.success('Copied owner wallet'); } catch (e) { toast.error('Copy failed'); } }}>
+                        <Copy className="w-4 h-4" />
+                      </button>
                     )}
                   </div>
                 </div>
@@ -129,7 +232,9 @@ export const PlanDetail: React.FC = () => {
                   <div className="text-white break-all font-mono text-sm flex items-center gap-2">
                     <span>{detail.plan?.contract_address ?? '—'}</span>
                     {detail.plan?.contract_address && (
-                      <button className="text-xs text-[#b8a494] px-2 py-1 border border-[#2f241c] rounded" onClick={async () => { try { await navigator.clipboard.writeText(detail.plan.contract_address); toast.success('Copied contract address'); } catch (e) { toast.error('Copy failed'); } }}>Copy</button>
+                      <button className="text-xs text-[#b8a494] px-2 py-1 border border-[#2f241c] rounded" onClick={async () => { try { await navigator.clipboard.writeText(detail.plan.contract_address); toast.success('Copied contract address'); } catch (e) { toast.error('Copy failed'); } }}>                    
+                      <Copy className="w-4 h-4" />
+                      </button>
                     )}
                   </div>
                 </div>
@@ -152,6 +257,13 @@ export const PlanDetail: React.FC = () => {
 
         {/* Right details (span 2 columns on large screens) */}
         <div className="lg:col-span-2 space-y-6">
+          {loading ? (
+            <div className="space-y-4">
+              <SkeletonCard />
+              <SkeletonCard />
+            </div>
+          ) : (
+          <>
           <Card className="bg-[#1f1915] border-[#3a2f1e]">
             <CardContent className="p-6">
               <div className="text-sm text-[#d1c3b4] space-y-4">
@@ -263,8 +375,25 @@ export const PlanDetail: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+          </>
+          )}
         </div>
       </div>
+
+      {/* Delete confirmation modal */}
+      {confirmDeleteOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60 z-[10000]" onClick={() => { if (!deleting) { setConfirmDeleteOpen(false); } }} />
+          <div className="relative bg-[#1f1915] border border-[#3a2f1e] rounded-lg w-[90%] max-w-md p-6 z-[10001]">
+            <h3 className="text-white font-bold mb-2">Confirm Delete</h3>
+            <div className="text-sm text-[#d1c3b4] mb-4">Are you sure you want to delete this inheritance plan? This action cannot be undone.</div>
+            <div className="flex gap-2 justify-end">
+              <button className="px-4 py-2 rounded bg-[#393028] text-white" onClick={() => { if (!deleting) { setConfirmDeleteOpen(false); } }}>Cancel</button>
+              <button className="px-4 py-2 rounded bg-red-700 text-white" onClick={() => performDelete()} disabled={deleting}>{deleting ? 'Deleting...' : 'Delete'}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

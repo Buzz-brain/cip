@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { fundPlanOnChain } from "../../lib/wallet/fundPlan";
 import { extractErrorMessage } from "../../lib/utils";
 import { BrowserProvider } from "ethers";
+import { usePlan } from "../../context/usePlan";
 
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
@@ -22,6 +23,7 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, default
   const [txHash, setTxHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [backendNotifyFailed, setBackendNotifyFailed] = useState<boolean>(false);
+  const planCtx = usePlan();
 
   useEffect(() => {
     if (!open) {
@@ -137,6 +139,27 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, default
           const errorMsg = await extractErrorMessage(resp);
           throw new Error(errorMsg);
         }
+        // After backend confirms, attempt to refetch the updated plan details and emit a global update
+        try {
+          const detailRes = await fetch(`${BACKEND_API_URL}/inherit/view-a-inheritances/${planIdNum}`, {
+            method: 'GET',
+            headers: {
+              accept: 'application/json',
+              ...(userToken ? { Authorization: `Bearer ${userToken}` } : {}),
+            }
+          });
+          if (detailRes.ok) {
+            const detailJson = await detailRes.json();
+            try {
+              planCtx?.emitPlansUpdated?.(detailJson?.data ?? detailJson);
+            } catch (e) {
+              console.warn('[FundPlanModal] emitPlansUpdated failed', e);
+            }
+          }
+        } catch (e) {
+          console.warn('[FundPlanModal] fetching updated plan detail failed', e);
+        }
+
         setStatus("success");
         toast.success("Plan funded and backend notified.");
       } catch (e: any) {
@@ -176,6 +199,28 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, default
         const errorMsg = await extractErrorMessage(resp);
         throw new Error(errorMsg);
       }
+      // refetch updated plan detail and emit update
+      try {
+        const planIdNum = Number(contractPlanId);
+        const detailRes = await fetch(`${BACKEND_API_URL}/inherit/view-a-inheritances/${planIdNum}`, {
+          method: 'GET',
+          headers: {
+            accept: 'application/json',
+            ...(userToken ? { Authorization: `Bearer ${userToken}` } : {}),
+          }
+        });
+        if (detailRes.ok) {
+          const detailJson = await detailRes.json();
+          try {
+            planCtx?.emitPlansUpdated?.(detailJson?.data ?? detailJson);
+          } catch (e) {
+            console.warn('[FundPlanModal] emitPlansUpdated failed', e);
+          }
+        }
+      } catch (e) {
+        console.warn('[FundPlanModal] fetching updated plan detail failed', e);
+      }
+
       setStatus("success");
       setBackendNotifyFailed(false);
       toast.success("Backend notified successfully!");

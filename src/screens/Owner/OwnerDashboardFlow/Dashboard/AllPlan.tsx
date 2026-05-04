@@ -287,6 +287,12 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
       setPendingDeletePlan(null);
       // refresh plans
       await fetchPlans();
+      try {
+        // notify other parts of the app that plans changed
+        planCtx?.emitPlansUpdated?.({ id: planIdNum, deleted: true });
+      } catch (e) {
+        // ignore
+      }
     } catch (e) {
       const m = e instanceof Error ? e.message : String(e);
       toast.error(m);
@@ -295,22 +301,29 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
     }
   };
 
-  const filtered = plans.filter((p) => {
-    // Apply status filter
-    if (selectedFilter !== "All Plans" && p.status !== selectedFilter) {
-      return false;
-    }
-    // Apply search filter
-    if (!searchQuery) return true;
-    const q = searchQuery.toLowerCase();
-    const beneficiaryNames = p.beneficiariesPreview?.map((b: any) => (b.name || b.wallet || "")).join(" ") || "";
-    return (
-      String(p.id).toLowerCase().includes(q) ||
-      String(p.name).toLowerCase().includes(q) ||
-      String(p.beneficiary?.name || "").toLowerCase().includes(q) ||
-      beneficiaryNames.toLowerCase().includes(q)
-    );
-  });
+  const filtered = plans
+    .filter((p) => {
+      // Apply status filter
+      if (selectedFilter !== "All Plans" && p.status !== selectedFilter) {
+        return false;
+      }
+      // Apply search filter
+      if (!searchQuery) return true;
+      const q = searchQuery.toLowerCase();
+      const beneficiaryNames = p.beneficiariesPreview?.map((b: any) => (b.name || b.wallet || "")).join(" ") || "";
+      return (
+        String(p.id).toLowerCase().includes(q) ||
+        String(p.name).toLowerCase().includes(q) ||
+        String(p.beneficiary?.name || "").toLowerCase().includes(q) ||
+        beneficiaryNames.toLowerCase().includes(q)
+      );
+    })
+    .sort((a, b) => {
+      // Sort by creation date (newest first)
+      const aCreated = Number(a.raw?.created_at ?? 0);
+      const bCreated = Number(b.raw?.created_at ?? 0);
+      return bCreated - aCreated;
+    });
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
 import { Badge } from "@components/ui/badge";
@@ -11,6 +11,7 @@ import { getActiveProofPlan } from "../../../../lib/api/inherit";
 import SubscriptionModal from "@components/SubscriptionModal";
 import { useAuth } from "../../../../context/useAuth";
 import getOwnerDashboardStats from "../../../../lib/dashboard/ownerStats";
+import { usePlan } from "../../../../context/usePlan";
 import { Plus, Eye, EyeOff } from "lucide-react";
 
 interface ActivityItem {
@@ -41,98 +42,107 @@ export const OwnerDashboard = (): JSX.Element => {
   const auth = useAuth();
   const navigate = useNavigate();
 
+  const fetchStats = useCallback(async () => {
+    try {
+      setStatsLoading(true);
+      const s = await getOwnerDashboardStats(auth?.user?.token);
+      setStats(s);
+    } catch (e) {
+      console.warn('Failed to fetch owner dashboard stats', e);
+    } finally {
+      setStatsLoading(false);
+    }
+  }, [auth?.user?.token]);
+
   useEffect(() => {
     let mounted = true;
-    async function fetchStats() {
-      try {
-        setStatsLoading(true);
-        const s = await getOwnerDashboardStats(auth?.user?.token);
-        if (!mounted) return;
-        setStats(s);
-      } catch (e) {
-        console.warn('Failed to fetch owner dashboard stats', e);
-      } finally {
-        setStatsLoading(false);
-      }
-    }
     fetchStats();
     return () => { mounted = false; };
+  }, [fetchStats]);
+
+  const fetchPlan = useCallback(async () => {
+    try {
+      setPolLoading(true);
+      const plan = await getActiveProofPlan(auth?.user?.token);
+      if (!plan) {
+        setPolStatus(null);
+        setPolLoading(false);
+        return;
+      }
+
+      const now = Date.now();
+      const baseTs = (plan.last_active_at || plan.created_at || plan.updated_at || 0) * 1000;
+      const inactivityDays = Number(plan.inactivity_period_days || plan.inactivity_period || 30);
+      const graceDays = Number(plan.grace_period_days || plan.grace_period || 2);
+
+      const msDay = 24 * 60 * 60 * 1000;
+      const inactivityTs = baseTs + inactivityDays * msDay;
+      const expiryTs = baseTs + (inactivityDays + graceDays) * msDay;
+
+      setPolPlan(plan);
+
+      const isTriggered = plan.should_release === true || plan.is_released === true;
+
+      if (!isTriggered) {
+        setPolStatus("active");
+        const deadlineTs = baseTs + (inactivityDays + graceDays) * 86400000;
+        setPolDeadlineTs(deadlineTs);
+        const remainingMs = Math.max(0, deadlineTs - now);
+        const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
+        setPolTimeRemaining({ days, hours, minutes, seconds });
+      } else if (now <= expiryTs) {
+        setPolStatus("missed");
+        const remainingMs = expiryTs - now;
+        const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
+        setPolTimeRemaining({ days, hours, minutes, seconds });
+        setMissedCheckCount(plan.missed_checks || 0);
+      } else {
+        setPolStatus("critical");
+        const remainingMs = Math.max(0, expiryTs - now);
+        const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
+        setPolTimeRemaining({ days, hours, minutes, seconds });
+        setMissedCheckCount(plan.missed_checks || 0);
+      }
+      setPolLoading(false);
+    } catch (err) {
+      console.warn("Failed to fetch proof plan", err);
+      setPolStatus(null);
+      setPolLoading(false);
+    }
   }, [auth?.user?.token]);
 
   useEffect(() => {
-    let mounted = true;
-    async function fetchPlan() {
-      try {
-        setPolLoading(true);
-        const plan = await getActiveProofPlan(auth?.user?.token);
-        if (!mounted) return;
-        if (!plan) {
-          setPolStatus(null);
-          setPolLoading(false);
-          return;
-        }
-
-        const now = Date.now();
-        const baseTs = (plan.last_active_at || plan.created_at || plan.updated_at || 0) * 1000;
-        const inactivityDays = Number(plan.inactivity_period_days || plan.inactivity_period || 30);
-        const graceDays = Number(plan.grace_period_days || plan.grace_period || 2);
-
-        const msDay = 24 * 60 * 60 * 1000;
-        const inactivityTs = baseTs + inactivityDays * msDay;
-        const expiryTs = baseTs + (inactivityDays + graceDays) * msDay;
-
-        setPolPlan(plan);
-
-        // Only show missed/critical status if backend says should_release is true
-        // If should_release is false, the plan has not been triggered yet
-        const isTriggered = plan.should_release === true || plan.is_released === true;
-
-        if (!isTriggered) {
-          // Plan not yet triggered by backend
-          setPolStatus("active");
-          // Compute deadline and time remaining for dashboard display
-          const deadlineTs = baseTs + (inactivityDays + graceDays) * 86400000;
-          setPolDeadlineTs(deadlineTs);
-          const remainingMs = Math.max(0, deadlineTs - now);
-          const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
-          setPolTimeRemaining({ days, hours, minutes, seconds });
-        } else if (now <= expiryTs) {
-          // Triggered and within grace period
-          setPolStatus("missed");
-          const remainingMs = expiryTs - now;
-          const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
-          setPolTimeRemaining({ days, hours, minutes, seconds });
-          // Only use missed_checks from backend if it exists; don't default to hardcoded value
-          setMissedCheckCount(plan.missed_checks || 0);
-        } else {
-          // Past grace period expiry
-          setPolStatus("critical");
-          const remainingMs = Math.max(0, expiryTs - now);
-          const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
-          setPolTimeRemaining({ days, hours, minutes, seconds });
-          setMissedCheckCount(plan.missed_checks || 0);
-        }
-        setPolLoading(false);
-      } catch (err) {
-        console.warn("Failed to fetch proof plan", err);
-        setPolStatus(null);
-        setPolLoading(false);
-      }
-    }
     fetchPlan();
-    return () => {
-      mounted = false;
+  }, [fetchPlan]);
+
+  // Subscribe to plan updates and refresh stats and proof-of-life when plans change
+  const planCtx = usePlan();
+  useEffect(() => {
+    const onUpdated = async (detail?: any) => {
+      try {
+        await fetchStats();
+      } catch (e) {}
+      try {
+        await fetchPlan();
+      } catch (e) {}
     };
-  }, [auth?.user?.token]);
+    if (planCtx?.subscribePlansUpdated) {
+      const unsub = planCtx.subscribePlansUpdated(onUpdated);
+      return () => unsub();
+    }
+    // fallback to window event
+    window.addEventListener('plans:updated', onUpdated as any);
+    return () => window.removeEventListener('plans:updated', onUpdated as any);
+  }, [fetchStats, fetchPlan, planCtx]);
 //   const [currentPage, setCurrentPage] = useState(1);
 
   return (

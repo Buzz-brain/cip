@@ -46,16 +46,20 @@ export const PlanActivatedSuccess: React.FC = () => {
   const [trxHex, setTrxHex] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(true);
 
+  const [contractPlanId, setContractPlanId] = useState<number | null>(null);
+
   useEffect(() => {
     const planId = searchParams.get('planId');
+    const contractId = searchParams.get('contractPlanId');
     const trx = searchParams.get('trx');
     setPlanIdToFund(planId ? Number(planId) : null);
+    setContractPlanId(contractId ? Number(contractId) : null);
     setTrxHex(trx && trx.length > 0 ? trx : null);
     setTimeout(() => setShowConfetti(false), 2500);
-  }, []);
+  }, [searchParams]);
   
   // Refs for copying plans details (optional, kept for potential features)
-  const stateRef = React.useRef({ planId: null, trx: null });
+  const stateRef = React.useRef<{ planId: number | null; trx: string | null }>({ planId: null, trx: null });
   React.useEffect(() => {
     stateRef.current = { planId: planIdToFund, trx: trxHex };
   }, [planIdToFund, trxHex]);
@@ -98,10 +102,11 @@ export const PlanActivatedSuccess: React.FC = () => {
 
             <div className="mt-4 flex flex-wrap gap-3">
               <button
-                onClick={() =>
-                  planIdToFund &&
-                  navigate(`/owner-dashboard/plans/${planIdToFund}`)
-                }
+                onClick={() => {
+                  if (planIdToFund) {
+                    navigate(`/owner-dashboard/plans/${planIdToFund}`);
+                  }
+                }}
                 className="px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-500 text-black font-semibold rounded-md shadow hover:scale-105 transform"
               >
                 Open Plan
@@ -118,15 +123,15 @@ export const PlanActivatedSuccess: React.FC = () => {
 
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-[#12100e] border border-[#2a241b] rounded-lg p-5 flex flex-col">
-            <div className="text-xs text-[#9b855f]">Plan ID to Fund</div>
+            <div className="text-xs text-[#9b855f]">Contract Plan ID to Fund</div>
             <div className="mt-2 flex items-center gap-3">
               <div className="text-2xl font-bold text-white truncate">
-                {planIdToFund ? String(planIdToFund) : "—"}
+                {contractPlanId ? String(contractPlanId) : "—"}
               </div>
-              {planIdToFund != null && (
+              {contractPlanId != null && (
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => copy(String(planIdToFund), "Plan ID copied")}
+                    onClick={() => copy(String(contractPlanId), "Contract Plan ID copied")}
                     className="text-[#d1c3b4] hover:text-white"
                   >
                     <Copy className="w-4 h-4" />
@@ -142,9 +147,11 @@ export const PlanActivatedSuccess: React.FC = () => {
 
             {planIdToFund != null && (
               <button
-                onClick={() =>
-                  navigate(`/owner-dashboard/plans/${planIdToFund}?action=fund`)
-                }
+                onClick={() => {
+                  if (planIdToFund) {
+                    navigate(`/owner-dashboard/plans/${planIdToFund}?action=fund`);
+                  }
+                }}
                 className="mt-4 w-full py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded"
               >
                 Fund Now

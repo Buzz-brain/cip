@@ -103,20 +103,27 @@ export const AllPlansPage: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const filtered = plans.filter((p) => {
-    if (selectedFilter !== "All Plans" && p.status !== selectedFilter) {
-      return false;
-    }
-    if (!searchQuery) return true;
-    const q = searchQuery.toLowerCase();
-    const beneficiaryNames = p.beneficiariesPreview?.map((b: any) => (b.name || b.wallet || "")).join(" ") || "";
-    return (
-      String(p.id).toLowerCase().includes(q) ||
-      String(p.name).toLowerCase().includes(q) ||
-      String(p.beneficiary?.name || "").toLowerCase().includes(q) ||
-      beneficiaryNames.toLowerCase().includes(q)
-    );
-  });
+  const filtered = plans
+    .filter((p) => {
+      if (selectedFilter !== "All Plans" && p.status !== selectedFilter) {
+        return false;
+      }
+      if (!searchQuery) return true;
+      const q = searchQuery.toLowerCase();
+      const beneficiaryNames = p.beneficiariesPreview?.map((b: any) => (b.name || b.wallet || "")).join(" ") || "";
+      return (
+        String(p.id).toLowerCase().includes(q) ||
+        String(p.name).toLowerCase().includes(q) ||
+        String(p.beneficiary?.name || "").toLowerCase().includes(q) ||
+        beneficiaryNames.toLowerCase().includes(q)
+      );
+    })
+    .sort((a, b) => {
+      // Sort by creation date (newest first)
+      const aCreated = Number(a.raw?.created_at ?? 0);
+      const bCreated = Number(b.raw?.created_at ?? 0);
+      return bCreated - aCreated;
+    });
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   useEffect(() => {

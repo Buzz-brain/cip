@@ -166,13 +166,14 @@ export const ReviewPlan = (): JSX.Element => {
 
       // Navigate only if submission succeeded
       if (submitResponse) {
-        // Extract from .data layer where backend puts it
-        const responseData = submitResponse?.data || submitResponse;
-        const planId = responseData?.plan_id_to_fund ?? responseData?.plan_id ?? submitResponse?.id;
-        const trx = responseData?.trx_hex ?? responseData?.transaction_hex ?? '';
+        // Extract both IDs from backend response
+        const responseData = submitResponse?.data || submitResponse || {};
+        const planId = responseData?.id ?? responseData['id:'] ?? submitResponse?.id ?? '';  // database plan ID for navigation (handle backend's "id:" typo)
+        const contractPlanId = responseData?.contract_plan_id ?? '';  // contract plan ID for display
+        const trx = responseData?.trx_hex ?? responseData?.transaction_hex ?? responseData?.trx ?? '';
 
         navigate(
-          `/owner-dashboard/plan-activated?planId=${planId ?? ''}&trx=${trx ?? ''}`
+          `/owner-dashboard/plan-activated?planId=${planId}&contractPlanId=${contractPlanId}&trx=${trx}`
         );
       }
     } catch (error) {
