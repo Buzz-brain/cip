@@ -89,7 +89,7 @@ export const Sidebar = (): JSX.Element => {
                     <div>
                         <div className="flex items-center gap-3">
                             <div className="flex items-center gap-3">
-                                <Link to="/dashboard">
+                                <Link to="/owner-dashboard">
                                     <img src={logoImg} alt="Logo" className="object-cover" />
                                 </Link>
                             </div>

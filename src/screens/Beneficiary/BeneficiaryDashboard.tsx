@@ -65,9 +65,9 @@ export const BeneficiaryDashboard = (): JSX.Element => {
             <CardContent className="p-6 flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center justify-center w-12 h-12 bg-[#27221c] rounded-lg">
-                  <CheckCircleIcon className="w-6 h-6 text-[#ff3b30]" />
+                  <CheckCircleIcon className="w-6 h-6 text-[#2ccd2c]" />
                 </div>
-                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#ff3b30] text-sm">Total Amount</span>
+                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#2ccd2c] text-sm">Total Amount</span>
               </div>
               <div className="flex flex-col gap-1">
                 <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">Total Inherited Value (ETH)</p>

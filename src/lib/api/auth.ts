@@ -140,3 +140,22 @@ export async function getActivityLogs(token?: string): Promise<any[]> {
   const json = await res.json().catch(() => []);
   return Array.isArray(json) ? json : (Array.isArray(json?.data) ? json.data : []);
 }
+
+export async function getSubscriptionHistory(token?: string): Promise<any[]> {
+  const url = `${BACKEND_API_URL}/auth/subscription-history`;
+  console.debug(`[auth.getSubscriptionHistory] url=${url} token=${token ? 'present' : 'missing'}`);
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  console.debug(`[auth.getSubscriptionHistory] responseStatus=${res.status}`);
+  if (!res.ok) {
+    console.warn('auth.getSubscriptionHistory: failed', res.status);
+    return [];
+  }
+  const json = await res.json().catch(() => []);
+  return Array.isArray(json) ? json : (Array.isArray(json?.data) ? json.data : []);
+}

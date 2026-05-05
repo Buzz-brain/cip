@@ -1,0 +1,22 @@
+{
+  "OWNER_ALIVE": {
+    "title": "Owner is still alive",
+    "description": "Proof of life required."
+  },
+  "INCORRECT_ASSETS": {
+    "title": "Incorrect Assets",
+    "description": "Missing or wrong tokens listed."
+  },
+  "WRONG_EXECUTOR": {
+    "title": "Wrong Executor",
+    "description": "Executor acting in bad faith."
+  },
+  "FAMILY_DISAGREEMENT": {
+    "title": "Family Disagreement",
+    "description": "Will contests or other disputes."
+  },
+  "OTHERS": {
+    "title": "Other Legal Reason",
+    "description": "Please specify in description."
+  }
+}

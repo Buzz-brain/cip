@@ -62,10 +62,6 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                 transaction history for your inheritance vaults.
               </p>
             </div>
-            {/* <button className="bg-[#FF6600] hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 font-medium transition">
-              <Download className="w-4 h-4" />
-              Download All Invoices
-            </button> */}
           </div>
         </div>
 

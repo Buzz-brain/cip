@@ -85,8 +85,29 @@ export async function getBeneficiaryDashboard(token?: string): Promise<{ benefic
   };
 }
 
+export async function nominateMediator(token: string, planId: number, body: { full_name: string; email: string; wallet: string; dispute_id?: number }): Promise<any> {
+  if (!token) throw new Error('Not authenticated');
+  const url = `${BACKEND_API_URL}/bf/nominate-mediator/${planId}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => '');
+    throw new Error(`nominateMediator failed: ${res.status} ${txt}`);
+  }
+  const json = await res.json().catch(() => null);
+  return json;
+}
+
 export default {
   getBeneficiaryInheritances,
   getBeneficiaryInheritanceById,
   getBeneficiaryDashboard,
+  nominateMediator,
 };

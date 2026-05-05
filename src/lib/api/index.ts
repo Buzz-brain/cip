@@ -4,3 +4,7 @@
 export * from "./auth";
 export * from "./dataProtector";
 export * from "./inherit";
+export * from "./beneficiary";
+export * from "./dispute";
+export * from "./executor";
+export * from "./mediator";

@@ -110,50 +110,7 @@ const featureCards = [
   },
 ];
 
-const pricingPlans = [
-  {
-    name: "Starter",
-    price: "$0",
-    period: "/mo",
-    description: "For single-chain assets.",
-    features: [
-      { text: "1 Wallet Connected", included: true },
-      { text: "Basic Beneficiary triggers", included: true },
-    ],
-    buttonText: "Start Free",
-    buttonVariant: "outline" as const,
-    highlighted: false,
-  },
-  {
-    name: "Pro Estate",
-    price: "$29",
-    period: "/mo",
-    description: "Multi-chain & TaxCore.",
-    badge: "POPULAR",
-    features: [
-      { text: "Unlimited Wallets", included: true },
-      { text: "Full TaxCore Access", included: true },
-      { text: "Children's Trust Features", included: true },
-    ],
-    buttonText: "Get Started",
-    buttonVariant: "default" as const,
-    highlighted: true,
-  },
-  {
-    name: "Lifetime",
-    price: "$999",
-    period: "/one-time",
-    description: "Pay once, secure forever.",
-    features: [
-      { text: "All Pro Features", included: true },
-      { text: "Concierge Onboarding", included: true },
-      { text: "Hardware Key Backup", included: true },
-    ],
-    buttonText: "Buy Lifetime",
-    buttonVariant: "outline" as const,
-    highlighted: false,
-  },
-];
+// Pricing cards are sourced from backend via `usePlans` hook; removed local mock data.
 
 const footerLinks = {
   product: ["Features", "TaxCore", "Security", "Pricing"],
@@ -868,7 +825,6 @@ export const Home = (): JSX.Element => {
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {plansLoading ? (
-                  // Skeletal loading: 3 placeholder cards
                   Array.from({ length: 3 }).map((_, i) => (
                     <div key={i} className="p-6 rounded-lg bg-[#27231C] border-2 border-[#54493B] animate-pulse">
                       <div className="h-6 bg-gray-700 rounded mb-4 w-1/3" />
@@ -881,105 +837,111 @@ export const Home = (): JSX.Element => {
                     </div>
                   ))
                 ) : (
-                  (backendPlans && backendPlans.length > 0 ? backendPlans : pricingPlans).map((rawPlan: any, index: number) => {
-                  const plan = backendPlans && backendPlans.length > 0 ? {
-                    name: toTitleCase(rawPlan.name),
-                    price: `$${rawPlan.price}`,
-                    period: "/mo",
-                    description: `${toTitleCase(rawPlan.name)} Plan`,
-                    features: [
-                      { text: `Included Plans: ${rawPlan.plans}`, included: true },
-                      { text: `Triggers: ${rawPlan.triggers}`, included: true },
-                      { text: `Supported Chains: ${rawPlan.supported_chain}`, included: true },
-                      { text: rawPlan.storage ? 'Storage Included' : 'No Storage', included: !!rawPlan.storage },
-                      { text: rawPlan.taxcore ? 'TaxCore Enabled' : 'No TaxCore', included: !!rawPlan.taxcore },
-                      { text: rawPlan.secret_ai ? 'Secret AI features' : 'No Secret AI', included: !!rawPlan.secret_ai },
-                      { text: `Plan edits allowed: ${rawPlan.plan_edit}`, included: true },
-                    ],
-                    buttonText: "Get Started",
-                    highlighted: rawPlan.price > 10 && rawPlan.price <= 49 ? true : false,
-                  } : rawPlan;
-                  return (
-                    <motion.div
-                      key={plan.name}
-                      initial={{ opacity: 0, y: 80, scale: 0.9, rotateY: 20 }}
-                      whileInView={{ opacity: 1, y: 0, scale: 1, rotateY: 0 }}
-                      transition={{ duration: 0.8, delay: index * 0.15, type: "spring", stiffness: 120, damping: 18 }}
-                      viewport={{}}
-                      whileHover={{ y: -15, scale: 1.03, boxShadow: "0 25px 50px rgba(255, 102, 0, 0.2)" }}
-                    >
-                      <Card
-                        className={`${plan.highlighted
-                          ? "bg-[#332619] border-2 border-[#ff6600]"
-                          : "bg-[#221911] border-[#674932]"
-                          } relative`}
-                      >
-                        {plan.badge && (
-                          <div className="absolute top-0 right-0 bg-[#ff6600] px-3 py-1">
-                            <span className="[font-family:'Sora',Helvetica] font-bold text-white text-xs">
-                              {plan.badge}
-                            </span>
-                          </div>
-                        )}
-                        <CardContent className="p-8 space-y-6">
-                          <div className="space-y-2">
-                            <h3 className="[font-family:'Sora',Helvetica] font-bold text-white text-xl">
-                              {plan.name}
-                            </h3>
-                            <p className="[font-family:'Sora',Helvetica] text-[#8b7664] text-sm">
-                              {plan.description}
-                            </p>
-                          </div>
-                          <div className="flex items-baseline gap-1">
-                            <span className="[font-family:'Sora',Helvetica] font-bold text-white text-3xl">
-                              {plan.price}
-                            </span>
-                            <span className="[font-family:'Sora',Helvetica] font-bold text-[#b8a494] text-sm">
-                              {plan.period}
-                            </span>
-                          </div>
-                          <div className="space-y-3">
-                            {plan.features.map((feature: { text: string; included?: boolean }, idx: number) => {
-                              const included = feature.included === undefined ? true : feature.included;
-                              return (
-                                <div key={idx} className="flex items-start gap-4">
-                                  <img
-                                    src={included ? sharpCheckSolid : sharpUncheckSolid}
-                                    alt=""
-                                    className="w-3.5 h-3.5 mt-0.5 flex-shrink-0"
-                                  />
-                                  <div className="flex-1">
-                                    <span className={`[font-family:'Sora',Helvetica] text-sm ${included ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>
-                                      {feature.text}
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                          <motion.div
-                            whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255, 102, 0, 0.3)", transition: { type: "spring", stiffness: 300, damping: 20 } }}
-                            whileTap={{ scale: 0.98, transition: { type: "spring", stiffness: 300, damping: 20 } }}
-                            animate={plan.highlighted ? { scale: [1, 1.2, 1], boxShadow: ["0 0 0 rgba(255, 102, 0, 0)", "0 0 30px rgba(255, 102, 0, 0.8)", "0 0 0 rgba(255, 102, 0, 0)"] } : {}}
-                            transition={plan.highlighted ? { duration: 1, repeat: Infinity, ease: "easeInOut" } : {}}
+                  (() => {
+                    if (!backendPlans || backendPlans.length === 0) {
+                      return <div className="p-6 text-center text-[#B8AA94]">No pricing plans available.</div>;
+                    }
+                    const sorted = backendPlans.slice().sort((a: any, b: any) => Number(a.id) - Number(b.id));
+                    return sorted.map((rawPlan: any, index: number) => {
+                      const plan = {
+                        name: toTitleCase(rawPlan.name),
+                        price: `$${rawPlan.price}`,
+                        period: "/mo",
+                        description: `${toTitleCase(rawPlan.name)} Plan`,
+                        features: [
+                          { text: `Included Plans: ${rawPlan.plans}`, included: true },
+                          { text: `Triggers: ${rawPlan.triggers}`, included: true },
+                          { text: `Supported Chains: ${rawPlan.supported_chain}`, included: true },
+                          { text: rawPlan.storage ? 'Storage Included' : 'No Storage', included: !!rawPlan.storage },
+                          { text: rawPlan.taxcore ? 'TaxCore Enabled' : 'No TaxCore', included: !!rawPlan.taxcore },
+                          { text: rawPlan.secret_ai ? 'Secret AI features' : 'No Secret AI', included: !!rawPlan.secret_ai },
+                          { text: `Plan edits allowed: ${rawPlan.plan_edit}`, included: true },
+                        ],
+                        buttonText: "Get Started",
+                        highlighted: rawPlan.price > 10 && rawPlan.price <= 49 ? true : false,
+                      };
+                      return (
+                        <motion.div
+                          key={plan.name}
+                          initial={{ opacity: 0, y: 80, scale: 0.9, rotateY: 20 }}
+                          whileInView={{ opacity: 1, y: 0, scale: 1, rotateY: 0 }}
+                          transition={{ duration: 0.8, delay: index * 0.15, type: "spring", stiffness: 120, damping: 18 }}
+                          viewport={{}}
+                          whileHover={{ y: -15, scale: 1.03, boxShadow: "0 25px 50px rgba(255, 102, 0, 0.2)" }}
+                        >
+                          <Card
+                            className={`${plan.highlighted
+                              ? "bg-[#332619] border-2 border-[#ff6600]"
+                              : "bg-[#221911] border-[#674932]"
+                              } relative`}
                           >
-                            <Button
-                              variant={plan.buttonVariant}
-                              className={`w-full ${plan.highlighted
-                                ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
-                                : "border border-[#674932] bg-transparent"
-                                } [font-family:'Sora',Helvetica] font-bold transition-all duration-300`}
-                              onClick={() => navigate("/pricing")}
-                            >
-                              {plan.buttonText}
-                            </Button>
-                          </motion.div>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  )
-                })
-              )}
+                            {plan.badge && (
+                              <div className="absolute top-0 right-0 bg-[#ff6600] px-3 py-1">
+                                <span className="[font-family:'Sora',Helvetica] font-bold text-white text-xs">
+                                  {plan.badge}
+                                </span>
+                              </div>
+                            )}
+                            <CardContent className="p-8 space-y-6">
+                              <div className="space-y-2">
+                                <h3 className="[font-family:'Sora',Helvetica] font-bold text-white text-xl">
+                                  {plan.name}
+                                </h3>
+                                <p className="[font-family:'Sora',Helvetica] text-[#8b7664] text-sm">
+                                  {plan.description}
+                                </p>
+                              </div>
+                              <div className="flex items-baseline gap-1">
+                                <span className="[font-family:'Sora',Helvetica] font-bold text-white text-3xl">
+                                  {plan.price}
+                                </span>
+                                <span className="[font-family:'Sora',Helvetica] font-bold text-[#b8a494] text-sm">
+                                  {plan.period}
+                                </span>
+                              </div>
+                              <div className="space-y-3">
+                                {plan.features.map((feature: { text: string; included?: boolean }, idx: number) => {
+                                  const included = feature.included === undefined ? true : feature.included;
+                                  return (
+                                    <div key={idx} className="flex items-start gap-4">
+                                      <img
+                                        src={included ? sharpCheckSolid : sharpUncheckSolid}
+                                        alt=""
+                                        className="w-3.5 h-3.5 mt-0.5 flex-shrink-0"
+                                      />
+                                      <div className="flex-1">
+                                        <span className={`[font-family:'Sora',Helvetica] text-sm ${included ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>
+                                          {feature.text}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              <motion.div
+                                whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255, 102, 0, 0.3)", transition: { type: "spring", stiffness: 300, damping: 20 } }}
+                                whileTap={{ scale: 0.98, transition: { type: "spring", stiffness: 300, damping: 20 } }}
+                                animate={plan.highlighted ? { scale: [1, 1.2, 1], boxShadow: ["0 0 0 rgba(255, 102, 0, 0)", "0 0 30px rgba(255, 102, 0, 0.8)", "0 0 0 rgba(255, 102, 0, 0)"] } : {}}
+                                transition={plan.highlighted ? { duration: 1, repeat: Infinity, ease: "easeInOut" } : {}}
+                              >
+                                <Button
+                                  variant={plan.buttonVariant}
+                                  className={`w-full ${plan.highlighted
+                                    ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
+                                    : "border border-[#674932] bg-transparent"
+                                    } [font-family:'Sora',Helvetica] font-bold transition-all duration-300`}
+                                  onClick={() => navigate("/pricing")}
+                                >
+                                  {plan.buttonText}
+                                </Button>
+                              </motion.div>
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      )
+                    })
+                  })()
+                )}
               </div>
             </div>
           </div>

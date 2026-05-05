@@ -1,249 +1,354 @@
-// import { useNavigate } from "react-router-dom";
-import {
-  CheckCircle,
-  AlertTriangle,
-  TrendingUp,
-} from "lucide-react";
+import { FileText as FileTextIcon, CircleCheck as CheckCircleIcon, Download as DownloadIcon, Lock as LockIcon, Home as HomeIcon } from "lucide-react";
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useAuth } from '../../context/useAuth';
+import { getExecutorInheritanceById, postExecutePlan } from '../../lib/api/executor';
+import { toast } from 'react-toastify';
 
 export const ExecuteInheritancePlan = (): JSX.Element => {
-//   const navigate = useNavigate();
+  const params = useParams();
+  const planId = params?.planId ?? '';
+  const { user } = useAuth();
+  const [payload, setPayload] = useState<any | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const formatTs = (ts?: number | null) => {
+    if (!ts) return '—';
+    try {
+      return new Date(Number(ts) * 1000).toLocaleString();
+    } catch (e) {
+      return String(ts);
+    }
+  };
+  const getInitials = (name?: string) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(/\s+/);
+    const initials = parts.slice(0, 2).map(p => p[0]?.toUpperCase() ?? '').join('');
+    return initials || 'U';
+  };
+  const assetNameMap: Record<string, string> = {
+    ETH: 'Ethereum',
+    BTC: 'Bitcoin',
+    USDC: 'USDC',
+    SOL: 'Solana',
+    USDT: 'USDT',
+  };
+
+  useEffect(() => {
+    let mounted = true;
+    const id = Number(planId);
+    if (!id) return;
+    setLoading(true);
+    (async () => {
+      try {
+        const res = await getExecutorInheritanceById(user?.token, id);
+        if (!mounted) return;
+        setPayload(res ?? null);
+      } catch (err) {
+        console.warn('Failed to fetch executor plan', err);
+        toast.error('Failed to load plan details');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [planId, user?.token]);
+
+  const plan = payload?.plan ?? payload;
+  const beneficiaries = payload?.beneficiaries ?? payload?.beneficiary ?? [];
+  const assetSymbol = plan?.crypto_asset ? String(plan.crypto_asset).toUpperCase() : undefined;
+  const assetDisplayName = assetSymbol ? (assetNameMap[assetSymbol] ?? assetSymbol) : undefined;
+  const assetsIncludedCount = plan?.crypto_asset ? 1 : 0;
+  const isMPC = !!plan?.plan_type && String(plan.plan_type).toLowerCase().includes('mpc');
+  const hasLegalDocs = Array.isArray(plan?.legal_docs) && plan.legal_docs.length > 0;
+
+  const triggerLabel = (type?: string) => {
+    if (!type) return '—';
+    switch (type.toLowerCase()) {
+      case 'health_oracle':
+        return "Health Oracle (Dead Man's Switch)";
+      case 'inactivity':
+        return 'Inactivity Monitor';
+      case 'time_lock':
+      case 'timelock':
+        return 'Time Lock';
+      default:
+        return type.replace('_', ' ');
+    }
+  };
+
+  const heartbeatStatus = (planObj: any) => {
+    if (!planObj) return { label: '—', sub: '' };
+    const last = planObj.last_active_at ? new Date(Number(planObj.last_active_at) * 1000) : null;
+    if (!last) return { label: 'No Activity', sub: 'Owner has not checked in' };
+    const ms = Date.now() - last.getTime();
+    const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+    if (days <= 2) return { label: 'Heartbeat Active', sub: `Last check-in: ${days} day(s) ago` };
+    if (days <= 30) return { label: 'Delayed Check-ins', sub: `Last check-in: ${days} day(s) ago` };
+    return { label: 'Missed Checks', sub: `Last check-in: ${days} day(s) ago` };
+  };
 
   return (
-    <div className="min-h-screen bg-[#1a1410] text-white">
-      <header className="border-b border-[#3a3430] bg-[#1a1410] px-8 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">C</span>
+    <main className="flex-1 bg-[#0d0501] overflow-auto [font-family:'Manrope',Helvetica] p-4">
+      {loading && (
+        <div className="p-4">
+          <div className="mb-4">
+            <div className="h-8 w-1/3 bg-[#181511] rounded animate-pulse" />
           </div>
-          <span className="text-sm text-gray-400">CIP</span>
-        </div>
-        <div className="text-xs text-orange-400 bg-orange-500/10 border border-orange-500/30 px-3 py-1 rounded-full">
-          Mainnet Connected
-        </div>
-      </header>
-
-      <main className="p-8 max-w-7xl mx-auto">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-gray-400 mb-8">
-          <span>Plans</span>
-          <span>›</span>
-          <span>#CIP-2849</span>
-          <span>›</span>
-          <span className="text-white">Execution</span>
-        </div>
-
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">
-            Execute Inheritance Plan #CIP-2849
-          </h1>
-          <p className="text-gray-400 max-w-2xl">
-            Execute the final transfer of assets. Please review all legal
-            documents and tax implications before proceeding. This action
-            generates an irreversible MPC signature on the blockchain.
-          </p>
-          <button className="mt-4 bg-[#2a2420] border border-[#3a3430] hover:bg-[#3a3430] px-4 py-2 rounded-lg text-sm flex items-center gap-2">
-            <span>📄</span>
-            View Legal Docs
-          </button>
-        </div>
-
-        <div className="grid grid-cols-3 gap-6 mb-8">
-          {/* Total Asset Value */}
-          <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-sm">Total Asset Value</span>
-              <button className="text-gray-400 hover:text-white">📋</button>
-            </div>
-            <div className="text-3xl font-bold mb-2">$4,250,000</div>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-green-400" />
-              <span className="text-sm text-green-400">+12.4% since audit</span>
-            </div>
-          </div>
-
-          {/* Estimated Tax Liability */}
-          <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-sm">
-                Estimated Tax Liability
-              </span>
-              <button className="text-gray-400 hover:text-white">📋</button>
-            </div>
-            <div className="text-3xl font-bold mb-2">$845,000</div>
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-orange-400" />
-              <span className="text-sm text-orange-400">
-                Verified by TaxCore
-              </span>
-            </div>
-          </div>
-
-          {/* Network Gas Fee */}
-          <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-sm">Network Gas Fee</span>
-              <button className="text-gray-400 hover:text-white">📋</button>
-            </div>
-            <div className="text-3xl font-bold mb-2">~0.04 ETH</div>
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-yellow-400" />
-              <span className="text-sm text-yellow-400">
-                High network congestion
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-6">
-          {/* Execution Decision */}
-          <div className="col-span-2">
-            <div className="bg-orange-500 rounded-xl p-6 mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold">Execution Decision</h2>
-                <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded text-sm font-medium">
-                  Ready for Signing
-                </span>
+          <div className="grid grid-cols-1 gap-4">
+            <div className="col-span-1">
+              <div className="grid grid-cols-1 gap-4">
+                <div className="w-full">
+                  <div className="animate-pulse">
+                    <div className="h-48 bg-[#181511] rounded-lg" />
+                  </div>
+                </div>
               </div>
-              <p className="text-orange-100 mb-6">
-                Your signature is required to release the assets.
-              </p>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              {[1,2,3,4].map(i => (
+                <div key={i} className="h-24 bg-[#181511] rounded-lg animate-pulse" />
+              ))}
+            </div>
+            <div className="grid grid-cols-3 gap-6">
+              <div className="col-span-2 h-64 bg-[#181511] rounded-lg animate-pulse" />
+              <div className="h-64 bg-[#181511] rounded-lg animate-pulse" />
+            </div>
+          </div>
+        </div>
+      )}
 
-              <div className="bg-orange-600/30 border border-orange-400/50 rounded-lg p-4 mb-6">
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-medium">
-                      I verify that I have reviewed the{" "}
-                      <span className="font-bold">Death Certificate</span> and
-                      assume full legal responsibility for this execution. I
-                      understand this will trigger a taxable event.
+      {!loading && (
+        <>
+          <header className="flex items-center justify-between px-4 py-4 bg-[#0d0501]">
+            <div className="flex items-center gap-2 text-[#8b7b64]">
+              <button onClick={() => {}} className="hover:text-white transition-colors">
+                <HomeIcon className="w-4 h-4" />
+              </button>
+              <span className="text-sm">/</span>
+              <span className="text-sm">Plans</span>
+              <span className="text-sm">/</span>
+              <span className="text-sm font-bold text-white">{`Plan #${plan?.id ?? plan?.contract_plan_id ?? '—'} Details`}</span>
+            </div>
+          </header>
+
+          <div className="p-4 flex flex-col gap-8">
+            <section className="flex flex-col gap-4">
+              <div className="flex items-end justify-between">
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-3">
+                    <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-3xl">
+                      {plan?.name ? String(plan.name) : (plan?.contract_plan_id ?? plan?.id ? `Plan #${plan.contract_plan_id ?? plan.id}` : '')}
+                    </h1>
+                    {(plan?.is_released === true || plan?.is_funded === true || plan?.status) && (
+                      <span className="bg-[#F97316] text-[#0d0501] [font-family:'Manrope',Helvetica] font-bold text-xs px-3 py-1 rounded-full">
+                        {plan?.is_released === true ? 'RELEASED' : plan?.is_funded === true ? 'FUNDED' : String(plan.status)}
+                      </span>
+                    )}
+                  </div>
+                  {(plan?.owner_wallet || plan?.last_active_at) && (
+                    <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">
+                      {plan?.owner_wallet ? `${plan.owner_wallet}` : ''}{plan?.owner_wallet && plan?.last_active_at ? ' • ' : ''}{plan?.last_active_at ? new Date(Number(plan.last_active_at) * 1000).toLocaleString() : ''}
                     </p>
+                  )}
+                </div>
+              </div>
+            </section>
+
+            {beneficiaries && beneficiaries.length > 0 && (
+              <div className="bg-[#181511] border border-[#392f28] rounded-xl">
+                <div className="p-4 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-[#F97316] flex items-center justify-center text-black font-bold">{getInitials(beneficiaries[0].name)}</div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-bold text-white">{beneficiaries[0].name}</p>
+                        <p className="text-[#8b7b64] text-xs">{beneficiaries[0].relationship ?? 'Beneficiary'}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[#bdb09a] text-xs">Allocation</p>
+                        <p className="font-bold text-white">{beneficiaries[0].allocation_percentage ?? '—'}%</p>
+                      </div>
+                    </div>
+                    <p className="text-[#8b7b64] text-xs mt-2">Wallet: {beneficiaries[0].wallet ? `${beneficiaries[0].wallet.slice(0,6)}...${beneficiaries[0].wallet.slice(-6)}` : '—'}</p>
                   </div>
                 </div>
               </div>
+            )}
 
-              <button className="w-full bg-white hover:bg-gray-100 text-[#1a1410] py-3 rounded-xl font-bold text-lg mb-3 flex items-center justify-center gap-2">
-                <span>✓</span>
-                Approve & Generate Signature
-              </button>
-              <p className="text-xs text-orange-100 text-center">
-                Secured by Multi-Party Computation (MPC)
-              </p>
+            <div className="grid grid-cols-4 gap-4">
+              <div className="p-4 bg-[#181511] border border-[#392f28] rounded-lg">
+                <p className="text-xs text-[#8b7664]">📦 Assets Included</p>
+                {assetSymbol ? (
+                  <>
+                    <p className="font-bold text-white mt-1">{assetDisplayName ?? assetSymbol}</p>
+                    {plan?.amount != null && <p className="text-xs text-[#8b7664] mt-1">Amount: {plan.amount} {assetSymbol}</p>}
+                  </>
+                ) : (
+                  <p className="font-bold text-white mt-1">—</p>
+                )}
+                {plan?.assets_description && <p className="text-xs text-[#8b7664] mt-1">{plan.assets_description}</p>}
+              </div>
+
+              <div className="p-4 bg-[#181511] border border-[#392f28] rounded-lg">
+                <p className="text-xs text-[#8b7664]">📊 Tax Status</p>
+                <p className="font-bold text-white mt-1">{plan?.tax_status ?? '—'}</p>
+                {plan?.tax_note && <p className="text-xs text-[#8b7664] mt-1">{plan.tax_note}</p>}
+              </div>
+
+              {(plan?.plan_type || plan?.inactivity_period_days != null) && (
+                <div className="p-4 bg-[#181511] border border-[#392f28] rounded-lg">
+                  <p className="text-xs text-[#8b7664]">⏰ Trigger Type</p>
+                  <p className="font-bold text-white mt-1">{plan?.plan_type ? triggerLabel(plan.plan_type) : '—'}</p>
+                  {plan?.inactivity_period_days != null && <p className="text-xs text-[#8b7664] mt-1">Inactivity Period: {plan.inactivity_period_days} Days</p>}
+                </div>
+              )}
+
+              {(plan?.last_active_at) && (
+                <div className="p-4 bg-[#181511] border border-[#392f28] rounded-lg">
+                  <p className="text-xs text-[#8b7664]">❤️ Current Status</p>
+                  <p className="font-bold text-white mt-1">{heartbeatStatus(plan).label}</p>
+                  <p className="text-xs text-[#8b7664] mt-1">{heartbeatStatus(plan).sub}</p>
+                </div>
+              )}
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-xl font-bold mb-4">Or Reject Plan</h3>
+            <div className="grid grid-cols-3 gap-6">
+              <div className="col-span-2 flex flex-col gap-4">
+                <div className="bg-[#181511] border border-[#392f28] rounded-xl">
+                  <div className="p-6 flex flex-col gap-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">Asset Allocation</h3>
+                      <span className="flex items-center gap-1 text-[#F97316] text-xs [font-family:'Manrope',Helvetica]"><LockIcon className="w-3 h-3" />Restricted View</span>
+                    </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Reason for Rejection
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Yoo, some reasons here"
-                      className="w-full bg-[#2a2420] border border-[#3a3430] rounded-lg px-4 py-2 text-sm placeholder-gray-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Action Type
-                    </label>
-                    <select className="w-full bg-[#2a2420] border border-[#3a3430] rounded-lg px-4 py-2 text-sm">
-                      <option>Initiate Mediator Review</option>
-                      <option>Escalate to Court</option>
-                      <option>Request Extension</option>
-                    </select>
+                    <div className="flex flex-col gap-4">
+                      {assetSymbol ? (
+                        <div className="flex items-center justify-between py-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-[#627eea] flex items-center justify-center text-white font-bold text-sm">
+                              {assetSymbol === 'BTC' ? '₿' : assetSymbol === 'ETH' ? 'Ξ' : assetSymbol?.[0] ?? assetSymbol}
+                            </div>
+                            <div>
+                              <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">{assetDisplayName}</p>
+                              <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs">{assetSymbol}</p>
+                            </div>
+                          </div>
+                          <span className="[font-family:'Manrope',Helvetica] font-bold text-[#627eea] text-sm">{assetSymbol === 'BTC' ? 'Bitcoin Network' : assetSymbol === 'ETH' ? 'Ethereum Mainnet' : 'Network'}</span>
+                        </div>
+                      ) : (
+                        <div className="py-6 text-[#8b7b64]">No asset information available.</div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                <button className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-medium">
-                  Reject Execution
-                </button>
+                <div className="bg-[#181511] border border-[#392f28] rounded-xl">
+                  <div className="p-6 flex flex-col gap-4">
+                    <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">Plan Timeline</h3>
+
+                    <div className="flex flex-col gap-4">
+                      <div className="flex gap-4">
+                        <div className="flex flex-col items-center">
+                          <div className="w-3 h-3 rounded-full bg-[#F97316]" />
+                          <div className="w-0.5 h-12 bg-[#392f28] mt-2" />
+                        </div>
+                        <div className="pb-4">
+                          <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">Plan Created</p>
+                          <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-1">{plan ? `Created: ${formatTs(plan.created_at)}` : '—'}</p>
+                        </div>
+                      </div>
+
+                      {plan?.plan_type === 'inactivity' && (
+                        <div className="flex gap-4">
+                          <div className="flex flex-col items-center">
+                            <div className="w-3 h-3 rounded-full bg-[#F97316]" />
+                            <div className="w-0.5 h-12 bg-[#F97316] mt-2" />
+                          </div>
+                          <div className="pb-4">
+                            <div className="flex items-center gap-2">
+                              <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">Inactivity Monitoring</p>
+                              <span className="bg-[#F97316] text-[#0d0501] [font-family:'Manrope',Helvetica] font-bold text-xs px-2 py-1 rounded">ACTIVE</span>
+                            </div>
+                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-1">Oracle checks wallet activity periodically.</p>
+                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-2">Inactivity period: {plan.inactivity_period_days ?? '—'} days</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {plan?.grace_period != null && (
+                        <div className="flex gap-4">
+                          <div className="flex flex-col items-center">
+                            <div className="w-3 h-3 rounded-full bg-[#8b7b64]" />
+                            <div className="w-0.5 h-12 bg-[#392f28] mt-2" />
+                          </div>
+                          <div className="pb-4">
+                            <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">Grace Period</p>
+                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-1">{plan.grace_period} days allowed for owner to cancel trigger.</p>
+                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#F97316] text-xs mt-2">Pending</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {plan?.should_release && (
+                        <div className="flex gap-4">
+                          <div className="flex flex-col items-center">
+                            <div className="w-3 h-3 rounded-full bg-[#8b7b64]" />
+                            <div className="w-0.5 h-12 bg-[#392f28] mt-2" />
+                          </div>
+                          <div className="pb-4">
+                            <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">MPC Authorization</p>
+                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-1">Designated signers must approve asset release.</p>
+                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#F97316] text-xs mt-2">{plan.is_released ? 'Completed' : 'Pending'}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {plan?.is_released && (
+                        <div className="flex gap-4">
+                          <div className="flex flex-col items-center">
+                            <div className="w-3 h-3 rounded-full bg-[#8b7b64]" />
+                          </div>
+                          <div className="pb-4">
+                            <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">Distribution Executed</p>
+                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-1">Assets transferred to beneficiary wallets.</p>
+                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-2">Released at {formatTs(plan.release_timestamp)}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
+
+              {hasLegalDocs && (
+                <div className="flex flex-col gap-4">
+                  <div className="bg-[#181511] border border-[#392f28] rounded-xl">
+                    <div className="p-6 flex flex-col gap-4">
+                      <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base">Legal Documents</h3>
+
+                      <div className="flex flex-col gap-3">
+                        {plan!.legal_docs.map((doc: any, idx: number) => (
+                          <div key={idx} className="flex items-center justify-between p-3 bg-[#27221c] rounded-lg hover:bg-[#2d251f] transition-colors cursor-pointer">
+                            <div className="flex items-center gap-3 flex-1">
+                              <FileTextIcon className="w-5 h-5 text-[#8b7b64]" />
+                              <div>
+                                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-xs">{doc.name ?? doc.title ?? `Document ${idx + 1}`}</p>
+                                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs">{doc.updated_at ? `Updated ${formatTs(doc.updated_at)}` : (doc.updated_at_display ?? '')}</p>
+                              </div>
+                            </div>
+                            <DownloadIcon className="w-4 h-4 text-[#8b7b64] hover:text-white" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-
-          {/* Plan Status Sidebar */}
-          <div className="space-y-6">
-            <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-6">
-              <h3 className="text-lg font-semibold mb-6">Plan Status</h3>
-              <div className="space-y-4">
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs text-gray-400">Oct 12, 2023</span>
-                    <span className="text-sm font-medium">Plan Created</span>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs text-gray-400">Oct 15, 2023</span>
-                    <span className="text-sm font-medium">Assets Staked</span>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs text-gray-400">Nov 07, 2023</span>
-                    <span className="text-sm font-medium">
-                      Proof of Death Verified
-                    </span>
-                  </div>
-                </div>
-                <div className="border-t border-[#3a3430] pt-4">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs text-yellow-400">Today</span>
-                    <span className="text-sm font-medium text-yellow-400">
-                      Awaiting Execution
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-6">
-              <h3 className="text-lg font-semibold mb-4">Beneficiaries</h3>
-              <p className="text-xs text-gray-400 mb-4">
-                3 Verified wallets ready to receive assets.
-              </p>
-              <div className="flex -space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full border-2 border-[#1a1410]"></div>
-                <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full border-2 border-[#1a1410]"></div>
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full border-2 border-[#1a1410]"></div>
-              </div>
-              <button className="w-full mt-4 bg-[#3a3430] hover:bg-[#4a4430] px-4 py-2 rounded-lg text-sm">
-                View All
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Dispute State */}
-        <div className="mt-8 bg-red-500/10 border-2 border-red-500/30 rounded-xl p-8">
-          <div className="flex items-start gap-4 mb-6">
-            <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-              <AlertTriangle className="w-8 h-8 text-red-400" />
-            </div>
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold mb-2">Dispute Active</h2>
-              <p className="text-gray-300 mb-4">
-                This plan has been flagged for Beneficiary Conflict. Assets are
-                currently frozen on-chain. The mediator panel has been activated
-                and all parties notified.
-              </p>
-              <div className="flex items-center gap-3">
-                <button className="bg-[#3a3430] hover:bg-[#4a4430] px-6 py-2 rounded-lg text-sm font-medium">
-                  Contact Mediator
-                </button>
-                <button className="bg-red-500 hover:bg-red-600 px-6 py-2 rounded-lg text-sm font-medium">
-                  View Evidence Log
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
+        </>
+      )}
+    </main>
   );
 };

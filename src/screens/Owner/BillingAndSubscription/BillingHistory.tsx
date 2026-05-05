@@ -1,12 +1,66 @@
 import { ChevronRight } from 'lucide-react';
 import { Wallet } from 'lucide-react';
 import { Header } from "./Header";
+import { useEffect, useState } from 'react';
+import { useAuth } from '../../../context/useAuth';
+import { getSubscriptionHistory } from '../../../lib/api/auth';
+import { usePlans } from '../../../lib/hooks/usePlans';
 
 interface BillingPageProps {
   onManagePayment?: () => void;
 }
 
+const fallbackPricingNameMap: Record<number, string> = {
+  1: 'Genesis',
+  2: 'Guardian',
+  3: 'Sovereign',
+  4: 'Protocol',
+};
+
+function formatTs(iso?: string) {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleString();
+  } catch (e) {
+    return iso;
+  }
+}
+
 export const BillingHistory = ({ onManagePayment }: BillingPageProps): JSX.Element => {
+  const { user } = useAuth();
+  const { plans: backendPlans } = usePlans();
+
+  // Build pricing id -> display name map from backend plans when available
+  const pricingNameMap: Record<number, string> = (backendPlans && backendPlans.length > 0)
+    ? backendPlans.reduce((acc: Record<number,string>, p: any) => {
+        acc[Number(p.id)] = String(p.name ?? p.title ?? `Plan ${p.id}`);
+        return acc;
+      }, {})
+    : fallbackPricingNameMap;
+  const [loading, setLoading] = useState(false);
+  const [subscriptions, setSubscriptions] = useState<any[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      if (!user?.token) return;
+      setLoading(true);
+      try {
+        const data = await getSubscriptionHistory(user.token);
+        if (!mounted) return;
+        // sort by start_date desc
+        const sorted = Array.isArray(data) ? data.slice().sort((a,b) => (new Date(b.start_date).getTime() - new Date(a.start_date).getTime())) : [];
+        setSubscriptions(sorted);
+      } catch (err) {
+        console.error('Failed to load subscription history', err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    load();
+    return () => { mounted = false; };
+  }, [user?.token]);
+
   return (
     <div className="flex flex-col w-full min-h-screen bg-[#221710] text-white [font-family:'Manrope',Helvetica]">
       <Header />
@@ -15,74 +69,12 @@ export const BillingHistory = ({ onManagePayment }: BillingPageProps): JSX.Eleme
         <div className="flex items-end justify-between mb-8">
           <div>
             <p className="text-3xl font-semibold mb-2">Billing History</p>
-            <p className="text-[#AFA89C]">Track your subscription payments, crypto transactions, and download invoices.</p>
+            <p className="text-[#AFA89C]">Track your subscription payments and download invoices.</p>
           </div>
           <button className="bg-[#483223] text-sm hover:bg-orange-600 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-medium transition">
             <Wallet className="w-4 h-4" />
             Manage Payment Methods
           </button>
-        </div>
-
-        <div className="grid grid-cols-3 gap-6 mb-8">
-
-          <div className="bg-[#483223] rounded-xl p-6 border border-[#674D32]">
-            <div className="flex items-start justify-between mb-4">
-              <div className='flex gap-2 items-center justify-between'>
-                <svg className="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <div className="text-[#B8AA94] text-sm">Next Billing</div>
-              </div>
-            </div>
-
-            <div className="text-white text-2xl font-semibold mb-1">Oct 24, 2024</div>
-            <div className="text-[#B8AA94] text-xs">Auto-renewal enabled</div>
-          </div>
-
-          <div className="bg-[#483223] rounded-xl p-6 border border-[#674D32]">
-            <div className="flex items-start justify-between mb-4">
-              <div className='flex gap-2 items-center justify-between'>
-                <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div className="text-[#B8AA94] text-sm">Active Plan</div>
-              </div>
-            </div>
-
-            <div className="text-white text-2xl font-semibold mb-1">Guardian Annual</div>
-            <div className="text-[#4ADE80] text-xs font-medium">Active & Secure</div>
-          </div>
-
-          <div className="bg-[#483223] rounded-xl p-6 border border-[#674D32]">
-            <div className="flex items-start justify-between mb-4">
-              <div className='flex gap-2 items-center justify-between'>
-                <svg className="w-5 h-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div className="text-[#B8AA94] text-sm">Total Spent</div>
-              </div>
-            </div>
-
-            <div className="text-white text-2xl font-semibold mb-1">$4,250.00</div>
-            <div className="text-[#B8AA94] text-xs">Since Jan 2022</div>
-          </div>
-        </div>
-
-        <div className="bg-[#483223] rounded-xl border border-[#674D32] p-6 mb-8">
-          <div className="flex items-center justify-between gap-4">
-            <input
-              type="text"
-              placeholder="Search by Transaction ID or Invoice #"
-              className="w-[400px] bg-[#221710] border border-[#80756B] text-sm rounded-lg px-4 py-2 text-white placeholder-white focus:outline-none focus:border-orange-500"
-            />
-
-            <div className='flex gap-3'>
-
-              <button className="bg-[#221710] hover:bg-neutral-600 text-[#F0E9E2] px-4 py-2 text-sm rounded-lg transition">Last 12 Months</button>
-              <button className="bg-[#221710] hover:bg-neutral-600 text-[#F0E9E2] px-4 py-2 text-sm rounded-lg transition">Status: All</button>
-              <button className="bg-[#221710] hover:bg-neutral-600 text-[#F0E9E2] px-4 py-2 text-sm rounded-lg transition">Method: Crypto</button>
-            </div>
-          </div>
         </div>
 
         <div className="bg-[#483223] rounded-xl border border-[#674D32] overflow-hidden">
@@ -92,59 +84,31 @@ export const BillingHistory = ({ onManagePayment }: BillingPageProps): JSX.Eleme
                 <tr className="border-b border-[#674D32] bg-[#32261A]">
                   <th className="px-6 py-4 text-left text-neutral-400 text-sm font-medium">Date</th>
                   <th className="px-6 py-4 text-left text-neutral-400 text-sm font-medium">Description</th>
-                  <th className="px-6 py-4 text-left text-neutral-400 text-sm font-medium">Transaction ID</th>
-                  <th className="px-6 py-4 text-left text-neutral-400 text-sm font-medium">Method</th>
-                  <th className="px-6 py-4 text-left text-neutral-400 text-sm font-medium">Amount</th>
+                  <th className="px-6 py-4 text-left text-neutral-400 text-sm font-medium">ID</th>
+                  <th className="px-6 py-4 text-left text-neutral-400 text-sm font-medium">Ends</th>
                   <th className="px-6 py-4 text-left text-neutral-400 text-sm font-medium">Status</th>
-                  <th className="px-6 py-4 text-left text-neutral-400 text-sm font-medium">Invoice</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#674D32]">
-                {[
-                  { date: 'Oct 24, 2024', desc: 'Guardian Annual', txId: '0x8a...4b2d', method: { name: 'USDC', icon: '⊕', color: 'teal' }, amount: '$120.00', status: 'Paid' },
-                  { date: 'Sep 15, 2024', desc: 'Storage Expansion', txId: 'INV-2024-0092', method: { name: 'Visa', icon: '💳', color: 'blue' }, amount: '$15.00', status: 'Paid' },
-                  { date: 'Aug 24, 2024', desc: 'Plan Setup Fee', txId: '0x3c...9f1a', method: { name: 'MATIC', icon: '⬠', color: 'purple' }, amount: '$45.00', status: 'Pending' },
-                  { date: 'Jul 24, 2024', desc: 'Guardian Annual', txId: '0x1d...e4f5', method: { name: 'USDC', icon: '⊕', color: 'teal' }, amount: '$120.00', status: 'Failed' },
-                  { date: 'Jun 10, 2024', desc: 'Consultation', txId: 'INV-2024-0045', method: { name: 'Mastercard', icon: '💳', color: 'red' }, amount: '$250.00', status: 'Paid' }
-                ].map((row, idx) => (
-                  <tr key={idx} className="hover:bg-neutral-900/50 transition">
-                    <td className="px-6 py-4 text-white text-sm">{row.date}</td>
+                {loading && (
+                  <tr><td colSpan={5} className="p-6 text-center text-[#B8AA94]">Loading...</td></tr>
+                )}
+                {!loading && subscriptions.length === 0 && (
+                  <tr><td colSpan={5} className="p-6 text-center text-[#B8AA94]">No subscription history found.</td></tr>
+                )}
+                {subscriptions.map((sub, idx) => (
+                  <tr key={sub.id ?? idx} className="hover:bg-neutral-900/50 transition">
+                    <td className="px-6 py-4 text-white text-sm">{formatTs(sub.start_date)}</td>
                     <td className="px-6 py-4">
-                      <div className="text-white text-sm">{row.desc}</div>
-                      {row.desc !== 'Guardian Annual' && row.desc !== 'Consultation' && <div className="text-[#B8AA94] text-xs">Renewal</div>}
+                      <div className="text-white text-sm">{pricingNameMap[sub.pricing_id] ?? `Plan ${sub.pricing_id}`}</div>
                     </td>
-                    <td className="px-6 py-4 text-neutral-400 text-sm font-mono">{row.txId}</td>
+                    <td className="px-6 py-4 text-neutral-400 text-sm font-mono">{sub.id}</td>
+                    <td className="px-6 py-4 text-white text-sm">{formatTs(sub.end_date)}</td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm ${row.method.color === 'teal' ? 'bg-teal-500/20 text-teal-400' :
-                            row.method.color === 'blue' ? 'bg-blue-500/20 text-blue-400' :
-                              row.method.color === 'purple' ? 'bg-purple-500/20 text-purple-400' :
-                                'bg-red-500/20 text-red-400'
-                          }`}>
-                          {row.method.icon}
-                        </div>
-                        <span className="text-white text-sm">{row.method.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-white font-medium text-sm">{row.amount}</td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${row.status === 'Paid' ? 'bg-green-500/20 text-green-400' :
-                          row.status === 'Pending' ? 'bg-yellow-500/20 text-yellow-400' :
-                            'bg-red-500/20 text-red-400'
-                        }`}>
-                        <div className={`w-2 h-2 rounded-full ${row.status === 'Paid' ? 'bg-green-400' :
-                            row.status === 'Pending' ? 'bg-yellow-400' :
-                              'bg-red-400'
-                          }`}></div>
-                        {row.status}
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${sub.is_active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                        <div className={`w-2 h-2 rounded-full ${sub.is_active ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                        {sub.is_active ? 'Active' : 'Ended'}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button className="text-neutral-400 hover:text-white transition">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                        </svg>
-                      </button>
                     </td>
                   </tr>
                 ))}
@@ -152,7 +116,7 @@ export const BillingHistory = ({ onManagePayment }: BillingPageProps): JSX.Eleme
             </table>
           </div>
           <div className="px-6 py-4 bg-[#32261A] border-t border-[#674D32] flex items-center justify-between">
-            <span className="text-[#B8AA94] text-sm">Showing 1 to 5 of 42 results</span>
+            <span className="text-[#B8AA94] text-sm">Showing {Math.min(subscriptions.length, 1)} to {subscriptions.length} of {subscriptions.length} results</span>
             <div className="flex items-center gap-2">
               <button className="text-neutral-400 hover:text-white">
                 <ChevronRight className="w-4 h-4 rotate-180" />

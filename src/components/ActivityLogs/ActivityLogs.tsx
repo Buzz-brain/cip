@@ -15,9 +15,10 @@ type Props = {
   userToken?: string | null;
   title?: string;
   subtitle?: string;
+  useOrange?: boolean;
 };
 
-const ActivityLogs: React.FC<Props> = ({ userToken, title = 'Activity Logs', subtitle }) => {
+const ActivityLogs: React.FC<Props> = ({ userToken, title = 'Activity Logs', subtitle, useOrange = false }) => {
   const { logs, loading, error, refresh } = useActivityLogs(userToken ?? undefined);
   const [query, setQuery] = useState('');
   const [planFilter, setPlanFilter] = useState('');
@@ -51,7 +52,7 @@ const ActivityLogs: React.FC<Props> = ({ userToken, title = 'Activity Logs', sub
                 placeholder="Search text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="flex-1 bg-[#0f0b08] border border-[#2f271f] rounded px-4 py-3 text-sm text-[#d1c3b4] focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className={`flex-1 bg-[#0f0b08] border border-[#2f271f] rounded px-4 py-3 text-sm text-[#d1c3b4] focus:outline-none ${useOrange ? 'focus:ring-2 focus:ring-[#F97316]' : 'focus:ring-2 focus:ring-[#2ccd2c]'}`}
               />
 
               <input
@@ -59,10 +60,10 @@ const ActivityLogs: React.FC<Props> = ({ userToken, title = 'Activity Logs', sub
                 placeholder="Plan ID"
                 value={planFilter}
                 onChange={(e) => setPlanFilter(e.target.value)}
-                className="w-40 bg-[#0f0b08] border border-[#2f271f] rounded px-3 py-3 text-sm text-[#d1c3b4] focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className={`w-40 bg-[#0f0b08] border border-[#2f271f] rounded px-3 py-3 text-sm text-[#d1c3b4] focus:outline-none ${useOrange ? 'focus:ring-2 focus:ring-[#F97316]' : 'focus:ring-2 focus:ring-[#2ccd2c]'}`}
               />
 
-              <button onClick={() => refresh()} className="px-4 py-3 bg-[#FF6600] text-white rounded font-medium">Refresh</button>
+              <button onClick={() => refresh()} className={`${useOrange ? 'bg-[#F97316]' : 'bg-[#2ccd2c]'} px-4 py-3 text-black rounded font-medium`}>Refresh</button>
             </div>
 
             {loading ? (

@@ -2,6 +2,7 @@ import { Badge } from "@components/ui/badge";
 import { Button } from "@components/ui/button";
 import { Card, CardContent, CardHeader } from "@components/ui/card";
 import { Separator } from "../../components/ui/separator";
+import { usePlans } from "../../lib/hooks/usePlans";
 
 const navigationItems = [
   { label: "How it Works", href: "#" },
@@ -75,120 +76,7 @@ const featureCards = [
   },
 ];
 
-const pricingPlans = [
-  {
-    name: "Starter",
-    price: "$0",
-    period: "/mo",
-    description: "For single-chain assets.",
-    features: [
-      { text: "1 WalletIcon Connected", included: true },
-      { text: "Basic Beneficiary triggers", included: true },
-    ],
-    buttonText: "Start Free",
-    buttonVariant: "outline" as const,
-    highlighted: false,
-  },
-  {
-    name: "Pro Estate",
-    price: "$29",
-    period: "/mo",
-    description: "Multi-chain & TaxCore.",
-    badge: "POPULAR",
-    features: [
-      { text: "Unlimited Wallets", included: true },
-      { text: "Full TaxCore Access", included: true },
-      { text: "Children's Trust Features", included: true },
-    ],
-    buttonText: "Get Started",
-    buttonVariant: "default" as const,
-    highlighted: true,
-  },
-  {
-    name: "Lifetime",
-    price: "$999",
-    period: "/one-time",
-    description: "Pay once, secure forever.",
-    features: [
-      { text: "All Pro Features", included: true },
-      { text: "Concierge Onboarding", included: true },
-      { text: "Hardware Key Backup", included: true },
-    ],
-    buttonText: "Buy Lifetime",
-    buttonVariant: "outline" as const,
-    highlighted: false,
-  },
-];
-
-const pricingPlansAlt = [
-  {
-    name: "Free",
-    price: "$0",
-    period: "/mo",
-    description: "Perfect for getting started with crypto inheritance.",
-    features: [
-      { text: "1 inheritance plan", included: true },
-      { text: "Basic editing (3x/year)", included: true },
-      { text: "MPC wallet enabled", included: true },
-      { text: "Basic tax estimate", included: true },
-      { text: "No AI detection", included: false },
-      { text: "No priority support", included: false },
-    ],
-    buttonText: "Get Started",
-    highlighted: false,
-  },
-  {
-    name: "Basic",
-    price: "$15",
-    period: "/mo",
-    description: "Essential protection for your main portfolio.",
-    features: [
-      { text: "3 inheritance plans", included: true },
-      { text: "Full MPC wallet", included: true },
-      {
-        text: "Limited triggers",
-        included: true,
-        subtext: "(Time-lock + Inactivity)",
-      },
-      { text: "Basic TaxCore", included: true },
-      { text: "No PDF exports", included: false },
-    ],
-    buttonText: "Choose Basic",
-    highlighted: false,
-  },
-  {
-    name: "Premium",
-    price: "$49",
-    period: "/mo",
-    description: "Complete peace of mind for you and your family.",
-    badge: "Recommended",
-    features: [
-      { text: "Unlimited plans", included: true },
-      { text: "All triggers including Health Oracle", included: true },
-      { text: "Full TaxCore + PDF exports", included: true },
-      { text: "AI fraud detection", included: true },
-      { text: "Children's trust accounts", included: true },
-      { text: "Priority support", included: true },
-    ],
-    buttonText: "Go Premium",
-    highlighted: true,
-  },
-  {
-    name: "Enterprise",
-    price: "Custom",
-    period: "",
-    description: "Tailored solutions for high-net-worth needs.",
-    features: [
-      { text: "API access", included: true },
-      { text: "White-label solution", included: true },
-      { text: "Dedicated support", included: true },
-      { text: "Custom contracts", included: true },
-      { text: "Compliance reporting", included: true },
-    ],
-    buttonText: "Contact Sales",
-    highlighted: false,
-  },
-];
+// Pricing is sourced from backend via `usePlans` — remove local mock arrays.
 
 const auditors = [
   { name: "CertiK", icon: "/iconoir-verified-user.svg" },
@@ -224,6 +112,10 @@ const footerLinksAlt = [
 ];
 
 export const Box = (): JSX.Element => {
+  const { plans: backendPlans, loading: plansLoading } = usePlans();
+  const planSource = backendPlans && backendPlans.length > 0 ? backendPlans.slice().sort((a: any, b: any) => Number(a.id) - Number(b.id)) : [];
+  const toTitleCase = (input?: string) => input ? input.replace(/(^|\s)\S/g, (t) => t.toUpperCase()) : '';
+
   return (
     <div className="min-h-screen bg-[#1e1e1e]">
       <div className="bg-black">
@@ -575,7 +467,23 @@ export const Box = (): JSX.Element => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {pricingPlans.map((plan) => (
+                {planSource.map((rawPlan: any, idx: number) => {
+                  const plan = {
+                    name: toTitleCase(rawPlan.name ?? `Plan ${rawPlan.id}`),
+                    price: rawPlan.price !== undefined && rawPlan.price !== null ? (typeof rawPlan.price === 'number' ? `$${rawPlan.price}` : `$${rawPlan.price}`) : 'Custom',
+                    period: "/mo",
+                    description: rawPlan.description ?? `${toTitleCase(rawPlan.name)} Plan`,
+                    features: [
+                      { text: `Included Plans: ${rawPlan.plans ?? '—'}`, included: true },
+                      { text: `Triggers: ${rawPlan.triggers ?? '—'}`, included: true },
+                      { text: `Supported Chains: ${rawPlan.supported_chain ?? '—'}`, included: true },
+                    ],
+                    buttonText: rawPlan.buttonText ?? 'Choose',
+                    buttonVariant: rawPlan.buttonVariant ?? 'default',
+                    highlighted: !!rawPlan.highlighted,
+                    badge: rawPlan.badge,
+                  };
+                  return (
                   <Card
                     key={plan.name}
                     className={`${
@@ -636,7 +544,7 @@ export const Box = (): JSX.Element => {
                       </Button>
                     </CardContent>
                   </Card>
-                ))}
+                )})}
               </div>
             </div>
           </div>
@@ -855,93 +763,105 @@ export const Box = (): JSX.Element => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                  {pricingPlansAlt.map((plan) => (
-                    <Card
-                      key={plan.name}
-                      className={`${
-                        plan.highlighted
-                          ? "bg-[#32241a] border-2 border-[#ff6600] relative"
-                          : "bg-[#32241a] border-[#554233]"
-                      }`}
-                    >
-                      {plan.badge && (
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-[#ff6600] rounded-full px-3 py-1">
-                          <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-xs">
-                            {plan.badge}
-                          </span>
-                        </div>
-                      )}
-                      <CardContent className="p-6 space-y-6">
-                        <div className="space-y-2">
-                          <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">
-                            {plan.name}
-                          </h3>
-                          <div className="flex items-baseline gap-1">
-                            <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-[35px] leading-[45px]">
-                              {plan.price}
+                  {planSource.map((rawPlan: any) => {
+                    const plan = {
+                      name: toTitleCase(rawPlan.name ?? `Plan ${rawPlan.id}`),
+                      price: rawPlan.price !== undefined && rawPlan.price !== null ? (typeof rawPlan.price === 'number' ? `$${rawPlan.price}` : `$${rawPlan.price}`) : 'Custom',
+                      period: rawPlan.period ?? '/mo',
+                      description: rawPlan.description ?? `${toTitleCase(rawPlan.name)} Plan`,
+                      features: rawPlan.features ?? [],
+                      buttonText: rawPlan.buttonText ?? 'Choose',
+                      highlighted: !!rawPlan.highlighted,
+                      badge: rawPlan.badge,
+                    };
+                    return (
+                      <Card
+                        key={plan.name}
+                        className={`${
+                          plan.highlighted
+                            ? "bg-[#32241a] border-2 border-[#ff6600] relative"
+                            : "bg-[#32241a] border-[#554233]"
+                        }`}
+                      >
+                        {plan.badge && (
+                          <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-[#ff6600] rounded-full px-3 py-1">
+                            <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-xs">
+                              {plan.badge}
                             </span>
-                            {plan.period && (
-                              <span className="[font-family:'Manrope',Helvetica] font-bold text-[#b8a494] text-sm">
-                                {plan.period}
-                              </span>
-                            )}
                           </div>
-                          <p className="[font-family:'Manrope',Helvetica] text-[#b8a494] text-sm">
-                            {plan.description}
-                          </p>
-                        </div>
-
-                        <Button
-                          variant={plan.highlighted ? "default" : "secondary"}
-                          className={`w-full ${
-                            plan.highlighted
-                              ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
-                              : "bg-[#554233] hover:bg-[#554233]/90"
-                          } [font-family:'Manrope',Helvetica] font-bold`}
-                        >
-                          {plan.buttonText}
-                        </Button>
-
-                        <Separator className="bg-[#554233]" />
-
-                        <div className="space-y-3">
-                          {plan.features.map((feature, idx) => (
-                            <div key={idx} className="flex items-start gap-4">
-                              {feature.included ? (
-                                <img
-                                  src="/streamline-sharp-check-solid.svg"
-                                  alt=""
-                                  className="w-3.5 h-3.5 mt-0.5 flex-shrink-0"
-                                />
-                              ) : (
-                                <img
-                                  src="/material-symbols-close.svg"
-                                  alt=""
-                                  className="w-[18px] h-[18px] flex-shrink-0"
-                                />
-                              )}
-                              <div className="flex-1">
-                                <span
-                                  className={`[font-family:'Manrope',Helvetica] text-sm ${
-                                    feature.included
-                                      ? "font-medium text-slate-200"
-                                      : "font-normal text-[#8b7964]"
-                                  }`}
-                                >
-                                  {feature.text}
+                        )}
+                        <CardContent className="p-6 space-y-6">
+                          <div className="space-y-2">
+                            <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">
+                              {plan.name}
+                            </h3>
+                            <div className="flex items-baseline gap-1">
+                              <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-[35px] leading-[45px]">
+                                {plan.price}
+                              </span>
+                              {plan.period && (
+                                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#b8a494] text-sm">
+                                  {plan.period}
                                 </span>
-                                {feature.subtext && (
-                                  <p className="[font-family:'Manrope',Helvetica] font-medium text-[#b8a494] text-xs mt-1">
-                                    {feature.subtext}
-                                  </p>
-                                )}
-                              </div>
+                              )}
                             </div>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                            <p className="[font-family:'Manrope',Helvetica] text-[#b8a494] text-sm">
+                              {plan.description}
+                            </p>
+                          </div>
+
+                          <Button
+                            variant={plan.highlighted ? "default" : "secondary"}
+                            className={`w-full ${
+                              plan.highlighted
+                                ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
+                                : "bg-[#554233] hover:bg-[#554233]/90"
+                            } [font-family:'Manrope',Helvetica] font-bold`}
+                          >
+                            {plan.buttonText}
+                          </Button>
+
+                          <Separator className="bg-[#554233]" />
+
+                          <div className="space-y-3">
+                            {plan.features.map((feature, idx) => (
+                              <div key={idx} className="flex items-start gap-4">
+                                {feature.included ? (
+                                  <img
+                                    src="/streamline-sharp-check-solid.svg"
+                                    alt=""
+                                    className="w-3.5 h-3.5 mt-0.5 flex-shrink-0"
+                                  />
+                                ) : (
+                                  <img
+                                    src="/material-symbols-close.svg"
+                                    alt=""
+                                    className="w-[18px] h-[18px] flex-shrink-0"
+                                  />
+                                )}
+                                <div className="flex-1">
+                                  <span
+                                    className={`[font-family:'Manrope',Helvetica] text-sm ${
+                                      feature.included
+                                        ? "font-medium text-slate-200"
+                                        : "font-normal text-[#8b7964]"
+                                    }`}
+                                  >
+                                    {feature.text}
+                                  </span>
+                                  {feature.subtext && (
+                                    <p className="[font-family:'Manrope',Helvetica] font-medium text-[#b8a494] text-xs mt-1">
+                                      {feature.subtext}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  )}
                 </div>
 
                 <div className="text-center space-y-6 pt-10">

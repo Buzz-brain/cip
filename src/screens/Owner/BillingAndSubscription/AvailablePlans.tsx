@@ -9,6 +9,7 @@ import sharpCheckSolid from '@assets/sharp-check-solid.svg';
 import sharpUncheckSolid from '@assets/sharp-uncheck-solid.svg';
 import { SkeletonCard } from '@components/ui/skeleton-card';
 import { toast } from 'react-toastify';
+import ConfirmPaymentModal from '@components/ui/ConfirmPaymentModal';
 
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 const XCIP_HEADER_VALUE = import.meta.env.VITE_XCIP_HEADER;
@@ -18,25 +19,53 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
   const { user } = useAuth();
   const navigate = useNavigate();
   const [subscribing, setSubscribing] = React.useState<Record<string, boolean>>({});
+  const [convertingEth, setConvertingEth] = React.useState<Record<string, boolean>>({});
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [modalPlan, setModalPlan] = React.useState<any>(null);
+  const [modalUsdPrice, setModalUsdPrice] = React.useState<number | null>(null);
+  const [modalEthAmount, setModalEthAmount] = React.useState<string | null>(null);
+  const [modalLoading, setModalLoading] = React.useState(false);
 
-  const handleSubscribe = async (plan: any) => {
-    if (!plan?.id) {
-      toast.info('Plan details unavailable.');
-      return;
-    }
-
-    const role = (user?.userInfo?.role ?? (user as any)?.role ?? '').toString();
-    if (role && role.toLowerCase() !== 'user') {
-      toast.error(`You're signed in as ${role}. Only owners can subscribe.`);
-      return;
-    }
-
+  const performPayment = async (plan: any, amountEth: string) => {
     const key = String(plan.id);
-    if (subscribing[key]) return;
+    setModalLoading(true);
     setSubscribing((s) => ({ ...s, [key]: true }));
-
     try {
-      const body = { pricing_id: plan.id, months: 1 };
+      if (!window.ethereum) throw new Error('No web3 provider found. Connect a wallet.');
+      await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
+      const { BrowserProvider, parseEther } = await import('ethers');
+      const provider = new BrowserProvider(window.ethereum as any);
+      const signer = await provider.getSigner();
+
+      const toAddress = '0xd9B9C4e5B0d9D3BEAAbcD21a803A2E8a3D47e1bF';
+      const value = parseEther(amountEth);
+
+      // GAS ESTIMATION
+      let gasLimit: bigint;
+      try {
+        const estimated = await provider.estimateGas({ to: toAddress, value });
+        gasLimit = (estimated * 130n) / 100n;
+      } catch (e) {
+        gasLimit = 100_000n;
+      }
+
+      // Fee overrides
+      let feeOverrides: { maxFeePerGas?: bigint; maxPriorityFeePerGas?: bigint } = {};
+      try {
+        const feeData = await provider.getFeeData();
+        if (feeData.maxFeePerGas) feeOverrides.maxFeePerGas = (feeData.maxFeePerGas * 125n) / 100n;
+        if (feeData.maxPriorityFeePerGas) feeOverrides.maxPriorityFeePerGas = (feeData.maxPriorityFeePerGas * 125n) / 100n;
+      } catch (e) {
+        console.warn('[performPayment] fee data error', e);
+      }
+
+      const tx = await signer.sendTransaction({ to: toAddress, value, gasLimit, ...feeOverrides });
+      const receipt = await tx.wait();
+      if (!receipt || receipt.status !== 1) throw new Error('On-chain payment failed or was reverted.');
+      const txHash = tx.hash;
+
+      // notify backend
+      const body = { tx_hash: txHash, pricing_id: plan.id, months: 1 };
       const res = await fetch(`${BACKEND_API_URL}/auth/subscribe`, {
         method: 'POST',
         headers: {
@@ -47,21 +76,100 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
         body: JSON.stringify(body),
       });
       const text = await res.text();
-      let data: any = null;
-      try { data = text ? JSON.parse(text) : null; } catch (e) { data = { raw: text }; }
-
       if (res.ok) {
         toast.success('Subscription successful.');
         if (typeof onSubscribe === 'function') onSubscribe();
         navigate('/owner-dashboard/select-assets');
       } else {
-        toast.error(`Subscription failed: ${text || res.status}`);
+        throw new Error(text || `Status ${res.status}`);
       }
     } catch (err: any) {
       toast.error(err?.message ?? String(err));
     } finally {
-      setSubscribing((s) => ({ ...s, [key]: false }));
+      setModalLoading(false);
+      setModalOpen(false);
+      setModalPlan(null);
+      setModalUsdPrice(null);
+      setModalEthAmount(null);
+      setSubscribing((s) => ({ ...s, [String(plan.id)]: false }));
     }
+  };
+
+  const handleSubscribe = async (plan: any) => {
+    if (!plan?.id) {
+      toast.info('Plan details unavailable.');
+      return;
+    }
+
+    const key = String(plan.id);
+    try {
+      const role = (user?.userInfo?.role ?? (user as any)?.role ?? '').toString();
+      if (role && role.toLowerCase() !== 'user') {
+        toast.error(`You're signed in as ${role}. Only owners can subscribe.`);
+        return;
+      }
+
+      if (subscribing[key] || convertingEth[key]) return;
+
+    // --- Convert USD price to ETH ---
+    setConvertingEth((s) => ({ ...s, [key]: true }));
+    toast.info('Calculating ETH amount from current exchange rate...');
+
+    // Extract USD price from plan
+    let usdPrice = 0;
+    if (typeof plan.price === 'number') {
+      usdPrice = plan.price;
+    } else if (typeof plan.price === 'string') {
+      usdPrice = parseFloat(plan.price.replace(/[^0-9.]/g, ''));
+    }
+
+    if (isNaN(usdPrice) || usdPrice < 0) {
+      throw new Error('Invalid plan price');
+    }
+
+    // Convert USD to ETH
+    const { convertUsdToEth } = await import('../../../lib/wallet/ethPrice');
+    let amountEth: string;
+    if (usdPrice === 0) {
+      amountEth = '0';
+      toast.info('Free plan - no payment required.');
+      // directly call backend for free tier
+      const body = { tx_hash: '', pricing_id: plan.id, months: 1 };
+      const res = await fetch(`${BACKEND_API_URL}/auth/subscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+          ...(XCIP_HEADER_VALUE ? { 'xcip-header': XCIP_HEADER_VALUE } : {}),
+        },
+        body: JSON.stringify(body),
+      });
+      if (res.ok) {
+        toast.success('Subscription successful.');
+        if (typeof onSubscribe === 'function') onSubscribe();
+        navigate('/owner-dashboard/select-assets');
+      } else {
+        const text = await res.text();
+        throw new Error(`Subscription failed: ${text || res.status}`);
+      }
+    } else {
+      amountEth = await convertUsdToEth(usdPrice);
+      toast.dismiss();
+      // open modal for confirmation
+      setModalPlan(plan);
+      setModalUsdPrice(usdPrice);
+      setModalEthAmount(amountEth);
+      setModalOpen(true);
+      // stop here; performPayment will continue when modal confirmed
+      setConvertingEth((s) => ({ ...s, [key]: false }));
+      return;
+    }
+  } catch (err: any) {
+    toast.error(err?.message ?? String(err));
+  } finally {
+    setSubscribing((s) => ({ ...s, [key]: false }));
+    setConvertingEth((s) => ({ ...s, [key]: false }));
+  }
   };
 
   if (plansLoading) return (
@@ -74,8 +182,9 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
   if (!backendPlans || backendPlans.length === 0) return <div className="p-6">No plans available.</div>;
 
   return (
+    <>
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-      {backendPlans.map((plan: any, idx: number) => {
+      {backendPlans.slice().sort((a: any, b: any) => Number(a.id) - Number(b.id)).map((plan: any, idx: number) => {
         const displayBadge = plan.badge ?? (idx === 2 ? 'Recommended' : undefined);
         return (
           <Card key={plan.id} className={`${plan.highlighted ? 'bg-[#32241a] border-2 border-[#ff6600]' : 'relative bg-[#32241a] border-[#554233]'}`}>
@@ -100,9 +209,9 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
               <Button
                 className={`${plan.highlighted ? 'bg-[#ff6600]' : 'bg-[#554233]'} w-full font-bold`}
                 onClick={() => handleSubscribe(plan)}
-                disabled={!!(plan.id && subscribing[String(plan.id)])}
+                disabled={!!(plan.id && (subscribing[String(plan.id)] || convertingEth[String(plan.id)]))}
               >
-                {subscribing[String(plan.id)] ? 'Processing...' : (plan.buttonText ?? 'Choose')}
+                {convertingEth[String(plan.id)] ? 'Converting...' : subscribing[String(plan.id)] ? 'Processing...' : (plan.buttonText ?? 'Choose')}
               </Button>
 
               <Separator className="bg-[#554233]" />
@@ -162,6 +271,19 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
         );
       })}
     </div>
+    {modalOpen && modalPlan && (
+      <ConfirmPaymentModal
+        open={modalOpen}
+        title={`Subscribe to ${modalPlan?.name ?? 'plan'}`}
+        planName={modalPlan?.name}
+        usdAmount={modalUsdPrice ?? undefined}
+        ethAmount={modalEthAmount ?? undefined}
+        loading={modalLoading}
+        onConfirm={() => performPayment(modalPlan, modalEthAmount ?? '0')}
+        onClose={() => setModalOpen(false)}
+      />
+    )}
+    </>
   );
 };
 

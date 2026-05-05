@@ -379,7 +379,7 @@ const AssignedInheritancePlans: React.FC = () => {
                       <button
                         className="text-orange-400 text-sm hover:text-orange-300"
                       >
-                        Manage
+                        View
                       </button>
                     </td>
                   </tr>

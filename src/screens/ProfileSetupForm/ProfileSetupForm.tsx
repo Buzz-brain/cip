@@ -222,7 +222,7 @@ export const ProfileSetupForm = (): JSX.Element => {
                 <div className="flex items-center gap-2">
                   <img src={protocolIcon} className="w-6" />
                   <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg tracking-[0] leading-[22px]">
-                    Protocol SettingsIcon
+                    Protocol Settings
                   </h2>
                 </div>
 
@@ -238,8 +238,9 @@ export const ProfileSetupForm = (): JSX.Element => {
                       defaultValue={profile.preferredChain}
                       onValueChange={(val) => setProfile((prev) => ({ ...prev, preferredChain: val }))}
                     >
-                      <SelectTrigger className="bg-[#27211c] border-[#54463b] text-white [font-family:'Manrope',Helvetica] font-normal text-sm h-10" />
-                      <SelectValue placeholder="Select chain" />
+                      <SelectTrigger className="bg-[#27211c] border-[#54463b] text-white [font-family:'Manrope',Helvetica] font-normal text-sm h-10">
+                        <SelectValue placeholder="Select chain" />
+                      </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="ETH">ETH</SelectItem>
                       </SelectContent>
@@ -260,8 +261,9 @@ export const ProfileSetupForm = (): JSX.Element => {
                       defaultValue={profile.taxResidence}
                       onValueChange={(val) => setProfile((prev) => ({ ...prev, taxResidence: val }))}
                     >
-                      <SelectTrigger className="bg-[#27211c] border-[#54463b] text-white [font-family:'Manrope',Helvetica] font-normal text-sm h-10" />
-                      <SelectValue placeholder="Select country" />
+                      <SelectTrigger className="bg-[#27211c] border-[#54463b] text-white [font-family:'Manrope',Helvetica] font-normal text-sm h-10">
+                        <SelectValue placeholder="Select country" />
+                      </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Nigeria">Nigeria</SelectItem>
                       </SelectContent>

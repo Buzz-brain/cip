@@ -35,6 +35,8 @@ import { SetTimeLock } from "./screens/Owner/PlanCreationFlow/TimeLock/SetTimeLo
 import { ReviewTimeLock } from "./screens/Owner/PlanCreationFlow/TimeLock/ReviewTimeLock.tsx";
 import { BeneficiaryDetails } from "./screens/Beneficiary/BeneficiaryDetails.tsx";
 import { BeneficiaryDashboard } from "./screens/Beneficiary/BeneficiaryDashboard.tsx";
+import { BeneficiaryDisputes } from "./screens/Beneficiary/BeneficiaryDisputes.tsx";
+import { BeneficiaryDisputeDetail } from "./screens/Beneficiary/BeneficiaryDisputeDetail.tsx";
 import BeneficiaryActivityLogs from "./screens/Beneficiary/BeneficiaryActivityLogs";
 import BeneficiaryRoutes from "./screens/Beneficiary/BeneficiaryRoutes";
 import { DisputePlanExecution } from "./screens/DisputeResolutionFlow/DisputePlanExecution";
@@ -73,6 +75,7 @@ import { EnterpriseLogin } from "./screens/EnterpriseFlow/EnterpriseLogin";
 import { EnterpriseDashboard } from "./screens/EnterpriseFlow/EnterpriseDashboard";
 import { ClientManagement } from "./screens/EnterpriseFlow/ClientManagement";
 import { InheritancePlans } from "./screens/EnterpriseFlow/InheritancePlans";
+import BeneficiaryInheritancePlans from "./screens/Beneficiary/InheritancePlans";
 import { AccessControl } from "./screens/EnterpriseFlow/AccessControl";
 import { AuditLogs } from "./screens/EnterpriseFlow/AuditLogs";
 import { ApiDevTools } from "./screens/EnterpriseFlow/ApiDevTools";
@@ -99,6 +102,7 @@ import ExecutorActivityLogs from "./screens/Executor/ExecutorActivityLogs";
 import { ExecutorDisputePlan } from "./screens/Executor/ExecutorDisputePlan.tsx";
 import { ExecutorAuditLog } from "./screens/Executor/ExecutorAuditLog.tsx";
 import { ExecuteInheritancePlan } from "./screens/Executor/ExecuteInheritancePlan.tsx";
+import ExecutorInheritancePlans from "./screens/Executor/ExecutorInheritancePlans";
 import { DocumentVerification } from "./screens/Executor/DocumentVerification.tsx";
 import { Compliance } from "./screens/Executor/Compliance.tsx";
 import { CommunicationCenter } from "./screens/Executor/CommunicationCenter.tsx";
@@ -240,6 +244,10 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/beneficiary-dashboard" element={<BeneficiaryRoutes />}>
           <Route index element={<BeneficiaryDashboard />} />
           <Route path="activity-logs" element={<BeneficiaryActivityLogs />} />
+          <Route path="plans" element={<BeneficiaryInheritancePlans />} />
+          <Route path="disputes" element={<BeneficiaryDisputes />} />
+          <Route path="disputes/view/:disputeId" element={<BeneficiaryDisputeDetail />} />
+          <Route path="disputes/raise/:planId" element={<DisputePlanExecution />} />
         </Route>
         <Route path="/beneficiary-details" element={<BeneficiaryDetails />} />
 
@@ -259,9 +267,6 @@ createRoot(document.getElementById("app") as HTMLElement).render(
 
         {/* Proof of Life Configuration  */}
         <Route path="/proof-of-life-config" element={<ProofOfLifeConfig />} /> ✅
-        {/* proof-of-life flows are modal-driven from the Owner Dashboard */}
-
-        {/* Billing and Subscription Flow (moved under /owner-dashboard) */}
 
         {/* Mediator Flow */}
         <Route path="/mediator-login" element={<MediatorLogin />} /> ✅
@@ -287,7 +292,8 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           <Route path="compliance" element={<Compliance />} />
           <Route path="beneficiary-coordination" element={<BeneficiaryCoordination />} />
           <Route path="communication-center" element={<CommunicationCenter />} />
-          <Route path="executor-inheritance-plan" element={<ExecuteInheritancePlan />} />
+          <Route path="executor-inheritance-plan" element={<ExecutorInheritancePlans />} />
+          <Route path="executor-inheritance-plan/:planId" element={<ExecuteInheritancePlan />} />
           <Route path="executor-audit-log" element={<ExecutorAuditLog />} />
           <Route path="settings-and-security" element={<SettingsAndSecurity />} />
           <Route path="executor-dispute-plan" element={<ExecutorDisputePlan />} />
@@ -302,9 +308,6 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/administrative-dashboard" element={<AdministrativeDashboard />} />
         <Route path="/manage-executors" element={<ManageExecutors />} />
         <Route path="/role-access-control" element={<RoleAccessControl />} />
-
-
-
 
 
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}
