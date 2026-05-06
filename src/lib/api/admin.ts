@@ -143,6 +143,27 @@ export async function viewExecutor(execId: number, token?: string): Promise<any>
   return res.json();
 }
 
+export async function viewMediator(medId: number, token?: string): Promise<any> {
+  const res = await fetch(`${BACKEND_API_URL}/admin/view-mediator/${medId}`, {
+    method: "GET",
+    headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  });
+  if (!res.ok) {
+    const json = await res.json().catch(() => null);
+    throw new Error(json?.message || res.statusText || "Failed to fetch mediator");
+  }
+  return res.json();
+}
+
+export async function viewIexecJobs(token?: string): Promise<any[]> {
+  const res = await fetch(`${BACKEND_API_URL}/admin/view-iexec-jobs`, {
+    method: "GET",
+    headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  });
+  if (!res.ok) throw new Error(res.statusText || "Failed to fetch iexec jobs");
+  return res.json();
+}
+
 export async function disapproveMediator(medId: number, token?: string): Promise<any> {
   const res = await fetch(`${BACKEND_API_URL}/admin/disapprove-mediator/${medId}`, {
     method: "PATCH",
@@ -155,8 +176,20 @@ export async function disapproveMediator(medId: number, token?: string): Promise
   return res.json();
 }
 
+export async function approveMediator(medId: number, token?: string): Promise<any> {
+  const res = await fetch(`${BACKEND_API_URL}/admin/approve-mediator/${medId}?medi_id=${medId}`, {
+    method: "PATCH",
+    headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  });
+  if (!res.ok) {
+    const json = await res.json().catch(() => null);
+    throw new Error(json?.message || res.statusText || "Failed to approve mediator");
+  }
+  return res.json();
+}
+
 export async function disapproveAdmin(adminIdd: number, token?: string): Promise<any> {
-  const res = await fetch(`${BACKEND_API_URL}/admin/disapprove-admin/${adminIdd}`, {
+  const res = await fetch(`${BACKEND_API_URL}/admin/disapprove-admin/${adminIdd}?admin_idd=${adminIdd}`, {
     method: "PATCH",
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
@@ -168,7 +201,7 @@ export async function disapproveAdmin(adminIdd: number, token?: string): Promise
 }
 
 export async function approveAdmin(adminIdd: number, token?: string): Promise<any> {
-  const res = await fetch(`${BACKEND_API_URL}/admin/approve-admin/${adminIdd}`, {
+  const res = await fetch(`${BACKEND_API_URL}/admin/approve-admin/${adminIdd}?admin_idd=${adminIdd}`, {
     method: "PATCH",
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
@@ -180,7 +213,7 @@ export async function approveAdmin(adminIdd: number, token?: string): Promise<an
 }
 
 export async function promoteAdmin(adminIdd: number, token?: string): Promise<any> {
-  const res = await fetch(`${BACKEND_API_URL}/admin/promote-admin/${adminIdd}`, {
+  const res = await fetch(`${BACKEND_API_URL}/admin/promote-admin/${adminIdd}?admin_idd=${adminIdd}`, {
     method: "PATCH",
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });

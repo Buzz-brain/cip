@@ -12,6 +12,7 @@ import loginArrowIcon from "@assets/login-arrow.svg";
 
 export const AdministrativeLogin = (): JSX.Element => {
   const navigate = useNavigate();
+  const { loginAsAdmin } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -25,22 +26,19 @@ export const AdministrativeLogin = (): JSX.Element => {
   };
 
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return toast.warn("Please provide email and password");
 
-    const { loginAsAdmin } = useAuth();
-    (async () => {
-      try {
-        const token = await adminLogin({ email_or_username: email, password });
-        // persist token in AuthContext
-        if (loginAsAdmin) await loginAsAdmin(token, { email });
-        toast.success("Logged in successfully");
-        onLoginSuccess();
-      } catch (err: any) {
-        toast.error(err?.message || "Login failed");
-      }
-    })();
+    try {
+      const token = await adminLogin({ email_or_username: email, password });
+      // persist token in AuthContext
+      if (loginAsAdmin) await loginAsAdmin(token, { email });
+      toast.success("Logged in successfully");
+      onLoginSuccess();
+    } catch (err: any) {
+      toast.error(err?.message || "Login failed");
+    }
   };
 
   return (

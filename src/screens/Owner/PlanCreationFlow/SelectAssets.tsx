@@ -8,7 +8,6 @@ import {
 import { Alert, AlertDescription } from "@components/ui/alert";
 import { Badge } from "@components/ui/badge";
 import { Button } from "@components/ui/button";
-import { Label } from "@components/ui/label";
 import { Card, CardContent } from "@components/ui/card";
 import { Checkbox } from "@components/ui/checkbox";
 import { Input } from "@components/ui/input";
@@ -42,11 +41,11 @@ import ethCoinPic from "@assets/eth-coin.svg";
 import wormHoleBg from "@assets/worm-hole-bg.svg";
 import chartGraph from "@assets/chart-graph.svg";
 import chartGraphLine from "@assets/chart-graph-line.svg";
-import robotIcon from "@assets/robot.svg";
-import shieldCheckGreen from "@assets/shield-check-green.svg";
-import connectWalletGreen from "@assets/connect-wallet-green.svg";
-import greaterThanSignIcon from "@assets/gt-sign.svg";
-import bulbIcon from "@assets/bulb-icon.svg";
+// import robotIcon from "@assets/robot.svg";
+// import shieldCheckGreen from "@assets/shield-check-green.svg";
+// import connectWalletGreen from "@assets/connect-wallet-green.svg";
+// import greaterThanSignIcon from "@assets/gt-sign.svg";
+// import bulbIcon from "@assets/bulb-icon.svg";
 // Header removed — layout provides it
 import { Separator } from "@components/ui/separator";
 
@@ -60,64 +59,127 @@ const assetData = [
         symbol: "ETH",
         chainIcon: ethIcon,
         chainIconClass: "w-[75.00%] h-[68.18%] top-[15.91%] left-[12.50%]",
-        chain: "Ethereum\nMainnet",
+        chain: "Arbitrum Sepolia",
         balance: "12.5402",
         value: "$23,199.37",
         bridgeStatus: "Native",
         bridgeBg: "bg-[#22c55e1a]",
         bridgeColor: "text-green-500",
+        needsBridge: false,
+        bridgeUrl: "",
         highlighted: false,
     },
-    // {
-    //     id: "sol",
-    //     checked: false,
-    //     icon: womanPic,
-    //     iconBg: "bg-[#3b2c1e]",
-    //     name: "Solana",
-    //     symbol: "SOL",
-    //     chainIcon: solanaIcon,
-    //     chainIconClass: "w-[91.67%] h-[75.00%] top-[12.50%] left-[4.17%]",
-    //     chain: "Solana",
-    //     balance: "450.00",
-    //     value: "$65,250.00",
-    //     bridgeStatus: "Bridge\nReq.",
-    //     bridgeBg: "bg-[#f59e0b1a]",
-    //     bridgeColor: "text-amber-500",
-    //     highlighted: true,
-    // },
-    // {
-    //     id: "usdc",
-    //     checked: false,
-    //     icon: threeSquareIcon,
-    //     iconBg: "bg-[#feeddb]",
-    //     name: "USD Coin",
-    //     symbol: "USDC",
-    //     chainIcon: hexagonIcon,
-    //     chainIconClass: "w-[86.67%] h-[61.36%] top-[19.32%] left-[6.67%]",
-    //     chain: "Polygon",
-    //     balance: "5,432.10",
-    //     value: "$5,432.10",
-    //     bridgeStatus: "Bridge\nReq.",
-    //     bridgeBg: "bg-[#f59e0b1a]",
-    //     bridgeColor: "text-amber-500",
-    //     highlighted: false,
-    // },
+    {
+        id: "sol",
+        checked: false,
+        icon: bitcoinPic,
+        iconBg: "bg-[#3b2c1e]",
+        name: "Solana",
+        symbol: "SOL",
+        chainIcon: ethIcon,
+        chainIconClass: "w-[91.67%] h-[75.00%] top-[12.50%] left-[4.17%]",
+        chain: "Solana",
+        balance: "450.00",
+        value: "$65,250.00",
+        bridgeStatus: "Bridge\nReq.",
+        bridgeBg: "bg-[#f59e0b1a]",
+        bridgeColor: "text-amber-500",
+        needsBridge: true,
+        bridgeUrl: "https://portalbridge.com/?fromChain=Solana&fromToken=SOL&toChain=Ethereum&toToken=ARB",
+        highlighted: true,
+    },
+    {
+        id: "bnb",
+        checked: false,
+        icon: bitcoinPic,
+        iconBg: "bg-[#f3ba2f1a]",
+        name: "Binance Coin",
+        symbol: "BNB",
+        chainIcon: ethIcon,
+        chainIconClass: "w-[86.67%] h-[61.36%] top-[19.32%] left-[6.67%]",
+        chain: "BNB Chain",
+        balance: "5.2",
+        value: "$2,100.00",
+        bridgeStatus: "Bridge\nReq.",
+        bridgeBg: "bg-[#f59e0b1a]",
+        bridgeColor: "text-amber-500",
+        needsBridge: true,
+        bridgeUrl: "https://portalbridge.com/?fromChain=BSC&fromToken=BNB&toChain=Ethereum&toToken=ARB",
+        highlighted: false,
+    },
+    {
+        id: "usdt",
+        checked: false,
+        icon: bitcoinPic,
+        iconBg: "bg-[#26a17b1a]",
+        name: "Tether USD",
+        symbol: "USDT",
+        chainIcon: ethIcon,
+        chainIconClass: "w-[75.00%] h-[68.18%] top-[15.91%] left-[12.50%]",
+        chain: "Ethereum",
+        balance: "10000.00",
+        value: "$10,000.00",
+        bridgeStatus: "Bridge\nReq.",
+        bridgeBg: "bg-[#f59e0b1a]",
+        bridgeColor: "text-amber-500",
+        needsBridge: true,
+        bridgeUrl: "https://portalbridge.com/?fromChain=Ethereum&fromToken=USDT&toChain=Ethereum&toToken=ARB",
+        highlighted: false,
+    },
+    {
+        id: "arb",
+        checked: false,
+        icon: bitcoinPic,
+        iconBg: "bg-[#28a0f01a]",
+        name: "Arbitrum",
+        symbol: "ARB",
+        chainIcon: ethIcon,
+        chainIconClass: "w-[75.00%] h-[68.18%] top-[15.91%] left-[12.50%]",
+        chain: "Arbitrum",
+        balance: "1000.00",
+        value: "$15,000.00",
+        bridgeStatus: "Native",
+        bridgeBg: "bg-[#22c55e1a]",
+        bridgeColor: "text-green-500",
+        needsBridge: false,
+        bridgeUrl: "",
+        highlighted: false,
+    },
+    {
+        id: "coti",
+        checked: false,
+        icon: bitcoinPic,
+        iconBg: "bg-[#6d28d91a]",
+        name: "COTI",
+        symbol: "COTI",
+        chainIcon: ethIcon,
+        chainIconClass: "w-[75.00%] h-[68.18%] top-[15.91%] left-[12.50%]",
+        chain: "COTI Network",
+        balance: "5000.00",
+        value: "$3,500.00",
+        bridgeStatus: "Bridge\nReq.",
+        bridgeBg: "bg-[#f59e0b1a]",
+        bridgeColor: "text-amber-500",
+        needsBridge: true,
+        bridgeUrl: "https://portalbridge.com/?fromChain=Ethereum&fromToken=COTI&toChain=Ethereum&toToken=ARB",
+        highlighted: false,
+    },
 ];
 
-const aiGuardianChecks = [
-    {
-        icon: shieldCheckGreen,
-        iconClass: "w-[66.67%] h-[69.44%] top-[15.28%] left-[16.67%]",
-        title: "Risk Check",
-        description: "Assets verified safe",
-    },
-    {
-        icon: connectWalletGreen,
-        iconClass: "w-[79.17%] h-[62.50%] top-[18.75%] left-[12.50%]",
-        title: "Inflow Check",
-        description: "0 Suspicious txs",
-    },
-];
+// const aiGuardianChecks = [
+//     {
+//         icon: shieldCheckGreen,
+//         iconClass: "w-[66.67%] h-[69.44%] top-[15.28%] left-[16.67%]",
+//         title: "Risk Check",
+//         description: "Assets verified safe",
+//     },
+//     {
+//         icon: connectWalletGreen,
+//         iconClass: "w-[79.17%] h-[62.50%] top-[18.75%] left-[12.50%]",
+//         title: "Inflow Check",
+//         description: "0 Suspicious txs",
+//     },
+// ];
 
 export const SelectAssets = (): JSX.Element => {
     const navigate = useNavigate();
@@ -131,6 +193,11 @@ export const SelectAssets = (): JSX.Element => {
     const toggleAsset = (id: string) => {
         setSelectedAssets(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
     };
+
+    // Get the first selected asset that needs a bridge, or null if none
+    const selectedAssetNeedingBridge = assetData.find(asset => 
+        selectedAssets.includes(asset.id) && asset.needsBridge
+    ) || null;
 
     // Filter assets based on search term
     const filteredAssets = assetData.filter(asset => {
@@ -380,11 +447,11 @@ export const SelectAssets = (): JSX.Element => {
               <Card className="bg-[#2c231a] border-[#54483b] rounded-xl overflow-hidden w-full">
                 <CardContent className="p-0">
                   <div className="overflow-x-auto">
-                    <Table>
+                    <div className="max-h-[350px] overflow-auto scrollbar-thin-custom">
+                      <Table>
                       <TableHeader className="bg-[#382f23]">
                         <TableRow className="border-0 hover:bg-transparent">
                           <TableHead className="w-[50px] p-4">
-                            <Checkbox className="w-4 h-4 ml-2 border-[#54483b]" />
                           </TableHead>
                           <TableHead className="w-[142.66px] p-4">
                             <span className="[font-family:'Manrope',Helvetica] font-bold text-[#afa59c] text-xs">
@@ -418,6 +485,12 @@ export const SelectAssets = (): JSX.Element => {
                         {filteredAssets.map((asset) => (
                           <TableRow
                             key={asset.id}
+                            onClick={(e:any) => {
+                              const tgt = (e.target as HTMLElement);
+                              // ignore clicks on checkbox inputs or buttons to avoid double-toggle
+                              if (tgt.closest && (tgt.closest('input[type="checkbox"]') || tgt.closest('button'))) return;
+                              toggleAsset(asset.id);
+                            }}
                             className={`border-t border-[#49382f] hover:bg-[#3a3228] cursor-pointer transition-colors ${
                               selectedAssets.includes(asset.id)
                                 ? "bg-[#ff66000d] border-l-4 border-l-[#ff6600]"
@@ -435,14 +508,14 @@ export const SelectAssets = (): JSX.Element => {
                             </TableCell>
                             <TableCell className="p-4">
                               <div className="flex items-center gap-3">
-                                <div
+                                {/* <div
                                   className={`flex w-8 h-8 items-center justify-center ${asset.iconBg} rounded-full overflow-hidden`}
                                 >
                                   <img
                                     src={asset.icon}
                                     className={`relative w-5 h-5 bg-cover bg-[50%_50%]`}
                                   />
-                                </div>
+                                </div> */}
                                 <div className="flex flex-col">
                                   <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">
                                     {asset.name}
@@ -455,13 +528,13 @@ export const SelectAssets = (): JSX.Element => {
                             </TableCell>
                             <TableCell className="p-4">
                               <div className="flex items-center gap-2">
-                                <div className="relative w-[18px] h-[22px]">
+                                {/* <div className="relative w-[18px] h-[22px]">
                                   <img
                                     className={`absolute ${asset.chainIconClass}`}
                                     alt="Chain"
                                     src={asset.chainIcon}
                                   />
-                                </div>
+                                </div> */}
                                 <span className="[font-family:'Manrope',Helvetica] font-normal text-gray-300 text-sm whitespace-pre-line">
                                   {asset.chain}
                                 </span>
@@ -494,9 +567,88 @@ export const SelectAssets = (): JSX.Element => {
                         ))}
                       </TableBody>
                     </Table>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
+
+              {selectedAssetNeedingBridge && (
+                <Alert className="bg-[#241f15] border-[#ff66004c] p-8 shadow-[0px_1px_2px_#0000000d] rounded-xl overflow-hidden relative">
+                  <div className="absolute top-2 right-8 opacity-10 rotate-12">
+                    <img
+                      className="w-[120px] h-36 -rotate-12"
+                      alt="Background"
+                      src={wormHoleBg}
+                    />
+                  </div>
+
+                  <AlertDescription className="flex items-center gap-6 relative z-10">
+                    <div className="flex flex-col items-start gap-2 flex-1">
+                      <div className="flex items-center gap-2">
+                        <img
+                          className="w-[23.33px] h-[22.38px]"
+                          alt="Alert"
+                          src={circlePentagonOrangeIcon}
+                        />
+                        <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">
+                          Cross-Chain Bridging Required
+                        </h3>
+                      </div>
+                      <p className="[font-family:'Manrope',Helvetica] font-normal text-gray-300 text-sm leading-5">
+                        You have selected assets on{" "}
+                        <span className="font-bold">{selectedAssetNeedingBridge.symbol}</span>. Use the
+                        <br />
+                        integrated Wormhole bridge to move them to the
+                        <br />
+                        secure Inheritance Vault on Ethereum.
+                      </p>
+                      <div className="inline-flex items-center gap-3 p-3 bg-[#00000033] rounded-lg border border-solid border-[#ffffff0d]">
+                        <div className="inline-flex items-center gap-2">
+                          <img
+                            src={whiteWomanPic}
+                            className="relative w-5 h-5 bg-cover bg-[50%_50%]"
+                          />
+                          <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-xs">
+                            {selectedAssetNeedingBridge.symbol}
+                          </span>
+                        </div>
+                        <ArrowRightIcon className="w-[8.89px] h-[8.89px] text-gray-400" />
+                        <div className="inline-flex items-center gap-2">
+                          <img
+                            src={portalPic}
+                            className={`relative w-5 h-5 bg-cover bg-[50%_50%]`}
+                          />
+                          <span className="[font-family:'Manrope',Helvetica] font-medium text-[#80796b] text-xs">
+                            Portal
+                          </span>
+                        </div>
+                        <ArrowRightIcon className="w-[8.89px] h-[8.89px] text-gray-400" />
+                        <div className="inline-flex items-center gap-2">
+                          <img
+                            src={ethCoinPic}
+                            className={`relative w-5 h-5 bg-cover bg-[50%_50%]`}
+                          />
+                          <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-xs">
+                            ETH Vault
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <Button 
+                      onClick={() => {
+                        if (selectedAssetNeedingBridge && selectedAssetNeedingBridge.bridgeUrl) {
+                          window.open(selectedAssetNeedingBridge.bridgeUrl, '_blank');
+                        }
+                      }}
+                      className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg shadow-[0px_4px_6px_-4px_#137fec33,0px_10px_15px_-3px_#137fec33]">
+                      <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-base">
+                        Start Bridge Process
+                      </span>
+                      <ZapIcon className="w-[15.56px] h-[19.44px]" />
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
             </div>
 
             <div className="flex flex-col w-[298.67px] items-start gap-6 relative self-stretch">
@@ -514,12 +666,12 @@ export const SelectAssets = (): JSX.Element => {
                         USD
                       </span>
                     </div>
-                    <div className="flex items-center gap-1 pt-1">
+                    {/* <div className="flex items-center gap-1 pt-1">
                       <TrendingUpIcon className="w-4 h-4 text-green-500" />
                       <span className="[font-family:'Manrope',Helvetica] font-medium text-green-500 text-sm">
                         +2.4% (24h)
                       </span>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="flex flex-col w-full h-[88px] items-start justify-center pt-2 relative">

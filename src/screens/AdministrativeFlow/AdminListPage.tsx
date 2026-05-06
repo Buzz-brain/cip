@@ -1,13 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import AdminLayout from "./AdminLayout";
 import { useAuth } from "../../context/useAuth";
-import { disapproveAdmin, approveAdmin, promoteAdmin, disapproveMediator, viewUser, viewExecutor } from "../../lib/api/admin";
+import { disapproveAdmin, approveAdmin, promoteAdmin, disapproveMediator, viewUser, viewExecutor, viewMediator } from "../../lib/api/admin";
 import ConfirmModal from "../../components/ui/ConfirmModal";
+import AdminDetailModal from "../../components/ui/AdminDetailModal";
 
 export default function AdminListPage({ title, fetcher }: { title: string; fetcher: (token?: string) => Promise<any[]> }) {
   const { user } = useAuth();
   const token = user?.token;
   const [items, setItems] = useState<any[]>([]);
+  const [execStats, setExecStats] = useState<{ exec_count?: number; total_wallets?: number; pending?: number } | null>(null);
+  const [mediatorStats, setMediatorStats] = useState<{ total_mediators?: number } | null>(null);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -16,13 +19,35 @@ export default function AdminListPage({ title, fetcher }: { title: string; fetch
   const [confirmAction, setConfirmAction] = useState<string | null>(null);
   const [confirmItemId, setConfirmItemId] = useState<number | null>(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailData, setDetailData] = useState<any>(null);
+  const [detailTitle, setDetailTitle] = useState<string>('Details');
 
   useEffect(() => {
     (async () => {
       setLoading(true);
       try {
         const res = await fetcher(token);
-        setItems(Array.isArray(res) ? res : []);
+        // backend may return { status,message,data:{ exec/mediators/...: [...] } } or an array
+        const data = res?.data || res;
+        // set executor stats when present
+        if (data && typeof data === 'object') {
+          if (typeof data.exec_count !== 'undefined' || typeof data.total_wallets !== 'undefined' || typeof data.pending !== 'undefined') {
+            setExecStats({ exec_count: data.exec_count, total_wallets: data.total_wallets, pending: data.pending });
+          } else {
+            setExecStats(null);
+          }
+          if (typeof data.total_mediators !== 'undefined') {
+            setMediatorStats({ total_mediators: data.total_mediators });
+          } else {
+            setMediatorStats(null);
+          }
+        }
+        const list = Array.isArray(res)
+          ? res
+          : data?.exec || res?.exec || data?.mediators || res?.mediators || data?.results || res?.data || [];
+        setItems(Array.isArray(list) ? list : []);
       } catch (err) {
         setItems([]);
       } finally { setLoading(false); }
@@ -47,7 +72,10 @@ export default function AdminListPage({ title, fetcher }: { title: string; fetch
       if (action === 'disapprove-mediator') await disapproveMediator(id, token);
       // refresh list
       const res = await fetcher(token);
-      setItems(Array.isArray(res) ? res : []);
+      const list = Array.isArray(res)
+        ? res
+        : res?.data?.exec || res?.exec || res?.data?.mediators || res?.mediators || res?.data?.results || res?.data || [];
+      setItems(Array.isArray(list) ? list : []);
       setConfirmOpen(false);
     } catch (err:any) {
       console.error('Action failed', err);
@@ -75,6 +103,33 @@ export default function AdminListPage({ title, fetcher }: { title: string; fetch
             <input value={query} onChange={e=>{setQuery(e.target.value); setPage(1);}} placeholder="Search..." className="px-3 py-2 bg-[#0f0c0a] border border-[#2a2520] text-white rounded" />
           </div>
         </div>
+        {/* Stats for executors/mediators if provided by backend */}
+        {(execStats || mediatorStats) && (
+          <div className="mt-4 grid grid-cols-3 gap-4">
+            {execStats && (
+              <>
+                <div className="bg-[#0f0c0a] border border-[#2a2520] rounded p-3 text-sm">
+                  <div className="text-gray-400">Executors</div>
+                  <div className="text-white text-lg font-semibold">{String(execStats.exec_count ?? 0)}</div>
+                </div>
+                <div className="bg-[#0f0c0a] border border-[#2a2520] rounded p-3 text-sm">
+                  <div className="text-gray-400">Total Wallets</div>
+                  <div className="text-white text-lg font-semibold">{String(execStats.total_wallets ?? 0)}</div>
+                </div>
+                <div className="bg-[#0f0c0a] border border-[#2a2520] rounded p-3 text-sm">
+                  <div className="text-gray-400">Pending</div>
+                  <div className="text-white text-lg font-semibold">{String(execStats.pending ?? 0)}</div>
+                </div>
+              </>
+            )}
+            {mediatorStats && (
+              <div className="bg-[#0f0c0a] border border-[#2a2520] rounded p-3 text-sm col-span-3 md:col-span-1">
+                <div className="text-gray-400">Mediators</div>
+                <div className="text-white text-lg font-semibold">{String(mediatorStats.total_mediators ?? 0)}</div>
+              </div>
+            )}
+          </div>
+        )}
 
         {loading ? <div className="text-gray-400">Loading...</div> : (
           <>
@@ -84,10 +139,38 @@ export default function AdminListPage({ title, fetcher }: { title: string; fetch
                   <div className="flex-1">
                     <div className="font-medium">{it.full_name || it.user_name || it.email || it.name || `#${it.id || idx}`}</div>
                     <div className="text-gray-400 text-xs mt-1">{it.email || it.contact || JSON.stringify(it).slice(0,120)}</div>
+                    <div className="mt-2 flex items-center gap-4 text-xs">
+                      {it.wallet && <div className="text-gray-400"><span className="text-gray-400">Wallet:</span> <span className="text-white ml-1">{String(it.wallet).slice(0,12)}...{String(it.wallet).slice(-6)}</span></div>}
+                      {typeof it.plan_id !== 'undefined' && <div className="text-gray-400"><span className="text-gray-400">Plan:</span> <span className="text-white ml-1">{String(it.plan_id)}</span></div>}
+                      {typeof it.has_approved !== 'undefined' && (
+                        <div>
+                          {it.has_approved ? <span className="px-2 py-0.5 bg-green-600 rounded text-xs">Approved</span> : <span className="px-2 py-0.5 bg-yellow-600 rounded text-xs">Pending</span>}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     {/* Actions: view, approve/disapprove, promote, disable depending on type */}
-                    <button onClick={async ()=>{ const details = await (it.id ? viewUser(it.id, token).catch(()=>null) : null); alert(JSON.stringify(details||it, null, 2)); }} className="px-3 py-1 bg-[#27231c] rounded text-sm">View</button>
+                    <button onClick={async ()=>{
+                      setDetailLoading(true);
+                      setDetailData(null);
+                      setDetailTitle(it.full_name || it.email || `#${it.id || idx}`);
+                      setDetailOpen(true);
+                      try {
+                        const details = it.id ? (
+                          title.toLowerCase().includes('executors') || it.plan_id
+                            ? await viewExecutor(it.id, token)
+                            : title.toLowerCase().includes('mediators')
+                              ? await viewMediator(it.id, token)
+                              : await viewUser(it.id, token)
+                        ) : null;
+                        setDetailData(details || it);
+                      } catch (e) {
+                        setDetailData(it);
+                      } finally {
+                        setDetailLoading(false);
+                      }
+                    }} className="px-3 py-1 bg-[#27231c] rounded text-sm">View</button>
                     {it.role === 'admin' || title.toLowerCase().includes('admins') ? (
                       <>
                         <button onClick={()=>openConfirm('approve-admin', it.id)} className="px-3 py-1 bg-green-600 rounded text-sm">Approve</button>
@@ -114,6 +197,7 @@ export default function AdminListPage({ title, fetcher }: { title: string; fetch
           </>
         )}
         <ConfirmModal open={confirmOpen} loading={confirmLoading} title="Confirm action" description={`Are you sure you want to ${confirmAction?.replace(/-/g,' ')} this item?`} confirmLabel="Yes, do it" cancelLabel="Cancel" onConfirm={handleConfirm} onCancel={()=>setConfirmOpen(false)} />
+        <AdminDetailModal open={detailOpen} loading={detailLoading} data={detailData} title={detailTitle} onClose={()=>{setDetailOpen(false); setDetailData(null);}} />
       </div>
     </AdminLayout>
   );

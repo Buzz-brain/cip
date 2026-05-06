@@ -1,14 +1,13 @@
 import {
   LayoutDashboard,
   Users,
-  FolderKanban,
   Box,
-  Headphones,
   Settings,
   LogOut,
 } from "lucide-react";
+import { useEffect } from "react";
 import { useApp } from "./AppContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface SidebarProps {
   variant?: "default" | "simple";
@@ -26,20 +25,14 @@ export function Sidebar({ variant = "default" }: SidebarProps) {
             icon: LayoutDashboard,
           },
           {
-            id: "user-analytics" as const,
-            label: "User Analytics",
+            id: "role-management" as const,
+            label: "Role Access Control",
             icon: Users,
           },
           {
-            id: "plan-management" as const,
-            label: "Plan Management",
-            icon: FolderKanban,
-          },
-          { id: "job-logs" as const, label: "iExec Job Logs", icon: Box },
-          {
-            id: "support-tickets" as const,
-            label: "Support Tickets",
-            icon: Headphones,
+            id: "iexec-jobs" as const,
+            label: "iExec Jobs",
+            icon: Box,
           },
         ]
       : [
@@ -59,14 +52,18 @@ export function Sidebar({ variant = "default" }: SidebarProps) {
         ];
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const routeForId = (id: string) => {
     switch (id) {
       case "dashboard":
         return "/administrative-dashboard";
+      case "iexec-jobs":
+        return "/administrative/iexec-jobs";
       case "user-analytics":
+        return "/administrative-dashboard";
       case "manage-executors":
-        return "/manage-executors";
+        return "/administrative/users";
       case "plan-management":
         return "/administrative-dashboard";
       case "job-logs":
@@ -74,11 +71,36 @@ export function Sidebar({ variant = "default" }: SidebarProps) {
       case "support-tickets":
         return "/administrative-dashboard";
       case "role-management":
-        return "/role-access-control";
+        return "/administrative/role-access-control";
       default:
         return "/administrative-dashboard";
     }
   };
+
+  useEffect(() => {
+    const path = location.pathname;
+
+    if (path.startsWith("/administrative/role-access-control")) {
+      setCurrentPage("role-management");
+      return;
+    }
+    if (path.startsWith("/administrative/users")) {
+      setCurrentPage("manage-executors");
+      return;
+    }
+    if (path.startsWith("/administrative/dashboard") || path === "/administrative-dashboard") {
+      setCurrentPage("dashboard");
+      return;
+    }
+    if (path.startsWith("/administrative/executors") || path.startsWith("/administrative/mediators") || path.startsWith("/administrative/admins")) {
+      setCurrentPage("manage-executors");
+      return;
+    }
+    if (path.startsWith("/administrative/iexec-jobs")) {
+      setCurrentPage("iexec-jobs");
+      return;
+    }
+  }, [location.pathname, setCurrentPage]);
 
   return (
     <div className="w-60 bg-[#1a1510] border-r border-[#2a2520] flex flex-col h-screen">

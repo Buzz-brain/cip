@@ -3,10 +3,12 @@ import AdminLayout from "./AdminLayout";
 import { createAdmin } from "../../lib/api/admin";
 import { useAuth } from "../../context/useAuth";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateAdmin(): JSX.Element {
   const { user } = useAuth();
   const token = user?.token;
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
@@ -24,6 +26,7 @@ export default function CreateAdmin(): JSX.Element {
       await createAdmin(token, { email, user_name: userName, password, full_name: fullName, secret_code: secretCode });
       toast.success("Admin user created");
       setEmail(""); setUserName(""); setPassword(""); setFullName(""); setSecretCode("");
+      setTimeout(() => navigate("/administrative-login"), 1000);
     } catch (err: any) {
       // Try to parse validation errors returned by backend
       const message = err?.message || "Failed to create admin";

@@ -7,7 +7,8 @@ type Page =
   | "job-logs"
   | "support-tickets"
   | "role-management"
-  | "manage-executors";
+  | "manage-executors"
+  | "iexec-jobs";
 
 interface AppContextType {
   currentPage: Page;

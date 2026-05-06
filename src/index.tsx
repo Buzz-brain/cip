@@ -120,6 +120,8 @@ import { AdministrativeSetNewPwd } from "./screens/AdministrativeFlow/Administra
 import { AdminPwdResetComplete } from "./screens/AdministrativeFlow/AdminPwdResetComplete";
 import CreateAdmin from "./screens/AdministrativeFlow/CreateAdmin";
 import AdminListPage from "./screens/AdministrativeFlow/AdminListPage";
+import { RoleAccessControl } from "./screens/AdministrativeFlow/RoleAccessControl";
+import IexecJobs from "./screens/AdministrativeFlow/IexecJobs";
 import { viewUsers, viewExecutors, viewMediators, viewAdmins } from "./lib/api/admin";
 import AdministrativeDashboard from "./screens/AdministrativeFlow/AdministrativeDashboard";
 
@@ -301,6 +303,10 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           <Route path="executor-secure-storage" element={<ExecutorSecureStorage />} />
         </Route>
 
+
+
+
+
         {/* Administrative Flows */}
         <Route path="/administrative-login" element={<AdministrativeLogin />} /> ✅
         <Route path="/administrative-forgot-password" element={<AdministrativeForgotPwd />} /> ✅
@@ -308,13 +314,18 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/administrative-password-reset-complete" element={<AdminPwdResetComplete />} /> ✅
         <Route path="/administrative-dashboard" element={<AdministrativeDashboard />} /> ✅
         <Route path="/administrative/create" element={<CreateAdmin />} /> ✅
+        <Route path="/administrative/role-access-control" element={<RoleAccessControl />} /> ✅
         <Route path="/administrative/users" element={<AdminListPage title="All Users" fetcher={viewUsers} />} /> ✅
         <Route path="/administrative/executors" element={<AdminListPage title="Executors" fetcher={viewExecutors} />} /> ✅
         <Route path="/administrative/mediators" element={<AdminListPage title="Mediators" fetcher={viewMediators} />} /> ✅
         <Route path="/administrative/admins" element={<AdminListPage title="Admins" fetcher={viewAdmins} />} /> ✅
+        <Route path="/administrative/iexec-jobs" element={<IexecJobs />} /> ✅
 
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}
         <Route path="/asset-registry" element={<AssetRegistry />} />
+
+
+
 
       </Routes>
       <ToastContainer

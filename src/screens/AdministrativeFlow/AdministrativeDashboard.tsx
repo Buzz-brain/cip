@@ -1,36 +1,45 @@
 import { useEffect, useState } from "react";
-import { Users, FolderKanban, HardDrive, Ticket } from "lucide-react";
+import { Users, FolderKanban, HardDrive } from "lucide-react";
+import { Link } from "react-router-dom";
 import AdminLayout from "./AdminLayout";
 import { useAuth } from "../../context/useAuth";
-import { getDashboard, viewUsers, viewExecutors, viewMediators, viewAdmins } from "../../lib/api/admin";
+import { getDashboard, viewUsers } from "../../lib/api/admin";
 
 export default function AdministrativeDashboard() {
   const { user } = useAuth();
   const token = user?.token;
 
-  const [stats, setStats] = useState<any[]>([]);
+  
   const [users, setUsers] = useState<any[]>([]);
-  const [executors, setExecutors] = useState<any[]>([]);
-  const [mediators, setMediators] = useState<any[]>([]);
-  const [admins, setAdmins] = useState<any[]>([]);
+  const [totalUsersCount, setTotalUsersCount] = useState<number | null>(null);
+  const [totalInheritanceCount, setTotalInheritanceCount] = useState<number | null>(null);
+  const [totalIexecJobsCount, setTotalIexecJobsCount] = useState<number | null>(null);
+  const [recentJobs, setRecentJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
       setLoading(true);
       try {
-        const [dashData, usersData, execsData, medsData, admsData] = await Promise.all([
-          getDashboard(token).catch(() => []),
+        const [dashData, usersData] = await Promise.all([
+          getDashboard(token).catch(() => null),
           viewUsers(token).catch(() => []),
-          viewExecutors(token).catch(() => []),
-          viewMediators(token).catch(() => []),
-          viewAdmins(token).catch(() => []),
         ]);
-        setStats(Array.isArray(dashData) ? dashData : []);
+        // dashboard may return { status, message, data: { total_users, total_inheritance, total_iexec_jobs, recent_jobs } }
+        if (dashData && typeof dashData === "object") {
+          const payload = dashData.data || dashData;
+          setTotalUsersCount(payload?.total_users ?? null);
+          setTotalInheritanceCount(payload?.total_inheritance ?? null);
+          setTotalIexecJobsCount(payload?.total_iexec_jobs ?? null);
+          setRecentJobs(Array.isArray(payload?.recent_jobs) ? payload.recent_jobs : []);
+        } else {
+          setTotalUsersCount(null);
+          setTotalInheritanceCount(null);
+          setTotalIexecJobsCount(null);
+          setRecentJobs([]);
+        }
+
         setUsers(Array.isArray(usersData) ? usersData : []);
-        setExecutors(Array.isArray(execsData) ? execsData : []);
-        setMediators(Array.isArray(medsData) ? medsData : []);
-        setAdmins(Array.isArray(admsData) ? admsData : []);
       } catch (err) {
         console.error("Failed to fetch dashboard data", err);
       } finally {
@@ -39,44 +48,66 @@ export default function AdministrativeDashboard() {
     })();
   }, [token]);
 
-  const totalUsers = stats.find((s: any) => s.stat_type === "total_users");
-  const plansCreated = stats.find((s: any) => s.stat_type === "plans_created");
-  const storageUsed = stats.find((s: any) => s.stat_type === "storage_used");
-  const pendingTickets = stats.find((s: any) => s.stat_type === "pending_tickets");
+  // prefer backend totals when available
+  const totalUsers = totalUsersCount ?? users.length;
+  const plansCreated = totalInheritanceCount ?? 0;
+  
 
   if (loading) return <AdminLayout title="Admin Dashboard"><div className="text-gray-400">Loading...</div></AdminLayout>;
 
   return (
     <AdminLayout title="Admin Dashboard">
       <div className="space-y-6">
-        <div className="grid grid-cols-4 gap-6">
-          <StatCard icon={<Users className="w-5 h-5" />} title="Total Active Users" value={(users.length || totalUsers?.value || 0).toString()} change={totalUsers?.change_percent || 0} />
-          <StatCard icon={<FolderKanban className="w-5 h-5" />} title="Plans Created" value={plansCreated?.value?.toLocaleString?.() || "0"} change={plansCreated?.change_percent || 0} />
-          <StatCard icon={<HardDrive className="w-5 h-5" />} title="Storage Used" value={`${storageUsed?.value || 0} ${storageUsed?.additional_info || ""}`} change={storageUsed?.change_percent || 0} />
-          <StatCard icon={<Ticket className="w-5 h-5" />} title="Pending Tickets" value={pendingTickets?.value?.toString?.() || "0"} change={0} changeLabel={pendingTickets?.additional_info} />
+        <div className="grid grid-cols-3 gap-6">
+          <StatCard icon={<Users className="w-5 h-5" />} title="Total Active Users" value={String(totalUsers ?? 0)} change={0} />
+          <StatCard icon={<FolderKanban className="w-5 h-5" />} title="Plans Created" value={String(plansCreated ?? 0)} change={0} />
+          <StatCard icon={<HardDrive className="w-5 h-5" />} title="iExec Jobs" value={String(totalIexecJobsCount ?? 0)} change={0} />
         </div>
 
-        <div className="grid grid-cols-4 gap-6">
-          <div className="col-span-1 bg-[#1a1510] border border-[#2a2520] rounded-xl p-6">
-            <h3 className="text-white font-semibold mb-2">Users</h3>
-            <div className="text-gray-400 text-sm mb-4">{users.length} users</div>
-            <a href="/administrative/users" className="text-orange-500 hover:text-orange-400">Manage users →</a>
+        <div className="rounded-xl border border-[#2a2520] bg-[#1a1510] p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 className="text-white font-semibold">Role & Access Control</h3>
+              <p className="text-gray-400 text-sm mt-2">
+                Manage all admin account roles from one page with fast sidebar navigation.
+              </p>
+            </div>
+            <Link to="/administrative/role-access-control" className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700">
+              Go to Role Access Control
+            </Link>
           </div>
-          <div className="col-span-1 bg-[#1a1510] border border-[#2a2520] rounded-xl p-6">
-            <h3 className="text-white font-semibold mb-2">Executors</h3>
-            <div className="text-gray-400 text-sm mb-4">{executors.length} executors</div>
-            <a href="/administrative/executors" className="text-orange-500 hover:text-orange-400">Manage executors →</a>
-          </div>
-          <div className="col-span-1 bg-[#1a1510] border border-[#2a2520] rounded-xl p-6">
-            <h3 className="text-white font-semibold mb-2">Mediators</h3>
-            <div className="text-gray-400 text-sm mb-4">{mediators.length} mediators</div>
-            <a href="/administrative/mediators" className="text-orange-500 hover:text-orange-400">Manage mediators →</a>
-          </div>
-          <div className="col-span-1 bg-[#1a1510] border border-[#2a2520] rounded-xl p-6">
-            <h3 className="text-white font-semibold mb-2">Admins</h3>
-            <div className="text-gray-400 text-sm mb-4">{admins.length} admins</div>
-            <a href="/administrative/admins" className="text-orange-500 hover:text-orange-400">Manage admins →</a>
-          </div>
+        </div>
+        
+        <div className="mt-6 bg-[#1a1510] border border-[#2a2520] rounded-xl p-6">
+          <h3 className="text-white font-semibold mb-4">Recent iExec Job Logs</h3>
+          {recentJobs.length === 0 ? (
+            <div className="text-gray-400">No recent jobs</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-gray-400 text-xs border-b border-[#2a2520]">
+                    <th className="py-2">Task ID</th>
+                    <th className="py-2">Plan</th>
+                    <th className="py-2">Trigger</th>
+                    <th className="py-2">Processed</th>
+                    <th className="py-2">Created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentJobs.map((job:any) => (
+                    <tr key={job.id} className="border-b border-[#2a2520]">
+                      <td className="py-3 align-top text-white">{String(job.task_id).slice(0, 14)}... <div className="text-gray-400 text-xs">{String(job.task_id)}</div></td>
+                      <td className="py-3 align-top text-white">{job.plan_name || job.plan_id}</td>
+                      <td className="py-3 align-top text-gray-300">{job.trigger_type}</td>
+                      <td className="py-3 align-top">{job.processed ? <span className="text-green-400">Yes</span> : <span className="text-yellow-400">No</span>}</td>
+                      <td className="py-3 align-top text-gray-300">{job.created_at ? new Date(Number(job.created_at) * 1000).toLocaleString() : '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </AdminLayout>
