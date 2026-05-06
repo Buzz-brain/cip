@@ -118,9 +118,10 @@ import { AdministrativeLogin } from "./screens/AdministrativeFlow/Administrative
 import { AdministrativeForgotPwd } from "./screens/AdministrativeFlow/AdministrativeForgotPwd";
 import { AdministrativeSetNewPwd } from "./screens/AdministrativeFlow/AdministrativeSetNewPwd";
 import { AdminPwdResetComplete } from "./screens/AdministrativeFlow/AdminPwdResetComplete";
-import { AdministrativeDashboard } from "./screens/AdministrativeFlow/AdministrativeDashboard";
-import { ManageExecutors } from "./screens/AdministrativeFlow/ManageExecutors";
-import { RoleAccessControl } from "./screens/AdministrativeFlow/RoleAccessControl";
+import CreateAdmin from "./screens/AdministrativeFlow/CreateAdmin";
+import AdminListPage from "./screens/AdministrativeFlow/AdminListPage";
+import { viewUsers, viewExecutors, viewMediators, viewAdmins } from "./lib/api/admin";
+import AdministrativeDashboard from "./screens/AdministrativeFlow/AdministrativeDashboard";
 
 import { Login } from "./screens/Login";
 
@@ -300,15 +301,17 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           <Route path="executor-secure-storage" element={<ExecutorSecureStorage />} />
         </Route>
 
-        {/* Administrative Flows - 7 of 15 */} ❌
+        {/* Administrative Flows */}
         <Route path="/administrative-login" element={<AdministrativeLogin />} /> ✅
         <Route path="/administrative-forgot-password" element={<AdministrativeForgotPwd />} /> ✅
         <Route path="/administrative-set-new-password" element={<AdministrativeSetNewPwd />} /> ✅
         <Route path="/administrative-password-reset-complete" element={<AdminPwdResetComplete />} /> ✅
-        <Route path="/administrative-dashboard" element={<AdministrativeDashboard />} />
-        <Route path="/manage-executors" element={<ManageExecutors />} />
-        <Route path="/role-access-control" element={<RoleAccessControl />} />
-
+        <Route path="/administrative-dashboard" element={<AdministrativeDashboard />} /> ✅
+        <Route path="/administrative/create" element={<CreateAdmin />} /> ✅
+        <Route path="/administrative/users" element={<AdminListPage title="All Users" fetcher={viewUsers} />} /> ✅
+        <Route path="/administrative/executors" element={<AdminListPage title="Executors" fetcher={viewExecutors} />} /> ✅
+        <Route path="/administrative/mediators" element={<AdminListPage title="Mediators" fetcher={viewMediators} />} /> ✅
+        <Route path="/administrative/admins" element={<AdminListPage title="Admins" fetcher={viewAdmins} />} /> ✅
 
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}
         <Route path="/asset-registry" element={<AssetRegistry />} />

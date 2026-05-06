@@ -21,6 +21,7 @@ export interface AuthContextType {
   error: string | null;
   isAuthenticated: boolean;
   loginWithWallet: (publicKey: string, signature: string, message: string) => Promise<User>;
+  loginAsAdmin?: (token: string, info?: { email?: string; full_name?: string }) => Promise<User>;
   getNonce: (publicKey: string) => Promise<string>;
   logout: () => void;
   clearError: () => void;
@@ -76,6 +77,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const message = err instanceof Error ? err.message : "Failed to get nonce";
       setError(message);
       throw err;
+    }
+  }, []);
+
+  // Login as admin with token
+  const loginAsAdmin = useCallback(async (token: string, info?: { email?: string; full_name?: string }) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const newUser: User = { publicKey: "", token, userInfo: info || {}, role: "admin", name: info?.full_name, email: info?.email };
+      setUser(newUser);
+      return newUser;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Admin login failed";
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -186,6 +204,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     error,
     isAuthenticated: !!user,
     loginWithWallet,
+    loginAsAdmin,
     getNonce,
     logout,
     clearError,

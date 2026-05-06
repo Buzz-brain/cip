@@ -71,21 +71,14 @@ export const AssignHealthOracleExec = (): JSX.Element => {
       <div className="bg-[#8A5F1E1A] border border-[#AF731E] rounded-xl p-8 mb-8">
         <div className="flex items-start gap-4">
           <div className="w-12 h-14 bg-orange-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
-            <img
-              src={shieldUserFullIcon}
-              className="w-6 h-6"
-              alt="Executor"
-            />
+            <img src={shieldUserFullIcon} className="w-6 h-6" alt="Executor" />
           </div>
           <div>
-            <h3 className="text-white font-bold mb-2">Executor Role</h3>
-            <p className="text-[#B9AC9D] text-sm mb-3">
-              This person is responsible for uploading the death certificate
-              to verify the trigger condition.
-            </p>
-            <p className="text-white font-semibold text-sm">
-              They cannot access funds. Their role is strictly administrative
-              and non-custodial.
+            <h3 className="text-white font-bold mb-1">Executor Role</h3>
+            <p className="text-[#B9AC9D] text-sm mb-1">
+              This person is responsible for uploading the death certificate to
+              verify the trigger condition. They cannot access funds, their role
+              is strictly administrative and non-custodial.
             </p>
           </div>
         </div>
@@ -144,7 +137,7 @@ export const AssignHealthOracleExec = (): JSX.Element => {
         </div>
 
         <div className="flex items-start gap-2 text-[#B9AC9D] text-xs">
-          <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+          <Info className="w-4 h-4 flex-shrink-0" />
           <span>
             This wallet will be whitelisted to interact with the verification
             oracle smart contract.

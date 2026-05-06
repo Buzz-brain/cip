@@ -1,11 +1,10 @@
-import { Download, CreditCard, Wallet, Link as LinkIcon, FileText, MessageCircle } from 'lucide-react';
+import { FileText, MessageCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { getSubscriptionHistory } from '../../../lib/api/auth';
 import { useAuth } from '../../../context/useAuth';
 import { usePlans } from '../../../lib/hooks/usePlans';
 import AvailablePlans from './AvailablePlans';
 import { SkeletonCard } from '@components/ui/skeleton-card';
-// import checkOrangeCircle from "@assets/check-orange-circle.svg"
-
 
 interface BillingPaymentPageProps {
   onUpgrade?: () => void;
@@ -13,13 +12,14 @@ interface BillingPaymentPageProps {
 
 export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.Element => {
   const { user } = useAuth();
-  const walletAddress = user?.publicKey || '0x0000...0000';
-  const displayAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
   const { plans: backendPlans } = usePlans();
 
   const [dashLoading, setDashLoading] = useState(false);
   const [dashboard, setDashboard] = useState<any | null>(null);
   const [dashError, setDashError] = useState<string | null>(null);
+  const [subscriptions, setSubscriptions] = useState<any[] | null>(null);
+  const [subsLoading, setSubsLoading] = useState(false);
+  const [subsError, setSubsError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -47,6 +47,28 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
       }
     }
     fetchDashboard();
+    return () => { mounted = false; };
+  }, [user?.token]);
+
+  // Fetch subscription history from auth endpoint so it appears in Network tab
+  useEffect(() => {
+    let mounted = true;
+    async function fetchSubs() {
+      setSubsLoading(true);
+      setSubsError(null);
+      try {
+        const data = await getSubscriptionHistory(user?.token);
+        if (!mounted) return;
+        setSubscriptions(Array.isArray(data) ? data : []);
+      } catch (err: any) {
+        if (!mounted) return;
+        setSubsError(err?.message ?? String(err));
+      } finally {
+        if (!mounted) return;
+        setSubsLoading(false);
+      }
+    }
+    fetchSubs();
     return () => { mounted = false; };
   }, [user?.token]);
   
@@ -294,61 +316,63 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
             </h3>
           </div>
 
-          {dashLoading ? (
+          {subsLoading || dashLoading ? (
             <div className="space-y-3">
               {Array.from({ length: 3 }).map((_, i) => (
                 <SkeletonCard key={`billing-skel-${i}`} />
               ))}
             </div>
-          ) : !dashboard ||
-            !Array.isArray(dashboard.all_subscriptions) ||
-            dashboard.all_subscriptions.length === 0 ? (
-            <div className="py-12 text-center text-[#AFA89C]">
-              <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p className="text-sm">
-                No billing history available at this time.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {Array.isArray(dashboard?.all_subscriptions)
-                ? [...dashboard.all_subscriptions]
-                    .sort((a: any, b: any) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())
-                    .map((sub: any) => (
-                      <div key={sub.id} className="bg-[#2d241a] p-4 rounded">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-white font-semibold">
-                              {(() => {
-                                const planInfo = backendPlans?.find(
-                                  (p: any) => Number(p.id) === Number(sub.pricing_id),
-                                );
-                                const name = planInfo?.name ?? `Plan #${sub.pricing_id}`;
-                                return `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
-                              })()}
-                            </div>
-                            <div className="text-sm text-[#AFA89C]">
-                              {sub.start_date ? new Date(sub.start_date).toLocaleString() : "—"}
-                            </div>
+          ) : (() => {
+            const history = Array.isArray(subscriptions) && subscriptions.length > 0
+              ? subscriptions
+              : (Array.isArray(dashboard?.all_subscriptions) ? dashboard.all_subscriptions : []);
+
+            if (!history || history.length === 0) {
+              return (
+                <div className="py-12 text-center text-[#AFA89C]">
+                  <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p className="text-sm">No billing history available at this time.</p>
+                </div>
+              );
+            }
+
+            return (
+              <div className="space-y-3">
+                {[...history]
+                  .sort((a: any, b: any) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())
+                  .map((sub: any) => (
+                    <div key={sub.id} className="bg-[#2d241a] p-4 rounded">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-white font-semibold">
+                            {(() => {
+                              const planInfo = backendPlans?.find((p: any) => Number(p.id) === Number(sub.pricing_id));
+                              const name = planInfo?.name ?? `Plan #${sub.pricing_id}`;
+                              return `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
+                            })()}
                           </div>
-                          <div className="text-right">
-                            <div className="text-sm text-[#AFA89C]">
-                              {sub.is_active ? (
-                                <span className="text-green-300">Active</span>
-                              ) : (
-                                <span className="text-gray-400">Ended</span>
-                              )}
-                            </div>
-                            <div className="text-sm text-[#AFA89C]">
-                              Ends: {sub.end_date ? new Date(sub.end_date).toLocaleString() : "—"}
-                            </div>
+                          <div className="text-sm text-[#AFA89C]">
+                            {sub.start_date ? new Date(sub.start_date).toLocaleString() : '—'}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm text-[#AFA89C]">
+                            {sub.is_active ? (
+                              <span className="text-green-300">Active</span>
+                            ) : (
+                              <span className="text-gray-400">Ended</span>
+                            )}
+                          </div>
+                          <div className="text-sm text-[#AFA89C]">
+                            Ends: {sub.end_date ? new Date(sub.end_date).toLocaleString() : '—'}
                           </div>
                         </div>
                       </div>
-                    ))
-                : null}
-            </div>
-          )}
+                    </div>
+                  ))}
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>

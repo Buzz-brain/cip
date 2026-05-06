@@ -8,6 +8,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { useApp } from "./AppContext";
+import { useNavigate } from "react-router-dom";
 
 interface SidebarProps {
   variant?: "default" | "simple";
@@ -57,6 +58,28 @@ export function Sidebar({ variant = "default" }: SidebarProps) {
           { id: "job-logs" as const, label: "Audit Logs", icon: Box },
         ];
 
+  const navigate = useNavigate();
+
+  const routeForId = (id: string) => {
+    switch (id) {
+      case "dashboard":
+        return "/administrative-dashboard";
+      case "user-analytics":
+      case "manage-executors":
+        return "/manage-executors";
+      case "plan-management":
+        return "/administrative-dashboard";
+      case "job-logs":
+        return "/administrative-dashboard";
+      case "support-tickets":
+        return "/administrative-dashboard";
+      case "role-management":
+        return "/role-access-control";
+      default:
+        return "/administrative-dashboard";
+    }
+  };
+
   return (
     <div className="w-60 bg-[#1a1510] border-r border-[#2a2520] flex flex-col h-screen">
       <div className="p-4 border-b border-[#2a2520]">
@@ -83,7 +106,11 @@ export function Sidebar({ variant = "default" }: SidebarProps) {
           return (
             <button
               key={item.id}
-              onClick={() => setCurrentPage(item.id)}
+              onClick={() => {
+                setCurrentPage(item.id);
+                const r = routeForId(item.id);
+                navigate(r);
+              }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-colors ${
                 isActive
                   ? "bg-orange-600 text-white"

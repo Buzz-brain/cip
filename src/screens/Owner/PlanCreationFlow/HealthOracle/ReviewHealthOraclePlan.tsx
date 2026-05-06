@@ -81,31 +81,7 @@ export const ReviewHealthOraclePlan = (): JSX.Element => {
             />
 
             <Copy className="w-4 h-4 text-orange-600 absolute right-3 top-[calc(35%)] cursor-pointer" />
-          </div>
-
-          <div className="flex items-center w-full gap-4 mt-6 text-xs">
-            <Badge
-              variant="outline"
-              className="gap-2 rounded-full border-[#22C55E33] bg-[#22C55E1A] px-3 py-1"
-            >
-              <div className="relative flex h-2 w-2 items-start">
-                <div className="absolute inset-0 rounded-full bg-green-400" />
-                <div className="relative h-2 w-2 rounded-full bg-green-500" />
-              </div>
-              <span className="text-xs font-medium leading-4 tracking-[0.60px] text-[#4ADE80] text-slate-400 [font-family:'Manrope',Helvetica]">
-                Verified
-              </span>
-            </Badge>
-
-            <Badge
-              variant="outline"
-              className="gap-2 rounded-full border-[#e5e7eb03] bg-[#372D1F] px-3 py-1"
-            >
-              <span className="text-xs font-medium leading-4 tracking-[0.60px] text-[#4ADE80] text-slate-400 [font-family:'Manrope',Helvetica]">
-                KYC Checked
-              </span>
-            </Badge>
-          </div>
+          </div>  
         </div>
       </div>
 

@@ -106,13 +106,13 @@ export const ReviewTimeLock = (): JSX.Element => {
                   </div>
 
                   <div>
-                    <p className="[font-family:'Manrope',Helvetica] font-normal text-[#FF6600] text-xs tracking-[0] leading-4">
+                    <p className="[font-family:'Manrope',Helvetica] font-normal text-[#FF6600] text-md tracking-[0] leading-6">
                       Automatic Trigger
                     </p>
 
-                    <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg tracking-[0] leading-5 mt-1">
-                      This plan will execute automatically on <br />
-                      <span className="text-[#ff6600]">
+                    <p className="[font-family:'Manrope',Helvetica] text-white text-md tracking-[0] leading-5 mt-1">
+                      This plan will execute automatically on {" "}
+                      <span className="text-[#FF6600]">
                         {formatDisplayDate()}
                       </span>
                     </p>

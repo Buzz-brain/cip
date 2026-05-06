@@ -431,7 +431,7 @@ export const Box = (): JSX.Element => {
                       {card.description}
                     </p>
                     <div className="space-y-2">
-                      {card.features.map((feature) => (
+                      {card.features.map((feature: string) => (
                         <div key={feature} className="flex items-center gap-2">
                           <img
                             src="/material-symbols-check-circle-outline.svg"
@@ -517,7 +517,7 @@ export const Box = (): JSX.Element => {
                         </span>
                       </div>
                       <div className="space-y-3">
-                        {plan.features.map((feature, idx) => (
+                        {plan.features.map((feature: { text: string; included?: boolean; subtext?: string } , idx: number) => (
                           <div key={idx} className="flex items-center gap-2">
                             <img
                               src="/streamline-sharp-check-solid.svg"
@@ -824,7 +824,7 @@ export const Box = (): JSX.Element => {
                           <Separator className="bg-[#554233]" />
 
                           <div className="space-y-3">
-                            {plan.features.map((feature, idx) => (
+                            {plan.features.map((feature: { text: string; included?: boolean; subtext?: string } , idx: number) => (
                               <div key={idx} className="flex items-start gap-4">
                                 {feature.included ? (
                                   <img

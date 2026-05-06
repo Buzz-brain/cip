@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from './button';
 import { Input } from './input';
-import { Card, CardContent } from './card';
 import { toast } from 'react-toastify';
 
 interface NominateMediatorModalProps {
@@ -33,7 +32,17 @@ export const NominateMediatorModal: React.FC<NominateMediatorModalProps> = ({ op
       setEmail('');
       setWallet('');
     } catch (err: any) {
-      toast.error(err?.message ?? 'Failed to nominate mediator');
+      const errMsg = err?.message ?? 'Failed to nominate mediator';
+      console.error('[NominateMediatorModal] error:', errMsg);
+      
+      // Check for specific error cases
+      if (errMsg.includes('must raise a dispute') || errMsg.includes('dispute_id')) {
+        toast.error('You must raise a dispute first before nominating a mediator.');
+      } else if (errMsg.includes('422')) {
+        toast.error('Validation error: Please ensure all fields are correct and a dispute exists.');
+      } else {
+        toast.error(errMsg);
+      }
     } finally {
       setSubmitting(false);
     }
@@ -47,26 +56,53 @@ export const NominateMediatorModal: React.FC<NominateMediatorModalProps> = ({ op
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-sm text-[#d1c3b4] block mb-2">Full Name</label>
-            <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Mediator full name" />
+            <label className="text-sm text-[#d1c3b4] block mb-2">
+              Full Name
+            </label>
+            <Input
+              className="text-white"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Mediator full name"
+            />
           </div>
 
           <div>
             <label className="text-sm text-[#d1c3b4] block mb-2">Email</label>
-            <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="mediator@example.com" />
+            <Input
+              className="text-white"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="mediator@example.com"
+            />
           </div>
 
           <div>
-            <label className="text-sm text-[#d1c3b4] block mb-2">Wallet Address</label>
-            <Input value={wallet} onChange={(e) => setWallet(e.target.value)} placeholder="0x..." />
+            <label className="text-sm text-[#d1c3b4] block mb-2">
+              Wallet Address
+            </label>
+            <Input
+              className="text-white"
+              value={wallet}
+              onChange={(e) => setWallet(e.target.value)}
+              placeholder="0x..."
+            />
           </div>
 
           <div className="flex gap-2 mt-6">
-            <Button onClick={onClose} className="bg-[#393028]" disabled={submitting}>
+            <Button
+              onClick={onClose}
+              className="bg-[#393028]"
+              disabled={submitting}
+            >
               Cancel
             </Button>
-            <Button onClick={handleSubmit} className="bg-[#ff6600]" disabled={submitting || loading || !fullName || !email || !wallet}>
-              {submitting || loading ? 'Submitting...' : 'Nominate Mediator'}
+            <Button
+              onClick={handleSubmit}
+              className="bg-[#2ccd2c]"
+              disabled={submitting || loading || !fullName || !email || !wallet}
+            >
+              {submitting || loading ? "Submitting..." : "Nominate Mediator"}
             </Button>
           </div>
         </form>

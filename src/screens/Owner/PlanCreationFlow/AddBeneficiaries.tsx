@@ -280,7 +280,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                                   <SelectItem
                                     key={option}
                                     value={option}
-                                    className="text-white hover:bg-[#2c231a] focus:bg-[#2c231a]"
+                                    className="text-white hover:bg-[#2c231a] focus:text-white focus:bg-[#2c231a]"
                                   >
                                     {option}
                                   </SelectItem>

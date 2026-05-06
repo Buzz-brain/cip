@@ -21,6 +21,7 @@ export const useAuth = (): AuthContextType => {
       error: null,
       isAuthenticated: false,
       loginWithWallet: noopAsync as any,
+      loginAsAdmin: noopAsync as any,
       getNonce: noopAsync as any,
       logout: () => {},
       clearError: () => {},

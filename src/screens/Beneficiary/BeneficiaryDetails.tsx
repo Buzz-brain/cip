@@ -5,6 +5,7 @@ import { Card, CardContent } from "@components/ui/card";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/useAuth";
 import { getBeneficiaryInheritanceById, nominateMediator } from "../../lib/api/beneficiary";
+import { getAllDisputes } from "../../lib/api/dispute";
 import NominateMediatorModal from "../../components/ui/NominateMediatorModal";
 import { toast } from "react-toastify";
 import BeneficiaryLayout from "./BeneficiaryLayout";
@@ -17,6 +18,8 @@ export const BeneficiaryDetails = (): JSX.Element => {
   const [planDetail, setPlanDetail] = useState<{ plan: any; beneficiary: any } | null>(null);
   const [nominateOpen, setNominateOpen] = useState(false);
   const [nominateLoading, setNominateLoading] = useState(false);
+  const [disputes, setDisputes] = useState<any[]>([]);
+  const [disputeId, setDisputeId] = useState<number | null>(null);
 
   const formatTs = (ts?: number | null) => {
     if (!ts) return '—';
@@ -45,6 +48,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
   const assetsIncludedCount = planDetail?.plan?.crypto_asset ? 1 : 0;
   const isMPC = !!planDetail?.plan?.plan_type && String(planDetail.plan.plan_type).toLowerCase().includes('mpc');
   const hasLegalDocs = Array.isArray(planDetail?.plan?.legal_docs) && planDetail?.plan?.legal_docs.length > 0;
+  const hasDispute = !!planDetail?.plan?.is_disputed;
 
   const triggerLabel = (type?: string) => {
     if (!type) return '—';
@@ -86,6 +90,9 @@ export const BeneficiaryDetails = (): JSX.Element => {
         const res = await getBeneficiaryInheritanceById(user.token, Number(id));
         if (!mounted) return;
         setPlanDetail(res);
+        
+        // Fetch disputes for this plan
+        fetchDisputesForPlan(user.token, res?.plan?.id);
       } catch (err) {
         console.error(err);
         toast.error('Failed to load plan details');
@@ -94,11 +101,34 @@ export const BeneficiaryDetails = (): JSX.Element => {
       }
     }
 
+    async function fetchDisputesForPlan(token: string, planId?: number) {
+      if (!token || !planId) return;
+      try {
+        const allDisputes = await getAllDisputes(token);
+        if (!mounted) return;
+        setDisputes(allDisputes);
+        
+        // Find dispute for this plan
+        const matchingDispute = allDisputes.find(d => d.plan_id === planId);
+        if (matchingDispute) {
+          setDisputeId(matchingDispute.id);
+          console.log(`[BeneficiaryDetails] Found dispute ${matchingDispute.id} for plan ${planId}`);
+        } else {
+          setDisputeId(null);
+          console.log(`[BeneficiaryDetails] No dispute found for plan ${planId}`);
+        }
+      } catch (err) {
+        console.error('[BeneficiaryDetails] Failed to fetch disputes:', err);
+      }
+    }
+
     if (navPlan && typeof navPlan === 'object' && (navPlan.plan || navPlan.beneficiary || navPlan.id)) {
       if (navPlan.plan && navPlan.beneficiary) {
         setPlanDetail({ plan: navPlan.plan, beneficiary: navPlan.beneficiary });
+        if (user?.token) fetchDisputesForPlan(user.token, navPlan.plan.id);
       } else if (navPlan.id && navPlan.beneficiary) {
         setPlanDetail({ plan: navPlan, beneficiary: navPlan.beneficiary });
+        if (user?.token) fetchDisputesForPlan(user.token, navPlan.id);
       } else if (navPlan.id) {
         fetchPlan(navPlan.id);
       } else if (navPlan.plan_id) {
@@ -171,7 +201,15 @@ export const BeneficiaryDetails = (): JSX.Element => {
                         {planDetail?.plan ? (planDetail.plan.is_released ? 'RELEASED' : planDetail.plan.is_funded ? 'ACTIVE MONITORING' : 'PENDING') : 'LOADING'}
                       </span>
                       <div className="ml-4">
-                        <Button onClick={() => setNominateOpen(true)} className="bg-[#3b82f6] text-white text-sm px-3 py-1">Nominate Mediator</Button>
+                        <div title={!hasDispute ? 'A dispute must be raised before nominating a mediator' : 'Nominate a mediator for this dispute'}>
+                          <Button 
+                            onClick={() => hasDispute && setNominateOpen(true)} 
+                            disabled={!hasDispute}
+                            className={`text-white text-sm px-3 py-1 ${hasDispute ? 'bg-[#3b82f6] hover:bg-[#3b82f6]/90' : 'bg-[#6b7280] cursor-not-allowed opacity-60'}`}
+                          >
+                            Nominate Mediator
+                          </Button>
+                        </div>
                       </div>
                     </div>
                     <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">
@@ -212,15 +250,27 @@ export const BeneficiaryDetails = (): JSX.Element => {
                     toast.error('Not authenticated or missing plan');
                     return;
                   }
+                  if (!disputeId) {
+                    toast.error('No active dispute found for this plan');
+                    return;
+                  }
                   setNominateLoading(true);
                   try {
                     const pid = Number(planDetail.plan.id ?? planDetail.plan.contract_plan_id);
-                    await nominateMediator(user.token, pid, payload as any);
-                    toast.success('Mediator nominated');
+                    // Include dispute_id in the payload
+                    await nominateMediator(user.token, pid, { ...payload, dispute_id: disputeId });
+                    toast.success('Mediator nominated successfully');
                     setNominateOpen(false);
                   } catch (err: any) {
-                    console.error(err);
-                    toast.error(err?.message ?? 'Failed to nominate mediator');
+                    const errMsg = err?.message ?? 'Failed to nominate mediator';
+                    console.error('[BeneficiaryDetails] nomination error:', errMsg);
+                    
+                    // Specific error handling for common issues
+                    if (errMsg.includes('must raise a dispute')) {
+                      toast.error('⚠️ You must raise a dispute before you can nominate a mediator');
+                    } else {
+                      toast.error(errMsg);
+                    }
                   } finally {
                     setNominateLoading(false);
                   }

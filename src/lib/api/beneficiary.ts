@@ -99,6 +99,22 @@ export async function nominateMediator(token: string, planId: number, body: { fu
   });
   if (!res.ok) {
     const txt = await res.text().catch(() => '');
+    // Parse structured error responses
+    try {
+      const json = JSON.parse(txt);
+      if (json.detail && Array.isArray(json.detail)) {
+        for (const error of json.detail) {
+          if (error.loc && error.loc.includes('dispute_id')) {
+            throw new Error('You must raise a dispute before nominating a mediator. Please raise a dispute first.');
+          }
+        }
+        throw new Error(json.detail[0]?.msg || `nominateMediator failed: ${res.status}`);
+      }
+    } catch (parseErr: any) {
+      if (parseErr.message && parseErr.message.includes('You must raise')) {
+        throw parseErr;
+      }
+    }
     throw new Error(`nominateMediator failed: ${res.status} ${txt}`);
   }
   const json = await res.json().catch(() => null);

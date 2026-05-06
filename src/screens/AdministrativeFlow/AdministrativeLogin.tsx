@@ -1,6 +1,9 @@
 import { User, EyeOff, Eye, Lock } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { adminLogin } from "../../lib/api/admin";
+import { useAuth } from "../../context/useAuth";
 import logoImg from "@assets/cip-logo.png";
 import loginBgImg from "@assets/login-bg.svg";
 import shieldPadlockIcon from "@assets/shield-padlock-orange.svg";
@@ -24,9 +27,20 @@ export const AdministrativeLogin = (): JSX.Element => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && password) {
-      onLoginSuccess();
-    }
+    if (!email || !password) return toast.warn("Please provide email and password");
+
+    const { loginAsAdmin } = useAuth();
+    (async () => {
+      try {
+        const token = await adminLogin({ email_or_username: email, password });
+        // persist token in AuthContext
+        if (loginAsAdmin) await loginAsAdmin(token, { email });
+        toast.success("Logged in successfully");
+        onLoginSuccess();
+      } catch (err: any) {
+        toast.error(err?.message || "Login failed");
+      }
+    })();
   };
 
   return (

@@ -5,6 +5,7 @@ import { Separator } from '@components/ui/separator';
 import { usePlans } from '../../../lib/hooks/usePlans';
 import { useAuth } from '../../../context/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useSubscription } from '../../../lib/hooks/useSubscription';
 import sharpCheckSolid from '@assets/sharp-check-solid.svg';
 import sharpUncheckSolid from '@assets/sharp-uncheck-solid.svg';
 import { SkeletonCard } from '@components/ui/skeleton-card';
@@ -18,6 +19,7 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
   const { plans: backendPlans, loading: plansLoading } = usePlans();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { refresh: refreshSubscription } = useSubscription();
   const [subscribing, setSubscribing] = React.useState<Record<string, boolean>>({});
   const [convertingEth, setConvertingEth] = React.useState<Record<string, boolean>>({});
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -78,6 +80,8 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
       const text = await res.text();
       if (res.ok) {
         toast.success('Subscription successful.');
+        // Refresh subscription status immediately
+        await refreshSubscription();
         if (typeof onSubscribe === 'function') onSubscribe();
         navigate('/owner-dashboard/select-assets');
       } else {
@@ -146,6 +150,8 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
       });
       if (res.ok) {
         toast.success('Subscription successful.');
+        // Refresh subscription status immediately so sidebar reflects new status
+        await refreshSubscription();
         if (typeof onSubscribe === 'function') onSubscribe();
         navigate('/owner-dashboard/select-assets');
       } else {
@@ -180,6 +186,15 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
     </div>
   );
   if (!backendPlans || backendPlans.length === 0) return <div className="p-6">No plans available.</div>;
+  const formatPrice = (p: any) => {
+    if (p === undefined || p === null) return 'Custom';
+    const num = typeof p === 'number' ? p : parseFloat(String(p).replace(/[^0-9.\-]/g, ''));
+    if (isNaN(num)) return String(p);
+    if (Number.isInteger(num)) return `$${num}`;
+    // keep up to 2 decimals but trim unnecessary trailing zeros (e.g., 1.7 -> 1.7, 1.70 -> 1.7)
+    const fixed = parseFloat(num.toFixed(2));
+    return `$${fixed.toString()}`;
+  };
 
   return (
     <>
@@ -200,7 +215,7 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
                     return `${n.charAt(0).toUpperCase()}${n.slice(1)}`;
                   })()}</h3>
                 <div className="flex items-baseline gap-1">
-                  <span className="font-bold text-white text-2xl">{plan.price !== undefined && plan.price !== null ? (typeof plan.price === 'number' ? `$${plan.price.toFixed(0)}` : `$${plan.price}`) : 'Custom'}</span>
+                  <span className="font-bold text-white text-2xl">{formatPrice(plan.price)}</span>
                   <span className="font-bold text-[#b8a494] text-sm">/mo</span>
                 </div>
                 <p className="text-sm text-[#b8a494]">{plan.description ?? (plan.name ? `${plan.name.charAt(0).toUpperCase()}${plan.name.slice(1)} Plan` : '')}</p>

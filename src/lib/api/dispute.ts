@@ -32,4 +32,30 @@ export async function raiseDispute(token: string, params: RaiseDisputeParams): P
   return json;
 }
 
-export default { raiseDispute };
+export async function getAllDisputes(token: string): Promise<any[]> {
+  if (!token) throw new Error('Not authenticated');
+  const url = `${BACKEND_API_URL}/dis/view-all-disputes`;
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const txt = await res.text().catch(() => '');
+    console.error(`[getAllDisputes] failed: ${res.status} ${txt}`);
+    return [];
+  }
+
+  const json = await res.json().catch(() => null);
+  if (!json) return [];
+  
+  // Extract disputes from response structure
+  // Response is typically: { status, disputes: { dispute: {...}, inheritance: [...] } }
+  const disputes = json.disputes?.dispute ? [json.disputes.dispute] : [];
+  return disputes;
+}
+
+export default { raiseDispute, getAllDisputes };

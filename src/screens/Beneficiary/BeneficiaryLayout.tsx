@@ -103,7 +103,7 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
                   : "font-normal text-[#8b7b64]"
               } text-sm`}
             >
-              Inheritance Plans
+              Plans
             </span>
           </button>
 

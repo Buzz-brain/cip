@@ -173,6 +173,15 @@ export const Home = (): JSX.Element => {
       .join(" ");
   };
 
+  const formatPrice = (p: any) => {
+    if (p === undefined || p === null) return 'Custom';
+    const num = typeof p === 'number' ? p : parseFloat(String(p).replace(/[^0-9.\-]/g, ''));
+    if (isNaN(num)) return String(p);
+    if (Number.isInteger(num)) return `$${num}`;
+    const fixed = parseFloat(num.toFixed(2));
+    return `$${fixed.toString()}`;
+  };
+
   return (
     <div className="min-h-screen bg-[#1e1e1e]">
       <div className="bg-black">
@@ -845,7 +854,7 @@ export const Home = (): JSX.Element => {
                     return sorted.map((rawPlan: any, index: number) => {
                       const plan = {
                         name: toTitleCase(rawPlan.name),
-                        price: `$${rawPlan.price}`,
+                        price: formatPrice(rawPlan.price),
                         period: "/mo",
                         description: `${toTitleCase(rawPlan.name)} Plan`,
                         features: [
@@ -859,6 +868,9 @@ export const Home = (): JSX.Element => {
                         ],
                         buttonText: "Get Started",
                         highlighted: rawPlan.price > 10 && rawPlan.price <= 49 ? true : false,
+                        // match Pricing page: allow backend badge or mark the 3rd plan (index 2) as Recommended
+                        badge: rawPlan.badge ?? (index === 2 ? 'Recommended' : undefined),
+                        buttonVariant: rawPlan.buttonVariant ?? (rawPlan.price > 10 && rawPlan.price <= 49 ? 'default' : 'secondary'),
                       };
                       return (
                         <motion.div
