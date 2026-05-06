@@ -17,6 +17,7 @@ export const AdministrativeLogin = (): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const onForgotPassword = () => {
     navigate("/administrative-forgot-password");
@@ -30,6 +31,7 @@ export const AdministrativeLogin = (): JSX.Element => {
     e.preventDefault();
     if (!email || !password) return toast.warn("Please provide email and password");
 
+    setLoading(true);
     try {
       const token = await adminLogin({ email_or_username: email, password });
       // persist token in AuthContext
@@ -38,6 +40,8 @@ export const AdministrativeLogin = (): JSX.Element => {
       onLoginSuccess();
     } catch (err: any) {
       toast.error(err?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -137,17 +141,30 @@ export const AdministrativeLogin = (): JSX.Element => {
 
               <button
                 type="submit"
-                className="w-full bg-[#FF6600] text-white font-medium py-3 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2"
+                disabled={loading}
+                className={`w-full bg-[#FF6600] text-white font-medium py-3 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2 ${loading ? 'opacity-80 cursor-not-allowed' : ''}`}
               >
-                Log In
-                <img src={loginArrowIcon} alt="" />
+                {loading ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                    <span>Logging in...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Log In</span>
+                    <img src={loginArrowIcon} alt="" />
+                  </>
+                )}
               </button>
             </form>
 
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-400">
                 Don't have an admin account?{' '}
-                <Link to="/administrative/create" className="text-orange-500 hover:underline">Create New Admin</Link>
+                <Link to="/administrative-create" className="text-orange-500 hover:underline">Create New Admin</Link>
               </p>
             </div>
 

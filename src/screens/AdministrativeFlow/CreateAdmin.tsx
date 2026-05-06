@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { createAdmin } from "../../lib/api/admin";
 import { useAuth } from "../../context/useAuth";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logoImg from "@assets/cip-logo.png";
 import loginBgImg from "@assets/login-bg.svg";
 import shieldPadlockIcon from "@assets/shield-padlock-orange.svg";
@@ -101,11 +101,29 @@ export default function CreateAdmin(): JSX.Element {
                 {errors.secret_code && <div className="text-red-400 text-sm mt-1">{errors.secret_code}</div>}
               </div>
 
-              <button type="submit" disabled={loading} className="w-full bg-[#FF6600] text-white font-medium py-3 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2">
-                {loading ? 'Creating...' : 'Create Admin'}
-                <img src={loginArrowIcon} alt="" />
+              <button type="submit" disabled={loading} className={`w-full bg-[#FF6600] text-white font-medium py-3 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2 ${loading ? 'opacity-80 cursor-not-allowed' : ''}`}>
+                {loading ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                    <span>Creating...</span>
+                  </>
+                ) : (
+                  <>
+                    Create Admin
+                    <img src={loginArrowIcon} alt="" />
+                  </>
+                )}
               </button>
             </form>
+            <div className="mt-4 text-center">
+              <p className="text-sm text-gray-400">
+                Already have an admin account?{' '}
+                <Link to="/administrative-login" className="text-orange-500 hover:underline">Login</Link>
+              </p>
+            </div>
           </div>
 
           <div className="mt-6 flex justify-center">

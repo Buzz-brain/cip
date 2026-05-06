@@ -11,6 +11,7 @@ import AdminLayout from "./AdminLayout";
 import { useAuth } from "../../context/useAuth";
 import { viewAdmins, viewExecutors, viewMediators, viewUsers, viewUser, viewExecutor, viewMediator, approveAdmin, disapproveAdmin, promoteAdmin, approveMediator, disapproveMediator } from "../../lib/api/admin";
 import AdminDetailModal from "../../components/ui/AdminDetailModal";
+import AdminCreateModal from "../../components/ui/AdminCreateModal";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 
 function normalizeResponse(data: any): any[] {
@@ -48,6 +49,7 @@ export const RoleAccessControl = (): JSX.Element => {
   const [confirmAction, setConfirmAction] = useState<string | null>(null);
   const [confirmItemId, setConfirmItemId] = useState<number | null>(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
   const itemsPerPage = 8;
 
   async function loadRoleData() {
@@ -159,13 +161,13 @@ export const RoleAccessControl = (): JSX.Element => {
               Manage all accounts for users, executors, mediators, and admins from a single page.
             </p>
           </div>
-          <Link
-            to="/administrative/create"
+          <button
+            onClick={() => setCreateOpen(true)}
             className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700"
           >
             <span className="text-lg">+</span>
             Add New Admin
-          </Link>
+          </button>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-5">
@@ -452,6 +454,7 @@ export const RoleAccessControl = (): JSX.Element => {
           </div>
           <AdminDetailModal open={detailOpen} loading={detailLoading} data={detailData} title={detailTitle} onClose={() => { setDetailOpen(false); setDetailData(null); }} />
           <ConfirmModal open={confirmOpen} loading={confirmLoading} title="Confirm action" description={`Are you sure you want to ${confirmAction?.replace(/-/g,' ')} this item?`} confirmLabel="Yes, do it" cancelLabel="Cancel" onConfirm={handleConfirm} onCancel={()=>setConfirmOpen(false)} />
+            <AdminCreateModal open={createOpen} onClose={()=>setCreateOpen(false)} token={token} onCreated={async ()=>{ await loadRoleData(); }} />
       </div>
     </AdminLayout>
   );

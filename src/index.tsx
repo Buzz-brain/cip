@@ -313,7 +313,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/administrative-set-new-password" element={<AdministrativeSetNewPwd />} /> ✅
         <Route path="/administrative-password-reset-complete" element={<AdminPwdResetComplete />} /> ✅
         <Route path="/administrative-dashboard" element={<AdministrativeDashboard />} /> ✅
-        <Route path="/administrative/create" element={<CreateAdmin />} /> ✅
+        <Route path="/administrative-create" element={<CreateAdmin />} /> ✅
         <Route path="/administrative/role-access-control" element={<RoleAccessControl />} /> ✅
         <Route path="/administrative/users" element={<AdminListPage title="All Users" fetcher={viewUsers} />} /> ✅
         <Route path="/administrative/executors" element={<AdminListPage title="Executors" fetcher={viewExecutors} />} /> ✅
