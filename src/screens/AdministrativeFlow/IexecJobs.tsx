@@ -64,7 +64,7 @@ export default function IexecJobs(): JSX.Element {
 
   return (
     <AdminLayout title="iExec Jobs" subtitle="Task logs, ProtectedData & EESR hashes from iExec.">
-      <div className="space-y-6 max-w-7xl mx-auto px-4">
+      <div className="space-y-6 max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-3 gap-4">
           <div className="rounded-lg border border-[#2a2520] bg-[#13100d] p-4">
             <div className="text-sm text-gray-400">Total Jobs</div>
@@ -100,10 +100,10 @@ export default function IexecJobs(): JSX.Element {
             <table className="min-w-full table-fixed border-collapse">
             <thead className="border-b border-[#2a2520] bg-[#13100d] text-left text-xs uppercase tracking-wide text-gray-400">
               <tr>
-                <th className="px-4 py-3 w-1/5">Task</th>
+                <th className="px-4 py-3 w-1/6">Task</th>
                 <th className="px-4 py-3 w-1/5">Plan</th>
                 <th className="px-4 py-3 w-1/6 hidden sm:table-cell">Trigger</th>
-                <th className="px-4 py-3 w-1/4">Result</th>
+                <th className="px-4 py-3 w-1/5">Result</th>
                 <th className="px-4 py-3 w-1/12">Processed</th>
                 <th className="px-4 py-3 w-1/6 hidden md:table-cell">Created</th>
                 <th className="px-4 py-3 w-1/12">Actions</th>
@@ -117,13 +117,13 @@ export default function IexecJobs(): JSX.Element {
               ) : filtered.map((job:any) => (
                 <tr key={job.id} className="border-b border-[#2a2520] hover:bg-white/3">
                   <td className="px-4 py-3 text-white align-top">
-                    <div className="font-medium truncate max-w-[220px]">{String(job.task_id)}</div>
-                    <div className="text-gray-400 text-xs mt-1 truncate max-w-[220px]">{job.task_id}</div>
+                    <div className="font-medium truncate max-w-[160px]">{String(job.task_id)}</div>
+                    <div className="text-gray-400 text-xs mt-1 truncate max-w-[160px]">{job.task_id}</div>
                   </td>
-                  <td className="px-4 py-3 text-white align-top truncate max-w-[180px]">{job.plan_name || job.plan_id}</td>
+                  <td className="px-4 py-3 text-white align-top truncate max-w-[160px]">{job.plan_name || job.plan_id}</td>
                   <td className="px-4 py-3 text-gray-300 align-top hidden sm:table-cell">{job.trigger_type}</td>
                   <td className="px-4 py-3 text-gray-300 align-top">
-                    <div className="truncate max-w-[320px] font-mono text-sm">{(job.result && job.result.hash) || '-'}</div>
+                    <div className="truncate max-w-[220px] font-mono text-sm">{(job.result && job.result.hash) || '-'}</div>
                   </td>
                   <td className="px-4 py-3 align-top">
                     {job.processed ? <span className="px-2 py-0.5 rounded bg-emerald-600 text-white text-xs">Processed</span> : <span className="px-2 py-0.5 rounded bg-yellow-600 text-black text-xs">Pending</span>}
