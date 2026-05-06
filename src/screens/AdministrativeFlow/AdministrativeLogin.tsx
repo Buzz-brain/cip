@@ -143,6 +143,14 @@ export const AdministrativeLogin = (): JSX.Element => {
                 <img src={loginArrowIcon} alt="" />
               </button>
             </form>
+
+            <div className="mt-4 text-center">
+              <p className="text-sm text-gray-400">
+                Don't have an admin account?{' '}
+                <Link to="/administrative/create" className="text-orange-500 hover:underline">Create New Admin</Link>
+              </p>
+            </div>
+
           </div>
 
           <div className="mt-6 flex justify-center">
@@ -158,7 +166,7 @@ export const AdministrativeLogin = (): JSX.Element => {
             <p className="text-gray-500 text-xs mb-1">
               Unauthorized access is prohibited and monitored.
             </p>
-            <p className="text-gray-600 text-xs">© 2024 CIP Foundation</p>
+            <p className="text-gray-600 text-xs">© 2026 CIP Foundation</p>
           </div>
         </div>
       </main>

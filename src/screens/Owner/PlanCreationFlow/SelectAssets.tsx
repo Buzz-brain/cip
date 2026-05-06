@@ -1,7 +1,7 @@
 import {
     ArrowRightIcon,
     SearchIcon,
-    TrendingUpIcon,
+    // TrendingUpIcon,
     ZapIcon,
     ChevronRightIcon
 } from "lucide-react";

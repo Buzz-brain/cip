@@ -199,7 +199,7 @@ export const Login = (): JSX.Element => {
             <p className="text-gray-500 text-xs mb-1">
               Unauthorized access is prohibited and monitored.
             </p>
-            <p className="text-gray-600 text-xs">© 2024 CIP Foundation</p>
+            <p className="text-gray-600 text-xs">© 2026 CIP Foundation</p>
           </div>
         </div>
       </main>
