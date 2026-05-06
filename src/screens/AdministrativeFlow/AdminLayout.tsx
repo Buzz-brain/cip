@@ -12,7 +12,7 @@ interface AdminLayoutProps {
 export default function AdminLayout({ title, subtitle, children }: AdminLayoutProps) {
   return (
     <AppProvider>
-      <div className="flex min-h-screen bg-[#0f0c0a]">
+      <div className="flex min-h-screen bg-[#0f0c0a] [font-family:'Manrope',Helvetica]">
         <Sidebar />
         <div className="flex-1">
           <Header title={title} subtitle={subtitle} />
