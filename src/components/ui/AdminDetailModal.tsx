@@ -16,6 +16,15 @@ export default function AdminDetailModal({ open, loading = false, data, title = 
   const acts = data?.acts || data?.actions || [];
   const inheritances = data?.inheritances || [];
 
+  function fmtTimestamp(ts:any) {
+    if (!ts) return '-';
+    // support seconds or ms
+    const n = Number(ts);
+    if (Number.isNaN(n)) return String(ts);
+    const d = n > 1e12 ? new Date(n) : new Date(n * 1000);
+    return d.toLocaleString();
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
@@ -44,8 +53,29 @@ export default function AdminDetailModal({ open, loading = false, data, title = 
 
               {Array.isArray(acts) && acts.length > 0 && (
                 <div className="mt-6">
+                  <h4 className="text-white font-medium mb-3">Activity</h4>
+
+                  <div className="max-h-56 overflow-y-auto space-y-3 pr-2">
+                    {acts.slice().reverse().map((a:any) => (
+                      <div key={a.id || `${a.user_id}-${a.created_at}`} className="flex items-start gap-3">
+                        <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-zinc-800 text-xs text-gray-300">{String(a.user_id || main?.id || '?')}</div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <div className="text-sm text-gray-200">{a.message || a.msg || '-'}</div>
+                            <div className="text-xs text-gray-400">{fmtTimestamp(a.created_at)}</div>
+                          </div>
+                          {a.meta && <div className="text-xs text-gray-400 mt-1">{JSON.stringify(a.meta)}</div>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {Array.isArray(acts) && acts.length === 0 && (
+                <div className="mt-6">
                   <h4 className="text-white font-medium mb-2">Activity</h4>
-                  <div className="text-sm text-gray-300">{JSON.stringify(acts)}</div>
+                  <div className="text-sm text-gray-400">No recent activity.</div>
                 </div>
               )}
 
