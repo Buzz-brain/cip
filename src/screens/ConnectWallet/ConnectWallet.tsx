@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { Button } from "@components/ui/button";
 import { toast } from "react-toastify";
 import * as walletUtils from "../../lib/wallet/walletUtils";
-import { initEip6963Discovery, getWalletProviderByRdns, waitForWalletProvider } from "../../lib/wallet/walletUtils";
-import { useWeb3Modal } from "@web3modal/ethers/react";
+import { initEip6963Discovery, getWalletProviderByRdns, waitForWalletProvider, signMessage } from "../../lib/wallet/walletUtils";
+import { useWeb3Modal, useWeb3ModalProvider, useWeb3ModalAccount } from "@web3modal/ethers/react";
 import { normalizeWalletAddress, getDashboardRoute } from "../../lib/utils";
 import { verifyMessage } from "ethers";
 import * as authAPI from "../../lib/api/auth";
@@ -83,6 +83,9 @@ export const ConnectWallet = (): JSX.Element => {
   const navigate = useNavigate();
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
   const { open: openWeb3Modal } = useWeb3Modal();
+  const { walletProvider } = useWeb3ModalProvider();
+  const { address: wcAddress, isConnected: wcIsConnected } = useWeb3ModalAccount();
+  const wcLoginTriggered = useRef(false);
 
   const handleNavigation = (href: string) => {
     if (href === "/") {
@@ -98,6 +101,51 @@ export const ConnectWallet = (): JSX.Element => {
       }, 100);
     }
   };
+
+  useEffect(() => {
+    if (!wcIsConnected || !wcAddress || !walletProvider) return;
+    if (wcLoginTriggered.current) return;
+    wcLoginTriggered.current = true;
+
+    const runWcLogin = async () => {
+      setIsConnectingWallet(true);
+      try {
+        const account = normalizeWalletAddress(wcAddress);
+        const nonce = await getNonce(account);
+        const signature = await signMessage(nonce, account, walletProvider);
+        const returnedUser = await loginWithWallet(account, signature, nonce);
+        let finalUserInfo = returnedUser?.userInfo ?? null;
+        if (!finalUserInfo && returnedUser?.token) {
+          try {
+            finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
+          } catch {
+            try { await fetchUserInfo(); } catch {}
+            finalUserInfo = returnedUser?.userInfo ?? null;
+          }
+        }
+        const finalUser = { ...(returnedUser || user), userInfo: finalUserInfo || returnedUser?.userInfo || user?.userInfo };
+        const role = ((finalUser?.userInfo?.role ?? (finalUser as any)?.role) || '').toString();
+        const isFullyRegistered = finalUser?.userInfo?.full_reg;
+        const isSetup = finalUser?.userInfo?.is_setup;
+        const roleLower = role.toLowerCase();
+        const likelyUser = roleLower === 'user' || roleLower === '';
+        const shouldRequireSetup = likelyUser && (isFullyRegistered !== true || isSetup === false);
+        if (shouldRequireSetup) {
+          navigate('/profile-setup');
+        } else {
+          navigate(getDashboardRoute(role));
+        }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'WalletConnect login failed';
+        toast.error(errorMessage);
+        wcLoginTriggered.current = false;
+      } finally {
+        setIsConnectingWallet(false);
+      }
+    };
+
+    runWcLogin();
+  }, [wcIsConnected, wcAddress, walletProvider]);
 
   const handleWalletSelect = async (walletId: string) => {
     setIsConnectingWallet(true);
