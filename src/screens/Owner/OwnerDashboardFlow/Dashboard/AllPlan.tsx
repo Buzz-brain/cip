@@ -503,11 +503,12 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                           {fundModalOpen && fundPlanContractId !== null && (
                           <FundPlanModal
                             open={fundModalOpen}
-                            onClose={() => { setFundModalOpen(false); setFundPlanContractId(null); }}
-                            contractPlanId={fundPlanContractId}
-                            defaultAmount={String(selectedPlanDetail?.plan?.amount ?? '')}
-                            userToken={user?.token ?? null}
-                            ownerWallet={selectedPlanDetail?.plan?.owner_wallet ?? null}
+                              onClose={() => { setFundModalOpen(false); setFundPlanContractId(null); }}
+                              contractPlanId={fundPlanContractId}
+                              planDbId={selectedPlanDetail?.plan?.id ?? null}
+                              defaultAmount={String(selectedPlanDetail?.plan?.amount ?? '')}
+                              userToken={user?.token ?? null}
+                              ownerWallet={selectedPlanDetail?.plan?.owner_wallet ?? null}
                           />
                         )}
 

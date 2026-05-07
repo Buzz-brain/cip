@@ -318,6 +318,7 @@ export const PlanDetail: React.FC = () => {
                     open={fundModalOpen}
                     onClose={() => { setFundModalOpen(false); setFundPlanContractId(null); }}
                     contractPlanId={fundPlanContractId}
+                    planDbId={detail?.plan?.id ?? null}
                     defaultAmount={String(detail?.plan?.amount ?? '')}
                     userToken={user?.token ?? null}
                     ownerWallet={detail?.plan?.owner_wallet ?? null}

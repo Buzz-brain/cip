@@ -13,12 +13,14 @@ interface Props {
   open: boolean;
   onClose: () => void;
   contractPlanId: number | string;
+  /** Database plan id (not contract_plan_id). Used to fetch authoritative plan fields like crypto_asset when PlanContext is empty. */
+  planDbId?: number | string | null;
   defaultAmount?: string;
   userToken?: string | null;
   ownerWallet?: string | null;
 }
 
-const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, defaultAmount = "0.0", userToken = null, ownerWallet = null }) => {
+const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbId = null, defaultAmount = "0.0", userToken = null, ownerWallet = null }) => {
   const [amount, setAmount] = useState<string>(defaultAmount);
   const [status, setStatus] = useState<"idle" | "signing" | "pending" | "success" | "error">("idle");
   const [txHash, setTxHash] = useState<string | null>(null);
@@ -26,15 +28,17 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, default
   const [backendNotifyFailed, setBackendNotifyFailed] = useState<boolean>(false);
   const [availableBalance, setAvailableBalance] = useState<string | null>(null);
   const planCtx = usePlan();
+  const [fetchedCryptoAsset, setFetchedCryptoAsset] = useState<string | null>(null);
 
   // Log crypto asset on every render
-  console.log('[FundPlanModal] planCtx?.plan?.cryptoAsset:', planCtx?.plan?.cryptoAsset);
+  console.log('[FundPlanModal] planCtx?.plan?.cryptoAsset:', planCtx);
 
-  // Get the selected asset from plan context
-  const selectedAsset = planCtx?.plan?.cryptoAsset ? assetData.find((a: any) => a.symbol === planCtx.plan.cryptoAsset || a.id === planCtx.plan.cryptoAsset) : null;
+  // Get the selected asset from plan context or fetched plan detail
+  const assetKey = planCtx?.plan?.cryptoAsset ?? fetchedCryptoAsset ?? null;
+  const selectedAsset = assetKey ? assetData.find((a: any) => a.symbol === assetKey || a.id === assetKey) : null;
   const needsBridge = selectedAsset?.needsBridge || false;
 
-  // Fetch user's Arbitrum wallet balance when modal opens
+  // Fetch user's Arbitrum wallet balance when modal opens. Also fetch plan detail by DB id if provided.
   useEffect(() => {
     const fetchBalance = async () => {
       try {
@@ -55,6 +59,31 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, default
 
     if (open) {
       fetchBalance();
+
+      // fetch plan detail by DB id to obtain crypto_asset if PlanContext is empty
+      (async () => {
+        try {
+          const idNum = planDbId ? Number(planDbId) : null;
+          if (!idNum) return;
+          const url = `${BACKEND_API_URL}/inherit/view-a-inheritances/${idNum}`;
+          const resp = await fetch(url, {
+            method: 'GET',
+            headers: {
+              accept: 'application/json',
+              ...(userToken ? { Authorization: `Bearer ${userToken}` } : {}),
+            }
+          });
+          if (!resp.ok) {
+            console.warn('[FundPlanModal] fetch plan detail failed', resp.status);
+            return;
+          }
+          const j = await resp.json();
+          const fetched = j?.data?.plan?.crypto_asset ?? j?.data?.crypto_asset ?? null;
+          if (fetched) setFetchedCryptoAsset(String(fetched));
+        } catch (e) {
+          console.warn('[FundPlanModal] fetching plan by DB id failed', e);
+        }
+      })();
     }
   }, [open]);
 
@@ -307,11 +336,13 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, default
                 </div>
               )}
             </div>
-            {selectedAsset?.symbol && selectedAsset.symbol !== 'ETH' && (
+            {(selectedAsset?.symbol || planCtx?.plan?.cryptoAsset) && 
+            (selectedAsset?.symbol || planCtx?.plan?.cryptoAsset) !== 'ETH' && (
               <div className="mb-3 p-2 bg-[#2a251d] border border-[#3a2f1e] rounded text-sm text-[#d1c3b4]">
-                You selected <span className="font-semibold text-[#ff9933]">{selectedAsset.symbol}</span>. This asset must be bridged to Arbitrum first. Once bridged, your funds arrive as ETH — enter the ETH amount you wish to fund below.
+                You selected <span className="font-semibold text-[#ff9933]">{selectedAsset?.symbol || planCtx?.plan?.cryptoAsset}</span>. This asset must be bridged to Arbitrum first. Once bridged, your funds arrive as ETH — enter the ETH amount you wish to fund below.
               </div>
             )}
+            
             <input
               value={amount}
               onChange={(e) => setAmount(e.target.value)}

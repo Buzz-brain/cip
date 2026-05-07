@@ -585,7 +585,7 @@ export const SelectAssets = (): JSX.Element => {
                               <span className="[font-family:'Inter',Helvetica] font-medium text-white text-sm">
                                 {asset.id === "eth"
                                   ? ethUsdFormatted ?? asset.value
-                                  : asset.value}
+                                  : "—"}
                               </span>
                             </TableCell>
                             <TableCell className="p-4">
