@@ -121,7 +121,7 @@ export const SetInactivityPeriod = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 [font-family:'Manrope',Helvetica]">
+        <div className="grid sm:grid-cols-2 gap-6 [font-family:'Manrope',Helvetica]">
           {periodOptions.map((option) => (
             <button
               key={option.id}

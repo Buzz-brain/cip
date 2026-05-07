@@ -222,7 +222,7 @@ export const ChoosePlanType = (): JSX.Element => {
                         </section>
 
                         {supportedBackendTypes === null ? (
-                            <div className="grid grid-cols-3 gap-6">
+                            <div className="grid md:grid-cols-3 gap-6">
                                 {Array.from({ length: 6 }).map((_, i) => (
                                     <div key={i} className="p-6 rounded-lg bg-[#27231C] border-2 border-[#54493B] animate-pulse">
                                         <div className="w-12 h-12 bg-gray-700 rounded-lg mb-4"></div>
@@ -238,7 +238,7 @@ export const ChoosePlanType = (): JSX.Element => {
                                     <p className="text-sm text-gray-400">There are no plan types available for your account right now. If you believe this is an error, please contact support or try again later.</p>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-3 gap-6">
+                                <div className="grid md:grid-cols-3 gap-6">
                                     {displayedPlanTypes.map((plan) => (
                                         <button
                                             key={plan.id}

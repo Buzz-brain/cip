@@ -74,12 +74,11 @@ export const ReviewTimeLock = (): JSX.Element => {
       <main className="flex-1 flex flex-col items-center px-4 py-4">
         <div className="w-full max-w-[1040px]">
           <div className="mb-8">
-            <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-[31.7px] tracking-[0] leading-[38px] mb-2">
+            <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl sm:text-[31.7px] tracking-[0] leading-7 sm:leading-[38px] mb-2">
               Review Time-Lock Plan
             </h1>
-            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b9ac9d] text-base tracking-[0] leading-[26px]">
-              Verify the parameters of your automated inheritance plan. This
-              setup ensures your assets are distributed exactly when intended.
+            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b9ac9d] text-sm sm:text-base tracking-[0] leading-[22px] sm:leading-[26px]">
+              Verify the parameters of your automated inheritance plan. This setup ensures your assets are distributed exactly when intended.
             </p>
           </div>
 
@@ -122,7 +121,7 @@ export const ReviewTimeLock = (): JSX.Element => {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <div className="bg-[#27221C] rounded-lg p-6 border border-[#544B3B]">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-[#064E3B33] rounded-lg flex items-center justify-center">
@@ -179,7 +178,7 @@ export const ReviewTimeLock = (): JSX.Element => {
             </div>
           </div>
 
-          <div className="flex-1 max-w-6xl mx-auto w-full [font-family:'Manrope',Helvetica]">
+            <div className="flex-1 max-w-6xl mx-auto w-full [font-family:'Manrope',Helvetica]">
             <div className="space-y-8 mt-12">
               <div className="bg-[#7C2D121A] rounded-lg p-6 border border-[#7C2D1233] flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
@@ -196,16 +195,16 @@ export const ReviewTimeLock = (): JSX.Element => {
               </div>
             </div>
 
-            <div className="flex justify-end items-center gap-4 mt-12">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mt-12 justify-end">
               <button
                 onClick={handleEditPlan}
-                className="px-8 py-3 text-white border border-[#544B3B] rounded-lg hover:bg-gray-900 transition-colors font-semibold"
+                className="w-full sm:w-auto px-6 py-3 text-white border border-[#544B3B] rounded-lg hover:bg-gray-900 transition-colors font-semibold"
               >
                 Edit Plan
               </button>
               <button
                 onClick={handleConfirmDeploy}
-                className="px-8 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-semibold flex items-center gap-2"
+                className="w-full sm:w-auto px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-semibold flex items-center justify-center gap-2"
               >
                 <span>Confirm & Deploy</span>
                 <img src={rocketIcon} className="w-5 h-5" alt="Rocket" />

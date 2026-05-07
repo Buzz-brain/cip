@@ -146,7 +146,7 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6 mt-12">
+          <div className="grid sm:grid-cols-2 gap-6 mt-12">
             {displayedMethods.map((method) => (
               <button
                 key={method.id}

@@ -91,12 +91,11 @@ export const SetTimeLock = (): JSX.Element => {
     <main className="flex-1 flex flex-col items-center px-4 py-4">
       <div className="w-full max-w-[1040px]">
         <div className="mb-8">
-          <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-[31.7px] tracking-[0] leading-[38px] mb-2">
+          <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl sm:text-[31.7px] tracking-[0] leading-7 sm:leading-[38px] mb-2">
             Set Time-Lock Date
           </h1>
-          <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b9ac9d] text-base tracking-[0] leading-[26px]">
-            Configure the specific date and time when your assets will
-            automatically unlock for your beneficiaries.
+          <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b9ac9d] text-sm sm:text-base tracking-[0] leading-[22px] sm:leading-[26px]">
+            Configure the specific date and time when your assets will automatically unlock for your beneficiaries.
           </p>
         </div>
 
@@ -114,8 +113,8 @@ export const SetTimeLock = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="flex gap-8">
-          <div className="flex-1">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-8">
+          <div className="flex-1 w-full">
             <Card className="bg-[#1a1410] border-[#392f28] rounded-2xl">
               <CardContent className="p-8">
                 <div className="bg-[#8A4F1E33] border border-[#AF731E4D] rounded-xl p-4 mb-8">
@@ -137,7 +136,7 @@ export const SetTimeLock = (): JSX.Element => {
                 </div>
 
                 <div className="flex flex-col gap-6">
-                  <div className="flex gap-6">
+                  <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex flex-col w-full gap-2">
                       <Label 
                         htmlFor="unlock-date"
@@ -234,9 +233,8 @@ export const SetTimeLock = (): JSX.Element => {
               </CardContent>
             </Card>
           </div>
-
-          <div className="w-[320px]">
-            <Card className="bg-[#1a1410] border-[#392f28] rounded-2xl h-fit">
+          <div className="w-full md:w-[320px] md:shrink-0">
+            <Card className="bg-[#1a1410] border-[#392f28] rounded-2xl h-fit md:sticky md:top-8">
               <CardContent className="p-6">
                 <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base tracking-[0] leading-[26px] mb-4">
                   Summary
@@ -296,11 +294,11 @@ export const SetTimeLock = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-4 mt-8">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mt-8 justify-end">
           <Button
             variant="outline"
             onClick={() => navigate("/choose-plan-type")}
-            className="h-11 px-6 [font-family:'Manrope',Helvetica] font-bold text-[#d4ccc6] text-sm bg-[#27211c] border border-[#392f28] hover:bg-[#392f28] hover:text-white rounded-xl"
+            className="h-11 px-6 w-full sm:w-auto [font-family:'Manrope',Helvetica] font-bold text-[#d4ccc6] text-sm bg-[#27211c] border border-[#392f28] hover:bg-[#392f28] hover:text-white rounded-xl"
           >
             Back
           </Button>

@@ -186,20 +186,17 @@ export const AddBeneficiaries = (): JSX.Element => {
           <div className="w-full max-w-6xl">
             <div className="mb-8">
               <div className="flex flex-col gap-2">
-                <h1 className="[font-family:'Manrope',Helvetica] font-extrabold text-white text-[35.7px] tracking-[-1.19px] leading-10">
+                <h1 className="[font-family:'Manrope',Helvetica] font-extrabold text-white text-2xl sm:text-[35.7px] tracking-[-1.19px] leading-8 sm:leading-10">
                   Add Beneficiaries
                 </h1>
-                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] text-base leading-6">
-                  Define who will inherit your digital assets. You can assign
-                  different percentages to multiple
-                  <br />
-                  beneficiaries. Ensure the total allocation equals 100%.
+                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] text-sm sm:text-base leading-6">
+                  Define who will inherit your digital assets. You can assign different percentages to multiple beneficiaries. Ensure the total allocation equals 100%.
                 </p>
               </div>
             </div>
 
-            <div className="flex  gap-10">
-              <div className="flex flex-col flex-1 gap-8">
+            <div className="flex flex-col md:flex-row gap-6 md:gap-10">
+              <div className="flex flex-col flex-1 gap-8 w-full">
                 <div className="flex flex-col gap-6">
                   {beneficiaries.map((beneficiary, index) => (
                     <Card
@@ -236,7 +233,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                           </Button>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                           <div className="flex flex-col gap-2">
                             <label className="[font-family:'Manrope',Helvetica] font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
                               Legal Name / Alias
@@ -253,7 +250,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                                   )
                                 }
                                 placeholder="Enter name"
-                                className="pl-10 bg-[#0d0501] border-[#2c231a] text-white placeholder:text-[#80796b]"
+                                className="pl-10 bg-[#0d0501] border-[#2c231a] text-white placeholder:text-[#80796b] w-full"
                               />
                             </div>
                           </div>
@@ -321,7 +318,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                                 )
                               }
                               placeholder="0x..."
-                              className="pl-10 bg-[#0d0501] border-[#2c231a] text-white placeholder:text-[#80796b] font-mono text-sm"
+                              className="pl-10 bg-[#0d0501] border-[#2c231a] text-white placeholder:text-[#80796b] font-mono text-sm w-full"
                             />
                           </div>
                         </div>
@@ -340,7 +337,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                               )
                             }
                             placeholder="name@example.com"
-                            className="bg-[#0d0501] border-[#2c231a] text-white placeholder:text-[#80796b]"
+                            className="bg-[#0d0501] border-[#2c231a] text-white placeholder:text-[#80796b] w-full"
                           />
                         </div>
 
@@ -396,7 +393,7 @@ export const AddBeneficiaries = (): JSX.Element => {
 
                   <button
                     onClick={handleAddBeneficiary}
-                    className="flex items-center justify-center gap-2 p-6 border-2 border-dashed border-[#2c231a] rounded-xl hover:border-[#ff6600] hover:bg-[#ff66000d] transition-colors group"
+                    className="flex items-center justify-center gap-2 p-4 sm:p-6 border-2 border-dashed border-[#2c231a] rounded-xl hover:border-[#ff6600] hover:bg-[#ff66000d] transition-colors group w-full sm:w-auto"
                   >
                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#2c231a] group-hover:bg-[#ff6600] transition-colors">
                       <PlusIcon className="w-5 h-5 text-[#80796b] group-hover:text-white transition-colors" />
@@ -408,7 +405,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                 </div>
               </div>
 
-              <div className="flex flex-col w-[320px] gap-6 sticky top-8">
+              <div className="flex flex-col w-full md:w-[320px] gap-6 md:sticky md:top-8">
                 <Card className="bg-[#1a1410] border-[#2c231a] rounded-xl overflow-hidden">
                   <CardContent className="p-6">
                     <div className="flex items-center gap-2 mb-6">
@@ -421,7 +418,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                     </div>
 
                     <div className="flex flex-col items-center justify-center py-8 mb-6">
-                      <div className="relative w-48 h-48">
+                      <div className="relative w-40 h-40 sm:w-48 sm:h-48">
                         <svg
                           className="w-full h-full -rotate-90"
                           viewBox="0 0 100 100"
@@ -460,7 +457,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                           })}
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-4xl">
+                          <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-3xl sm:text-4xl">
                             {totalAllocated}%
                           </span>
                           <span className="[font-family:'Manrope',Helvetica] font-medium text-[#80796b] text-sm uppercase tracking-wide">
@@ -572,7 +569,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                     navigate('/choose-plan-type');
                   }}
                   disabled={unallocated !== 0}
-                  className="w-full py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 disabled:bg-[#54483b] disabled:text-[#80796b] disabled:cursor-not-allowed rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40]"
+                  className="w-full py-4 sm:py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 disabled:bg-[#54483b] disabled:text-[#80796b] disabled:cursor-not-allowed rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40]"
                 >
                   <span className="[font-family:'Manrope',Helvetica] font-bold text-base">
                     Next: Review Plan
@@ -583,7 +580,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                 <Button
                   variant="ghost"
                   onClick={() => navigate(-1)}
-                  className="w-full text-[#9dabb9] hover:text-white hover:bg-transparent"
+                  className="w-full text-[#9dabb9] hover:text-white hover:bg-transparent mt-3"
                 >
                   Go Back
                 </Button>
