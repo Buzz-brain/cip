@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@components/ui/card";
 import { Badge } from "@components/ui/badge";
-import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Copy } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../../context/useAuth";
 import useActivityLogs from "../../../../lib/hooks/useActivityLogs";
@@ -89,6 +89,9 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
   const [selectedPlanDetail, setSelectedPlanDetail] = useState<any | null>(null);
   const [fundModalOpen, setFundModalOpen] = useState(false);
   const [fundPlanContractId, setFundPlanContractId] = useState<number | null>(null);
+  const [fundPlanDbId, setFundPlanDbId] = useState<number | null>(null);
+  const [fundPlanDefaultAmount, setFundPlanDefaultAmount] = useState<string>('0.0');
+  const [fundPlanOwnerWallet, setFundPlanOwnerWallet] = useState<string | null>(null);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [pendingDeletePlan, setPendingDeletePlan] = useState<any | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -98,6 +101,62 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
   const pageSize = 4;
   const [selectedFilter, setSelectedFilter] = useState<"All Plans" | "Active" | "Pending" | "Triggered">("All Plans");
   const highlightTimerRef = React.useRef<number | null>(null);
+  const [viewLoadingId, setViewLoadingId] = useState<string | null>(null);
+  const [fundLoadingId, setFundLoadingId] = useState<string | null>(null);
+  const [deleteOpeningId, setDeleteOpeningId] = useState<string | null>(null);
+  const abbr = (addr?: string | null, start = 6, end = 6) => {
+    if (!addr) return '—';
+    try {
+      if (addr.length <= start + end + 3) return addr;
+      return `${addr.slice(0, start)}...${addr.slice(-end)}`;
+    } catch (e) {
+      return addr;
+    }
+  };
+
+  const copyToClipboard = async (text?: string | null) => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success('Copied to clipboard');
+    } catch (e) {
+      toast.error('Copy failed');
+    }
+  };
+
+  const openPlanDetail = async (idNum?: number | string | null) => {
+    if (!idNum) {
+      toast.error('Cannot load plan details');
+      return;
+    }
+    const idStr = String(idNum);
+    setViewLoadingId(idStr);
+    setModalOpen(true);
+    setSelectedPlanDetail(null);
+    try {
+      const r = await fetch(`${BACKEND_API_URL}/inherit/view-a-inheritances/${idNum}`, {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+        }
+      });
+      if (!r.ok) {
+        const errorMsg = await extractErrorMessage(r);
+        toast.error(`Failed to load plan details: ${errorMsg}`);
+        setSelectedPlanDetail(null);
+        return;
+      }
+      const j = await r.json();
+      setSelectedPlanDetail(j?.data ?? null);
+    } catch (err) {
+      const m = err instanceof Error ? err.message : String(err);
+      toast.error(`Error loading plan details: ${m}`);
+      setSelectedPlanDetail(null);
+    } finally {
+      setViewLoadingId((prev) => (prev === idStr ? null : prev));
+    }
+  };
 
   const tabs = ["All Plans", "Active", "Pending", "Triggered"] as const;
 
@@ -238,6 +297,11 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
     };
   }, [user?.token]);
 
+  // when Fund modal closes, clear fundLoadingId
+  useEffect(() => {
+    if (!fundModalOpen) setFundLoadingId(null);
+  }, [fundModalOpen]);
+
   // Delete a plan via backend API
   const handleDelete = async (planObj: any) => {
     const planIdNum = Number(planObj?.plan?.id ?? planObj?.plan?.contract_plan_id ?? 0);
@@ -341,19 +405,21 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
     <Card className="bg-[#261D18] border-[#393028]">
       <CardContent className="p-4 sm:p-6 space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          {tabs.map((tab) => (
-            <button 
-              key={tab}
-              onClick={() => { setSelectedFilter(tab); setCurrentPage(1); }}
-              className={`px-4 py-2 rounded-lg [font-family:'Noto_Sans',Helvetica] font-medium text-sm transition-colors ${
-                selectedFilter === tab
-                  ? "bg-[#393028] border border-[#FF660080] text-white"
-                  : "text-[#B9B09D] hover:bg-[#2a1f10] border border-transparent"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+          <div className="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2 w-full sm:w-auto">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => { setSelectedFilter(tab); setCurrentPage(1); }}
+                className={`min-w-[96px] flex-shrink-0 px-4 py-2 rounded-lg [font-family:'Noto_Sans',Helvetica] font-medium text-sm transition-colors ${
+                  selectedFilter === tab
+                    ? "bg-[#393028] border border-[#FF660080] text-white"
+                    : "text-[#B9B09D] hover:bg-[#2a1f10] border border-transparent"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
 
           <div className="ml-auto relative flex w-full sm:w-auto items-center gap-3">
             <div className="relative">
@@ -382,7 +448,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                   <div className="text-[#b8a494]">Loading...</div>
                 ) : (
                     <div className="space-y-4 text-sm text-[#d1c3b4]">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <div className="text-xs text-[#8b7664]">Plan Name</div>
                         <div className="font-mono text-white">{selectedPlanDetail.plan?.name ?? `Plan #${selectedPlanDetail.plan?.id}`}</div>
@@ -480,8 +546,10 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                       {!selectedPlanDetail.plan?.is_funded && (user?.publicKey && String(user.publicKey).toLowerCase() === String(selectedPlanDetail.plan?.owner_wallet).toLowerCase()) && (
                         <button className="px-4 py-2 rounded bg-[#ff6600] text-white" onClick={() => {
                           const cid = Number(selectedPlanDetail.plan?.contract_plan_id ?? selectedPlanDetail.plan?.id ?? 0);
-                          console.log('[AllPlan] opening FundPlanModal', { contractPlanId: cid, user: user?.publicKey });
                           setFundPlanContractId(cid);
+                          setFundPlanDbId(Number(selectedPlanDetail.plan?.id ?? selectedPlanDetail.plan?.contract_plan_id ?? 0));
+                          setFundPlanDefaultAmount(String(selectedPlanDetail.plan?.amount ?? '0.0'));
+                          setFundPlanOwnerWallet(selectedPlanDetail.plan?.owner_wallet ?? null);
                           setFundModalOpen(true);
                         }}>Fund Plan</button>
                       )}
@@ -500,17 +568,6 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                     <div>
                       <div className="text-xs text-[#8b7664]">Beneficiaries</div>
                       <div className="mt-2 space-y-2">
-                          {fundModalOpen && fundPlanContractId !== null && (
-                          <FundPlanModal
-                            open={fundModalOpen}
-                              onClose={() => { setFundModalOpen(false); setFundPlanContractId(null); }}
-                              contractPlanId={fundPlanContractId}
-                              planDbId={selectedPlanDetail?.plan?.id ?? null}
-                              defaultAmount={String(selectedPlanDetail?.plan?.amount ?? '')}
-                              userToken={user?.token ?? null}
-                              ownerWallet={selectedPlanDetail?.plan?.owner_wallet ?? null}
-                          />
-                        )}
 
                         {Array.isArray(selectedPlanDetail.beneficiaries) && selectedPlanDetail.beneficiaries.length > 0 ? (
                           selectedPlanDetail.beneficiaries.map((b: any) => (
@@ -544,6 +601,19 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
           </div>
         )}
 
+        {/* Fund plan modal (global) */}
+        {fundModalOpen && fundPlanContractId !== null && (
+          <FundPlanModal
+            open={fundModalOpen}
+            onClose={() => { setFundModalOpen(false); setFundPlanContractId(null); setFundPlanDbId(null); setFundPlanDefaultAmount('0.0'); setFundPlanOwnerWallet(null); }}
+            contractPlanId={fundPlanContractId}
+            planDbId={fundPlanDbId}
+            defaultAmount={fundPlanDefaultAmount}
+            userToken={user?.token ?? null}
+            ownerWallet={fundPlanOwnerWallet}
+          />
+        )}
+
         {/* Custom confirm delete modal (global) */}
         {confirmDeleteOpen && (
           <div className="fixed inset-0 z-[9999] flex items-center justify-center">
@@ -574,22 +644,64 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
           ) : paginated.length > 0 ? (
             paginated.map((plan) => (
               <div key={`m-${plan.id}`} className={`p-4 bg-[#231b16] border border-[#2f241c] rounded ${plan.id === highlightedPlanId ? 'ring-2 ring-green-400/40' : ''}`}>
-                <div className="flex items-center justify-between">
+                <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-[#3a2f1e] flex items-center justify-center text-white font-bold">{plan.chainIcon}</div>
-                    <div>
+                    <div className="min-w-0">
                       <div className="text-white font-bold text-sm truncate">{plan.name}</div>
-                      <div className="text-[#B9B09D] text-xs truncate">{plan.beneficiary?.name || '—'}</div>
+                      <div className="text-[#B9B09D] text-xs truncate">ID #{plan.raw?.id ?? plan.id} • {plan.raw?.plan_type ?? (plan.raw?.planType ?? '—')}</div>
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-white text-sm">{showValues ? plan.assets : '••••'}</div>
-                    <div className="text-xs text-[#8b7664] mt-1">{plan.status}</div>
+                    <div className="mt-1">
+                      <Badge className={`${plan.status === "Active" ? "bg-green-500/20 text-green-400 border-green-500/30" : plan.status === "Pending" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"} [font-family:'Noto_Sans',Helvetica] font-bold text-xs`}>{plan.status === "Active" ? "● Active" : plan.status === "Pending" ? "● Pending" : "● Triggered"}</Badge>
+                    </div>
                   </div>
                 </div>
-                <div className="mt-3 flex items-center gap-2">
-                  <button className="px-3 py-2 rounded bg-[#393028] text-sm text-white">View</button>
-                  <button className="px-3 py-2 rounded bg-[#2a1f10] text-sm text-[#B9B09D]">Actions</button>
+
+                <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-[#B9B09D]">
+                  <div className="col-span-2 break-words">
+                    <div className="text-[#8b7664] text-[11px]">Owner</div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="font-mono text-white text-sm truncate">{abbr(plan.raw?.owner_wallet || plan.beneficiary?.name)}</div>
+                      <button onClick={() => copyToClipboard(plan.raw?.owner_wallet ?? plan.beneficiary?.name)} aria-label="Copy owner wallet" className="text-[#ff6600] text-sm p-1">
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-[#8b7664] text-[11px]">Asset</div>
+                    <div className="text-white mt-1">{plan.assetsDetail}</div>
+                  </div>
+                  <div>
+                    <div className="text-[#8b7664] text-[11px]">Amount</div>
+                    <div className="text-white mt-1">{plan.assets}</div>
+                  </div>
+
+                  <div>
+                    <div className="text-[#8b7664] text-[11px]">Contract</div>
+                    <div className="text-white mt-1 truncate">{abbr(plan.raw?.contract_address)}</div>
+                  </div>
+                  <div>
+                    <div className="text-[#8b7664] text-[11px]">Funded</div>
+                    <div className="text-white mt-1">{plan.raw?.is_funded ? 'Yes' : 'No'}</div>
+                  </div>
+                </div>
+
+                <div className="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <button disabled={viewLoadingId === String(plan.raw?.id ?? plan.id)} onClick={() => openPlanDetail(plan.raw?.id ?? plan.raw?.contract_plan_id)} className="w-full sm:w-auto px-3 py-2 rounded bg-[#393028] text-sm text-white">
+                    {viewLoadingId === String(plan.raw?.id ?? plan.id) ? 'Opening...' : 'View'}
+                  </button>
+                  {user?.publicKey && String(user.publicKey).toLowerCase() === String(plan.raw?.owner_wallet).toLowerCase() && (
+                    <div className="flex gap-2 w-full sm:w-auto">
+                      {!plan.raw?.is_funded && (
+                        <button disabled={Boolean(fundLoadingId)} onClick={() => { const cid = Number(plan.raw?.contract_plan_id ?? plan.raw?.id ?? 0); setFundLoadingId(String(plan.id)); setFundPlanContractId(cid); setFundPlanDbId(Number(plan.raw?.id ?? plan.raw?.contract_plan_id ?? 0)); setFundPlanDefaultAmount(String(plan.raw?.amount ?? '0.0')); setFundPlanOwnerWallet(plan.raw?.owner_wallet ?? null); setFundModalOpen(true); }} className="flex-1 px-3 py-2 rounded bg-[#ff6600] text-sm text-white">{fundLoadingId === String(plan.id) ? 'Opening...' : 'Fund'}</button>
+                      )}
+                      <button disabled={deleteOpeningId === String(plan.id)} onClick={() => { setDeleteOpeningId(String(plan.id)); setPendingDeletePlan({ plan: plan.raw }); setConfirmDeleteOpen(true); setDeleteOpeningId(null); }} className="flex-1 px-3 py-2 rounded bg-red-700 text-sm text-white">{deleteOpeningId === String(plan.id) ? 'Opening...' : 'Delete'}</button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))
@@ -623,41 +735,12 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                 ))
               ) : paginated.length > 0 ? (
                 paginated.map((plan) => (
-                <tr key={plan.id} className={`border-b border-[#393028] hover:bg-[#0d0b08] transition-colors cursor-pointer ${plan.id === highlightedPlanId ? 'ring-2 ring-green-400/40 bg-green-900/5' : ''}`} onClick={async () => {
-                  const idNum = plan.raw?.id ?? plan.raw?.contract_plan_id;
-                  if (!idNum) {
-                    toast.error('Cannot load plan details');
-                    return;
-                  }
-                  setModalOpen(true);
-                  setSelectedPlanDetail(null);
-                  try {
-                    const r = await fetch(`${BACKEND_API_URL}/inherit/view-a-inheritances/${idNum}`, {
-                      method: 'GET',
-                      headers: {
-                        accept: 'application/json',
-                        ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
-                      }
-                    });
-                    if (!r.ok) {
-                      const errorMsg = await extractErrorMessage(r);
-                      toast.error(`Failed to load plan details: ${errorMsg}`);
-                      setSelectedPlanDetail(null);
-                      return;
-                    }
-                    const j = await r.json();
-                    setSelectedPlanDetail(j?.data ?? null);
-                  } catch (err) {
-                    const m = err instanceof Error ? err.message : String(err);
-                    toast.error(`Error loading plan details: ${m}`);
-                    setSelectedPlanDetail(null);
-                  }
-                }}>
+                <tr key={plan.id} className={`border-b border-[#393028] hover:bg-[#0d0b08] transition-colors cursor-pointer ${plan.id === highlightedPlanId ? 'ring-2 ring-green-400/40 bg-green-900/5' : ''}`} onClick={() => openPlanDetail(plan.raw?.id ?? plan.raw?.contract_plan_id)}>
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-[#332619] rounded-lg flex items-center justify-center text-lg">{plan.chainIcon}</div>
                       <div>
-                        <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">{plan.name ? `${plan.name.charAt(0).toUpperCase()}${plan.name.slice(1)}` : plan.name}</div>
+                        <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm truncate">{plan.name ? `${plan.name.charAt(0).toUpperCase()}${plan.name.slice(1)}` : plan.name}</div>
                         <div className="flex items-center gap-2">
                           <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">#{plan.id} • {plan.chainName}</div>
                           {plan.id === highlightedPlanId && (
@@ -671,9 +754,9 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                     {(() => {
                       const beneficiaryName = (plan.beneficiariesPreview && plan.beneficiariesPreview.length > 0) ? (plan.beneficiariesPreview[0].name || plan.beneficiariesPreview[0].wallet) : plan.beneficiary.name;
                       return (
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">{getInitials(beneficiaryName)}</div>
-                          <span className="[font-family:'Noto_Sans',Helvetica] text-white text-sm">{beneficiaryName}</span>
+                          <div className="flex items-center gap-2 truncate">
+                            <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">{getInitials(beneficiaryName)}</div>
+                            <span className="[font-family:'Noto_Sans',Helvetica] text-white text-sm truncate">{beneficiaryName}</span>
                           {plan.beneficiariesPreview && plan.beneficiariesPreview.length > 1 && (
                             <span className="ml-2 text-xs text-[#8b7664]">+{plan.beneficiariesPreview.length - 1} more</span>
                           )}
@@ -683,8 +766,8 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                   </td>
                   <td className="py-4 px-4">
                     <div>
-                      <div className="[font-family:'Space_Grotesk',Helvetica] text-white text-sm">{showValues ? plan.assets : "••••••"}</div>
-                      <div className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs">{plan.assetsDetail}</div>
+                      <div className="[font-family:'Space_Grotesk',Helvetica] text-white text-sm truncate">{showValues ? plan.assets : "••••••"}</div>
+                      <div className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs truncate">{plan.assetsDetail}</div>
                     </div>
                   </td>
                   <td className="py-4 px-4">
@@ -705,19 +788,19 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between pt-4">
+        <div className="flex flex-col sm:flex-row items-center sm:justify-between pt-4 gap-3">
           <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">Showing {(filtered.length === 0) ? 0 : ((currentPage - 1) * pageSize + 1)} - {Math.min(currentPage * pageSize, filtered.length)} of {filtered.length} plans</span>
           <div className="flex items-center gap-4">
             <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs">{currentPage} / {pageCount}</span>
             <div className="flex items-center gap-2">
-              <button 
+              <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
                 className={`w-8 h-8 rounded border border-[#B9B09D] ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[#2a1f10]'} flex items-center justify-center transition-colors`}
               >
                 <ChevronLeft className="w-4 h-4 text-[#B9B09D]" />
               </button>
-              <button 
+              <button
                 onClick={() => setCurrentPage((p) => Math.min(pageCount, p + 1))}
                 disabled={currentPage === pageCount}
                 className={`w-8 h-8 rounded border border-[#B9B09D] ${currentPage === pageCount ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[#2a1f10]'} flex items-center justify-center transition-colors`}

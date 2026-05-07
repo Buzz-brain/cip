@@ -225,10 +225,10 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center text-white [font-family:'Manrope',Helvetica]">
-      {/* backdrop does not capture pointer events so background can still be scrolled */}
-      <div className="absolute inset-0 bg-black/60 pointer-events-none" />
-      <div className="relative w-full max-w-2xl mx-4 pointer-events-auto">
-        <div ref={modalRef} role="dialog" aria-labelledby="pol-title" aria-modal="false" tabIndex={-1} className="border-t-4 border-[#EC7813] rounded-lg p-6 bg-[#2E261C] relative">
+      {/* backdrop captures pointer events to allow click-to-close */}
+      <div className="absolute inset-0 bg-black/60" onClick={() => onClose && onClose()} />
+      <div className="relative w-full max-w-2xl mx-4 pointer-events-auto max-h-[90vh] overflow-auto">
+        <div ref={modalRef} role="dialog" aria-labelledby="pol-title" aria-modal="true" tabIndex={-1} className="border-t-4 border-[#EC7813] rounded-lg p-6 bg-[#2E261C] relative">
           {/* close button */}
           <button aria-label="Close proof of life modal" onClick={() => onClose && onClose()} className="absolute top-3 right-3 text-[#B9B09D] hover:text-white">✕</button>
             <div className="flex justify-center mb-6">
@@ -249,7 +249,7 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
               <div className="grid grid-cols-1 md:grid-cols-[45%_55%]">
                 {/* Left: Video */}
                 <div className="w-full bg-black">
-                  <div className="relative" style={{ paddingTop: '100.25%' }}>
+                  <div className="relative" style={{ paddingTop: '56.25%' }}>
                     <video
                       src={heartVideo}
                       className="absolute inset-0 w-full h-full object-cover"

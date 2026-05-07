@@ -302,112 +302,196 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
   };
 
   return (
-    <div className="fixed inset-0 z-60 flex items-center justify-center">
+    <div className="fixed inset-0 z-70 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative bg-[#1f1915] border border-[#3a2f1e] rounded-lg w-[90%] max-w-lg p-6 z-70">
+      <div className="relative bg-[#1f1915] border border-[#3a2f1e] rounded-lg w-[90%] max-w-lg p-6 z-80">
         <div className="flex items-start justify-between mb-4">
           <h3 className="text-white font-bold">Fund Plan</h3>
           <button className="text-[#b8a494]" onClick={onClose}>Close</button>
         </div>
-
-        {needsBridge && availableBalance === null && (
-          <div className="mb-4 p-3 bg-[#2a251d] border border-[#3a2f1e] rounded">
-            <div className="text-[#d1c3b4] text-sm animate-pulse">Checking balance...</div>
-          </div>
-        )}
-
-        {needsBridge && availableBalance !== null && parseFloat(availableBalance) < 0.0001 && (
-          <div className="mb-4 p-3 bg-[#f59e0b1a] border border-amber-500 rounded">
-            <div className="text-amber-500 font-semibold">Bridge Required</div>
-            <div className="text-sm text-[#e7c8b0]">This asset requires bridging before funding. Please complete the bridge process first.</div>
-            {selectedAsset?.bridgeUrl && (
-              <a href={selectedAsset.bridgeUrl} target="_blank" rel="noreferrer" className="text-[#ff6600] underline">Bridge Now</a>
-            )}
-            <div className="mt-3">
+        <div className="max-h-[72vh] overflow-auto pr-2 scrollbar-thin-custom">
+        {needsBridge ? (
+          <>
+            {/* Section 1: Bridge */}
+            <div className="mb-6">
+              <h4 className="text-[#ff6600] font-bold text-sm mb-2">Step 1: Bridge Your {selectedAsset?.symbol}</h4>
+              <p className="text-[#d1c3b4] text-sm mb-4">
+                Your {selectedAsset?.symbol} needs to be bridged to Arbitrum before funding. If you've already bridged, check your balance below and proceed to Step 2.
+              </p>
+              <Button
+                type="button"
+                onClick={() => window.open(selectedAsset?.bridgeUrl, '_blank')}
+                className="bg-[#ff6600] hover:bg-[#ff5500] text-white mb-4"
+              >
+                Open Portal Bridge
+              </Button>
+              <div className="mb-2">
+                {availableBalance === null ? (
+                  <div className="text-[#8b7664] text-sm animate-pulse">Checking your Arbitrum balance...</div>
+                ) : (
+                  <div className="text-white text-sm">Arbitrum Balance: {availableBalance} ETH</div>
+                )}
+              </div>
               <Button
                 type="button"
                 onClick={fetchBalance}
-                className="px-3 py-2 h-auto text-sm bg-[#ff6600] hover:bg-[#ff5500] text-white"
+                className="px-3 py-2 h-auto text-sm border border-[#3a2f1e] bg-transparent text-[#d1c3b4] hover:bg-[#2a251d]"
               >
-                I've completed the bridge — check my balance
+                Refresh Balance
               </Button>
+            </div>
+
+            {/* Section 2: Fund */}
+            <div>
+              <h4 className="text-white font-bold text-sm mb-4">Step 2: Fund Your Plan</h4>
+              <div className="text-sm text-[#d1c3b4] space-y-4">
+                <div>
+                  <div className="text-xs text-[#8b7664]">Contract Plan ID</div>
+                  <div className="font-mono text-white">{contractPlanId}</div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs text-[#8b7664]">Amount (ETH)</div>
+                    {availableBalance && (
+                      <div className="text-xs text-[#8b7664]">
+                        Available: <span className="text-white font-semibold">{availableBalance}</span> ETH
+                        <Button
+                          type="button"
+                          onClick={() => setAmount(availableBalance)}
+                          className="ml-2 px-2 py-0 h-auto text-xs bg-[#ff6600] hover:bg-[#ff5500]"
+                        >
+                          Max
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                  {/* Show a loading skeleton while fetching plan details by DB id */}
+                  {planDbId && !planCtx?.plan?.cryptoAsset && planFetchLoading && (
+                    <div className="mb-3 p-2 bg-[#2a251d] border border-[#3a2f1e] rounded text-sm text-[#d1c3b4] animate-pulse">
+                      Loading asset info...
+                    </div>
+                  )}
+
+                  
+                  <input
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="e.g. 0.05"
+                    inputMode="decimal"
+                    className="w-full bg-[#221a15] border border-[#2f241c] rounded px-3 py-2 text-white"
+                  />
+                  {/* Inline validation hint */}
+                  {error && <div className="text-xs text-red-400 mt-1">{error}</div>}
+                  {!error && <div className="text-xs text-[#8b7664] mt-1">Enter the amount in ETH to send to the contract.</div>}
+                </div>
+
+                <div className="text-xs text-[#8b7664]">Warning</div>
+                <div className="text-sm text-[#e7c8b0]">Funding a plan is irreversible on-chain. Ensure the amount and plan are correct before confirming.</div>
+
+                {/* txHash is shown above; error is shown inline near input */}
+                {txHash && <div className="text-sm text-[#b8a494]">Transaction: <a className="text-[#ff6600]" href={`https://etherscan.io/tx/${txHash}`} target="_blank" rel="noreferrer">{txHash}</a></div>}
+
+                <div className="flex gap-2 mt-4">
+                  <Button onClick={onClose} className="bg-[#393028]">Cancel</Button>
+                  {backendNotifyFailed && (status === "error" || status === "pending") ? (
+                    <Button
+                      onClick={handleRetryBackend}
+                      className="bg-[#ff9933]"
+                      disabled={status === "pending" || !txHash}
+                    >
+                      {status === "pending" ? "Retrying..." : "Retry Send to Backend"}
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleConfirm}
+                      className="bg-[#ff6600]"
+                      disabled={status === "signing" || status === "pending" || Boolean(error) || amount.toString().trim() === '' || (needsBridge && availableBalance !== null && parseFloat(availableBalance) < 0.0001)}
+                    >
+                      {status === "signing" ? "Waiting for signature..." : status === "pending" ? "Pending..." : "Confirm & Fund"}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          /* Normal fund form when no bridge needed */
+          <div className="text-sm text-[#d1c3b4] space-y-4">
+            <div>
+              <div className="text-xs text-[#8b7664]">Contract Plan ID</div>
+              <div className="font-mono text-white">{contractPlanId}</div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xs text-[#8b7664]">Amount (ETH)</div>
+                {availableBalance && (
+                  <div className="text-xs text-[#8b7664]">
+                    Available: <span className="text-white font-semibold">{availableBalance}</span> ETH
+                    <Button
+                      type="button"
+                      onClick={() => setAmount(availableBalance)}
+                      className="ml-2 px-2 py-0 h-auto text-xs bg-[#ff6600] hover:bg-[#ff5500]"
+                    >
+                      Max
+                    </Button>
+                  </div>
+                )}
+              </div>
+              {/* Show a loading skeleton while fetching plan details by DB id */}
+              {planDbId && !planCtx?.plan?.cryptoAsset && planFetchLoading && (
+                <div className="mb-3 p-2 bg-[#2a251d] border border-[#3a2f1e] rounded text-sm text-[#d1c3b4] animate-pulse">
+                  Loading asset info...
+                </div>
+              )}
+
+              {needsBridge && (assetKey || selectedAsset?.symbol) && (assetKey || selectedAsset?.symbol) !== 'ETH' && (
+                <div className="mb-3 p-2 bg-[#2a251d] border border-[#3a2f1e] rounded text-sm text-[#d1c3b4]">
+                  You selected <span className="font-semibold text-[#ff9933]">{assetKey || selectedAsset?.symbol}</span>. This asset must be bridged to Arbitrum first. Once bridged, your funds arrive as ETH — enter the ETH amount you wish to fund below.
+                </div>
+              )}
+              
+              <input
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="e.g. 0.05"
+                inputMode="decimal"
+                className="w-full bg-[#221a15] border border-[#2f241c] rounded px-3 py-2 text-white"
+              />
+              {/* Inline validation hint */}
+              {error && <div className="text-xs text-red-400 mt-1">{error}</div>}
+              {!error && <div className="text-xs text-[#8b7664] mt-1">Enter the amount in ETH to send to the contract.</div>}
+            </div>
+
+            <div className="text-xs text-[#8b7664]">Warning</div>
+            <div className="text-sm text-[#e7c8b0]">Funding a plan is irreversible on-chain. Ensure the amount and plan are correct before confirming.</div>
+
+            {/* txHash is shown above; error is shown inline near input */}
+            {txHash && <div className="text-sm text-[#b8a494]">Transaction: <a className="text-[#ff6600]" href={`https://etherscan.io/tx/${txHash}`} target="_blank" rel="noreferrer">{txHash}</a></div>}
+
+            <div className="flex gap-2 mt-4">
+              <Button onClick={onClose} className="bg-[#393028]">Cancel</Button>
+              {backendNotifyFailed && (status === "error" || status === "pending") ? (
+                <Button
+                  onClick={handleRetryBackend}
+                  className="bg-[#ff9933]"
+                  disabled={status === "pending" || !txHash}
+                >
+                  {status === "pending" ? "Retrying..." : "Retry Send to Backend"}
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleConfirm}
+                  className="bg-[#ff6600]"
+                  disabled={status === "signing" || status === "pending" || Boolean(error) || amount.toString().trim() === '' || (needsBridge && availableBalance !== null && parseFloat(availableBalance) < 0.0001)}
+                >
+                  {status === "signing" ? "Waiting for signature..." : status === "pending" ? "Pending..." : "Confirm & Fund"}
+                </Button>
+              )}
             </div>
           </div>
         )}
-
-        <div className="text-sm text-[#d1c3b4] space-y-4">
-          <div>
-            <div className="text-xs text-[#8b7664]">Contract Plan ID</div>
-            <div className="font-mono text-white">{contractPlanId}</div>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-xs text-[#8b7664]">Amount (ETH)</div>
-              {availableBalance && (
-                <div className="text-xs text-[#8b7664]">
-                  Available: <span className="text-white font-semibold">{availableBalance}</span> ETH
-                  <Button
-                    type="button"
-                    onClick={() => setAmount(availableBalance)}
-                    className="ml-2 px-2 py-0 h-auto text-xs bg-[#ff6600] hover:bg-[#ff5500]"
-                  >
-                    Max
-                  </Button>
-                </div>
-              )}
-            </div>
-            {/* Show a loading skeleton while fetching plan details by DB id */}
-            {planDbId && !planCtx?.plan?.cryptoAsset && planFetchLoading && (
-              <div className="mb-3 p-2 bg-[#2a251d] border border-[#3a2f1e] rounded text-sm text-[#d1c3b4] animate-pulse">
-                Loading asset info...
-              </div>
-            )}
-
-            {(assetKey || selectedAsset?.symbol) && (assetKey || selectedAsset?.symbol) !== 'ETH' && (
-              <div className="mb-3 p-2 bg-[#2a251d] border border-[#3a2f1e] rounded text-sm text-[#d1c3b4]">
-                You selected <span className="font-semibold text-[#ff9933]">{assetKey || selectedAsset?.symbol}</span>. This asset must be bridged to Arbitrum first. Once bridged, your funds arrive as ETH — enter the ETH amount you wish to fund below.
-              </div>
-            )}
-            
-            <input
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="e.g. 0.05"
-              inputMode="decimal"
-              className="w-full bg-[#221a15] border border-[#2f241c] rounded px-3 py-2 text-white"
-            />
-            {/* Inline validation hint */}
-            {error && <div className="text-xs text-red-400 mt-1">{error}</div>}
-            {!error && <div className="text-xs text-[#8b7664] mt-1">Enter the amount in ETH to send to the contract.</div>}
-          </div>
-
-          <div className="text-xs text-[#8b7664]">Warning</div>
-          <div className="text-sm text-[#e7c8b0]">Funding a plan is irreversible on-chain. Ensure the amount and plan are correct before confirming.</div>
-
-          {/* txHash is shown above; error is shown inline near input */}
-          {txHash && <div className="text-sm text-[#b8a494]">Transaction: <a className="text-[#ff6600]" href={`https://etherscan.io/tx/${txHash}`} target="_blank" rel="noreferrer">{txHash}</a></div>}
-
-          <div className="flex gap-2 mt-4">
-            <Button onClick={onClose} className="bg-[#393028]">Cancel</Button>
-            {backendNotifyFailed && (status === "error" || status === "pending") ? (
-              <Button
-                onClick={handleRetryBackend}
-                className="bg-[#ff9933]"
-                disabled={status === "pending" || !txHash}
-              >
-                {status === "pending" ? "Retrying..." : "Retry Send to Backend"}
-              </Button>
-            ) : (
-              <Button
-                onClick={handleConfirm}
-                className="bg-[#ff6600]"
-                disabled={status === "signing" || status === "pending" || Boolean(error) || amount.toString().trim() === '' || (needsBridge && availableBalance !== null && parseFloat(availableBalance) < 0.0001)}
-              >
-                {status === "signing" ? "Waiting for signature..." : status === "pending" ? "Pending..." : "Confirm & Fund"}
-              </Button>
-            )}
-          </div>
         </div>
       </div>
     </div>
