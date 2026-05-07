@@ -182,10 +182,6 @@ export const assetData = [
 export const SelectAssets = (): JSX.Element => {
     const navigate = useNavigate();
     const [selectedAssets, setSelectedAssets] = useState<string | null>(assetData.find(a => a.checked)?.id || null);
-    // Track bridge initiation for the currently selected asset needing bridge
-    const [bridgeInitiated, setBridgeInitiated] = useState(false);
-    // Reset bridgeInitiated if selected asset changes
-    const prevBridgeAssetId = useRef<string|null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [ethBalance, setEthBalance] = useState<string | null>(null);
     const [ethUsdAmount, setEthUsdAmount] = useState<number | null>(null);
@@ -198,15 +194,6 @@ export const SelectAssets = (): JSX.Element => {
 
     // Get the selected asset if it needs a bridge, or null if none
     const selectedAssetNeedingBridge = selectedAssets ? assetData.find(asset => asset.id === selectedAssets && asset.needsBridge) || null : null;
-
-    // Reset bridgeInitiated if selected asset needing bridge changes
-    useEffect(() => {
-      const currentId = selectedAssetNeedingBridge?.id || null;
-      if (prevBridgeAssetId.current !== currentId) {
-        setBridgeInitiated(false);
-        prevBridgeAssetId.current = currentId;
-      }
-    }, [selectedAssetNeedingBridge?.id]);
 
     // Filter assets based on search term
     const filteredAssets = assetData.filter(asset => {
@@ -326,28 +313,6 @@ export const SelectAssets = (): JSX.Element => {
             toast.error('Please select at least one asset before continuing.');
             console.warn('[SelectAssets] no assets selected to persist');
             return;
-        }
-
-        // Check Arbitrum wallet balance before proceeding (only if asset needs bridge)
-        if (selectedAssetNeedingBridge) {
-            try {
-                if ((window as any).ethereum) {
-                    const provider = new BrowserProvider((window as any).ethereum);
-                    const addr = plan?.ownerWallet || user?.publicKey || null;
-                    if (addr) {
-                        const bal = await provider.getBalance(addr);
-                        const balStr = formatEther(bal);
-                        const balNum = parseFloat(balStr);
-                        if (balNum === 0 || balNum < 0.0001) {
-                            toast.error("Your Arbitrum wallet balance is zero. Please complete the bridge before proceeding.");
-                            return;
-                        }
-                    }
-                }
-            } catch (err) {
-                console.error('[SelectAssets] balance check error', err);
-                // Don't block on error, let user proceed
-            }
         }
 
         // proceed to beneficiaries step
@@ -760,8 +725,8 @@ export const SelectAssets = (): JSX.Element => {
               <div className="inline-flex items-start gap-4 relative flex-[0_0_auto]">
                 <Button
                   onClick={handleNext}
-                  disabled={selectedAssetNeedingBridge ? (!ethBalance || parseFloat(ethBalance) < 0.0001) : false}
-                  className={`inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40] [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6 ${selectedAssetNeedingBridge && (!ethBalance || parseFloat(ethBalance) < 0.0001) ? 'opacity-60 cursor-not-allowed' : ''}`}
+                  disabled={!selectedAssets}
+                  className={`inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40] [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6 ${!selectedAssets ? 'opacity-60 cursor-not-allowed' : ''}`}
                 >
                   Next: Configure Beneficiaries
                   <ChevronRightIcon className="w-6 h-6" />

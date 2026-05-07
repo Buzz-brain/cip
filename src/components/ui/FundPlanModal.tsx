@@ -39,25 +39,26 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
   const selectedAsset = assetKey ? assetData.find((a: any) => a.symbol === assetKey || a.id === assetKey) : null;
   const needsBridge = selectedAsset?.needsBridge || false;
 
+  // Fetch user's Arbitrum wallet balance
+  const fetchBalance = async () => {
+    try {
+      if ((window as any).ethereum) {
+        const provider = new BrowserProvider((window as any).ethereum);
+        const signer = await provider.getSigner();
+        const addr = await signer.getAddress();
+        const bal = await provider.getBalance(addr);
+        const balStr = formatEther(bal);
+        setAvailableBalance(balStr);
+        console.log('[FundPlanModal] fetched balance:', { addr, balStr });
+      }
+    } catch (err) {
+      console.error('[FundPlanModal] balance fetch failed:', err);
+      setAvailableBalance(null);
+    }
+  };
+
   // Fetch user's Arbitrum wallet balance when modal opens. Also fetch plan detail by DB id if provided.
   useEffect(() => {
-    const fetchBalance = async () => {
-      try {
-        if ((window as any).ethereum) {
-          const provider = new BrowserProvider((window as any).ethereum);
-          const signer = await provider.getSigner();
-          const addr = await signer.getAddress();
-          const bal = await provider.getBalance(addr);
-          const balStr = formatEther(bal);
-          setAvailableBalance(balStr);
-          console.log('[FundPlanModal] fetched balance:', { addr, balStr });
-        }
-      } catch (err) {
-        console.error('[FundPlanModal] balance fetch failed:', err);
-        setAvailableBalance(null);
-      }
-    };
-
     if (open) {
       fetchBalance();
 
@@ -309,6 +310,12 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
           <button className="text-[#b8a494]" onClick={onClose}>Close</button>
         </div>
 
+        {needsBridge && availableBalance === null && (
+          <div className="mb-4 p-3 bg-[#2a251d] border border-[#3a2f1e] rounded">
+            <div className="text-[#d1c3b4] text-sm animate-pulse">Checking balance...</div>
+          </div>
+        )}
+
         {needsBridge && availableBalance !== null && parseFloat(availableBalance) < 0.0001 && (
           <div className="mb-4 p-3 bg-[#f59e0b1a] border border-amber-500 rounded">
             <div className="text-amber-500 font-semibold">Bridge Required</div>
@@ -316,6 +323,15 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
             {selectedAsset?.bridgeUrl && (
               <a href={selectedAsset.bridgeUrl} target="_blank" rel="noreferrer" className="text-[#ff6600] underline">Bridge Now</a>
             )}
+            <div className="mt-3">
+              <Button
+                type="button"
+                onClick={fetchBalance}
+                className="px-3 py-2 h-auto text-sm bg-[#ff6600] hover:bg-[#ff5500] text-white"
+              >
+                I've completed the bridge — check my balance
+              </Button>
+            </div>
           </div>
         )}
 
@@ -386,7 +402,7 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
               <Button
                 onClick={handleConfirm}
                 className="bg-[#ff6600]"
-                disabled={status === "signing" || status === "pending" || Boolean(error) || amount.toString().trim() === ''}
+                disabled={status === "signing" || status === "pending" || Boolean(error) || amount.toString().trim() === '' || (needsBridge && availableBalance !== null && parseFloat(availableBalance) < 0.0001)}
               >
                 {status === "signing" ? "Waiting for signature..." : status === "pending" ? "Pending..." : "Confirm & Fund"}
               </Button>

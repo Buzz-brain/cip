@@ -146,10 +146,10 @@ export const OwnerDashboard = (): JSX.Element => {
 //   const [currentPage, setCurrentPage] = useState(1);
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-4 sm:p-8 space-y-8">
 
       {/* Welcome Section */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl mb-2">
             Welcome back, {
@@ -167,7 +167,7 @@ export const OwnerDashboard = (): JSX.Element => {
           </p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex w-full sm:w-auto flex-col sm:flex-row gap-2">
           <button
             onClick={() => setShowValues(!showValues)}
             className="px-5 py-3 rounded-lg bg-[#393028] hover:bg-[#3a2f1e] text-[#FFFFFF] hover:text-white transition-colors flex items-center gap-2 [font-family:'Noto_Sans',Helvetica] font-medium text-md"
@@ -195,7 +195,7 @@ export const OwnerDashboard = (): JSX.Element => {
               setShowSubscribeModal(true);
             }}
             disabled={statsLoading}
-            className="px-5 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Noto_Sans',Helvetica] text-md gap-2"
+            className="w-full sm:w-auto px-5 py-3 sm:py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Noto_Sans',Helvetica] text-md gap-2"
           >
             <Plus className="w-4 h-4" />
             Create New Plan
@@ -204,7 +204,7 @@ export const OwnerDashboard = (): JSX.Element => {
       </div>
 
               {/* Stats Cards */}
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card className="bg-[#2D241C] border-[#393028]">
                   <CardContent className="p-6 space-y-2">
                     <div className="flex items-center justify-between">

@@ -339,8 +339,8 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
 
   return (
     <Card className="bg-[#261D18] border-[#393028]">
-      <CardContent className="p-6 space-y-6">
-        <div className="flex items-center gap-4">
+      <CardContent className="p-4 sm:p-6 space-y-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           {tabs.map((tab) => (
             <button 
               key={tab}
@@ -355,7 +355,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
             </button>
           ))}
 
-          <div className="ml-auto relative flex items-center gap-3">
+          <div className="ml-auto relative flex w-full sm:w-auto items-center gap-3">
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B9B09D]" />
               <input
@@ -363,7 +363,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                 placeholder="Search plans..."
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                className="bg-[#2D241C] border border-[#393028] rounded-lg pl-10 pr-4 py-2 text-[#b8a494] placeholder-[#706758] [font-family:'Noto_Sans',Helvetica] text-sm focus:outline-none focus:border-[#ff6600]"
+                className="bg-[#2D241C] border border-[#393028] rounded-lg pl-10 pr-4 py-2 text-[#b8a494] placeholder-[#706758] [font-family:'Noto_Sans',Helvetica] text-sm focus:outline-none focus:border-[#ff6600] w-full sm:w-56"
               />
             </div>
             <Link to="/owner-dashboard/plans" className="text-sm text-[#ff6600] hover:underline">View all</Link>
@@ -559,8 +559,47 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
           </div>
         )}
 
-        {/* Table */}
-        <div className="overflow-x-auto">
+        {/* Mobile list (cards) */}
+        <div className="space-y-3 md:hidden">
+          {loading ? (
+            Array.from({ length: pageSize }).map((_, i) => (
+              <div key={`s-m-${i}`} className="p-4 bg-[#231b16] border border-[#2f241c] rounded">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="h-4 bg-[#2f241c] w-24 rounded animate-pulse" />
+                  <div className="h-4 bg-[#2f241c] w-12 rounded animate-pulse" />
+                </div>
+                <div className="h-3 bg-[#2f241c] w-3/4 rounded animate-pulse" />
+              </div>
+            ))
+          ) : paginated.length > 0 ? (
+            paginated.map((plan) => (
+              <div key={`m-${plan.id}`} className={`p-4 bg-[#231b16] border border-[#2f241c] rounded ${plan.id === highlightedPlanId ? 'ring-2 ring-green-400/40' : ''}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#3a2f1e] flex items-center justify-center text-white font-bold">{plan.chainIcon}</div>
+                    <div>
+                      <div className="text-white font-bold text-sm truncate">{plan.name}</div>
+                      <div className="text-[#B9B09D] text-xs truncate">{plan.beneficiary?.name || '—'}</div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-white text-sm">{showValues ? plan.assets : '••••'}</div>
+                    <div className="text-xs text-[#8b7664] mt-1">{plan.status}</div>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center gap-2">
+                  <button className="px-3 py-2 rounded bg-[#393028] text-sm text-white">View</button>
+                  <button className="px-3 py-2 rounded bg-[#2a1f10] text-sm text-[#B9B09D]">Actions</button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="p-4 bg-[#231b16] border border-[#2f241c] rounded text-sm text-[#b8a494]">{getNoPlansMessage()}</div>
+          )}
+        </div>
+
+        {/* Table for md+ */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-[#3a2f1e]">

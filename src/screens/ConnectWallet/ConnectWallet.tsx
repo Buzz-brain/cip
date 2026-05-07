@@ -9,7 +9,7 @@ import { useWeb3Modal } from "@web3modal/ethers/react";
 import { normalizeWalletAddress, getDashboardRoute } from "../../lib/utils";
 import { verifyMessage } from "ethers";
 import * as authAPI from "../../lib/api/auth";
-import logoImg from "@assets/cip-logo.png";
+import logoImg from "@assets/cip-logo-full.png";
 import helpIcon from "@assets/help.svg";
 import connectWalletOrange from "@assets/connect-wallet.-orange.svg";
 // import cotiWalletIcon from "@assets/coti-wallet.svg";
@@ -17,7 +17,7 @@ import metamask from "@assets/metamask.svg";
 import trustWallet from "@assets/trust-wallet.svg";
 import phantom from "@assets/phantom.svg";
 // import ledger from "@assets/ledger.svg";
-import arrowForward from "@assets/arrow-forward.svg";
+// import arrowForward from "@assets/arrow-forward.svg";
 import { Link } from "react-router-dom";
 
 
