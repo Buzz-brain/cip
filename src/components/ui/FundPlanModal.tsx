@@ -3,8 +3,9 @@ import { Button } from "@components/ui/button";
 import { toast } from "react-toastify";
 import { fundPlanOnChain } from "../../lib/wallet/fundPlan";
 import { extractErrorMessage } from "../../lib/utils";
-import { BrowserProvider } from "ethers";
+import { BrowserProvider, formatEther } from "ethers";
 import { usePlan } from "../../context/usePlan";
+import { assetData } from "../../screens/Owner/PlanCreationFlow/SelectAssets";
 
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
@@ -23,7 +24,39 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, default
   const [txHash, setTxHash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [backendNotifyFailed, setBackendNotifyFailed] = useState<boolean>(false);
+  const [availableBalance, setAvailableBalance] = useState<string | null>(null);
   const planCtx = usePlan();
+
+  // Log crypto asset on every render
+  console.log('[FundPlanModal] planCtx?.plan?.cryptoAsset:', planCtx?.plan?.cryptoAsset);
+
+  // Get the selected asset from plan context
+  const selectedAsset = planCtx?.plan?.cryptoAsset ? assetData.find((a: any) => a.symbol === planCtx.plan.cryptoAsset || a.id === planCtx.plan.cryptoAsset) : null;
+  const needsBridge = selectedAsset?.needsBridge || false;
+
+  // Fetch user's Arbitrum wallet balance when modal opens
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        if ((window as any).ethereum) {
+          const provider = new BrowserProvider((window as any).ethereum);
+          const signer = await provider.getSigner();
+          const addr = await signer.getAddress();
+          const bal = await provider.getBalance(addr);
+          const balStr = formatEther(bal);
+          setAvailableBalance(balStr);
+          console.log('[FundPlanModal] fetched balance:', { addr, balStr });
+        }
+      } catch (err) {
+        console.error('[FundPlanModal] balance fetch failed:', err);
+        setAvailableBalance(null);
+      }
+    };
+
+    if (open) {
+      fetchBalance();
+    }
+  }, [open]);
 
   useEffect(() => {
     if (!open) {
@@ -32,6 +65,7 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, default
       setTxHash(null);
       setError(null);
       setBackendNotifyFailed(false);
+      setAvailableBalance(null);
     }
   }, [open, defaultAmount]);
 
@@ -241,6 +275,16 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, default
           <button className="text-[#b8a494]" onClick={onClose}>Close</button>
         </div>
 
+        {needsBridge && availableBalance !== null && parseFloat(availableBalance) < 0.0001 && (
+          <div className="mb-4 p-3 bg-[#f59e0b1a] border border-amber-500 rounded">
+            <div className="text-amber-500 font-semibold">Bridge Required</div>
+            <div className="text-sm text-[#e7c8b0]">This asset requires bridging before funding. Please complete the bridge process first.</div>
+            {selectedAsset?.bridgeUrl && (
+              <a href={selectedAsset.bridgeUrl} target="_blank" rel="noreferrer" className="text-[#ff6600] underline">Bridge Now</a>
+            )}
+          </div>
+        )}
+
         <div className="text-sm text-[#d1c3b4] space-y-4">
           <div>
             <div className="text-xs text-[#8b7664]">Contract Plan ID</div>
@@ -248,7 +292,26 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, default
           </div>
 
           <div>
-            <div className="text-xs text-[#8b7664]">Amount (ETH)</div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs text-[#8b7664]">Amount (ETH)</div>
+              {availableBalance && (
+                <div className="text-xs text-[#8b7664]">
+                  Available: <span className="text-white font-semibold">{availableBalance}</span> ETH
+                  <Button
+                    type="button"
+                    onClick={() => setAmount(availableBalance)}
+                    className="ml-2 px-2 py-0 h-auto text-xs bg-[#ff6600] hover:bg-[#ff5500]"
+                  >
+                    Max
+                  </Button>
+                </div>
+              )}
+            </div>
+            {selectedAsset?.symbol && selectedAsset.symbol !== 'ETH' && (
+              <div className="mb-3 p-2 bg-[#2a251d] border border-[#3a2f1e] rounded text-sm text-[#d1c3b4]">
+                You selected <span className="font-semibold text-[#ff9933]">{selectedAsset.symbol}</span>. This asset must be bridged to Arbitrum first. Once bridged, your funds arrive as ETH — enter the ETH amount you wish to fund below.
+              </div>
+            )}
             <input
               value={amount}
               onChange={(e) => setAmount(e.target.value)}

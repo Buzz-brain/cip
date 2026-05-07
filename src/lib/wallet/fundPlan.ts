@@ -70,11 +70,16 @@ export async function fundPlanOnChain(
     if (provider) {
       const feeData = await provider.getFeeData();
       if (feeData.maxFeePerGas) {
-        // +25% buffer over current maxFeePerGas to absorb block-to-block baseFee fluctuation
-        feeOverrides.maxFeePerGas = (feeData.maxFeePerGas * 125n) / 100n;
+        // +50% buffer over current maxFeePerGas to absorb block-to-block baseFee fluctuation
+        let maxFee = (feeData.maxFeePerGas * 150n) / 100n;
+        // Ensure minimum floor of 30 million wei to prevent rejection on Arbitrum Sepolia
+        if (maxFee < 30000000n) {
+          maxFee = 30000000n;
+        }
+        feeOverrides.maxFeePerGas = maxFee;
       }
       if (feeData.maxPriorityFeePerGas) {
-        feeOverrides.maxPriorityFeePerGas = (feeData.maxPriorityFeePerGas * 125n) / 100n;
+        feeOverrides.maxPriorityFeePerGas = (feeData.maxPriorityFeePerGas * 150n) / 100n;
       }
       console.log('[fundPlanOnChain] fee data fetched', {
         maxFeePerGas: feeOverrides.maxFeePerGas?.toString(),

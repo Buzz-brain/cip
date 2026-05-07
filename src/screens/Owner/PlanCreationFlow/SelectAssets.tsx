@@ -1,7 +1,6 @@
 import {
     ArrowRightIcon,
     SearchIcon,
-    // TrendingUpIcon,
     ZapIcon,
     ChevronRightIcon
 } from "lucide-react";
@@ -9,7 +8,6 @@ import { Alert, AlertDescription } from "@components/ui/alert";
 import { Badge } from "@components/ui/badge";
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
-import { Checkbox } from "@components/ui/checkbox";
 import { Input } from "@components/ui/input";
 import {
     Table,
@@ -22,7 +20,7 @@ import {
 import { Progress } from "@components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { BrowserProvider, formatEther } from "ethers";
 import { useAuth } from "../../../context/useAuth";
 import { usePlan } from "../../../context/usePlan";
@@ -49,7 +47,7 @@ import chartGraphLine from "@assets/chart-graph-line.svg";
 // Header removed — layout provides it
 import { Separator } from "@components/ui/separator";
 
-const assetData = [
+export const assetData = [
     {
         id: "eth",
         checked: true,
@@ -183,7 +181,11 @@ const assetData = [
 
 export const SelectAssets = (): JSX.Element => {
     const navigate = useNavigate();
-    const [selectedAssets, setSelectedAssets] = useState<string[]>(assetData.filter(a => a.checked).map(a => a.id));
+    const [selectedAssets, setSelectedAssets] = useState<string | null>(assetData.find(a => a.checked)?.id || null);
+    // Track bridge initiation for the currently selected asset needing bridge
+    const [bridgeInitiated, setBridgeInitiated] = useState(false);
+    // Reset bridgeInitiated if selected asset changes
+    const prevBridgeAssetId = useRef<string|null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [ethBalance, setEthBalance] = useState<string | null>(null);
     const [ethUsdAmount, setEthUsdAmount] = useState<number | null>(null);
@@ -191,13 +193,20 @@ export const SelectAssets = (): JSX.Element => {
     const { user } = useAuth();
 
     const toggleAsset = (id: string) => {
-        setSelectedAssets(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+        setSelectedAssets(id);
     };
 
-    // Get the first selected asset that needs a bridge, or null if none
-    const selectedAssetNeedingBridge = assetData.find(asset => 
-        selectedAssets.includes(asset.id) && asset.needsBridge
-    ) || null;
+    // Get the selected asset if it needs a bridge, or null if none
+    const selectedAssetNeedingBridge = selectedAssets ? assetData.find(asset => asset.id === selectedAssets && asset.needsBridge) || null : null;
+
+    // Reset bridgeInitiated if selected asset needing bridge changes
+    useEffect(() => {
+      const currentId = selectedAssetNeedingBridge?.id || null;
+      if (prevBridgeAssetId.current !== currentId) {
+        setBridgeInitiated(false);
+        prevBridgeAssetId.current = currentId;
+      }
+    }, [selectedAssetNeedingBridge?.id]);
 
     // Filter assets based on search term
     const filteredAssets = assetData.filter(asset => {
@@ -210,23 +219,23 @@ export const SelectAssets = (): JSX.Element => {
     });
 
     // Calculate unique chains from selected assets
-    const selectedChainsSet = new Set(
+    const selectedChainsSet = selectedAssets ? new Set(
         assetData
-            .filter(a => selectedAssets.includes(a.id))
+            .filter(a => a.id === selectedAssets)
             .map(a => a.chain.split('\n')[0])
-    );
+    ) : new Set();
     const selectedChainsCount = selectedChainsSet.size;
 
     // Calculate total value from selected assets (use live ETH USD amount when available)
-    const totalSelectedValue = assetData
-        .filter(a => selectedAssets.includes(a.id))
+    const totalSelectedValue = selectedAssets ? assetData
+        .filter(a => a.id === selectedAssets)
         .reduce((sum, asset) => {
             if (asset.id === 'eth' && ethUsdAmount != null) {
                 return sum + ethUsdAmount;
             }
             const valueNum = parseFloat(asset.value.replace(/[$,]/g, ''));
             return sum + (isNaN(valueNum) ? 0 : valueNum);
-        }, 0);
+        }, 0) : 0;
     const totalValueFormatted = new Intl.NumberFormat('en-US', { 
         style: 'currency', 
         currency: 'USD',
@@ -282,7 +291,7 @@ export const SelectAssets = (): JSX.Element => {
         return () => { mounted = false; clearInterval(interval); };
     }, [user?.publicKey, ethBalance]);
 
-    const handleNext = () => {
+    const handleNext = async () => {
         // validate plan name
         const trimmed = planName.trim();
         if (trimmed.length < 3) {
@@ -300,7 +309,8 @@ export const SelectAssets = (): JSX.Element => {
         // persist plan name into PlanContext
         setPlanField('name', trimmed);
         // Log selected assets for debugging / audit trail
-        const chosen = assetData.filter(a => selectedAssets.includes(a.id)).map(a => ({ id: a.id, name: a.name, symbol: a.symbol, balance: a.balance }));
+        const foundAsset = selectedAssets ? assetData.find(a => a.id === selectedAssets) : null;
+        const chosen = foundAsset ? [{ id: foundAsset.id, name: foundAsset.name, symbol: foundAsset.symbol, balance: foundAsset.balance }] : [];
         console.log('[SelectAssets] Selected assets:', chosen);
         // persist first selected asset into PlanContext (cryptoAsset, amount)
         if (chosen.length > 0) {
@@ -309,14 +319,37 @@ export const SelectAssets = (): JSX.Element => {
             // amount: use the balance string (caller can edit later)
             setAssets(first.symbol || first.id, first.balance || '0');
             // persist all selected asset IDs
-            setPlanField('assets', selectedAssets);
+            setPlanField('assets', selectedAssets ? [selectedAssets] : []);
             // ensure crypto asset and amount persisted (already done) and name persisted above
-            console.log('[SelectAssets] persisted to PlanContext:', { cryptoAsset: first.symbol || first.id, amount: first.balance, assets: selectedAssets });
+            console.log('[SelectAssets] persisted to PlanContext:', { cryptoAsset: first.symbol || first.id, amount: first.balance, assets: selectedAssets ? [selectedAssets] : [] });
         } else {
             toast.error('Please select at least one asset before continuing.');
             console.warn('[SelectAssets] no assets selected to persist');
             return;
         }
+
+        // Check Arbitrum wallet balance before proceeding (only if asset needs bridge)
+        if (selectedAssetNeedingBridge) {
+            try {
+                if ((window as any).ethereum) {
+                    const provider = new BrowserProvider((window as any).ethereum);
+                    const addr = plan?.ownerWallet || user?.publicKey || null;
+                    if (addr) {
+                        const bal = await provider.getBalance(addr);
+                        const balStr = formatEther(bal);
+                        const balNum = parseFloat(balStr);
+                        if (balNum === 0 || balNum < 0.0001) {
+                            toast.error("Your Arbitrum wallet balance is zero. Please complete the bridge before proceeding.");
+                            return;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('[SelectAssets] balance check error', err);
+                // Don't block on error, let user proceed
+            }
+        }
+
         // proceed to beneficiaries step
         navigate('/beneficiaries');
     };
@@ -487,22 +520,23 @@ export const SelectAssets = (): JSX.Element => {
                             key={asset.id}
                             onClick={(e:any) => {
                               const tgt = (e.target as HTMLElement);
-                              // ignore clicks on checkbox inputs or buttons to avoid double-toggle
-                              if (tgt.closest && (tgt.closest('input[type="checkbox"]') || tgt.closest('button'))) return;
+                              // ignore clicks on radio inputs or buttons to avoid double-toggle
+                              if (tgt.closest && (tgt.closest('input[type="radio"]') || tgt.closest('button'))) return;
                               toggleAsset(asset.id);
                             }}
                             className={`border-t border-[#49382f] hover:bg-[#3a3228] cursor-pointer transition-colors ${
-                              selectedAssets.includes(asset.id)
+                              selectedAssets === asset.id
                                 ? "bg-[#ff66000d] border-l-4 border-l-[#ff6600]"
                                 : ""
                             }`}
                           >
                             <TableCell className="p-4">
                               <div className="flex items-center justify-center">
-                                <Checkbox
-                                  className="w-4 h-4 mr-4 border-[#54483b]"
-                                  checked={selectedAssets.includes(asset.id)}
-                                  onCheckedChange={() => toggleAsset(asset.id)}
+                                <input
+                                  type="radio"
+                                  checked={selectedAssets === asset.id}
+                                  onChange={() => toggleAsset(asset.id)}
+                                  className="w-4 h-4 text-[#ff6600] bg-[#221a15] border-[#2f241c] focus:ring-[#ff6600] focus:ring-2"
                                 />
                               </div>
                             </TableCell>
@@ -544,7 +578,7 @@ export const SelectAssets = (): JSX.Element => {
                               <span className="[font-family:'Inter',Helvetica] font-normal text-white text-sm">
                                 {asset.id === "eth"
                                   ? ethBalance ?? asset.balance
-                                  : asset.balance}
+                                  : "—"}
                               </span>
                             </TableCell>
                             <TableCell className="p-4 text-right">
@@ -571,6 +605,10 @@ export const SelectAssets = (): JSX.Element => {
                   </div>
                 </CardContent>
               </Card>
+
+              <p className="text-xs text-[#8b7664] mt-2">
+                Balances shown for connected Arbitrum wallet only. Other chain balances require connecting the respective wallet.
+              </p>
 
               {selectedAssetNeedingBridge && (
                 <Alert className="bg-[#241f15] border-[#ff66004c] p-8 shadow-[0px_1px_2px_#0000000d] rounded-xl overflow-hidden relative">
@@ -693,7 +731,7 @@ export const SelectAssets = (): JSX.Element => {
                         Selected Assets
                       </span>
                       <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">
-                        {selectedAssets.length}
+                        {selectedAssets ? 1 : 0}
                       </span>
                     </div>
                     <div className="flex flex-col flex-1">
@@ -722,7 +760,8 @@ export const SelectAssets = (): JSX.Element => {
               <div className="inline-flex items-start gap-4 relative flex-[0_0_auto]">
                 <Button
                   onClick={handleNext}
-                  className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40] [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+                  disabled={selectedAssetNeedingBridge ? (!ethBalance || parseFloat(ethBalance) < 0.0001) : false}
+                  className={`inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40] [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6 ${selectedAssetNeedingBridge && (!ethBalance || parseFloat(ethBalance) < 0.0001) ? 'opacity-60 cursor-not-allowed' : ''}`}
                 >
                   Next: Configure Beneficiaries
                   <ChevronRightIcon className="w-6 h-6" />
