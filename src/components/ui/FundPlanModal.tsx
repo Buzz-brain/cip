@@ -29,6 +29,7 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
   const [availableBalance, setAvailableBalance] = useState<string | null>(null);
   const planCtx = usePlan();
   const [fetchedCryptoAsset, setFetchedCryptoAsset] = useState<string | null>(null);
+  const [planFetchLoading, setPlanFetchLoading] = useState<boolean>(false);
 
   // Log crypto asset on every render
   console.log('[FundPlanModal] planCtx?.plan?.cryptoAsset:', planCtx);
@@ -65,6 +66,8 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
         try {
           const idNum = planDbId ? Number(planDbId) : null;
           if (!idNum) return;
+          setPlanFetchLoading(true);
+          setFetchedCryptoAsset(null);
           const url = `${BACKEND_API_URL}/inherit/view-a-inheritances/${idNum}`;
           const resp = await fetch(url, {
             method: 'GET',
@@ -82,6 +85,8 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
           if (fetched) setFetchedCryptoAsset(String(fetched));
         } catch (e) {
           console.warn('[FundPlanModal] fetching plan by DB id failed', e);
+        } finally {
+          setPlanFetchLoading(false);
         }
       })();
     }
@@ -336,10 +341,16 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
                 </div>
               )}
             </div>
-            {(selectedAsset?.symbol || planCtx?.plan?.cryptoAsset) && 
-            (selectedAsset?.symbol || planCtx?.plan?.cryptoAsset) !== 'ETH' && (
+            {/* Show a loading skeleton while fetching plan details by DB id */}
+            {planDbId && !planCtx?.plan?.cryptoAsset && planFetchLoading && (
+              <div className="mb-3 p-2 bg-[#2a251d] border border-[#3a2f1e] rounded text-sm text-[#d1c3b4] animate-pulse">
+                Loading asset info...
+              </div>
+            )}
+
+            {(assetKey || selectedAsset?.symbol) && (assetKey || selectedAsset?.symbol) !== 'ETH' && (
               <div className="mb-3 p-2 bg-[#2a251d] border border-[#3a2f1e] rounded text-sm text-[#d1c3b4]">
-                You selected <span className="font-semibold text-[#ff9933]">{selectedAsset?.symbol || planCtx?.plan?.cryptoAsset}</span>. This asset must be bridged to Arbitrum first. Once bridged, your funds arrive as ETH — enter the ETH amount you wish to fund below.
+                You selected <span className="font-semibold text-[#ff9933]">{assetKey || selectedAsset?.symbol}</span>. This asset must be bridged to Arbitrum first. Once bridged, your funds arrive as ETH — enter the ETH amount you wish to fund below.
               </div>
             )}
             
