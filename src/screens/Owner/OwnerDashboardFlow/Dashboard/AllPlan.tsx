@@ -503,6 +503,22 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                         <div className="text-white">{selectedPlanDetail.plan?.amount ?? '—'}</div>
                       </div>
 
+                      {selectedPlanDetail.plan?.protected_data && (
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Protected Data</div>
+                        <div className="text-white break-all font-mono text-xs">
+                          <a 
+                            href={`https://explorer.iex.ec/arbitrum-sepolia-testnet/dataset/${selectedPlanDetail.plan.protected_data}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[#ff6600] hover:underline"
+                          >
+                            {selectedPlanDetail.plan.protected_data}
+                          </a>
+                        </div>
+                      </div>
+                      )}
+
                       <div>
                         <div className="text-xs text-[#8b7664]">Is Funded</div>
                         <div className="text-white">{selectedPlanDetail.plan?.is_funded ? 'Yes' : 'No'}</div>

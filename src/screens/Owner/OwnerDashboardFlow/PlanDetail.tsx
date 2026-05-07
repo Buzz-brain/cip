@@ -239,6 +239,22 @@ export const PlanDetail: React.FC = () => {
                   </div>
                 </div>
 
+                {detail.plan?.protected_data && (
+                  <div>
+                    <div className="text-xs text-[#8b7664]">Protected Data</div>
+                    <div className="text-white break-all font-mono text-sm">
+                      <a 
+                        href={`https://explorer.iex.ec/arbitrum-sepolia-testnet/dataset/${detail.plan.protected_data}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[#ff6600] hover:underline"
+                      >
+                        {detail.plan.protected_data}
+                      </a>
+                    </div>
+                  </div>
+                )}
+
                 {shouldShowField(detail.plan?.plan_type, 'release_timestamp') && (
                   <div>
                     <div className="text-xs text-[#8b7664]">Release At</div>
