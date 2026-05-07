@@ -18,6 +18,8 @@ import trustWallet from "@assets/trust-wallet.svg";
 import phantom from "@assets/phantom.svg";
 // import ledger from "@assets/ledger.svg";
 import arrowForward from "@assets/arrow-forward.svg";
+import { Link } from "react-router-dom";
+
 
 const navigationItems = [
   { label: "Home", href: "/" },
@@ -219,12 +221,13 @@ export const ConnectWallet = (): JSX.Element => {
 
   return (
     <div className="w-full min-h-screen bg-[#221810] flex flex-col">
-      <header className="w-full h-[65px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#392f28]">
+      <header className="w-full h-[65px] flex items-center justify-between px-4 sm:px-10 bg-[#0d0501] border-b border-[#392f28]">
         <div className="flex items-center gap-2">
-          <img src={logoImg} className="h-[45px] object-cover" alt="Logo" />
+          <Link to="/">
+            <img src={logoImg} className="h-[45px] object-cover" alt="Logo" />
+          </Link>
         </div>
-
-        <nav className="flex items-center gap-[35px]">
+        <nav className="hidden sm:flex items-center gap-[20px]">
           {navigationItems.map((item) => (
             <button
               key={item.label}
@@ -235,50 +238,41 @@ export const ConnectWallet = (): JSX.Element => {
             </button>
           ))}
         </nav>
-
-        <div className="flex items-center gap-4">
-          <Button className="h-10 px-4 bg-[#ff6600] hover:bg-[#ff7700] [font-family:'Manrope',Helvetica] font-bold text-white text-sm leading-[21px] rounded-lg gap-2">
-            <img src={helpIcon} alt="Icon" />
-            Help Center
-          </Button>
-        </div>
       </header>
 
-      <section className="w-full flex-1 flex flex-col items-center justify-center px-8 py-12">
-        <div className="flex flex-col items-center gap-6 mb-12">
-          <div className="w-16 h-16 rounded-full bg-[#ff660033] flex items-center justify-center flex-shrink-0 mt-1">
-            <img src={connectWalletOrange} alt="Icon" />
+      <section className="w-full flex-1 flex flex-col items-center justify-start px-4 sm:px-8 py-8 sm:py-12">
+        <div className="flex flex-col items-center gap-4 mb-8 sm:mb-12">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#ff660033] flex items-center justify-center flex-shrink-0 mt-1">
+            <img src={connectWalletOrange} alt="Icon" className="w-8 h-8 sm:w-10 sm:h-10" />
           </div>
 
-          <h1 className="text-5xl font-bold text-white text-center [font-family:'Manrope',Helvetica]">
+          <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white text-center [font-family:'Manrope',Helvetica] leading-tight">
             Connect your Wallet
           </h1>
 
-          <p className="text-center text-gray-400 max-w-2xl [font-family:'Manrope',Helvetica] text-base leading-relaxed">
-            Select a provider to securely access your inheritance dashboard and
-            manage your digital legacy across chains.
+          <p className="text-center text-gray-400 max-w-xl sm:max-w-2xl [font-family:'Manrope',Helvetica] text-sm sm:text-base leading-relaxed">
+            Select a provider to securely access your inheritance dashboard and manage your digital legacy across chains.
           </p>
         </div>
 
         {isConnectingWallet && (
-          <div className="bg-[#332b22] border border-[#ff6600]/30 rounded-lg p-4 mb-6 flex items-center gap-3 max-w-md mx-auto">
-            <div className="w-5 h-5 border-2 border-[#ff6600] border-t-transparent rounded-full animate-spin"></div>
-            <div className="text-[#ff6600] font-semibold text-base [font-family:'Manrope',Helvetica]">
+          <div className="bg-[#332b22] border border-[#ff6600]/30 rounded-lg p-3 mb-6 flex items-center gap-3 max-w-md mx-auto w-full sm:w-auto">
+            <div className="w-5 h-5 border-2 border-[#ff6600] border-t-transparent rounded-full animate-spin" />
+            <div className="text-[#ff6600] font-semibold text-sm sm:text-base [font-family:'Manrope',Helvetica]">
               Connecting wallet and signing message...
             </div>
           </div>
         )}
 
-
-
-        <div className="grid grid-cols-3 gap-6 max-w-5xl mb-8">
-          {wallets.map((wallet) => (
-            <button
-              key={wallet.id}
-              disabled={isConnectingWallet}
-              onClick={() => handleWalletSelect(wallet.id)}
-              className="group relative p-6 rounded-2xl bg-[#2d2420] border border-[#3d3530] hover:border-[#ff6600] hover:bg-[#332b22] transition-all duration-200 cursor-pointer flex flex-col items-start gap-3 min-h-[200px] min-w-[280px]"
-            >
+        <div className="w-full max-w-4xl mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+            {wallets.map((wallet) => (
+              <button
+                key={wallet.id}
+                disabled={isConnectingWallet}
+                onClick={() => handleWalletSelect(wallet.id)}
+                className="group relative p-4 sm:p-6 rounded-2xl bg-[#2d2420] border border-[#3d3530] hover:border-[#ff6600] hover:bg-[#332b22] transition-all duration-200 cursor-pointer flex flex-col items-start gap-3 min-h-[140px] sm:min-h-[200px] w-full"
+              >
               {/* {wallet.badge && (
                 <span className="absolute top-4 right-4 text-[13px] px-3 py-1 rounded-full bg-[#ff660033] border-[#f6b13b33] text-[#ff6600] [font-family:'Manrope',Helvetica]">
                   {wallet.badge}
@@ -291,49 +285,36 @@ export const ConnectWallet = (): JSX.Element => {
                 </span>
               )}
 
-              <img
-                className="w-16 h-16 rounded-lg bg-white text-2xl"
-                src={wallet.icon}
-                alt={wallet.name}
-              />
+                <img className="w-12 h-12 sm:w-16 sm:h-16 rounded-md bg-white" src={wallet.icon} alt={wallet.name} />
 
-              <h3 className="text-lg font-bold text-white text-left [font-family:'Manrope',Helvetica]">
-                {wallet.name}
-              </h3>
+                <h3 className="text-base sm:text-lg font-bold text-white text-left [font-family:'Manrope',Helvetica]">
+                  {wallet.name}
+                </h3>
 
-              <p className="text-sm text-gray-400 text-left [font-family:'Manrope',Helvetica]">
-                {wallet.description}
-              </p>
-            </button>
-          ))}
-        </div>
-
-        <div className="flex flex-col items-center gap-4">
-          <Button
-            onClick={() => navigate("/wallet-recovery")}
-            className="h-12 px-8 bg-[#ff6600] hover:bg-[#ff7700] [font-family:'Manrope',Helvetica] font-bold text-white text-base leading-[21px] rounded-lg gap-2"
-          >
-            <img src={helpIcon} alt="Icon" />
-            Forgot Access
-          </Button>
-          <div className="flex gap-1 justify-between items-center">
-            <p className="text-gray-400 [font-family:'Manrope',Helvetica] text-sm">
-              New here?
-            </p>
-            <p className="text-[#ff6600] [font-family:'Manrope',Helvetica] text-sm">
-              Learn how to create a wallet
-            </p>
-            <p>
-              <a
-                href="#create"
-                className="text-[#ff6600] hover:text-[#ff7700] test-sm transition-colors"
-              ></a>
-            </p>
-            <img src={arrowForward} className="w-3" alt="" />
+                <p className="text-xs sm:text-sm text-gray-400 text-left [font-family:'Manrope',Helvetica]">
+                  {wallet.description}
+                </p>
+              </button>
+            ))}
           </div>
         </div>
 
-        <p className="text-center text-gray-500 text-xs mt-8 [font-family:'Manrope',Helvetica] leading-relaxed">
+        <div className="flex flex-col items-center gap-4 w-full max-w-md">
+          <Button
+            onClick={() => navigate("/connect-wallet")}
+            className="w-full h-12 px-6 bg-[#ff6600] hover:bg-[#ff7700] [font-family:'Manrope',Helvetica] font-bold text-white text-base leading-[21px] rounded-lg gap-2 flex items-center justify-center"
+          >
+            <img src={helpIcon} alt="Icon" className="w-4 h-4 mr-2" />
+            Forgot Access
+          </Button>
+
+          <div className="flex flex-col sm:flex-row gap-2 items-center text-center">
+            <p className="text-gray-400 [font-family:'Manrope',Helvetica] text-sm">New here?</p>
+            <a className="text-[#ff6600] [font-family:'Manrope',Helvetica] text-sm hover:text-[#ff7700]">Learn how to create a wallet</a>
+          </div>
+        </div>
+
+        <p className="text-center text-gray-500 text-xs mt-8 [font-family:'Manrope',Helvetica] leading-relaxed max-w-md">
           By connecting your wallet, you agree to our{" "}
           <a
             href="#tos"

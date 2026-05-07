@@ -55,8 +55,8 @@ export const StepTwo = (): JSX.Element => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 items-center">
-            <div className="flex items-center justify-between">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="flex items-center justify-between order-2 md:order-1">
               <div className="relative w-full max-w-md h-[450px] rounded-3xl bg-[#1a1410] border border-[#3a3530] p-2 flex flex-col items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#ff6600]/10 to-transparent"></div>
 
@@ -91,7 +91,7 @@ export const StepTwo = (): JSX.Element => {
               </div>
             </div>
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6 order-1 md:order-2">
               {/* <div className="flex items-start gap-3"> */}
               <div className="w-12 h-12 rounded-lg bg-[#ff660033] flex items-center justify-center flex-shrink-0 mt-1">
                 <img src={shareButton} alt="Icon" />

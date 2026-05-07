@@ -62,9 +62,9 @@ export const StepOne = (): JSX.Element => {
     <div className="w-full min-h-screen">
       <div className="flex flex-col min-h-screen bg-[linear-gradient(0deg,rgba(34,24,16,1)_0%,rgba(34,24,16,1)_100%)]">
         <header className="sticky top-0 z-50 w-full border-b border-[#37291f] bg-[#0d0501] backdrop-blur-[6px]">
-          <div className="container flex h-16 items-center justify-between px-8">
+          <div className="container flex h-16 items-center justify-between px-4 sm:px-8">
             <div className="flex items-center gap-3">
-                                    <Link to="/dashboard">
+                                    <Link to="/">
                             <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
                           </Link>
             </div>
@@ -95,11 +95,11 @@ export const StepOne = (): JSX.Element => {
         <main className="relative flex-1">
           <div className="absolute inset-0 [background:radial-gradient(50%_50%_at_50%_0%,rgba(250,130,55,0.15)_0%,rgba(255,102,0,0)_60%)]" />
 
-          <section className="relative py-32">
-            <div className="container max-w-screen-xl px-8">
-              <div className="flex items-center justify-center gap-20">
-                <div className="flex max-w-2xl flex-1 flex-col items-start gap-8">
-                  <div className="relative h-[325.75px] w-full">
+          <section className="relative py-12 sm:py-20">
+            <div className="container max-w-screen-xl px-4 sm:px-8">
+              <div className="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-20">
+                <div className="w-full md:max-w-2xl flex-1 flex flex-col items-start gap-6 md:gap-8">
+                  <div className="relative w-full h-auto sm:h-[325px]">
                     <Badge
                       variant="outline"
                       className="gap-2 rounded-full border-[#372d1f] bg-[#2e241c] px-3 py-1"
@@ -114,26 +114,22 @@ export const StepOne = (): JSX.Element => {
                     </Badge>
 
                     <div>
-                      <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-[68px] leading-[66px] mt-3 mb-2">
-                        Secure Your Legacy <br />
-                        <span className="bg-gradient-to-r from-[#FF6600] to-[#FAB060] text-transparent bg-clip-text">
+                      <h1 className="[font-family:'Manrope',Helvetica] font-bold text-3xl sm:text-4xl md:text-[68px] text-white mt-3 mb-2 leading-tight md:leading-[66px]">
+                        Secure Your Legacy
+                        <span className="block bg-gradient-to-r from-[#FF6600] to-[#FAB060] text-transparent bg-clip-text">
                           Across Chains.
                         </span>
                       </h1>
-                      <p className="text-lg font-normal leading-[29.2px] text-slate-400 [font-family:'Manrope',Helvetica]">
-                        Ensure your digital assets are safely transferred to
-                        <br />
-                        your loved ones using advanced decentralized
-                        <br />
-                        cryptography and automated inheritance planning.
+                      <p className="text-sm sm:text-base font-normal text-slate-400 [font-family:'Manrope',Helvetica] leading-6 sm:leading-7">
+                        Ensure your digital assets are safely transferred to your loved ones using advanced decentralized cryptography and automated inheritance planning.
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex w-full items-start gap-4">
+                  <div className="flex w-full flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                     <Button
                       onClick={() => navigate("/onboarding/step-two")}
-                      className="h-12 gap-2 overflow-hidden rounded-lg bg-[#ff6600] px-8 shadow-[0px_4px_6px_-4px_#3b82f633,0px_10px_15px_-3px_#3b82f633] hover:bg-[#ff6600]/90"
+                      className="w-full sm:w-auto h-12 gap-2 overflow-hidden rounded-lg bg-[#ff6600] px-6 sm:px-8 shadow-[0px_4px_6px_-4px_#3b82f633,0px_10px_15px_-3px_#3b82f633] hover:bg-[#ff6600]/90"
                     >
                       <div className="relative h-6 w-5">
                         <img
@@ -149,7 +145,7 @@ export const StepOne = (): JSX.Element => {
 
                     <Button
                       variant="outline"
-                      className="h-12 gap-2 rounded-lg border-[#554733] bg-transparent px-8 hover:bg-[#554733]/10"
+                      className="w-full sm:w-auto h-12 gap-2 rounded-lg border-[#554733] bg-transparent px-6 sm:px-8 hover:bg-[#554733]/10"
                     >
                       <div className="relative h-6 w-5">
                         <img
@@ -165,14 +161,14 @@ export const StepOne = (): JSX.Element => {
                   </div>
 
                   <div className="flex w-full flex-col items-start px-0 pb-0 pt-4">
-                    <div className="flex w-full flex-col items-start gap-4 border-t border-[#3b2e1e] px-0 pb-0 pt-8">
+                    <div className="flex w-full flex-col items-start gap-4 border-t border-[#3b2e1e] px-0 pb-0 pt-6">
                       <div className="flex w-full flex-col items-start">
                         <p className="text-xs font-semibold leading-4 tracking-[0.60px] text-[#8b7c64] [font-family:'Manrope',Helvetica]">
                           POWERED BY LEADING TECHNOLOGY
                         </p>
                       </div>
 
-                      <div className="relative grid h-[100px] w-full grid-cols-3 gap-y-4 bg-[#191919] p-5 opacity-70">
+                      <div className="relative grid auto-rows-min w-full grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-y-4 bg-[#191919] p-4 sm:p-5 opacity-80 items-center">
                         {technologyPartners.map((partner) => (
                           <div
                             key={partner.name}
@@ -195,7 +191,7 @@ export const StepOne = (): JSX.Element => {
                   </div>
                 </div>
 
-                <div className="relative h-[500px] flex-1">
+                <div className="w-full md:h-[500px] flex-1 mt-8 md:mt-0">
                   <Card className="h-full overflow-hidden rounded-2xl border-[#3b2e1e] bg-[#2e241c] shadow-[0px_25px_50px_-12px_#00000040]">
                     <div className="flex h-10 items-center gap-2 border-b border-[#3b2e1e] bg-[#231c15] px-4">
                       <div className="h-3 w-3 rounded-full border border-[#ef444480] bg-[#ef444433]" />
@@ -204,13 +200,13 @@ export const StepOne = (): JSX.Element => {
                     </div>
 
                     <CardContent
-                      className="relative h-[calc(100%-40px)] p-0"
+                      className="relative h-auto md:h-[calc(100%-40px)] p-4 md:p-0"
                       style={{ background: `url(${bgUrl}) 50% 50% / cover` }}
                     >
                       <div className="absolute inset-0 bg-[#2a1b0fcc] backdrop-blur-[1px]" />
 
-                      <div className="absolute inset-0">
-                        <Card className="absolute left-[calc(50%-203px)] top-[calc(50%-35px)] w-[219px] gap-3 overflow-hidden border-[#554733] bg-[#221510e6] p-4 shadow-[0px_8px_10px_-6px_#0000001a,0px_20px_25px_-5px_#0000001a] backdrop-blur-[6px]">
+                      <div className="absolute inset-0 flex flex-col md:block items-center md:items-start justify-center">
+                        <Card className="relative w-full sm:w-[320px] md:absolute md:left-[calc(50%-203px)] md:top-[calc(50%-35px)] w-[219px] gap-3 overflow-hidden border-[#554733] bg-[#221510e6] p-4 shadow-[0px_8px_10px_-6px_#0000001a,0px_20px_25px_-5px_#0000001a] backdrop-blur-[6px]">
                           <CardContent className="flex flex-col gap-3 p-0">
                             <div className="flex items-center gap-3">
                               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#ff660033]">
@@ -236,9 +232,9 @@ export const StepOne = (): JSX.Element => {
                           </CardContent>
                         </Card>
 
-                        <Card className="absolute left-[calc(50%-32px)] top-[calc(50%-94px)] h-[123px] w-[219px] overflow-hidden border-[#ff66004c] bg-[#221810] shadow-[0px_25px_50px_-12px_#00000040]">
-                          <CardContent className="flex h-full flex-col p-0">
-                            <div className="mx-[17px] mt-[17px] flex max-h-5 items-center justify-between">
+                        <Card className="relative w-full sm:w-[320px] md:absolute md:left-[calc(50%-32px)] md:top-[calc(50%-94px)] h-auto md:h-[123px] w-[219px] overflow-hidden border-[#ff66004c] bg-[#221810] shadow-[0px_25px_50px_-12px_#00000040] mt-4 md:mt-0">
+                          <CardContent className="flex h-full flex-col p-4 md:p-0">
+                            <div className="mx-0 sm:mx-[17px] mt-0 sm:mt-[17px] flex max-h-5 items-center justify-between">
                               <span className="text-xs font-bold leading-4 text-slate-400 [font-family:'Manrope',Helvetica]">
                                 Transfer Status
                               </span>
@@ -247,7 +243,7 @@ export const StepOne = (): JSX.Element => {
                               </Badge>
                             </div>
 
-                            <div className="mx-[17px] mt-4 flex max-h-5 items-center justify-between">
+                            <div className="mx-0 sm:mx-[17px] mt-3 sm:mt-4 flex max-h-5 items-center justify-between">
                               <span className="text-sm font-medium leading-5 text-white [font-family:'Manrope',Helvetica]">
                                 Assets Locked
                               </span>
@@ -256,9 +252,9 @@ export const StepOne = (): JSX.Element => {
                               </span>
                             </div>
 
-                            <div className="mx-[17px] mt-2 w-[185px] h-[6px] rounded-full bg-[#FF6600]" />
+                            <div className="mx-0 sm:mx-[17px] mt-2 w-full sm:w-[185px] h-[6px] rounded-full bg-[#FF6600]" />
 
-                            <div className="mx-[17px] mt-1 flex max-h-[15px] items-start justify-between">
+                            <div className="mx-0 sm:mx-[17px] mt-2 flex max-h-[15px] items-start justify-between">
                               <span className="text-[10px] font-normal leading-[15px] text-[#8b7c64] [font-family:'Manrope',Helvetica]">
                                 Vault #8821
                               </span>

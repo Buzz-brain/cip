@@ -40,7 +40,7 @@ const navigationItems = [
   { label: "How it Works", href: "#core-capabilities" },
   { label: "TaxCore", href: "#taxcore-intelligence" },
   { label: "Pricing", href: "#pricing" },
-  { label: "Enterprise", href: "/login" },
+  { label: "Enterprise", href: "#" },
 ];
 
 const blockchains = [
@@ -183,7 +183,7 @@ export const Home = (): JSX.Element => {
   };
 
   return (
-    <div className="min-h-screen bg-[#1e1e1e]">
+    <div className="min-h-screen bg-[#1e1e1e] [font-family:'Sora',Helvetica]">
       <div className="bg-black">
         <Navbar
           logo={logoImg}
@@ -199,7 +199,7 @@ export const Home = (): JSX.Element => {
           }
         />
 
-        <section className="relative bg-[#060605] py-20">
+        <section className="relative bg-[#060605] py-12 sm:py-20">
           <motion.img
             src={homeBgImg}
             alt="Home Background"
@@ -209,8 +209,8 @@ export const Home = (): JSX.Element => {
             transition={{ duration: 1.5, ease: "easeOut" }}
           />
 
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto text-center space-y-12">
+          <div className="container mx-auto px-4 sm:px-6 relative z-10">
+            <div className="max-w-3xl sm:max-w-4xl mx-auto text-center space-y-8 sm:space-y-12">
               <motion.div
                 className="space-y-6"
                 initial={{ opacity: 0, y: 50 }}
@@ -218,7 +218,7 @@ export const Home = (): JSX.Element => {
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
                 <motion.h2
-                  className="[font-family:'Sora',Helvetica] font-bold text-7xl leading-[72px]"
+                  className="[font-family:'Sora',Helvetica] font-bold text-3xl sm:text-4xl md:text-7xl leading-[38px] sm:leading-[44px] md:leading-[72px]"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4 }}
@@ -226,7 +226,7 @@ export const Home = (): JSX.Element => {
                   <span className="text-white">Secure Your Digital Legacy</span>
                 </motion.h2>
                 <motion.div
-                  className="[font-family:'Sora',Helvetica] font-light text-slate-300 text-xl max-w-2xl mx-auto inline-flex items-center justify-center text-center"
+                  className="[font-family:'Sora',Helvetica] font-light text-slate-300 text-sm sm:text-base md:text-xl max-w-xl sm:max-w-2xl mx-auto flex items-center justify-center text-center"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.6 }}
@@ -235,7 +235,10 @@ export const Home = (): JSX.Element => {
                   <motion.span
                     className="ml-2 text-[#ff6600]"
                     animate={{ opacity: isTypingComplete ? 0 : [0, 1, 0] }}
-                    transition={{ repeat: isTypingComplete ? 0 : Infinity, duration: 1 }}
+                    transition={{
+                      repeat: isTypingComplete ? 0 : Infinity,
+                      duration: 1,
+                    }}
                   >
                     |
                   </motion.span>
@@ -243,18 +246,21 @@ export const Home = (): JSX.Element => {
               </motion.div>
 
               <motion.div
-                className="flex items-center justify-center gap-4"
+                className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full px-4 sm:px-0"
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.8 }}
               >
                 <motion.div
-                  whileHover={{ scale: 1.05, boxShadow: "0px 0px 20px #ff6633cc" }}
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow: "0px 0px 20px #ff6633cc",
+                  }}
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   <Button
-                    className="bg-gradient-to-r px-7 py-5 from-[#ff6600] to-[#993d00] hover:opacity-90 shadow-[0px_0px_20px_#ff6633cc] [font-family:'Sora',Helvetica] font-bold"
+                    className="w-full sm:w-auto bg-gradient-to-r px-6 py-3 sm:px-7 sm:py-5 from-[#ff6600] to-[#993d00] hover:opacity-90 shadow-[0px_0px_20px_#ff6633cc] [font-family:'Sora',Helvetica] font-bold text-sm sm:text-base"
                     onClick={() => navigate("/onboarding/step-one")}
                   >
                     Start Plan
@@ -262,13 +268,16 @@ export const Home = (): JSX.Element => {
                 </motion.div>
 
                 <motion.div
-                  whileHover={{ scale: 1.05, boxShadow: "0 0 15px rgba(189, 75, 0, 0.5)" }}
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow: "0 0 15px rgba(189, 75, 0, 0.5)",
+                  }}
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   <Button
                     variant="outline"
-                    className="bg-[#111111] px-5 py-5 border-[#bd4b00] [font-family:'Sora',Helvetica] font-bold"
+                    className="w-full sm:w-auto bg-[#111111] px-4 py-3 sm:px-5 sm:py-5 border-[#bd4b00] [font-family:'Sora',Helvetica] font-bold text-sm sm:text-base"
                   >
                     <motion.svg
                       width="18"
@@ -292,8 +301,8 @@ export const Home = (): JSX.Element => {
           </div>
         </section>
 
-        <section className="bg-[#1c130d] py-8 overflow-hidden">
-          <div className="container mx-auto px-4">
+        <section className="bg-[#1c130d] py-6 sm:py-8 overflow-hidden">
+          <div className="container mx-auto px-4 sm:px-6">
             <div className="text-center space-y-4">
               <motion.p
                 className="[font-family:'Sora',Helvetica] font-bold text-[#8b7664] text-xs"
@@ -303,33 +312,33 @@ export const Home = (): JSX.Element => {
                   duration: 0.6,
                   type: "spring",
                   stiffness: 200,
-                  damping: 20
+                  damping: 20,
                 }}
                 viewport={{}}
               >
                 Securing Assets On Top Chains
               </motion.p>
-              <div className="flex items-center justify-center gap-16">
+              <div className="flex items-center justify-center gap-8 sm:gap-12 flex-wrap">
                 {blockchains.map((chain, index) => (
                   <motion.div
                     key={chain.name}
-                    className="flex items-center gap-4 cursor-pointer group"
+                    className="flex items-center gap-4 cursor-pointer group p-2"
                     initial={{
                       y: 80,
                       rotateX: -15,
-                      scale: 0.7
+                      scale: 0.7,
                     }}
                     whileInView={{
                       y: 0,
                       rotateX: 0,
-                      scale: 1
+                      scale: 1,
                     }}
                     transition={{
                       duration: 0.8,
                       delay: index * 0.2,
                       type: "spring",
                       stiffness: 150,
-                      damping: 25
+                      damping: 25,
                     }}
                     viewport={{}}
                     whileHover={{
@@ -340,22 +349,22 @@ export const Home = (): JSX.Element => {
                         duration: 0.3,
                         type: "spring",
                         stiffness: 300,
-                        damping: 15
-                      }
+                        damping: 15,
+                      },
                     }}
                     whileTap={{
                       scale: 0.9,
                       rotateX: 10,
-                      transition: { duration: 0.1 }
+                      transition: { duration: 0.1 },
                     }}
                     style={{ perspective: "1000px" }}
                   >
                     <motion.div
-                      className="relative p-3 rounded-xl bg-[#332619] border border-[#674932]"
+                      className="relative p-2 sm:p-3 rounded-xl bg-[#332619] border border-[#674932]"
                       whileHover={{
                         borderColor: "#ff6600",
                         boxShadow: "0 0 25px rgba(255, 102, 0, 0.3)",
-                        transition: { duration: 0.3 }
+                        transition: { duration: 0.3 },
                       }}
                     >
                       <motion.img
@@ -367,8 +376,8 @@ export const Home = (): JSX.Element => {
                           scale: 1.2,
                           transition: {
                             duration: 0.6,
-                            ease: "easeInOut"
-                          }
+                            ease: "easeInOut",
+                          },
                         }}
                       />
                       {/* Clean glow effect */}
@@ -376,17 +385,17 @@ export const Home = (): JSX.Element => {
                         className="absolute inset-0 rounded-xl bg-[#ff6600] opacity-0"
                         whileHover={{
                           opacity: 0.1,
-                          transition: { duration: 0.3 }
+                          transition: { duration: 0.3 },
                         }}
                       />
                     </motion.div>
                     <motion.span
-                      className="[font-family:'Sora',Helvetica] font-bold text-[#b8a494] text-base"
+                      className="[font-family:'Sora',Helvetica] font-bold text-[#b8a494] text-sm sm:text-base"
                       whileHover={{
                         color: "#ff6600",
                         scale: 1.05,
                         textShadow: "0 0 10px rgba(255, 102, 0, 0.5)",
-                        transition: { duration: 0.2 }
+                        transition: { duration: 0.2 },
                       }}
                     >
                       {chain.name}
@@ -398,7 +407,10 @@ export const Home = (): JSX.Element => {
           </div>
         </section>
 
-        <section id="core-capabilities" className="py-20 relative overflow-hidden">
+        <section
+          id="core-capabilities"
+          className="py-20 relative overflow-hidden"
+        >
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-6xl mx-auto space-y-12">
               <motion.div
@@ -412,7 +424,12 @@ export const Home = (): JSX.Element => {
                   className="[font-family:'Sora',Helvetica] font-bold text-white text-4xl"
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2, type: "spring", stiffness: 200 }}
+                  transition={{
+                    duration: 0.6,
+                    delay: 0.2,
+                    type: "spring",
+                    stiffness: 200,
+                  }}
                   viewport={{}}
                 >
                   Core Capabilities
@@ -429,7 +446,7 @@ export const Home = (): JSX.Element => {
                 </motion.p>
               </motion.div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {coreCapabilities.map((capability, index) => {
                   const [flipped, setFlipped] = useState(false);
                   return (
@@ -437,7 +454,13 @@ export const Home = (): JSX.Element => {
                       key={capability.title}
                       initial={{ opacity: 0, y: 50, scale: 0.95 }}
                       whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ duration: 0.6, delay: 0.4 + index * 0.1, type: "spring", stiffness: 200, damping: 20 }}
+                      transition={{
+                        duration: 0.6,
+                        delay: 0.4 + index * 0.1,
+                        type: "spring",
+                        stiffness: 200,
+                        damping: 20,
+                      }}
                       viewport={{}}
                       className="group perspective-1000"
                       style={{ perspective: 1000 }}
@@ -446,7 +469,11 @@ export const Home = (): JSX.Element => {
                         className="relative w-full h-full min-h-[260px]"
                         style={{ transformStyle: "preserve-3d" }}
                         animate={{ rotateY: flipped ? 180 : 0 }}
-                        transition={{ duration: 0.6, type: "spring", stiffness: 120 }}
+                        transition={{
+                          duration: 0.6,
+                          type: "spring",
+                          stiffness: 120,
+                        }}
                         onMouseEnter={() => setFlipped(true)}
                         onMouseLeave={() => setFlipped(false)}
                         tabIndex={0}
@@ -458,9 +485,7 @@ export const Home = (): JSX.Element => {
                           className="absolute inset-0 bg-[#332619] border-[#674932] border rounded-lg overflow-hidden flex flex-col items-center justify-center p-6 z-20"
                           style={{ backfaceVisibility: "hidden" }}
                         >
-                          <motion.div
-                            className="w-12 h-12 bg-[#135bec1a] rounded-lg flex items-center justify-center mb-4"
-                          >
+                          <motion.div className="w-12 h-12 bg-[#135bec1a] rounded-lg flex items-center justify-center mb-4">
                             <motion.img
                               src={capability.icon}
                               alt=""
@@ -479,11 +504,12 @@ export const Home = (): JSX.Element => {
                         {/* Back Side */}
                         <div
                           className="absolute inset-0 bg-[#ff6600] border-[#674932] border rounded-lg overflow-hidden flex flex-col items-center justify-center p-6 z-10"
-                          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+                          style={{
+                            backfaceVisibility: "hidden",
+                            transform: "rotateY(180deg)",
+                          }}
                         >
-                          <motion.div
-                            className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4"
-                          >
+                          <motion.div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
                             <motion.img
                               src={capability.icon}
                               alt=""
@@ -508,23 +534,37 @@ export const Home = (): JSX.Element => {
           </div>
         </section>
 
-        <section id="taxcore-intelligence" className="bg-[#20190f] border-t border-b border-[#483423] py-20 relative">
+        <section
+          id="taxcore-intelligence"
+          className="bg-[#20190f] border-t border-b border-[#483423] py-20 relative"
+        >
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#8a6f1e1a] rounded-full blur-3xl" />
 
           <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
+            <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16">
               <div className="space-y-10">
                 <motion.div
                   initial={{ opacity: 0, y: 40, scale: 0.95 }}
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.7, type: "spring", stiffness: 180, damping: 18 }}
+                  transition={{
+                    duration: 0.7,
+                    type: "spring",
+                    stiffness: 180,
+                    damping: 18,
+                  }}
                   viewport={{}}
                   className="space-y-6"
                 >
                   <motion.div
                     initial={{ scale: 0.8, rotate: -8, opacity: 0 }}
                     whileInView={{ scale: 1, rotate: 0, opacity: 1 }}
-                    transition={{ duration: 0.7, delay: 0.1, type: "spring", stiffness: 300, damping: 20 }}
+                    transition={{
+                      duration: 0.7,
+                      delay: 0.1,
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 20,
+                    }}
                     viewport={{}}
                   >
                     <Badge className="bg-[#f6a83b1a] border-[#f6b13b33] !pl-4 !pr-20 !pt-2 !pb-2 text-[#faaf60] [font-family:'Sora',Helvetica] font-bold rounded-3xl">
@@ -536,9 +576,16 @@ export const Home = (): JSX.Element => {
                     className="[font-family:'Sora',Helvetica] font-bold text-white text-5xl"
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.2, type: "spring", stiffness: 200 }}
+                    transition={{
+                      duration: 0.7,
+                      delay: 0.2,
+                      type: "spring",
+                      stiffness: 200,
+                    }}
                     viewport={{}}
-                    whileHover={{ textShadow: "0 0 24px #f6a83b, 0 0 8px #ff6600" }}
+                    whileHover={{
+                      textShadow: "0 0 24px #f6a83b, 0 0 8px #ff6600",
+                    }}
                   >
                     TaxCore Intelligence
                   </motion.h2>
@@ -549,23 +596,35 @@ export const Home = (): JSX.Element => {
                     transition={{ duration: 0.7, delay: 0.3 }}
                     viewport={{}}
                   >
-                    TaxCore isn't just a calculator; it's a full compliance suite. It integrates real-time transaction analysis, automatic capital gains calculation, and multi-jurisdiction tax rules to prepare accountant-ready documentation.
+                    TaxCore isn't just a calculator; it's a full compliance
+                    suite. It integrates real-time transaction analysis,
+                    automatic capital gains calculation, and multi-jurisdiction
+                    tax rules to prepare accountant-ready documentation.
                   </motion.p>
                 </motion.div>
 
-                <div className="border-l border-[#674932] pl-8 space-y-12">
+                <div className="border-l border-[#674932] pl-4 sm:pl-8 space-y-8 sm:space-y-12">
                   {taxCoreSteps.map((step, index) => (
                     <motion.div
                       key={step.title}
                       initial={{ x: -200, rotate: -15, scale: 0.8, opacity: 0 }}
                       whileInView={{ x: 0, rotate: 0, scale: 1, opacity: 1 }}
-                      transition={{ duration: 0.8, delay: index * 0.3, type: "spring", stiffness: 100, damping: 15 }}
+                      transition={{
+                        duration: 0.8,
+                        delay: index * 0.3,
+                        type: "spring",
+                        stiffness: 100,
+                        damping: 15,
+                      }}
                       viewport={{}}
                       className="space-y-2"
                     >
                       <motion.h3
                         className="[font-family:'Sora',Helvetica] font-bold text-white text-lg"
-                        whileHover={{ scale: 1.1, textShadow: "0 0 20px #ff6600" }}
+                        whileHover={{
+                          scale: 1.1,
+                          textShadow: "0 0 20px #ff6600",
+                        }}
                       >
                         {step.title}
                       </motion.h3>
@@ -600,8 +659,8 @@ export const Home = (): JSX.Element => {
                     </Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="p-6 space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
+                <CardContent className="p-4 sm:p-6 space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label className="[font-family:'Sora',Helvetica] text-[#8b7664] text-xs">
                         Origin Jurisdiction
@@ -624,13 +683,13 @@ export const Home = (): JSX.Element => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Card className="bg-[#221911] border-[#674932]">
                       <CardContent className="p-4 space-y-2">
-                        <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                        <p className="text-[#8b7664] text-xs">
                           Est. Capital Gains
                         </p>
-                        <p className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                        <p className=" font-bold text-white text-2xl">
                           $142,050.00
                         </p>
                         <div className="flex items-center gap-1">
@@ -643,20 +702,20 @@ export const Home = (): JSX.Element => {
                     </Card>
                     <Card className="bg-[#221911] border-[#674932]">
                       <CardContent className="p-4 space-y-2">
-                        <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                        <p className="text-[#8b7664] text-xs">
                           Inheritance Tax
                         </p>
-                        <p className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                        <p className="font-bold text-white text-2xl">
                           $56,820.00
                         </p>
-                        <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-[10px]">
+                        <p className="text-[#b8a494] text-[10px]">
                           Rate: 40% (Above Threshold)
                         </p>
                       </CardContent>
                     </Card>
                   </div>
 
-                  <div className="bg-[#ff66001a] border border-[#ff66004d] rounded-lg p-4 flex gap-4">
+                  <div className="bg-[#ff66001a] border border-[#ff66004d] rounded-lg p-3 sm:p-4 flex gap-3 sm:gap-4 flex-col sm:flex-row">
                     <img
                       src={starIcon}
                       alt=""
@@ -675,7 +734,10 @@ export const Home = (): JSX.Element => {
                   </div>
 
                   <motion.div
-                    whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255, 102, 0, 0.4)" }}
+                    whileHover={{
+                      scale: 1.02,
+                      boxShadow: "0 0 20px rgba(255, 102, 0, 0.4)",
+                    }}
                     whileTap={{ scale: 0.98 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   >
@@ -691,37 +753,59 @@ export const Home = (): JSX.Element => {
 
         <section className="py-20">
           <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               {featureCards.map((card, index) => (
                 <motion.div
                   key={card.title}
-                  initial={{ opacity: 0, y: 100, scale: 0.5, rotateY: 90, rotateX: 45 }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1, rotateY: 0, rotateX: 0 }}
-                  transition={{ duration: 1, delay: index * 0.3, type: "spring", stiffness: 80, damping: 15 }}
+                  initial={{
+                    opacity: 0,
+                    y: 100,
+                    scale: 0.5,
+                    rotateY: 90,
+                    rotateX: 45,
+                  }}
+                  whileInView={{
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    rotateY: 0,
+                    rotateX: 0,
+                  }}
+                  transition={{
+                    duration: 1,
+                    delay: index * 0.3,
+                    type: "spring",
+                    stiffness: 80,
+                    damping: 15,
+                  }}
                   viewport={{}}
                   whileHover={{
                     y: -20,
                     scale: 1.05,
                     rotateY: 5,
                     rotateX: -5,
-                    boxShadow: "0 30px 60px rgba(0,0,0,0.4), 0 0 30px rgba(255, 102, 0, 0.3)"
+                    boxShadow:
+                      "0 30px 60px rgba(0,0,0,0.4), 0 0 30px rgba(255, 102, 0, 0.3)",
                   }}
                   style={{ perspective: 1000 }}
                 >
-                  <Card
-                    className="bg-[#332619] border-[#674932] relative overflow-hidden"
-                  >
+                  <Card className="bg-[#332619] border-[#674932] relative overflow-hidden">
                     <CardContent className="p-8 space-y-6 relative z-10">
                       <motion.div
                         className={`w-12 h-12 ${card.bgColor} rounded-lg flex items-center justify-center`}
                         initial={{ scale: 0, rotate: -180 }}
                         whileInView={{ scale: 1, rotate: 0 }}
-                        transition={{ duration: 0.6, delay: index * 0.3 + 0.2, type: "spring", stiffness: 200 }}
+                        transition={{
+                          duration: 0.6,
+                          delay: index * 0.3 + 0.2,
+                          type: "spring",
+                          stiffness: 200,
+                        }}
                         viewport={{}}
                         whileHover={{
                           rotate: 360,
                           scale: 1.2,
-                          boxShadow: "0 0 20px rgba(255, 102, 0, 0.5)"
+                          boxShadow: "0 0 20px rgba(255, 102, 0, 0.5)",
                         }}
                       >
                         <motion.img
@@ -733,21 +817,26 @@ export const Home = (): JSX.Element => {
                         />
                       </motion.div>
                       <motion.h3
-                        className="[font-family:'Poppins',Helvetica] font-bold text-white text-2xl"
+                        className="font-bold text-white text-2xl"
                         initial={{ opacity: 0, x: -50, scale: 0.8 }}
                         whileInView={{ opacity: 1, x: 0, scale: 1 }}
-                        transition={{ duration: 0.7, delay: index * 0.3 + 0.4, type: "spring", stiffness: 150 }}
+                        transition={{
+                          duration: 0.7,
+                          delay: index * 0.3 + 0.4,
+                          type: "spring",
+                          stiffness: 150,
+                        }}
                         viewport={{}}
                         whileHover={{
                           scale: 1.1,
                           textShadow: "0 0 20px rgba(255, 102, 0, 0.8)",
-                          color: "#ff6600"
+                          color: "#ff6600",
                         }}
                       >
                         {card.title}
                       </motion.h3>
                       <motion.p
-                        className="[font-family:'Poppins',Helvetica] text-[#b8a494] text-base leading-6"
+                        className="text-[#b8a494] text-base leading-6"
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: index * 0.3 + 0.6 }}
@@ -762,38 +851,52 @@ export const Home = (): JSX.Element => {
                         transition={{ duration: 0.5, delay: index * 0.3 + 0.8 }}
                         viewport={{}}
                       >
-                        {card.features.map((feature: string, featureIndex: number) => (
-                          <motion.div
-                            key={feature}
-                            className="flex items-center gap-2"
-                            initial={{ opacity: 0, x: -30, scale: 0.9 }}
-                            whileInView={{ opacity: 1, x: 0, scale: 1 }}
-                            transition={{ duration: 0.5, delay: index * 0.3 + 0.8 + featureIndex * 0.1, type: "spring", stiffness: 200 }}
-                            viewport={{}}
-                            whileHover={{ scale: 1.05, x: 5 }}
-                          >
-                            <motion.img
-                              src={card.featureIcon}
-                              alt=""
-                              initial={{ scale: 0 }}
-                              whileInView={{ scale: 1 }}
-                              transition={{ duration: 0.3, delay: index * 0.3 + 0.8 + featureIndex * 0.1 + 0.2 }}
+                        {card.features.map(
+                          (feature: string, featureIndex: number) => (
+                            <motion.div
+                              key={feature}
+                              className="flex items-center gap-2"
+                              initial={{ opacity: 0, x: -30, scale: 0.9 }}
+                              whileInView={{ opacity: 1, x: 0, scale: 1 }}
+                              transition={{
+                                duration: 0.5,
+                                delay: index * 0.3 + 0.8 + featureIndex * 0.1,
+                                type: "spring",
+                                stiffness: 200,
+                              }}
                               viewport={{}}
-                              whileHover={{ rotate: 360, scale: 1.2 }}
-                            />
-                            <motion.span
-                              className="[font-family:'Poppins',Helvetica] text-slate-300 text-sm"
-                              whileHover={{ color: "#ff6600", scale: 1.05 }}
+                              whileHover={{ scale: 1.05, x: 5 }}
                             >
-                              {feature}
-                            </motion.span>
-                          </motion.div>
-                        ))}
+                              <motion.img
+                                src={card.featureIcon}
+                                alt=""
+                                initial={{ scale: 0 }}
+                                whileInView={{ scale: 1 }}
+                                transition={{
+                                  duration: 0.3,
+                                  delay:
+                                    index * 0.3 +
+                                    0.8 +
+                                    featureIndex * 0.1 +
+                                    0.2,
+                                }}
+                                viewport={{}}
+                                whileHover={{ rotate: 360, scale: 1.2 }}
+                              />
+                              <motion.span
+                                className="text-slate-300 text-sm"
+                                whileHover={{ color: "#ff6600", scale: 1.05 }}
+                              >
+                                {feature}
+                              </motion.span>
+                            </motion.div>
+                          ),
+                        )}
                       </motion.div>
+                      <div
+                        className={`absolute bottom-0 right-0 w-28 h-28 w-40 h-40 ${card.bgColor} rounded-full translate-x-1/3 translate-y-1/3`}
+                      />
                     </CardContent>
-                    <div
-                      className={`absolute bottom-0 right-0 w-40 h-40 ${card.bgColor} rounded-full translate-x-1/3 translate-y-1/3`}
-                    />
                   </Card>
                 </motion.div>
               ))}
@@ -801,28 +904,41 @@ export const Home = (): JSX.Element => {
           </div>
         </section>
 
-        <section id="pricing" className="bg-[#20180f] border-t border-[#483423] py-20">
+        <section
+          id="pricing"
+          className="bg-[#20180f] border-t border-[#483423] py-20"
+        >
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto space-y-12">
               <motion.div
                 className="text-center space-y-5"
                 initial={{ opacity: 0, y: 40, scale: 0.95 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.7, type: "spring", stiffness: 150, damping: 20 }}
+                transition={{
+                  duration: 0.7,
+                  type: "spring",
+                  stiffness: 150,
+                  damping: 20,
+                }}
                 viewport={{}}
               >
                 <motion.h2
-                  className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl"
+                  className="font-bold text-white text-4xl"
                   initial={{ scale: 0.8, rotate: -5 }}
                   whileInView={{ scale: 1, rotate: 0 }}
-                  transition={{ duration: 0.6, delay: 0.1, type: "spring", stiffness: 200 }}
+                  transition={{
+                    duration: 0.6,
+                    delay: 0.1,
+                    type: "spring",
+                    stiffness: 200,
+                  }}
                   viewport={{}}
                   whileHover={{ textShadow: "0 0 20px #ff6600" }}
                 >
                   Simple Pricing for Peace of Mind
                 </motion.h2>
                 <motion.p
-                  className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-base"
+                  className="text-[#b8a494] text-base"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
@@ -832,128 +948,251 @@ export const Home = (): JSX.Element => {
                 </motion.p>
               </motion.div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                {plansLoading ? (
-                  Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="p-6 rounded-lg bg-[#27231C] border-2 border-[#54493B] animate-pulse">
-                      <div className="h-6 bg-gray-700 rounded mb-4 w-1/3" />
-                      <div className="h-10 bg-gray-700 rounded mb-4 w-1/2" />
-                      <div className="space-y-2">
-                        <div className="h-4 bg-gray-700 rounded w-full" />
-                        <div className="h-4 bg-gray-700 rounded w-3/4" />
-                        <div className="h-4 bg-gray-700 rounded w-2/4" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                {plansLoading
+                  ? Array.from({ length: 3 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="p-6 rounded-lg bg-[#27231C] border-2 border-[#54493B] animate-pulse"
+                      >
+                        <div className="h-6 bg-gray-700 rounded mb-4 w-1/3" />
+                        <div className="h-10 bg-gray-700 rounded mb-4 w-1/2" />
+                        <div className="space-y-2">
+                          <div className="h-4 bg-gray-700 rounded w-full" />
+                          <div className="h-4 bg-gray-700 rounded w-3/4" />
+                          <div className="h-4 bg-gray-700 rounded w-2/4" />
+                        </div>
                       </div>
-                    </div>
-                  ))
-                ) : (
-                  (() => {
-                    if (!backendPlans || backendPlans.length === 0) {
-                      return <div className="p-6 text-center text-[#B8AA94]">No pricing plans available.</div>;
-                    }
-                    const sorted = backendPlans.slice().sort((a: any, b: any) => Number(a.id) - Number(b.id));
-                    return sorted.map((rawPlan: any, index: number) => {
-                      const plan = {
-                        name: toTitleCase(rawPlan.name),
-                        price: formatPrice(rawPlan.price),
-                        period: "/mo",
-                        description: `${toTitleCase(rawPlan.name)} Plan`,
-                        features: [
-                          { text: `Included Plans: ${rawPlan.plans}`, included: true },
-                          { text: `Triggers: ${rawPlan.triggers}`, included: true },
-                          { text: `Supported Chains: ${rawPlan.supported_chain}`, included: true },
-                          { text: rawPlan.storage ? 'Storage Included' : 'No Storage', included: !!rawPlan.storage },
-                          { text: rawPlan.taxcore ? 'TaxCore Enabled' : 'No TaxCore', included: !!rawPlan.taxcore },
-                          { text: rawPlan.secret_ai ? 'Secret AI features' : 'No Secret AI', included: !!rawPlan.secret_ai },
-                          { text: `Plan edits allowed: ${rawPlan.plan_edit}`, included: true },
-                        ],
-                        buttonText: "Get Started",
-                        highlighted: rawPlan.price > 10 && rawPlan.price <= 49 ? true : false,
-                        // match Pricing page: allow backend badge or mark the 3rd plan (index 2) as Recommended
-                        badge: rawPlan.badge ?? (index === 2 ? 'Recommended' : undefined),
-                        buttonVariant: rawPlan.buttonVariant ?? (rawPlan.price > 10 && rawPlan.price <= 49 ? 'default' : 'secondary'),
-                      };
-                      return (
-                        <motion.div
-                          key={plan.name}
-                          initial={{ opacity: 0, y: 80, scale: 0.9, rotateY: 20 }}
-                          whileInView={{ opacity: 1, y: 0, scale: 1, rotateY: 0 }}
-                          transition={{ duration: 0.8, delay: index * 0.15, type: "spring", stiffness: 120, damping: 18 }}
-                          viewport={{}}
-                          whileHover={{ y: -15, scale: 1.03, boxShadow: "0 25px 50px rgba(255, 102, 0, 0.2)" }}
-                        >
-                          <Card
-                            className={`${plan.highlighted
-                              ? "bg-[#332619] border-2 border-[#ff6600]"
-                              : "bg-[#221911] border-[#674932]"
-                              } relative`}
+                    ))
+                  : (() => {
+                      if (!backendPlans || backendPlans.length === 0) {
+                        return (
+                          <div className="p-6 text-center text-[#B8AA94]">
+                            No pricing plans available.
+                          </div>
+                        );
+                      }
+                      const sorted = backendPlans
+                        .slice()
+                        .sort((a: any, b: any) => Number(a.id) - Number(b.id));
+                      return sorted.map((rawPlan: any, index: number) => {
+                        const plan = {
+                          name: toTitleCase(rawPlan.name),
+                          price: formatPrice(rawPlan.price),
+                          period: "/mo",
+                          description: `${toTitleCase(rawPlan.name)} Plan`,
+                          features: [
+                            {
+                              text: `Included Plans: ${rawPlan.plans}`,
+                              included: true,
+                            },
+                            {
+                              text: `Triggers: ${rawPlan.triggers}`,
+                              included: true,
+                            },
+                            {
+                              text: `Supported Chains: ${rawPlan.supported_chain}`,
+                              included: true,
+                            },
+                            {
+                              text: rawPlan.storage
+                                ? "Storage Included"
+                                : "No Storage",
+                              included: !!rawPlan.storage,
+                            },
+                            {
+                              text: rawPlan.taxcore
+                                ? "TaxCore Enabled"
+                                : "No TaxCore",
+                              included: !!rawPlan.taxcore,
+                            },
+                            {
+                              text: rawPlan.secret_ai
+                                ? "Secret AI features"
+                                : "No Secret AI",
+                              included: !!rawPlan.secret_ai,
+                            },
+                            {
+                              text: `Plan edits allowed: ${rawPlan.plan_edit}`,
+                              included: true,
+                            },
+                          ],
+                          buttonText: "Get Started",
+                          highlighted:
+                            rawPlan.price > 10 && rawPlan.price <= 49
+                              ? true
+                              : false,
+                          // match Pricing page: allow backend badge or mark the 3rd plan (index 2) as Recommended
+                          badge:
+                            rawPlan.badge ??
+                            (index === 2 ? "Recommended" : undefined),
+                          buttonVariant:
+                            rawPlan.buttonVariant ??
+                            (rawPlan.price > 10 && rawPlan.price <= 49
+                              ? "default"
+                              : "secondary"),
+                        };
+                        return (
+                          <motion.div
+                            key={plan.name}
+                            initial={{
+                              opacity: 0,
+                              y: 80,
+                              scale: 0.9,
+                              rotateY: 20,
+                            }}
+                            whileInView={{
+                              opacity: 1,
+                              y: 0,
+                              scale: 1,
+                              rotateY: 0,
+                            }}
+                            transition={{
+                              duration: 0.8,
+                              delay: index * 0.15,
+                              type: "spring",
+                              stiffness: 120,
+                              damping: 18,
+                            }}
+                            viewport={{}}
+                            whileHover={{
+                              y: 0,
+                              scale: 1.03,
+                              boxShadow: "0 25px 50px rgba(255, 102, 0, 0.2)",
+                            }}
                           >
-                            {plan.badge && (
-                              <div className="absolute top-0 right-0 bg-[#ff6600] px-3 py-1">
-                                <span className="[font-family:'Sora',Helvetica] font-bold text-white text-xs">
-                                  {plan.badge}
-                                </span>
-                              </div>
-                            )}
-                            <CardContent className="p-8 space-y-6">
-                              <div className="space-y-2">
-                                <h3 className="[font-family:'Sora',Helvetica] font-bold text-white text-xl">
-                                  {plan.name}
-                                </h3>
-                                <p className="[font-family:'Sora',Helvetica] text-[#8b7664] text-sm">
-                                  {plan.description}
-                                </p>
-                              </div>
-                              <div className="flex items-baseline gap-1">
-                                <span className="[font-family:'Sora',Helvetica] font-bold text-white text-3xl">
-                                  {plan.price}
-                                </span>
-                                <span className="[font-family:'Sora',Helvetica] font-bold text-[#b8a494] text-sm">
-                                  {plan.period}
-                                </span>
-                              </div>
-                              <div className="space-y-3">
-                                {plan.features.map((feature: { text: string; included?: boolean }, idx: number) => {
-                                  const included = feature.included === undefined ? true : feature.included;
-                                  return (
-                                    <div key={idx} className="flex items-start gap-4">
-                                      <img
-                                        src={included ? sharpCheckSolid : sharpUncheckSolid}
-                                        alt=""
-                                        className="w-3.5 h-3.5 mt-0.5 flex-shrink-0"
-                                      />
-                                      <div className="flex-1">
-                                        <span className={`[font-family:'Sora',Helvetica] text-sm ${included ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>
-                                          {feature.text}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                              <motion.div
-                                whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255, 102, 0, 0.3)", transition: { type: "spring", stiffness: 300, damping: 20 } }}
-                                whileTap={{ scale: 0.98, transition: { type: "spring", stiffness: 300, damping: 20 } }}
-                                animate={plan.highlighted ? { scale: [1, 1.2, 1], boxShadow: ["0 0 0 rgba(255, 102, 0, 0)", "0 0 30px rgba(255, 102, 0, 0.8)", "0 0 0 rgba(255, 102, 0, 0)"] } : {}}
-                                transition={plan.highlighted ? { duration: 1, repeat: Infinity, ease: "easeInOut" } : {}}
-                              >
-                                <Button
-                                  variant={plan.buttonVariant}
-                                  className={`w-full ${plan.highlighted
-                                    ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
-                                    : "border border-[#674932] bg-transparent"
-                                    } [font-family:'Sora',Helvetica] font-bold transition-all duration-300`}
-                                  onClick={() => navigate("/pricing")}
+                            <Card
+                              className={`${
+                                plan.highlighted
+                                  ? "bg-[#332619] border-2 border-[#ff6600]"
+                                  : "bg-[#221911] border-[#674932]"
+                              } relative`}
+                            >
+                              {plan.badge && (
+                                <div className="absolute top-0 right-0 bg-[#ff6600] px-3 py-1">
+                                  <span className="[font-family:'Sora',Helvetica] font-bold text-white text-xs">
+                                    {plan.badge}
+                                  </span>
+                                </div>
+                              )}
+                              <CardContent className="p-6 sm:p-8 space-y-6">
+                                <div className="space-y-2">
+                                  <h3 className="[font-family:'Sora',Helvetica] font-bold text-white text-xl">
+                                    {plan.name}
+                                  </h3>
+                                  <p className="[font-family:'Sora',Helvetica] text-[#8b7664] text-sm">
+                                    {plan.description}
+                                  </p>
+                                </div>
+                                <div className="flex items-baseline gap-1">
+                                  <span className="[font-family:'Sora',Helvetica] font-bold text-white text-3xl">
+                                    {plan.price}
+                                  </span>
+                                  <span className="[font-family:'Sora',Helvetica] font-bold text-[#b8a494] text-sm">
+                                    {plan.period}
+                                  </span>
+                                </div>
+                                <div className="space-y-3">
+                                  {plan.features.map(
+                                    (
+                                      feature: {
+                                        text: string;
+                                        included?: boolean;
+                                      },
+                                      idx: number,
+                                    ) => {
+                                      const included =
+                                        feature.included === undefined
+                                          ? true
+                                          : feature.included;
+                                      return (
+                                        <div
+                                          key={idx}
+                                          className="flex items-start gap-4"
+                                        >
+                                          <img
+                                            src={
+                                              included
+                                                ? sharpCheckSolid
+                                                : sharpUncheckSolid
+                                            }
+                                            alt=""
+                                            className="w-3.5 h-3.5 mt-0.5 flex-shrink-0"
+                                          />
+                                          <div className="flex-1">
+                                            <span
+                                              className={`[font-family:'Sora',Helvetica] text-sm ${
+                                                included
+                                                  ? "font-medium text-slate-200"
+                                                  : "font-normal text-[#8b7964]"
+                                              }`}
+                                            >
+                                              {feature.text}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      );
+                                    },
+                                  )}
+                                </div>
+                                <motion.div
+                                  whileHover={{
+                                    scale: 1.02,
+                                    boxShadow:
+                                      "0 0 20px rgba(255, 102, 0, 0.3)",
+                                    transition: {
+                                      type: "spring",
+                                      stiffness: 300,
+                                      damping: 20,
+                                    },
+                                  }}
+                                  whileTap={{
+                                    scale: 0.98,
+                                    transition: {
+                                      type: "spring",
+                                      stiffness: 300,
+                                      damping: 20,
+                                    },
+                                  }}
+                                  animate={
+                                    plan.highlighted
+                                      ? {
+                                          scale: [1, 1.2, 1],
+                                          boxShadow: [
+                                            "0 0 0 rgba(255, 102, 0, 0)",
+                                            "0 0 30px rgba(255, 102, 0, 0.8)",
+                                            "0 0 0 rgba(255, 102, 0, 0)",
+                                          ],
+                                        }
+                                      : {}
+                                  }
+                                  transition={
+                                    plan.highlighted
+                                      ? {
+                                          duration: 1,
+                                          repeat: Infinity,
+                                          ease: "easeInOut",
+                                        }
+                                      : {}
+                                  }
                                 >
-                                  {plan.buttonText}
-                                </Button>
-                              </motion.div>
-                            </CardContent>
-                          </Card>
-                        </motion.div>
-                      )
-                    })
-                  })()
-                )}
+                                  <Button
+                                    className={`w-full  ${
+                                      plan.highlighted
+                                        ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
+                                        : "border border-[#674932] bg-transparent"
+                                    } [font-family:'Sora',Helvetica] font-bold transition-all duration-300`}
+                                    onClick={() => navigate("/pricing")}
+                                  >
+                                    {plan.buttonText}
+                                  </Button>
+                                </motion.div>
+                              </CardContent>
+                            </Card>
+                          </motion.div>
+                        );
+                      });
+                    })()}
               </div>
             </div>
           </div>
@@ -962,7 +1201,7 @@ export const Home = (): JSX.Element => {
         <section className="py-20">
           <div className="container mx-auto px-4">
             <Card className="max-w-5xl mx-auto bg-gradient-to-r from-[#332319] to-[#99684b] [#332319] border-[#674932]">
-              <CardContent className="p-12 flex items-center justify-between gap-12">
+              <CardContent className="p-12 md:flex items-center justify-between gap-12">
                 <div className="flex-1 space-y-6">
                   <h2 className="[font-family:'Sora',Helvetica] font-bold text-white text-3xl">
                     For Family Offices & Custodians
@@ -976,10 +1215,18 @@ export const Home = (): JSX.Element => {
                     <motion.span
                       className="[font-family:'Sora',Helvetica] font-bold text-[#ff6600] text-base cursor-pointer"
                       initial={{ opacity: 0.85, scale: 1 }}
-                      whileHover={{ scale: 1.08, color: "#ffc77a", textShadow: "0 0 16px rgba(255, 102, 0, 0.6)" }}
+                      whileHover={{
+                        scale: 1.08,
+                        color: "#ffc77a",
+                        textShadow: "0 0 16px rgba(255, 102, 0, 0.6)",
+                      }}
                       whileTap={{ scale: 0.98 }}
                       animate={{ opacity: [0.85, 1, 0.85] }}
-                      transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                      transition={{
+                        duration: 1.6,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
                     >
                       Contact Sales
                     </motion.span>
@@ -990,7 +1237,11 @@ export const Home = (): JSX.Element => {
                       initial={{ x: 0, rotate: 0 }}
                       whileHover={{ x: 6, rotate: 15 }}
                       animate={{ x: [0, 6, 0], rotate: [0, 15, 0] }}
-                      transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+                      transition={{
+                        duration: 1.2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
                     />
                   </div>
                 </div>
@@ -1004,7 +1255,11 @@ export const Home = (): JSX.Element => {
                     className="relative w-[252px] h-[277px]"
                     style={{ transformStyle: "preserve-3d" }}
                     animate={{ rotateY: 360 }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                   >
                     {/* Front Side */}
                     <div
@@ -1022,7 +1277,10 @@ export const Home = (): JSX.Element => {
                     {/* Back Side */}
                     <div
                       className="absolute inset-0 flex items-center justify-center"
-                      style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+                      style={{
+                        backfaceVisibility: "hidden",
+                        transform: "rotateY(180deg)",
+                      }}
                     >
                       <motion.img
                         src={shieldCheckImg}
@@ -1045,10 +1303,7 @@ export const Home = (): JSX.Element => {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
                 <div className="space-y-4">
                   <div className="flex items-center padding 3 gap-2">
-                      <img
-                        src={logoImgFull}
-                        alt="Logo"
-                      />
+                    <img src={logoImgFull} alt="Logo" />
                   </div>
                   <p className="[font-family:'Sora',Helvetica] text-[#8b7664] text-sm leading-[22px]">
                     The standard for sovereign digital inheritance. Securing the
@@ -1057,7 +1312,7 @@ export const Home = (): JSX.Element => {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-base">
+                  <h4 className="font-bold text-white text-base">
                     Product
                   </h4>
                   <div className="space-y-2">
@@ -1074,7 +1329,7 @@ export const Home = (): JSX.Element => {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-base">
+                  <h4 className="font-bold text-white text-base">
                     Resources
                   </h4>
                   <div className="space-y-2">
@@ -1091,7 +1346,7 @@ export const Home = (): JSX.Element => {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-base">
+                  <h4 className="font-bold text-white text-base">
                     Legal
                   </h4>
                   <div className="space-y-2">
