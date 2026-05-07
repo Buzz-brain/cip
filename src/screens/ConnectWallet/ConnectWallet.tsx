@@ -56,13 +56,13 @@ const wallets = [
     category: "Solana",
     icon: phantom,
   },
-  // {
-  //   id: "walletconnect",
-  //   name: "WalletConnect",
-  //   description: "Connect mobile wallets via QR or deep link",
-  //   category: "Mobile",
-  //   icon: connectWalletOrange,
-  // },
+  {
+    id: "walletconnect",
+    name: "WalletConnect",
+    description: "Connect mobile wallets via QR or deep link",
+    category: "Mobile",
+    icon: connectWalletOrange,
+  },
     // {
     //   id: "coinbase",
     //   name: "Coinbase Wallet",
@@ -82,6 +82,7 @@ export const ConnectWallet = (): JSX.Element => {
   const { getNonce, loginWithWallet, fetchUserInfo, user } = useAuth();
   const navigate = useNavigate();
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
+  const { open: openWeb3Modal } = useWeb3Modal();
 
   const handleNavigation = (href: string) => {
     if (href === "/") {
@@ -100,7 +101,6 @@ export const ConnectWallet = (): JSX.Element => {
 
   const handleWalletSelect = async (walletId: string) => {
     setIsConnectingWallet(true);
-    const { open: openWeb3Modal } = useWeb3Modal();
 
     try {
       // Ensure we discover available injected providers (EIP-6963)
