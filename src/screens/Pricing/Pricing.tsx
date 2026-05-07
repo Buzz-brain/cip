@@ -488,23 +488,23 @@ const navigationItems = [
           }
         />
 
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto space-y-10">
-            <div className="text-center space-y-6">
-              <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-[46px] leading-[48px]">
+      <section className="py-8 sm:py-12">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="max-w-6xl mx-auto space-y-8 sm:space-y-10">
+            <div className="text-center space-y-4 sm:space-y-6">
+              <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl sm:text-3xl md:text-[46px] leading-snug md:leading-[48px]">
                 Secure your legacy across chains
               </h1>
-              <p className="[font-family:'Manrope',Helvetica] text-[#b8a494] text-lg max-w-2xl mx-auto leading-[27px]">
-                Choose the inheritance plan that fits your assets and your
-                family's needs. Upgrade or downgrade at any time with zero
-                lock-in periods.
+              <p className="[font-family:'Manrope',Helvetica] text-[#b8a494] text-sm sm:text-base max-w-xl sm:max-w-2xl mx-auto leading-relaxed">
+                Choose the inheritance plan that fits your assets and your family's needs. Upgrade or downgrade at any time with zero lock-in periods.
               </p>
                   {/* Billing period toggle */}
-                  <ToggleBilling value={isYearly} onChange={setIsYearly} />
+                  <div className="flex items-center justify-center">
+                    <ToggleBilling value={isYearly} onChange={setIsYearly} />
+                  </div>
             </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                 {plansLoading ? (
                   Array.from({ length: 4 }).map((_, i) => (
                     <Card key={`skeleton-${i}`} className="bg-[#32241a] border-[#554233] animate-pulse">
@@ -532,26 +532,23 @@ const navigationItems = [
                 )}
               </div>
 
-            <div className="text-center space-y-6 pt-10">
-              <p className="[font-family:'Manrope',Helvetica] font-bold text-[#b8a494] text-sm">
-                Trusted by leading auditors
-              </p>
-              <div className="flex items-center justify-center gap-10">
-                {auditorElements}
+            <div className="text-center space-y-4 sm:space-y-6 pt-8 sm:pt-10">
+                <p className="[font-family:'Manrope',Helvetica] font-bold text-[#b8a494] text-sm">
+                  Trusted by leading auditors
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+                  {auditorElements}
+                </div>
               </div>
-            </div>
 
-            <div className="max-w-3xl mx-auto space-y-6 pt-14">
-              <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl text-center">
+            <div className="max-w-3xl mx-auto space-y-6 pt-10 sm:pt-14 px-2">
+              <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-xl sm:text-2xl text-center">
                 Frequently Asked Questions
               </h2>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {faqs.map((faq) => (
-                  <Card
-                    key={faq.question}
-                    className="bg-[#32241a] border-[#554233]"
-                  >
-                    <CardContent className="p-4 space-y-2">
+                  <Card key={faq.question} className="bg-[#32241a] border-[#554233]">
+                    <CardContent className="p-3 sm:p-4 space-y-2">
                       <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base">
                         {faq.question}
                       </h3>
@@ -567,36 +564,31 @@ const navigationItems = [
         </div>
       </section>
 
-      <footer className="bg-[#32241a] border-t border-[#3b2f1e] py-12">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto space-y-6">
-            <div className="flex items-center justify-center gap-20">
+      <footer className="bg-[#32241a] border-t border-[#3b2f1e] py-8 sm:py-12">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 sm:gap-8">
+            <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center sm:items-center justify-center sm:justify-start gap-3 sm:gap-6">
               {footerLinksAlt.map((link) => (
                 <a
                   key={link}
                   href="#"
-                  className="[font-family:'Manrope',Helvetica] text-[#b8a494] text-base hover:text-white transition-colors"
+                  className="[font-family:'Manrope',Helvetica] text-[#b8a494] text-sm sm:text-base hover:text-white transition-colors"
                 >
                   {link}
                 </a>
               ))}
             </div>
-            <div className="flex items-center justify-center gap-4">
-              <span className="[font-family:'Inter',Helvetica] text-[#896d61] text-xs">
-                public
-              </span>
-              <img
-                src={chatbubble}
-                alt=""
-                className="w-6 h-6"
-              />
-              <span className="[font-family:'Inter',Helvetica] text-[#896d61] text-sm">
-                mail
-              </span>
+
+            <div className="flex flex-col items-center gap-3">
+              <div className="flex items-center justify-center gap-3">
+                <span className="[font-family:'Inter',Helvetica] text-[#896d61] text-xs">public</span>
+                <img src={chatbubble} alt="" className="w-5 h-5 sm:w-6 sm:h-6" />
+                <span className="[font-family:'Inter',Helvetica] text-[#896d61] text-sm">mail</span>
+              </div>
+              <p className="[font-family:'Manrope',Helvetica] text-[#8b7964] text-xs sm:text-sm text-center">
+                © 2024 Multi-Chain Inheritance Protocol. All rights reserved.
+              </p>
             </div>
-            <p className="[font-family:'Manrope',Helvetica] text-[#8b7964] text-sm text-center">
-              © 2024 Multi-Chain Inheritance Protocol. All rights reserved.
-            </p>
           </div>
         </div>
       </footer>
