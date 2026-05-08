@@ -7,7 +7,7 @@ import { SkeletonCard } from '@components/ui/skeleton-card';
 
 export const BeneficiaryDisputes = (): JSX.Element => {
   const navigate = useNavigate();
-  const { disputes, loading, refetch } = useViewAllDisputes();
+  const { disputes, plansMap, loading, refetch } = useViewAllDisputes() as any;
 
   const onSelect = (id: number) => {
     navigate(`/beneficiary-dashboard/disputes/view/${id}`);
@@ -27,8 +27,8 @@ export const BeneficiaryDisputes = (): JSX.Element => {
           <div className="grid grid-cols-1 gap-6">
             {[1,2,3].map(i => <SkeletonCard key={i} />)}
           </div>
-        ) : (
-          <DisputeList disputes={disputes} onSelectDispute={onSelect} />
+          ) : (
+          <DisputeList disputes={disputes} onSelectDispute={onSelect} plansMap={plansMap} />
         )}
       </div>
     </div>

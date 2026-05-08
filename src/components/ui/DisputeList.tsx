@@ -19,6 +19,7 @@ interface DisputeListProps {
   onSelectDispute: (disputeId: number) => void;
   filter?: string;
   useOrange?: boolean;
+  plansMap?: Record<number, any> | null;
 }
 
 export const DisputeList: React.FC<DisputeListProps> = ({
@@ -27,6 +28,7 @@ export const DisputeList: React.FC<DisputeListProps> = ({
   onSelectDispute,
   filter = 'all',
   useOrange = false,
+  plansMap = null,
 }) => {
   const filteredDisputes = filter === 'all' 
     ? disputes 
@@ -66,13 +68,13 @@ export const DisputeList: React.FC<DisputeListProps> = ({
                       D
                     </div>
                     <div>
-                      <h3 className="text-white font-semibold">
-                        Dispute #{dispute.id}
-                      </h3>
-                      <p className="text-[#8b7664] text-xs">
-                        Plan #{dispute.plan_id} ·{" "}
-                        {new Date(dispute.created_at).toLocaleString()}
-                      </p>
+                        <h3 className="text-white font-semibold">
+                          Dispute #{dispute.id}
+                        </h3>
+                        <p className="text-[#8b7664] text-xs">
+                          {plansMap?.[dispute.plan_id]?.name ?? (dispute as any).plan?.name ?? `Plan #${dispute.plan_id}`} ·{" "}
+                          {new Date(dispute.created_at).toLocaleString()}
+                        </p>
                     </div>
                   </div>
                   <span

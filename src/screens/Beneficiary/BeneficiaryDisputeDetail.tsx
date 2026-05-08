@@ -20,7 +20,7 @@ export const BeneficiaryDisputeDetail = (): JSX.Element => {
   return (
     <div>
       {dispute ? (
-        <DisputeDetail dispute={dispute} messages={messages} onSendMessage={handleSend} loading={disputeLoading} />
+        <DisputeDetail dispute={dispute} plan={(dispute as any).plan} messages={messages} onSendMessage={handleSend} loading={disputeLoading} />
       ) : (
         <div className="text-[#AFA89C]">Loading dispute...</div>
       )}

@@ -17,6 +17,7 @@ interface DisputeDetailProps {
     updated_at: string;
     [key: string]: any;
   };
+  plan?: any;
   messages: DisputeMessage[];
   onSendMessage?: (content: string, file?: File) => Promise<void>;
   canResolve?: boolean;
@@ -27,6 +28,7 @@ interface DisputeDetailProps {
 
 export const DisputeDetail: React.FC<DisputeDetailProps> = ({
   dispute,
+  plan,
   messages,
   onSendMessage,
   canResolve = false,
@@ -81,7 +83,12 @@ export const DisputeDetail: React.FC<DisputeDetailProps> = ({
               <h2 className="text-white text-2xl font-bold">
                 Dispute #{dispute.id}
               </h2>
-              <p className="text-[#AFA89C] text-sm">Plan #{dispute.plan_id}</p>
+              <p className="text-[#AFA89C] text-sm">
+                {plan?.name ?? (dispute as any).plan?.name ?? `Plan #${dispute.plan_id}`}
+                {plan?.owner_wallet || (dispute as any).plan?.owner_wallet ? (
+                  <span className="text-[#8b7b64] ml-2">• Owner: {plan?.owner_wallet ?? (dispute as any).plan?.owner_wallet}</span>
+                ) : null}
+              </p>
             </div>
             <span
               className={`px-3 py-1 rounded-full text-xs font-medium ${

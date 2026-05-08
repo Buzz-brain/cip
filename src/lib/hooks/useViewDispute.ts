@@ -45,6 +45,7 @@ export const useViewAllDisputes = () => {
       // 2) { data: { disputes: [...] } }
       // 3) direct array response: [ ... ]
       let items: any[] = [];
+      let inheritanceItems: any[] = [];
 
       if (Array.isArray(data)) {
         items = data;
@@ -54,24 +55,43 @@ export const useViewAllDisputes = () => {
         if (Array.isArray(d?.dispute)) items = d.dispute;
         else if (d?.dispute) items = [d.dispute];
         else if (Array.isArray(d)) items = d;
+
+        // backend may include an `inheritance` (plans) array alongside disputes
+        if (Array.isArray(d?.inheritance)) inheritanceItems = d.inheritance;
+        else if (d?.inheritance) inheritanceItems = [d.inheritance];
       } else if (data?.data?.disputes) {
         items = Array.isArray(data.data.disputes) ? data.data.disputes : [];
+        if (Array.isArray(data.data.inheritance)) inheritanceItems = data.data.inheritance;
       } else if (Array.isArray(data?.data)) {
         items = data.data;
       }
 
-      // Normalize each dispute to expected shape for UI list
-      const normalized = items.map((x: any) => ({
-        id: Number(x.id ?? x.dispute_id ?? 0),
-        plan_id: Number(x.plan_id ?? x.contract_plan_id ?? x.plan_id ?? 0),
-        raised_by: x.raised_by ?? x.raised_by_id ?? null,
-        reason: x.reason ?? x.reason_code ?? 'UNKNOWN',
-        status: x.resolved === true ? 'resolved' : (x.stage ? x.stage.toLowerCase() : (x.status ?? 'pending')),
-        created_at: x.created_at ? (typeof x.created_at === 'number' ? new Date(x.created_at * 1000).toISOString() : x.created_at) : (x.created_at ?? null),
-        raw: x,
-      }));
+      // Build a map of plan id -> plan object if inheritance info present
+      const plansMap: Record<number, any> = {};
+      for (const plan of inheritanceItems) {
+        const pid = Number(plan.id ?? plan.plan_id ?? plan.contract_plan_id ?? 0);
+        if (pid) plansMap[pid] = plan;
+      }
+
+      // Normalize each dispute to expected shape for UI list, attach plan when available
+      const normalized = items.map((x: any) => {
+        const pid = Number(x.plan_id ?? x.contract_plan_id ?? x.plan_id ?? 0);
+        return {
+          id: Number(x.id ?? x.dispute_id ?? 0),
+          plan_id: pid,
+          plan: plansMap[pid] ?? null,
+          raised_by: x.raised_by ?? x.raised_by_id ?? null,
+          reason: x.reason ?? x.reason_code ?? 'UNKNOWN',
+          status: x.resolved === true ? 'resolved' : (x.stage ? x.stage.toLowerCase() : (x.status ?? 'pending')),
+          created_at: x.created_at ? (typeof x.created_at === 'number' ? new Date(x.created_at * 1000).toISOString() : x.created_at) : (x.created_at ?? null),
+          raw: x,
+        };
+      });
 
       setDisputes(normalized);
+      // attach plans map to state by returning it from the hook
+      // (we'll return it from the hook's return value)
+      (setAnyPlans as any)(plansMap);
     } catch (err: any) {
       setError(err?.message ?? 'Error fetching disputes');
       setDisputes([]);
@@ -84,7 +104,16 @@ export const useViewAllDisputes = () => {
     fetchDisputes();
   }, [user?.token]);
 
-  return { disputes, loading, error, refetch: fetchDisputes };
+  // expose optional plansMap via closure variable
+  const [anyPlans, setAnyPlans] = useState<Record<number, any> | null>(null);
+
+  // Small hack: re-run fetch to populate anyPlans
+  useEffect(() => {
+    // no-op; anyPlans is set during fetchDisputes via setAnyPlans
+  }, [anyPlans]);
+
+  // Return disputes and plans map
+  return { disputes, plansMap: anyPlans, loading, error, refetch: fetchDisputes };
 };
 
 export const useViewDispute = (disputeId: number | null) => {
@@ -128,6 +157,18 @@ export const useViewDispute = (disputeId: number | null) => {
           raw = data[0];
         }
 
+        // attempt to extract inheritance/plan info from response envelopes
+        let inheritanceArr: any[] = [];
+        if (data?.disputes) {
+          const d = data.disputes;
+          if (Array.isArray(d?.inheritance)) inheritanceArr = d.inheritance;
+          else if (d?.inheritance) inheritanceArr = [d.inheritance];
+        } else if (Array.isArray(data?.inheritance)) {
+          inheritanceArr = data.inheritance;
+        } else if (data?.data?.inheritance) {
+          inheritanceArr = Array.isArray(data.data.inheritance) ? data.data.inheritance : [data.data.inheritance];
+        }
+
         const normalized = {
           id: Number(raw?.id ?? raw?.dispute_id ?? 0),
           plan_id: Number(raw?.plan_id ?? raw?.contract_plan_id ?? 0),
@@ -140,6 +181,12 @@ export const useViewDispute = (disputeId: number | null) => {
           file: raw?.file ?? raw?.file_url ?? null,
           raw,
         };
+
+        // attach plan object if returned alongside dispute
+        if (inheritanceArr && inheritanceArr.length > 0) {
+          const found = inheritanceArr.find((pl: any) => Number(pl.id ?? pl.plan_id ?? pl.contract_plan_id) === normalized.plan_id);
+          if (found) (normalized as any).plan = found;
+        }
 
         setDispute(normalized as any);
       } catch (err: any) {
