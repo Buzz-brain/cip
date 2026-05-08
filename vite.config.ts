@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [react({
     jsxRuntime: 'automatic'
   })],
-  base: "./",
+  base: "/",
   resolve: {
     alias: {
       "@assets": resolve(__dirname, "src/assets"),
