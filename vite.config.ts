@@ -20,4 +20,23 @@ export default defineConfig({
       plugins: [tailwind()],
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          // Split node_modules into separate chunks
+          if (id.includes('node_modules')) {
+            if (id.includes('@iexec')) return 'vendor-iexec';
+            if (id.includes('ethers')) return 'vendor-ethers';
+            if (id.includes('web3modal')) return 'vendor-web3modal';
+            if (id.includes('@radix-ui')) return 'vendor-radix';
+            if (id.includes('react')) return 'vendor-react';
+            if (id.includes('framer-motion') || id.includes('lucide-react')) return 'vendor-anim';
+            return 'vendor-other';
+          }
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1500, // Suppress warnings until we hit 1.5MB
+  },
 });
