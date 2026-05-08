@@ -38,14 +38,14 @@ export const BeneficiaryDashboard = (): JSX.Element => {
   return (
       <section className="flex flex-col gap-4">
         <div className="flex items-end justify-between">
-          <div className="flex flex-col gap-2">
-            <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-[32px] leading-10">
-              Welcome back, {user?.name ?? user?.email ?? (user?.userInfo?.wallet ? `${user.userInfo.wallet.slice(0,6)}...${user.userInfo.wallet.slice(-4)}` : (user?.publicKey ? `${user.publicKey.slice(0,6)}...${user.publicKey.slice(-4)}` : 'User'))}
-            </h2>
+            <div className="flex flex-col gap-2">
+              <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl sm:text-[32px] leading-8 sm:leading-10">
+                Welcome back, {user?.name ?? user?.email ?? (user?.userInfo?.wallet ? `${user.userInfo.wallet.slice(0,6)}...${user.userInfo.wallet.slice(-4)}` : (user?.publicKey ? `${user.publicKey.slice(0,6)}...${user.publicKey.slice(-4)}` : 'User'))}
+              </h2>
+            </div>
           </div>
-        </div>
 
-        <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <Card className="bg-[#181511] border border-[#392f28] rounded-xl">
             <CardContent className="p-6 flex flex-col gap-4">
               <div className="flex items-center justify-between">

@@ -1,7 +1,6 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@components/ui/button';
-import { Card, CardContent } from '@components/ui/card';
+// import { Card, CardContent } from '@components/ui/card';
 import { DisputeList } from '@components/ui/DisputeList';
 import { useViewAllDisputes } from '../../lib/hooks/useViewDispute';
 import { SkeletonCard } from '@components/ui/skeleton-card';

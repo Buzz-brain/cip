@@ -92,7 +92,7 @@ export const YourInheritances = (): JSX.Element => {
   }
 
   return (
-    <div className={`grid grid-cols-2 gap-6 transition-all duration-300 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+    <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 transition-all duration-300 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
       {plans.map((p: any) => {
         const planBeneficiaries = beneficiariesByPlan.get(Number(p.id)) ?? [];
         const created = p.created_at ? new Date(Number(p.created_at) * 1000) : null;

@@ -60,7 +60,7 @@ export const DisputeList: React.FC<DisputeListProps> = ({
           <CardContent className="p-4">
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex sm:flex-row flex-col items-center justify-between mb-2">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded bg-[#241b15] flex items-center justify-center text-white font-semibold">
                       D
