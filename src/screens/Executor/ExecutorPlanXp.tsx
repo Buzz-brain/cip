@@ -14,7 +14,7 @@ export const ExecutorPlanXp = (): JSX.Element => {
   return (
     <div className="min-h-screen bg-[#1a1410] text-white">
       <header className="border-b border-[#3a3430] bg-[#1a1410]">
-        <div className="flex items-center justify-between px-6 py-4">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4">
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
@@ -50,17 +50,17 @@ export const ExecutorPlanXp = (): JSX.Element => {
         </div>
       </header>
 
-      <main className="p-8">
+      <main className="p-4 sm:p-8">
         <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
           <span>📊 Dashboard</span>
           <ChevronRight className="w-4 h-4" />
           <span>Plan #XP-9921</span>
         </div>
 
-        <div className="flex items-start justify-between mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-3xl font-bold">
+              <h1 className="text-2xl sm:text-3xl font-bold">
                 Plan #XP-9921: Estate of Jonathan Doe
               </h1>
               <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded text-sm">
@@ -82,7 +82,7 @@ export const ExecutorPlanXp = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-8 mb-8">
+        <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-4 sm:p-8 mb-8">
           <div className="flex items-center justify-between relative">
             <div className="flex items-center flex-1">
               <div className="flex flex-col items-center relative z-10">
@@ -142,7 +142,7 @@ export const ExecutorPlanXp = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="col-span-2">
             <div className="bg-[#2a2420] border border-orange-500/30 rounded-xl p-5 mb-6">
               <div className="flex items-start gap-3">

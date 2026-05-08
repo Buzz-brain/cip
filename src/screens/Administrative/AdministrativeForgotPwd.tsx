@@ -1,7 +1,7 @@
 import { ArrowLeft, Lock } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logoImg from "@assets/cip-logo.png";
+import logoImg from "@assets/cip-logo-full.png";
 
 export const AdministrativeForgotPwd = (): JSX.Element => {
   const navigate = useNavigate();
@@ -30,26 +30,9 @@ export const AdministrativeForgotPwd = (): JSX.Element => {
             <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
           </Link>
         </div>
-        <nav className="flex items-center gap-8">
-          <a href="#" className="text-[#DBD8D1] hover:text-gray-300 text-sm">
-            Documentation
-          </a>
-          <a
-            href="#"
-            className="text-[#DBD8D1] hover:text-gray-300 text-sm"
-          >
-            Support
-          </a>
-          <a href="/mediator-login" className="text-[#FF6600] hover:text-gray-300 text-sm">
-            Login
-          </a>
-        </nav>
       </header>
 
-      <main className="relative z-10 flex items-center justify-center min-h-screen px-4"
-        style={{ minHeight: "150vh" }}
-
-      >
+      <main className="relative z-10 flex items-center justify-center min-h-screen px-4">
         <div className="w-full max-w-md">
           <div className="bg-[#2D231C] backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-[#393428]">
             <div className="flex justify-center mb-6">

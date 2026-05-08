@@ -105,7 +105,7 @@ export default function AdminListPage({ title, fetcher }: { title: string; fetch
         </div>
         {/* Stats for executors/mediators if provided by backend */}
         {(execStats || mediatorStats) && (
-          <div className="mt-4 grid grid-cols-3 gap-4">
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
             {execStats && (
               <>
                 <div className="bg-[#0f0c0a] border border-[#2a2520] rounded p-3 text-sm">
@@ -135,11 +135,11 @@ export default function AdminListPage({ title, fetcher }: { title: string; fetch
           <>
             <div className="space-y-3">
               {current.length === 0 ? <div className="text-gray-400">No records</div> : current.map((it:any, idx:number)=> (
-                <div key={idx} className="p-3 bg-[#0f0c0a] rounded border border-[#2a2520] text-sm text-white flex items-start justify-between">
+                <div key={idx} className="p-3 bg-[#0f0c0a] rounded border border-[#2a2520] text-sm text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div className="flex-1">
                     <div className="font-medium">{it.full_name || it.user_name || it.email || it.name || `#${it.id || idx}`}</div>
                     <div className="text-gray-400 text-xs mt-1">{it.email || it.contact || JSON.stringify(it).slice(0,120)}</div>
-                    <div className="mt-2 flex items-center gap-4 text-xs">
+                    <div className="mt-2 flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
                       {it.wallet && <div className="text-gray-400"><span className="text-gray-400">Wallet:</span> <span className="text-white ml-1">{String(it.wallet).slice(0,12)}...{String(it.wallet).slice(-6)}</span></div>}
                       {typeof it.plan_id !== 'undefined' && <div className="text-gray-400"><span className="text-gray-400">Plan:</span> <span className="text-white ml-1">{String(it.plan_id)}</span></div>}
                       {typeof it.has_approved !== 'undefined' && (
@@ -149,7 +149,7 @@ export default function AdminListPage({ title, fetcher }: { title: string; fetch
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     {/* Actions: view, approve/disapprove, promote, disable depending on type */}
                     <button onClick={async ()=>{
                       setDetailLoading(true);

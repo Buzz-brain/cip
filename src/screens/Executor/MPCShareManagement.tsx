@@ -14,7 +14,7 @@ export const MPCShareManagement = (): JSX.Element => {
   return (
     <div className="min-h-screen bg-[#1a1410] text-white">
       <header className="border-b border-[#3a3430] sticky top-0 z-50 bg-[#1a1410]">
-        <div className="px-8 py-4 flex items-center justify-between">
+        <div className="px-4 sm:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold">C</span>
@@ -37,10 +37,10 @@ export const MPCShareManagement = (): JSX.Element => {
         </div>
       </header>
 
-      <main className="p-8">
-        <div className="flex items-start justify-between mb-8">
+      <main className="p-4 sm:p-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-4xl font-bold mb-2">MPC Share Management</h1>
+            <h1 className="text-2xl sm:text-4xl font-bold mb-2">MPC Share Management</h1>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-sm text-gray-400">
                 Protocol ID: #CIP#8823
@@ -78,7 +78,7 @@ export const MPCShareManagement = (): JSX.Element => {
               </button>
             </div>
 
-            <div className="grid grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <span className="w-3 h-3 bg-green-400 rounded-full"></span>
@@ -154,7 +154,7 @@ export const MPCShareManagement = (): JSX.Element => {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="col-span-2 space-y-6">
               <div>
                 <h2 className="text-2xl font-bold mb-6">Critical Actions</h2>
@@ -177,7 +177,7 @@ export const MPCShareManagement = (): JSX.Element => {
                   </div>
                 </button>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-4">
                     <div className="flex items-start gap-3 mb-3">
                       <span className="text-2xl">🔑</span>

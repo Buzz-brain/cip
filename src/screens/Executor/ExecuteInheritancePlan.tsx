@@ -105,15 +105,15 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               {[1,2,3,4].map(i => (
                 <div key={i} className="h-24 bg-[#181511] rounded-lg animate-pulse" />
               ))}
             </div>
-            <div className="grid grid-cols-3 gap-6">
-              <div className="col-span-2 h-64 bg-[#181511] rounded-lg animate-pulse" />
-              <div className="h-64 bg-[#181511] rounded-lg animate-pulse" />
-            </div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="col-span-1 lg:col-span-2 h-64 bg-[#181511] rounded-lg animate-pulse" />
+                <div className="h-64 bg-[#181511] rounded-lg animate-pulse" />
+              </div>
           </div>
         </div>
       )}
@@ -137,7 +137,7 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
               <div className="flex items-end justify-between">
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-3">
-                    <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-3xl">
+                      <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl sm:text-3xl">
                       {plan?.name ? String(plan.name) : (plan?.contract_plan_id ?? plan?.id ? `Plan #${plan.contract_plan_id ?? plan.id}` : '')}
                     </h1>
                     {(plan?.is_released === true || plan?.is_funded === true || plan?.status) && (
@@ -176,7 +176,7 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
               </div>
             )}
 
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               <div className="p-4 bg-[#181511] border border-[#392f28] rounded-lg">
                 <p className="text-xs text-[#8b7664]">📦 Assets Included</p>
                 {assetSymbol ? (
@@ -213,8 +213,8 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
               )}
             </div>
 
-            <div className="grid grid-cols-3 gap-6">
-              <div className="col-span-2 flex flex-col gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="col-span-1 lg:col-span-2 flex flex-col gap-4">
                 <div className="bg-[#181511] border border-[#392f28] rounded-xl">
                   <div className="p-6 flex flex-col gap-4">
                     <div className="flex items-center justify-between">

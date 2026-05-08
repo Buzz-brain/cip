@@ -107,7 +107,7 @@ const ExecutorInheritancePlans = (): JSX.Element => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6 py-4 border-y border-[#2d2720]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-4 border-y border-[#2d2720]">
                 <div>
                   <p className="text-[#bdb09a] text-xs">Beneficiaries</p>
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -135,9 +135,9 @@ const ExecutorInheritancePlans = (): JSX.Element => {
                       <div className={`h-full bg-gradient-to-r from-[#F97316] to-[#f59e0b]`} style={{ width: p.is_released ? '100%' : '30%' }} />
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button onClick={() => onDetails(p.id)} className="text-[#F97316] bg-transparent border border-[#2a2a2a]">Details</Button>
-                  <Button onClick={() => onRaiseDispute(p.id)} className="bg-[#F97316]">Raise Dispute</Button>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Button onClick={() => onDetails(p.id)} className="w-full sm:w-auto text-[#F97316] bg-transparent border border-[#2a2a2a]">Details</Button>
+                  <Button onClick={() => onRaiseDispute(p.id)} className="w-full sm:w-auto bg-[#F97316]">Raise Dispute</Button>
                 </div>
               </div>
             </CardContent>

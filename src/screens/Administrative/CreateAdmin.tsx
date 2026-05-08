@@ -3,7 +3,7 @@ import { createAdmin } from "../../lib/api/admin";
 import { useAuth } from "../../context/useAuth";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
-import logoImg from "@assets/cip-logo.png";
+import logoImg from "@assets/cip-logo-full.png";
 import loginBgImg from "@assets/login-bg.svg";
 import shieldPadlockIcon from "@assets/shield-padlock-orange.svg";
 import loginArrowIcon from "@assets/login-arrow.svg";
@@ -63,7 +63,7 @@ export default function CreateAdmin(): JSX.Element {
         <div />
       </header>
 
-      <main className="relative z-10 flex items-center justify-center px-4" style={{ minHeight: "150vh" }}>
+      <main className="relative z-10 flex items-center justify-center px-4 min-h-screen">
         <div className="w-full max-w-md">
           <div className="bg-[#27231C] backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-zinc-800">
             <div className="flex justify-center mb-6">

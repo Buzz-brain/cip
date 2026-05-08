@@ -12,7 +12,7 @@ export const Compliance = (): JSX.Element => {
   return (
     <div className="min-h-screen bg-[#1a1410] text-white">
       <header className="border-b border-[#3a3430] sticky top-0 z-50 bg-[#1a1410]">
-        <div className="px-8 py-4 flex items-center justify-between">
+        <div className="px-4 sm:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold">C</span>
@@ -39,9 +39,9 @@ export const Compliance = (): JSX.Element => {
         </div>
       </header>
 
-      <main className="p-8">
+      <main className="p-4 sm:p-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">
+          <h1 className="text-2xl sm:text-4xl font-bold mb-2">
             Compliance & TaxCore Integration
           </h1>
           <p className="text-gray-400 max-w-2xl">
@@ -50,9 +50,9 @@ export const Compliance = (): JSX.Element => {
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           <div className="col-span-2 space-y-8">
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-6">
                 <div className="mb-4">
                   <h3 className="text-sm text-gray-400 mb-1">
@@ -237,9 +237,9 @@ export const Compliance = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-6">
-            <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <div>
                 <p className="text-xs text-gray-400 mb-1">Transfer Tax</p>
                 <p className="text-lg font-bold">$12,450.00</p>

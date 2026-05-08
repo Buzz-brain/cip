@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import AdminLayout from "./AdminLayout";
+import SkeletonCard from "../../components/ui/skeleton-card";
 import { useAuth } from "../../context/useAuth";
 import { viewAdmins, viewExecutors, viewMediators, viewUsers, viewUser, viewExecutor, viewMediator, approveAdmin, disapproveAdmin, promoteAdmin, approveMediator, disapproveMediator } from "../../lib/api/admin";
 import AdminDetailModal from "../../components/ui/AdminDetailModal";
@@ -154,13 +155,51 @@ export const RoleAccessControl = (): JSX.Element => {
   return (
     <AdminLayout title="Role & Access Control" subtitle="Manage user roles, permissions and access across all accounts.">
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-white text-2xl font-bold">Role & Access Control</h2>
-            <p className="text-gray-400 max-w-2xl">
-              Manage all accounts for users, executors, mediators, and admins from a single page.
-            </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="rounded-2xl border border-[#2a2520] bg-[#1a1510] p-4">
+            <div className="text-sm text-gray-400">All Accounts</div>
+            {loading ? (
+              <div className="mt-2 h-10 w-24 bg-[#27221c] rounded animate-pulse" />
+            ) : (
+              <div className="mt-2 text-white text-3xl font-semibold">{allAccountsCount}</div>
+            )}
           </div>
+          <div className="rounded-2xl border border-[#2a2520] bg-[#1a1510] p-4">
+            <div className="text-sm text-gray-400">Users</div>
+            {loading ? (
+              <div className="mt-2 h-10 w-24 bg-[#27221c] rounded animate-pulse" />
+            ) : (
+              <div className="mt-2 text-white text-3xl font-semibold">{userCount}</div>
+            )}
+          </div>
+          <div className="rounded-2xl border border-[#2a2520] bg-[#1a1510] p-4">
+            <div className="text-sm text-gray-400">Executors</div>
+            {loading ? (
+              <div className="mt-2 h-10 w-24 bg-[#27221c] rounded animate-pulse" />
+            ) : (
+              <div className="mt-2 text-white text-3xl font-semibold">{executorCount}</div>
+            )}
+          </div>
+          <div className="rounded-2xl border border-[#2a2520] bg-[#1a1510] p-4">
+            <div className="text-sm text-gray-400">Mediators</div>
+            {loading ? (
+              <div className="mt-2 h-10 w-24 bg-[#27221c] rounded animate-pulse" />
+            ) : (
+              <div className="mt-2 text-white text-3xl font-semibold">{mediatorCount}</div>
+            )}
+          </div>
+          <div className="rounded-2xl border border-[#2a2520] bg-[#1a1510] p-4">
+            <div className="text-sm text-gray-400">Admins</div>
+            {loading ? (
+              <div className="mt-2 h-10 w-24 bg-[#27221c] rounded animate-pulse" />
+            ) : (
+              <div className="mt-2 text-white text-3xl font-semibold">{adminCount}</div>
+            )}
+          </div>
+        </div>
+
+                <div className="flex items-center justify-between gap-4">
+          <div />
           <button
             onClick={() => setCreateOpen(true)}
             className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700"
@@ -170,30 +209,9 @@ export const RoleAccessControl = (): JSX.Element => {
           </button>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-5">
-          <div className="rounded-2xl border border-[#2a2520] bg-[#1a1510] p-4">
-            <div className="text-sm text-gray-400">All Accounts</div>
-            <div className="mt-2 text-white text-3xl font-semibold">{allAccountsCount}</div>
-          </div>
-          <div className="rounded-2xl border border-[#2a2520] bg-[#1a1510] p-4">
-            <div className="text-sm text-gray-400">Users</div>
-            <div className="mt-2 text-white text-3xl font-semibold">{userCount}</div>
-          </div>
-          <div className="rounded-2xl border border-[#2a2520] bg-[#1a1510] p-4">
-            <div className="text-sm text-gray-400">Executors</div>
-            <div className="mt-2 text-white text-3xl font-semibold">{executorCount}</div>
-          </div>
-          <div className="rounded-2xl border border-[#2a2520] bg-[#1a1510] p-4">
-            <div className="text-sm text-gray-400">Mediators</div>
-            <div className="mt-2 text-white text-3xl font-semibold">{mediatorCount}</div>
-          </div>
-          <div className="rounded-2xl border border-[#2a2520] bg-[#1a1510] p-4">
-            <div className="text-sm text-gray-400">Admins</div>
-            <div className="mt-2 text-white text-3xl font-semibold">{adminCount}</div>
-          </div>
-        </div>
 
         <div className="bg-[#0f0c0a] border-b border-[#2a2520] px-4 py-3">
+          
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => {
@@ -286,8 +304,8 @@ export const RoleAccessControl = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-3xl border border-[#2a2520] bg-[#1a1510] text-sm">
-          <table className="w-full border-collapse">
+        <div className="overflow-x-auto rounded-3xl border border-[#2a2520] bg-[#1a1510] text-sm">
+          <table className="min-w-full border-collapse">
             <thead className="border-b border-[#2a2520] bg-[#13100d] text-left text-xs uppercase tracking-wide text-gray-400">
               <tr>
                 <th className="px-6 py-4">User</th>
@@ -299,11 +317,32 @@ export const RoleAccessControl = (): JSX.Element => {
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
-                    Loading role data...
-                  </td>
-                </tr>
+                // show skeleton rows while loading
+                Array.from({ length: 6 }).map((_, i) => (
+                  <tr key={`skeleton-${i}`} className="border-b border-[#2a2520]">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-[#27221c] animate-pulse" />
+                        <div className="flex-1">
+                          <div className="h-4 bg-[#27221c] rounded w-3/5 mb-2 animate-pulse" />
+                          <div className="h-3 bg-[#27221c] rounded w-1/2 animate-pulse" />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 bg-[#27221c] rounded w-28 animate-pulse" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 bg-[#27221c] rounded w-20 animate-pulse" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 bg-[#27221c] rounded w-24 animate-pulse" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-8 w-24 bg-[#27221c] rounded animate-pulse" />
+                    </td>
+                  </tr>
+                ))
               ) : paginatedUsers.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-8 text-center text-gray-400">

@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { adminLogin } from "../../lib/api/admin";
 import { useAuth } from "../../context/useAuth";
-import logoImg from "@assets/cip-logo.png";
+import logoImg from "@assets/cip-logo-full.png";
 import loginBgImg from "@assets/login-bg.svg";
 import shieldPadlockIcon from "@assets/shield-padlock-orange.svg";
 import loginArrowIcon from "@assets/login-arrow.svg";
@@ -57,18 +57,9 @@ export const AdministrativeLogin = (): JSX.Element => {
             <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
           </Link>
         </div>
-        <button className="px-4 py-2 font-bold  rounded-lg border border-gray-600 text-white text-sm hover:border-gray-500 transition-colors flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full border border-white flex items-center justify-center">
-            <span className="text-xs">?</span>
-          </div>
-          Contact Support
-        </button>
       </header>
 
-      <main
-        className="relative z-10 flex items-center justify-center px-4"
-        style={{ minHeight: "150vh" }}
-      >
+      <main className="relative z-10 flex items-center justify-center px-4 min-h-screen">
         <div className="w-full max-w-md">
           <div className="bg-[#27231C] backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-zinc-800">
             <div className="flex justify-center mb-6">

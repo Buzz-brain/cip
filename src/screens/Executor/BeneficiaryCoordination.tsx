@@ -6,7 +6,7 @@ export const BeneficiaryCoordination = (): JSX.Element => {
 
   return (
     <div className="min-h-screen bg-[#1a1410] text-white">
-      <header className="border-b border-[#3a3430] bg-[#1a1410] px-8 py-4 flex items-center justify-between">
+      <header className="border-b border-[#3a3430] bg-[#1a1410] px-4 sm:px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">C</span>
@@ -18,7 +18,7 @@ export const BeneficiaryCoordination = (): JSX.Element => {
         </div>
       </header>
 
-      <main className="p-8 max-w-7xl mx-auto">
+      <main className="p-4 sm:p-8 max-w-7xl mx-auto">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-gray-400 mb-8">
           <span>Plans</span>
@@ -30,7 +30,7 @@ export const BeneficiaryCoordination = (): JSX.Element => {
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Execute Inheritance Plan #CIP-2849</h1>
+          <h1 className="text-2xl sm:text-4xl font-bold mb-2">Execute Inheritance Plan #CIP-2849</h1>
           <p className="text-gray-400 max-w-2xl">Execute the final transfer of assets. Please review all legal documents and tax implications before proceeding. This action generates an irreversible MPC signature on the blockchain.</p>
           <button className="mt-4 bg-[#2a2420] border border-[#3a3430] hover:bg-[#3a3430] px-4 py-2 rounded-lg text-sm flex items-center gap-2">
             <span>📄</span>
@@ -38,7 +38,7 @@ export const BeneficiaryCoordination = (): JSX.Element => {
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Total Asset Value */}
           <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
@@ -79,9 +79,9 @@ export const BeneficiaryCoordination = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Execution Decision */}
-          <div className="col-span-2">
+          <div className="col-span-1 lg:col-span-2">
             <div className="bg-orange-500 rounded-xl p-6 mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold">Execution Decision</h2>
@@ -109,7 +109,7 @@ export const BeneficiaryCoordination = (): JSX.Element => {
               <div>
                 <h3 className="text-xl font-bold mb-4">Or Reject Plan</h3>
 
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">Reason for Rejection</label>
                     <input

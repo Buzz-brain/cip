@@ -1,7 +1,7 @@
 import { Shield, EyeOff, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logoImg from "@assets/cip-logo.png";
+import logoImg from "@assets/cip-logo-full.png";
 import setNewPwdIcon from "@assets/set-new-pwd.svg";
 
 export const AdministrativeSetNewPwd = (): JSX.Element => {
@@ -52,16 +52,9 @@ export const AdministrativeSetNewPwd = (): JSX.Element => {
             <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
           </Link>
         </div>
-          <div className="w-6 h-6 rounded-full border border-white flex items-center justify-center">
-            <span className="text-lg text-white font-bold hover:border-gray-500 transition-colors">?</span>
-          </div>
       </header>
 
-      <main
-        className="relative z-10 flex items-center justify-center px-4"
-        style={{ minHeight: "150vh" }}
-
-      >
+      <main className="relative z-10 flex items-center justify-center px-4 min-h-screen">
         <div className="w-full max-w-md">
           <div className="bg-[#2B2018] backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-[#393428]">
             <div className="flex justify-center mb-6">

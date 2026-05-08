@@ -36,22 +36,22 @@ export const ExecutorAuditLog = (): JSX.Element => {
         </nav>
       </header>
 
-      <main className="p-8 max-w-6xl mx-auto">
-        <div className="flex items-start justify-between mb-8">
+      <main className="p-4 sm:p-8 max-w-6xl mx-auto">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-4xl font-bold mb-2">Executor Audit Log</h1>
+            <h1 className="text-2xl sm:text-4xl font-bold mb-2">Executor Audit Log</h1>
             <p className="text-gray-400">
               Traceable history of all plan activities, verifications, and asset
               movements.
             </p>
           </div>
-          <button className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded-lg text-sm font-medium">
+          <button className="w-full sm:w-auto flex items-center gap-2 bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded-lg text-sm font-medium">
             <Download className="w-4 h-4" />
             Export Log
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-400 text-sm">Plan Status</span>

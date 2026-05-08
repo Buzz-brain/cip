@@ -49,7 +49,7 @@ export const SettingsAndSecurity = (): JSX.Element => {
 
       {/* Main Content */}
       <main className="flex-1">
-        <header className="border-b border-[#3a3430] bg-[#1a1410] px-8 py-4 flex items-center justify-between">
+        <header className="border-b border-[#3a3430] bg-[#1a1410] px-4 sm:px-8 py-4 flex items-center justify-between">
           <div></div>
           <nav className="flex items-center gap-6">
             <button className="text-gray-400 hover:text-white text-sm">
@@ -68,9 +68,9 @@ export const SettingsAndSecurity = (): JSX.Element => {
           </nav>
         </header>
 
-        <div className="p-8 max-w-5xl">
+        <div className="p-4 sm:p-8 max-w-5xl">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Settings & Security</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">Settings & Security</h1>
             <p className="text-gray-400">
               Manage your executor profile, security credentials, and protocol
               safeguards.
@@ -88,9 +88,9 @@ export const SettingsAndSecurity = (): JSX.Element => {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Executor Identity Card */}
-            <div className="col-span-2 bg-[#2a2420] border border-[#3a3430] rounded-xl p-6">
+              <div className="col-span-1 lg:col-span-2 bg-[#2a2420] border border-[#3a3430] rounded-xl p-6">
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h2 className="text-lg font-bold flex items-center gap-2">
@@ -106,7 +106,7 @@ export const SettingsAndSecurity = (): JSX.Element => {
               <div className="flex gap-6">
                 <div className="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex-shrink-0"></div>
                 <div className="flex-1">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <div className="text-gray-400 text-xs mb-1">
                         Legal Name
@@ -152,7 +152,7 @@ export const SettingsAndSecurity = (): JSX.Element => {
               </button>
               <p className="text-xs text-gray-400 mb-6">Instant Freeze</p>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button className="flex flex-col items-center gap-2 p-3 bg-[#2a2420] hover:bg-[#3a3430] rounded-lg">
                   <span className="text-2xl">🔄</span>
                   <span className="text-xs font-medium">Rotate MPC Share</span>

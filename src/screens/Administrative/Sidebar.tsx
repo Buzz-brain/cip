@@ -7,13 +7,17 @@ import {
 } from "lucide-react";
 import { useEffect } from "react";
 import { useApp } from "./AppContext";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import logoImg from "@assets/cip-logo-full.png";
 
 interface SidebarProps {
   variant?: "default" | "simple";
+  mobile?: boolean;
+  open?: boolean;
+  onClose?: () => void;
 }
 
-export function Sidebar({ variant = "default" }: SidebarProps) {
+export function Sidebar({ variant = "default", mobile = false, open = false, onClose }: SidebarProps) {
   const { currentPage, setCurrentPage } = useApp();
 
   const navigationItems =
@@ -102,24 +106,62 @@ export function Sidebar({ variant = "default" }: SidebarProps) {
     }
   }, [location.pathname, setCurrentPage]);
 
-  return (
-    <div className="w-60 bg-[#1a1510] border-r border-[#2a2520] flex flex-col h-screen">
-      <div className="p-4 border-b border-[#2a2520]">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center">
-            <Box className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-white font-semibold text-sm">
-              {variant === "default" ? "CIP Admin" : "Admin Panel"}
-            </h1>
-            <p className="text-gray-400 text-xs">
-              {variant === "default" ? "Inference Protocol" : "CIP Team"}
-            </p>
-          </div>
+  // Mobile drawer
+  if (mobile) {
+    return (
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#1a1510] border-r border-[#2a2520] transform transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'}`} aria-hidden={!open}>
+        <div className="p-4 border-b border-[#3a2f1e] flex items-center justify-between">
+          <Link to="/administrative-dashboard">
+            <img src={logoImg} alt="Logo" className="h-8 object-contain" />
+          </Link>
+          <button onClick={onClose} aria-label="Close menu" className="text-slate-300 p-2">✕</button>
+        </div>
+
+
+        <nav className="flex-1 p-3 overflow-y-auto">
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentPage === item.id;
+
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setCurrentPage(item.id);
+                  const r = routeForId(item.id);
+                  navigate(r);
+                  onClose && onClose();
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-colors ${
+                  isActive
+                    ? 'bg-orange-600 text-white'
+                    : 'text-gray-400 hover:bg-[#2a2520] hover:text-gray-300'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="text-sm">{item.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="p-3 border-t border-[#2a2520]">
+          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-[#2a2520] hover:text-gray-300 transition-colors">
+            <LogOut className="w-4 h-4" />
+            <span className="text-sm">Logout</span>
+          </button>
         </div>
       </div>
+    );
+  }
 
+  return (
+    <div className="w-60 bg-[#1a1510] border-r border-[#2a2520] flex flex-col h-screen sticky top-0">
+      <div className="p-4 border-b border-[#3a2f1e] flex items-center justify-between">
+          <Link to="/administrative-dashboard">
+            <img src={logoImg} alt="Logo" className="h-8 object-contain" />
+          </Link>
+        </div>
       <nav className="flex-1 p-3">
         {navigationItems.map((item) => {
           const Icon = item.icon;
@@ -147,14 +189,6 @@ export function Sidebar({ variant = "default" }: SidebarProps) {
       </nav>
 
       <div className="p-3 border-t border-[#2a2520]">
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-[#2a2520] hover:text-gray-300 transition-colors">
-          {variant === "default" ? (
-            <>
-              <Settings className="w-4 h-4" />
-              <span className="text-sm">Settings</span>
-            </>
-          ) : null}
-        </button>
         <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-[#2a2520] hover:text-gray-300 transition-colors">
           <LogOut className="w-4 h-4" />
           <span className="text-sm">

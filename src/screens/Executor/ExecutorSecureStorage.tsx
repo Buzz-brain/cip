@@ -13,7 +13,7 @@ export const ExecutorSecureStorage = (): JSX.Element => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a2a1f] to-[#0f1f17] text-white">
-      <header className="border-b border-green-500/20 bg-[#0a2a1f]/80 backdrop-blur px-8 py-4 flex items-center justify-between">
+      <header className="border-b border-green-500/20 bg-[#0a2a1f]/80 backdrop-blur px-4 sm:px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">C</span>
@@ -35,13 +35,13 @@ export const ExecutorSecureStorage = (): JSX.Element => {
         </div>
       </header>
 
-      <main className="p-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-3 gap-8">
+      <main className="p-4 sm:p-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
-          <div className="col-span-2">
+          <div className="col-span-1 lg:col-span-2">
             {/* Header */}
             <div className="mb-8">
-              <h1 className="text-4xl font-bold mb-3">Secure Storage</h1>
+              <h1 className="text-2xl sm:text-4xl font-bold mb-3">Secure Storage</h1>
               <p className="text-gray-400 text-sm leading-relaxed max-w-lg">
                 Your inheritance plans and legal documents are encrypted locally
                 and permanently archived on the Autonomys distributed storage
@@ -50,7 +50,7 @@ export const ExecutorSecureStorage = (): JSX.Element => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
               <div className="bg-[#1a3a2a]/50 border border-green-500/20 rounded-xl p-6">
                 <div className="text-gray-400 text-xs mb-2 flex items-center gap-2">
                   <span>🔒</span>

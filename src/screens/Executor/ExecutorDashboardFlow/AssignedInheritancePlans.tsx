@@ -114,7 +114,7 @@ const AssignedInheritancePlans: React.FC = () => {
         throw new Error("Failed to fetch assigned plans");
       }
       const data = await res.json();
-      
+
       // Transform API response to component format
       let plansList: InheritancePlan[] = [];
       if (data?.plan) {
@@ -147,7 +147,7 @@ const AssignedInheritancePlans: React.FC = () => {
           };
         });
       }
-      
+
       setPlans(plansList);
       setFilteredPlans(plansList);
     } catch (err) {
@@ -245,62 +245,64 @@ const AssignedInheritancePlans: React.FC = () => {
   if (loading) {
     return (
       <div>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
           <h2 className="text-xl font-semibold">Assigned Inheritance Plans</h2>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
             <input
               type="text"
               placeholder="Search plans..."
               value=""
               disabled
-              className="bg-[#2a2420] border border-[#3a3430] rounded-lg px-4 py-2 text-sm w-64 text-white placeholder-gray-500 opacity-50"
+              className="bg-[#2a2420] border border-[#3a3430] rounded-lg px-4 py-2 text-sm w-full sm:w-64 text-white placeholder-gray-500 opacity-50"
             />
-            <button disabled className="bg-[#2a2420] border border-[#3a3430] px-4 py-2 rounded-lg text-sm flex items-center gap-2 text-gray-400 opacity-50">
+            <button disabled className="w-full sm:w-auto bg-[#2a2420] border border-[#3a3430] px-4 py-2 rounded-lg text-sm flex items-center gap-2 text-gray-400 opacity-50">
               ⚙️ Filter
             </button>
           </div>
         </div>
 
-        <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-[#3a3430] text-sm text-gray-400">
-                <th className="text-left p-4 font-medium">Plan Name</th>
-                <th className="text-left p-4 font-medium">Plan Type</th>
-                <th className="text-left p-4 font-medium">Status</th>
-                <th className="text-left p-4 font-medium">Assets</th>
-                <th className="text-left p-4 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Skeleton loading rows */}
-              {[1, 2, 3].map((i) => (
-                <tr key={i} className="border-b border-[#3a3430]">
-                  <td className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-[#3a3430] rounded-full animate-pulse"></div>
-                      <div className="space-y-2 flex-1">
-                        <div className="h-4 bg-[#3a3430] rounded w-24 animate-pulse"></div>
-                        <div className="h-3 bg-[#3a3430] rounded w-16 animate-pulse"></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="h-4 bg-[#3a3430] rounded w-20 animate-pulse"></div>
-                  </td>
-                  <td className="p-4">
-                    <div className="h-6 bg-[#3a3430] rounded w-16 animate-pulse"></div>
-                  </td>
-                  <td className="p-4">
-                    <div className="h-4 bg-[#3a3430] rounded w-24 animate-pulse"></div>
-                  </td>
-                  <td className="p-4">
-                    <div className="h-4 bg-[#3a3430] rounded w-16 animate-pulse"></div>
-                  </td>
+        <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl overflow-auto">
+          <div className="min-w-full">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-[#3a3430] text-sm text-gray-400">
+                  <th className="text-left p-4 font-medium">Plan Name</th>
+                  <th className="text-left p-4 font-medium">Plan Type</th>
+                  <th className="text-left p-4 font-medium">Status</th>
+                  <th className="text-left p-4 font-medium">Assets</th>
+                  <th className="text-left p-4 font-medium">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {/* Skeleton loading rows */}
+                {[1, 2, 3].map((i) => (
+                  <tr key={i} className="border-b border-[#3a3430]">
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-[#3a3430] rounded-full animate-pulse"></div>
+                        <div className="space-y-2 flex-1">
+                          <div className="h-4 bg-[#3a3430] rounded w-24 animate-pulse"></div>
+                          <div className="h-3 bg-[#3a3430] rounded w-16 animate-pulse"></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="h-4 bg-[#3a3430] rounded w-20 animate-pulse"></div>
+                    </td>
+                    <td className="p-4">
+                      <div className="h-6 bg-[#3a3430] rounded w-16 animate-pulse"></div>
+                    </td>
+                    <td className="p-4">
+                      <div className="h-4 bg-[#3a3430] rounded w-24 animate-pulse"></div>
+                    </td>
+                    <td className="p-4">
+                      <div className="h-4 bg-[#3a3430] rounded w-16 animate-pulse"></div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     );
@@ -308,17 +310,17 @@ const AssignedInheritancePlans: React.FC = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
         <h2 className="text-xl font-semibold">Assigned Inheritance Plans</h2>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
           <input
             type="text"
             placeholder="Search plans..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-[#2a2420] border border-[#3a3430] rounded-lg px-4 py-2 text-sm w-64 text-white placeholder-gray-500"
+            className="bg-[#2a2420] border border-[#3a3430] rounded-lg px-4 py-2 text-sm w-full sm:w-64 text-white placeholder-gray-500"
           />
-          <button className="bg-[#2a2420] border border-[#3a3430] px-4 py-2 rounded-lg text-sm flex items-center gap-2 text-gray-400 hover:text-white">
+          <button className="w-full sm:w-auto bg-[#2a2420] border border-[#3a3430] px-4 py-2 rounded-lg text-sm flex items-center gap-2 text-gray-400 hover:text-white">
             ⚙️ Filter
           </button>
         </div>
@@ -338,7 +340,7 @@ const AssignedInheritancePlans: React.FC = () => {
           <tbody>
             {filteredPlans.length === 0 ? (
               <tr>
-                <td colSpan={5} className="p-8 text-center text-gray-400">
+                <td colSpan={5} className="p-4 sm:p-8 text-center text-gray-400">
                   No assigned inheritance plans found.
                 </td>
               </tr>
@@ -403,54 +405,54 @@ const AssignedInheritancePlans: React.FC = () => {
               {detailLoading || !selectedPlanDetail ? (
                 <div className="text-[#b8a494]">{detailLoading ? 'Loading...' : 'No data'}</div>
               ) : (
-                  <div className="space-y-4 text-sm text-[#d1c3b4]">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <div className="text-xs text-[#8b7664]">Plan ID</div>
-                        <div className="font-mono text-white">{selectedPlanDetail.plan?.id ?? selectedPlanDetail.id}</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-[#8b7664]">Type</div>
-                        <div className="text-white">{selectedPlanDetail.plan?.plan_type}</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-[#8b7664]">Owner Wallet</div>
-                        <div className="text-white break-all font-mono text-xs">{selectedPlanDetail.plan?.owner_wallet}</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-[#8b7664]">Asset</div>
-                        <div className="text-white">{selectedPlanDetail.plan?.crypto_asset || "—"}</div>
-                      </div>
+                <div className="space-y-4 text-sm text-[#d1c3b4]">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-xs text-[#8b7664]">Plan ID</div>
+                      <div className="font-mono text-white">{selectedPlanDetail.plan?.id ?? selectedPlanDetail.id}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-[#8b7664]">Type</div>
+                      <div className="text-white">{selectedPlanDetail.plan?.plan_type}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-[#8b7664]">Owner Wallet</div>
+                      <div className="text-white break-all font-mono text-xs">{selectedPlanDetail.plan?.owner_wallet}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-[#8b7664]">Asset</div>
+                      <div className="text-white">{selectedPlanDetail.plan?.crypto_asset || "—"}</div>
+                    </div>
 
-                      <div>
-                        <div className="text-xs text-[#8b7664]">Contract Plan ID</div>
-                        <div className="text-white">{selectedPlanDetail.plan?.contract_plan_id ?? '—'}</div>
-                      </div>
-                      {shouldShowField(selectedPlanDetail.plan?.plan_type, 'proof_of_life') && (
+                    <div>
+                      <div className="text-xs text-[#8b7664]">Contract Plan ID</div>
+                      <div className="text-white">{selectedPlanDetail.plan?.contract_plan_id ?? '—'}</div>
+                    </div>
+                    {shouldShowField(selectedPlanDetail.plan?.plan_type, 'proof_of_life') && (
                       <div>
                         <div className="text-xs text-[#8b7664]">Proof of Life</div>
                         <div className="text-white">{selectedPlanDetail.plan?.proof_of_life ?? '—'}</div>
                       </div>
-                      )}
+                    )}
 
-                      <div>
-                        <div className="text-xs text-[#8b7664]">Contract Address</div>
-                        <div className="text-white break-all font-mono text-xs">{selectedPlanDetail.plan?.contract_address ?? '—'}</div>
-                      </div>
-                      {shouldShowField(selectedPlanDetail.plan?.plan_type, 'grace_period') && (
+                    <div>
+                      <div className="text-xs text-[#8b7664]">Contract Address</div>
+                      <div className="text-white break-all font-mono text-xs">{selectedPlanDetail.plan?.contract_address ?? '—'}</div>
+                    </div>
+                    {shouldShowField(selectedPlanDetail.plan?.plan_type, 'grace_period') && (
                       <div>
                         <div className="text-xs text-[#8b7664]">Grace Period</div>
                         <div className="text-white">{selectedPlanDetail.plan?.grace_period ?? '—'}</div>
                       </div>
-                      )}
+                    )}
 
-                      {selectedPlanDetail.plan?.plan_type === 'health_oracle' && (
+                    {selectedPlanDetail.plan?.plan_type === 'health_oracle' && (
                       <div>
                         <div className="text-xs text-[#8b7664]">Oracle Source</div>
                         {selectedPlanDetail.plan?.oracle_source ? (
-                          <a 
-                            href={selectedPlanDetail.plan.oracle_source} 
-                            target="_blank" 
+                          <a
+                            href={selectedPlanDetail.plan.oracle_source}
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-400 hover:text-blue-300 underline break-all text-xs font-mono"
                             title={selectedPlanDetail.plan.oracle_source}
@@ -461,94 +463,94 @@ const AssignedInheritancePlans: React.FC = () => {
                           <div className="text-white">—</div>
                         )}
                       </div>
-                      )}
-                      <div>
-                        <div className="text-xs text-[#8b7664]">Amount</div>
-                        <div className="text-white">{selectedPlanDetail.plan?.amount ?? '—'}</div>
-                      </div>
+                    )}
+                    <div>
+                      <div className="text-xs text-[#8b7664]">Amount</div>
+                      <div className="text-white">{selectedPlanDetail.plan?.amount ?? '—'}</div>
+                    </div>
 
-                      <div>
-                        <div className="text-xs text-[#8b7664]">Is Funded</div>
-                        <div className="text-white">{selectedPlanDetail.plan?.is_funded ? 'Yes' : 'No'}</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-[#8b7664]">Should Release</div>
-                        <div className="text-white">{selectedPlanDetail.plan?.should_release ? 'Yes' : 'No'}</div>
-                      </div>
+                    <div>
+                      <div className="text-xs text-[#8b7664]">Is Funded</div>
+                      <div className="text-white">{selectedPlanDetail.plan?.is_funded ? 'Yes' : 'No'}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-[#8b7664]">Should Release</div>
+                      <div className="text-white">{selectedPlanDetail.plan?.should_release ? 'Yes' : 'No'}</div>
+                    </div>
 
-                      {shouldShowField(selectedPlanDetail.plan?.plan_type, 'release_timestamp') && (
+                    {shouldShowField(selectedPlanDetail.plan?.plan_type, 'release_timestamp') && (
                       <div>
                         <div className="text-xs text-[#8b7664]">Release Timestamp</div>
                         <div className="text-white">{formatTs(selectedPlanDetail.plan?.release_timestamp)}</div>
                       </div>
-                      )}
-                      <div>
-                        <div className="text-xs text-[#8b7664]">Is Released</div>
-                        <div className="text-white">{selectedPlanDetail.plan?.is_released ? 'Yes' : 'No'}</div>
-                      </div>
+                    )}
+                    <div>
+                      <div className="text-xs text-[#8b7664]">Is Released</div>
+                      <div className="text-white">{selectedPlanDetail.plan?.is_released ? 'Yes' : 'No'}</div>
+                    </div>
 
-                      {shouldShowField(selectedPlanDetail.plan?.plan_type, 'inactivity_period_days') && (
+                    {shouldShowField(selectedPlanDetail.plan?.plan_type, 'inactivity_period_days') && (
                       <div>
                         <div className="text-xs text-[#8b7664]">Inactivity Period (days)</div>
                         <div className="text-white">{selectedPlanDetail.plan?.inactivity_period_days ?? '—'}</div>
                       </div>
-                      )}
-                      <div>
-                        <div className="text-xs text-[#8b7664]">Created At</div>
-                        <div className="text-white">{formatTs(selectedPlanDetail.plan?.created_at)}</div>
-                      </div>
+                    )}
+                    <div>
+                      <div className="text-xs text-[#8b7664]">Created At</div>
+                      <div className="text-white">{formatTs(selectedPlanDetail.plan?.created_at)}</div>
+                    </div>
 
-                      {shouldShowField(selectedPlanDetail.plan?.plan_type, 'last_active_at') && (
+                    {shouldShowField(selectedPlanDetail.plan?.plan_type, 'last_active_at') && (
                       <div>
                         <div className="text-xs text-[#8b7664]">Last Active</div>
                         <div className="text-white">{formatTs(selectedPlanDetail.plan?.last_active_at)}</div>
                       </div>
-                      )}
-                    </div>
+                    )}
+                  </div>
 
-                    <div className="flex gap-2 mt-6 mb-6">
-                      {!selectedPlanDetail.plan?.oracle_source ? (
-                        <label className="flex-1 px-4 py-3 rounded bg-orange-600 text-white cursor-pointer hover:bg-orange-700 transition-colors flex items-center justify-center gap-2 font-medium">
-                          <Upload className="w-4 h-4" />
-                          {fileUploading ? "Uploading..." : "Upload File"}
-                          <input
-                            type="file"
-                            onChange={handleFileUpload}
-                            disabled={fileUploading}
-                            className="hidden"
-                          />
-                        </label>
-                      ) : (
-                        <div className="flex-1 px-4 py-3 rounded bg-green-600/20 border border-green-600/50 text-green-400 flex items-center justify-center gap-2 font-medium">
-                          <CheckCircle className="w-4 h-4" />
-                          File Uploaded
-                        </div>
-                      )}
-                      <button className="px-4 py-2 rounded bg-[#393028] text-white hover:bg-[#4a3830]" onClick={() => { setModalOpen(false); setSelectedPlanDetail(null); }}>Close</button>
-                    </div>
-
-                    <div>
-                      <div className="text-xs text-[#8b7664]">Beneficiaries</div>
-                      <div className="mt-2 space-y-2">
-                        {Array.isArray(selectedPlanDetail.beneficiaries) && selectedPlanDetail.beneficiaries.length > 0 ? (
-                          selectedPlanDetail.beneficiaries.map((b: any, idx: number) => (
-                            <div key={idx} className="p-3 bg-[#231b16] border border-[#2f241c] rounded">
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <div className="text-white font-medium">{b.name || b.wallet}</div>
-                                  <div className="text-xs text-[#8b7664]">{b.relationship ? `${b.relationship} • ` : ''}{b.email ?? b.wallet}</div>
-                                  <div className="text-xs text-[#8b7664]">Wallet: {b.wallet}</div>
-                                </div>
-                                <div className="text-sm text-[#b8a494]">{b.allocation_percentage ? `${b.allocation_percentage}%` : '—'}</div>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="text-[#b8a494]">No beneficiaries found</div>
-                        )}
+                  <div className="flex flex-col sm:flex-row gap-2 mt-6 mb-6">
+                    {!selectedPlanDetail.plan?.oracle_source ? (
+                      <label className="w-full sm:flex-1 px-4 py-3 rounded bg-orange-600 text-white cursor-pointer hover:bg-orange-700 transition-colors flex items-center justify-center gap-2 font-medium">
+                        <Upload className="w-4 h-4" />
+                        {fileUploading ? "Uploading..." : "Upload File"}
+                        <input
+                          type="file"
+                          onChange={handleFileUpload}
+                          disabled={fileUploading}
+                          className="hidden"
+                        />
+                      </label>
+                    ) : (
+                      <div className="w-full sm:flex-1 px-4 py-3 rounded bg-green-600/20 border border-green-600/50 text-green-400 flex items-center justify-center gap-2 font-medium">
+                        <CheckCircle className="w-4 h-4" />
+                        File Uploaded
                       </div>
+                    )}
+                    <button className="w-full sm:w-auto px-4 py-2 rounded bg-[#393028] text-white hover:bg-[#4a3830]" onClick={() => { setModalOpen(false); setSelectedPlanDetail(null); }}>Close</button>
+                  </div>
+
+                  <div>
+                    <div className="text-xs text-[#8b7664]">Beneficiaries</div>
+                    <div className="mt-2 space-y-2">
+                      {Array.isArray(selectedPlanDetail.beneficiaries) && selectedPlanDetail.beneficiaries.length > 0 ? (
+                        selectedPlanDetail.beneficiaries.map((b: any, idx: number) => (
+                          <div key={idx} className="p-3 bg-[#231b16] border border-[#2f241c] rounded">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="text-white font-medium">{b.name || b.wallet}</div>
+                                <div className="text-xs text-[#8b7664]">{b.relationship ? `${b.relationship} • ` : ''}{b.email ?? b.wallet}</div>
+                                <div className="text-xs text-[#8b7664]">Wallet: {b.wallet}</div>
+                              </div>
+                              <div className="text-sm text-[#b8a494]">{b.allocation_percentage ? `${b.allocation_percentage}%` : '—'}</div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-[#b8a494]">No beneficiaries found</div>
+                      )}
                     </div>
                   </div>
+                </div>
               )}
             </div>
           </div>

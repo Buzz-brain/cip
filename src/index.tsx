@@ -114,16 +114,16 @@ import { ExecutorSecureStorage } from "./screens/Executor/ExecutorSecureStorage.
 import ExecutorLayout from "./screens/Executor/ExecutorLayout.tsx";
 
 
-import { AdministrativeLogin } from "./screens/AdministrativeFlow/AdministrativeLogin";
-import { AdministrativeForgotPwd } from "./screens/AdministrativeFlow/AdministrativeForgotPwd";
-import { AdministrativeSetNewPwd } from "./screens/AdministrativeFlow/AdministrativeSetNewPwd";
-import { AdminPwdResetComplete } from "./screens/AdministrativeFlow/AdminPwdResetComplete";
-import CreateAdmin from "./screens/AdministrativeFlow/CreateAdmin";
-import AdminListPage from "./screens/AdministrativeFlow/AdminListPage";
-import { RoleAccessControl } from "./screens/AdministrativeFlow/RoleAccessControl";
-import IexecJobs from "./screens/AdministrativeFlow/IexecJobs";
+import { AdministrativeLogin } from "./screens/Administrative/AdministrativeLogin.tsx";
+import { AdministrativeForgotPwd } from "./screens/Administrative/AdministrativeForgotPwd.tsx";
+import { AdministrativeSetNewPwd } from "./screens/Administrative/AdministrativeSetNewPwd.tsx";
+import { AdminPwdResetComplete } from "./screens/Administrative/AdminPwdResetComplete.tsx";
+import CreateAdmin from "./screens/Administrative/CreateAdmin.tsx";
+import AdminListPage from "./screens/Administrative/AdminListPage.tsx";
+import { RoleAccessControl } from "./screens/Administrative/RoleAccessControl.tsx";
+import IexecJobs from "./screens/Administrative/IexecJobs.tsx";
 import { viewUsers, viewExecutors, viewMediators, viewAdmins } from "./lib/api/admin";
-import AdministrativeDashboard from "./screens/AdministrativeFlow/AdministrativeDashboard";
+import AdministrativeDashboard from "./screens/Administrative/AdministrativeDashboard.tsx";
 
 import { Login } from "./screens/Login";
 

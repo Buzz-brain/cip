@@ -40,10 +40,10 @@ export const ExecutorDashboard = (): JSX.Element => {
   }, [user?.token]);
 
   return (
-    <main className="p-8">
-      <div className="flex items-start justify-between mb-8">
+    <main className="p-4 sm:p-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold mb-2">{`Welcome, ${user?.name ?? user?.email ?? (user?.publicKey ? `${user.publicKey.slice(0,6)}...${user.publicKey.slice(-4)}` : 'User')}`}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">{`Welcome, ${user?.name ?? user?.email ?? (user?.publicKey ? `${user.publicKey.slice(0,6)}...${user.publicKey.slice(-4)}` : 'User')}`}</h1>
           <p className="text-gray-400">
             Manage your assigned inheritance plans, verify documents, and
             handle MPC approvals.
@@ -55,7 +55,7 @@ export const ExecutorDashboard = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-5">
           <div className="flex items-start justify-start mb-4">
             <div className="w-10 h-10 bg-[#3a3430] rounded-lg flex items-center justify-center">
@@ -77,8 +77,8 @@ export const ExecutorDashboard = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
-        <div className="col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="col-span-1 lg:col-span-2">
           <div>
             <AssignedInheritancePlans />
           </div>

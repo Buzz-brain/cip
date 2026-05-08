@@ -1,8 +1,9 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, Link } from "react-router-dom";
 import ExecutorSidebar from "../../components/ui/ExecutorSidebar";
 import ExecutorHeader from "../../components/ui/ExecutorHeader";
 import { useAuth } from "../../context/useAuth";
-import { LogOut } from "lucide-react";
+import { LogOut, Menu as MenuIcon } from "lucide-react";
+import { useState } from "react";
 
 const ExecutorLayout = (): JSX.Element => {
     const navigate = useNavigate();
@@ -53,15 +54,51 @@ const ExecutorLayout = (): JSX.Element => {
         </div>
     );
 
-    return (
-        <div className="min-h-screen bg-[#1a1410] text-white flex [font-family:'Manrope',Helvetica]">
-            <ExecutorSidebar items={sidebarItems} footer={footerContent} />
-            <div className="flex-1">
-                <ExecutorHeader />
-                <Outlet />
-            </div>
-        </div>
-    );
+        const [showMobileNav, setShowMobileNav] = useState(false);
+
+        return (
+                <div className="min-h-screen bg-[#1a1410] text-white flex [font-family:'Manrope',Helvetica]">
+                        {/* Desktop sidebar */}
+                        <div className="hidden sm:block">
+                            <ExecutorSidebar items={sidebarItems} footer={footerContent} />
+                        </div>
+
+                        <div className="flex-1">
+                                <header className="sticky top-0 z-40">
+                                    <div className="border-b border-[#3a3430] bg-[#1a1410]">
+                                        <div className="flex items-center justify-between px-4 sm:px-6 py-3">
+                                            <div className="flex items-center gap-3 sm:hidden">
+                                                <button onClick={() => setShowMobileNav(true)} aria-label="Open menu" className="p-2 rounded hover:bg-[#27221c]">
+                                                    <MenuIcon className="w-5 h-5 text-[#8b7b64]" />
+                                                </button>
+                                            </div>
+                                            <ExecutorHeader />
+                                        </div>
+                                    </div>
+                                </header>
+
+                                <main>
+                                    <Outlet />
+                                </main>
+                        </div>
+
+                        {/* Mobile nav drawer */}
+                        <div aria-hidden={!showMobileNav} className={`fixed inset-0 z-50 ${showMobileNav ? '' : 'pointer-events-none'}`}>
+                            <div onClick={() => setShowMobileNav(false)} className={`absolute inset-0 bg-black/40 transition-opacity ${showMobileNav ? 'opacity-100' : 'opacity-0'}`} />
+                            <aside className={`absolute left-0 top-0 h-full w-[260px] bg-[#14100d] border-r border-[#3a3430] transform transition-transform duration-300 ${showMobileNav ? 'translate-x-0' : '-translate-x-full'}`}>
+                                <div className="p-6 border-b border-[#3a3430] flex items-center justify-between">
+                                    <Link to="/executor-dashboard">
+                                        <img src={"/assets/cip-logo-full.png"} alt="Logo" className="object-cover w-36" />
+                                    </Link>
+                                    <button onClick={() => setShowMobileNav(false)} className="p-2 rounded hover:bg-[#27221c]"><MenuIcon className="w-5 h-5 text-[#8b7b64] rotate-90" /></button>
+                                </div>
+                                <div className="p-4">
+                                    <ExecutorSidebar items={sidebarItems} footer={footerContent} />
+                                </div>
+                            </aside>
+                        </div>
+                </div>
+        );
 };
 
 export default ExecutorLayout;

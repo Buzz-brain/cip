@@ -79,7 +79,7 @@ export const DocumentVerification = (): JSX.Element => {
       </aside>
 
       <main className="flex-1">
-        <header className="border-b border-[#3a3430] bg-[#1a1410] px-8 py-4">
+        <header className="border-b border-[#3a3430] bg-[#1a1410] px-4 sm:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <span>Executor Dashboard</span>
@@ -104,11 +104,11 @@ export const DocumentVerification = (): JSX.Element => {
           </div>
         </header>
 
-        <div className="p-8">
-          <div className="flex items-start justify-between mb-8">
+        <div className="p-4 sm:p-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold">Document Verification</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold">Document Verification</h1>
                 <span className="bg-orange-500/20 text-orange-400 px-3 py-1 rounded text-sm">
                   Plan #1024
                 </span>
@@ -138,7 +138,7 @@ export const DocumentVerification = (): JSX.Element => {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-6 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <div className="col-span-2">
               <div className="bg-[#2a2420] border border-[#3a3430] rounded-xl p-6 mb-6">
                 <div className="flex items-center justify-between mb-4">

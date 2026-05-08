@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Search, Download, Clipboard, Eye } from "lucide-react";
 import AdminLayout from "./AdminLayout";
+import SkeletonCard from "../../components/ui/skeleton-card";
 import { useAuth } from "../../context/useAuth";
 import { viewIexecJobs } from "../../lib/api/admin";
 import IexecJobModal from "../../components/ui/IexecJobModal";
@@ -65,18 +66,18 @@ export default function IexecJobs(): JSX.Element {
   return (
     <AdminLayout title="iExec Jobs" subtitle="Task logs, ProtectedData & EESR hashes from iExec.">
       <div className="space-y-6 max-w-6xl mx-auto px-4">
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="rounded-lg border border-[#2a2520] bg-[#13100d] p-4">
             <div className="text-sm text-gray-400">Total Jobs</div>
-            <div className="text-white text-2xl font-semibold">{stats.total}</div>
+            {loading ? <div className="h-10 w-24 bg-[#27221c] rounded animate-pulse" /> : <div className="text-white text-2xl font-semibold">{stats.total}</div>}
           </div>
           <div className="rounded-lg border border-[#2a2520] bg-[#13100d] p-4">
             <div className="text-sm text-gray-400">Processed</div>
-            <div className="text-white text-2xl font-semibold">{stats.processed}</div>
+            {loading ? <div className="h-10 w-24 bg-[#27221c] rounded animate-pulse" /> : <div className="text-white text-2xl font-semibold">{stats.processed}</div>}
           </div>
           <div className="rounded-lg border border-[#2a2520] bg-[#13100d] p-4">
             <div className="text-sm text-gray-400">Pending</div>
-            <div className="text-white text-2xl font-semibold">{stats.pending}</div>
+            {loading ? <div className="h-10 w-24 bg-[#27221c] rounded animate-pulse" /> : <div className="text-white text-2xl font-semibold">{stats.pending}</div>}
           </div>
         </div>
 
@@ -111,7 +112,32 @@ export default function IexecJobs(): JSX.Element {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-400">Loading...</td></tr>
+                // skeleton table rows
+                Array.from({ length: 6 }).map((_, i) => (
+                  <tr key={`skeleton-${i}`} className="border-b border-[#2a2520]">
+                    <td className="px-4 py-3">
+                      <div className="h-4 bg-[#27221c] rounded w-32 animate-pulse" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="h-4 bg-[#27221c] rounded w-40 animate-pulse" />
+                    </td>
+                    <td className="px-4 py-3 hidden sm:table-cell">
+                      <div className="h-4 bg-[#27221c] rounded w-28 animate-pulse" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="h-4 bg-[#27221c] rounded w-48 animate-pulse" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="h-4 bg-[#27221c] rounded w-20 animate-pulse" />
+                    </td>
+                    <td className="px-4 py-3 hidden md:table-cell">
+                      <div className="h-4 bg-[#27221c] rounded w-36 animate-pulse" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="h-8 w-24 bg-[#27221c] rounded animate-pulse" />
+                    </td>
+                  </tr>
+                ))
               ) : filtered.length === 0 ? (
                 <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-400">No jobs found.</td></tr>
               ) : filtered.map((job:any) => (

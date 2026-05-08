@@ -1,13 +1,13 @@
 import { CheckCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import logoImg from "@assets/cip-logo.png";
+import logoImg from "@assets/cip-logo-full.png";
 
 
 export const AdminPwdResetComplete = (): JSX.Element => {
   const navigate = useNavigate();
 
   const onLoginNow = () => {
-    navigate("/administrative-dashboard");
+    navigate("/administrative-login");
   };
 
   return (
@@ -17,9 +17,6 @@ export const AdminPwdResetComplete = (): JSX.Element => {
           <Link to="/dashboard">
             <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
           </Link>
-        </div>
-        <div className="w-6 h-6 rounded-full border border-white flex items-center justify-center">
-          <span className="text-lg text-white font-bold hover:border-gray-500 transition-colors">?</span>
         </div>
       </header>
 

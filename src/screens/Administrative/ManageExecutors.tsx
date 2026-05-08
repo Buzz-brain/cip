@@ -263,7 +263,7 @@ const systemMenuItems = [
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <div className="bg-[#1a1510] border border-[#2a2520] rounded-xl p-6">
               <div className="flex items-center gap-3 mb-3">
                 <div className="p-2 bg-green-500/10 rounded-lg">
@@ -309,7 +309,8 @@ const systemMenuItems = [
               </div>
             </div>
 
-            <table className="w-full">
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
               <thead className="border-b border-[#2a2520]">
                 <tr>
                   <th className="text-left text-gray-400 text-sm font-medium px-6 py-4">
@@ -378,7 +379,8 @@ const systemMenuItems = [
                   </tr>
                 ))}
               </tbody>
-            </table>
+                </table>
+              </div>
 
             <div className="px-6 py-4 flex items-center justify-between">
               <div className="text-gray-400 text-sm">
