@@ -495,7 +495,19 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                       {selectedPlanDetail.plan?.plan_type === 'health_oracle' && (
                       <div>
                         <div className="text-xs text-[#8b7664]">Oracle Source</div>
-                        <div className="text-white">{selectedPlanDetail.plan?.oracle_source ?? '—'}</div>
+                        {selectedPlanDetail.plan?.oracle_source ? (
+                          <a
+                            href={selectedPlanDetail.plan.oracle_source}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title={selectedPlanDetail.plan.oracle_source}
+                            className="text-[#ff6600] hover:underline break-all font-mono text-xs"
+                          >
+                            {selectedPlanDetail.plan.oracle_source.length > 60 ? `${selectedPlanDetail.plan.oracle_source.slice(0,60)}...` : selectedPlanDetail.plan.oracle_source}
+                          </a>
+                        ) : (
+                          <div className="text-white">—</div>
+                        )}
                       </div>
                       )}
                       <div>

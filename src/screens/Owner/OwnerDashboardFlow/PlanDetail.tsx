@@ -315,7 +315,19 @@ export const PlanDetail: React.FC = () => {
                 {detail?.plan?.plan_type === 'health_oracle' && (
                   <div>
                     <div className="text-xs text-[#8b7664]">Oracle Source</div>
-                    <div className="text-white">{detail?.plan?.oracle_source ?? '—'}</div>
+                    {detail?.plan?.oracle_source ? (
+                      <a
+                        href={detail.plan.oracle_source}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={detail.plan.oracle_source}
+                        className="text-[#ff6600] hover:underline break-all font-mono text-sm"
+                      >
+                        {detail.plan.oracle_source.length > 60 ? `${detail.plan.oracle_source.slice(0,60)}...` : detail.plan.oracle_source}
+                      </a>
+                    ) : (
+                      <div className="text-white">—</div>
+                    )}
                   </div>
                 )}
               </div>
