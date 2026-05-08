@@ -24,19 +24,14 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Split node_modules into separate chunks
+          // Only split React and major UI libraries to avoid circular deps
           if (id.includes('node_modules')) {
-            if (id.includes('@iexec')) return 'vendor-iexec';
-            if (id.includes('ethers')) return 'vendor-ethers';
-            if (id.includes('web3modal')) return 'vendor-web3modal';
+            if (id.includes('react') && (id.includes('react-dom') || id.includes('react-router'))) return 'vendor-react';
             if (id.includes('@radix-ui')) return 'vendor-radix';
-            if (id.includes('react')) return 'vendor-react';
-            if (id.includes('framer-motion') || id.includes('lucide-react')) return 'vendor-anim';
-            return 'vendor-other';
           }
         }
       }
     },
-    chunkSizeWarningLimit: 1500, // Suppress warnings until we hit 1.5MB
+    chunkSizeWarningLimit: 2000, // Increase limit, focus on real issues
   },
 });
