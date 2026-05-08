@@ -185,7 +185,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
                 <span className="text-sm">/</span>
                 <span className="text-sm">Beneficiary Plans</span>
                 <span className="text-sm">/</span>
-                <span className="text-sm font-bold text-white">{`Plan #${planDetail?.plan?.id ?? planDetail?.plan?.contract_plan_id ?? '—'} Details`}</span>
+                <span className="text-sm font-bold text-white">{planDetail?.plan ? `${planDetail.plan.name ?? `Plan #${planDetail.plan.id ?? planDetail.plan.contract_plan_id ?? '—'}`} Details` : 'Plan Details'}</span>
               </div>
             </header>
 
@@ -195,7 +195,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-3">
                       <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-3xl">
-                        {planDetail?.plan ? `Estate Plan #${planDetail.plan.id ?? planDetail.plan.contract_plan_id}` : 'Estate Plan'}
+                        {planDetail?.plan ? (planDetail.plan.name ?? `Plan #${planDetail.plan.id ?? planDetail.plan.contract_plan_id}`) : 'Plan Details'}
                       </h1>
                       <span className="bg-[#2ccd2c] text-[#0d0501] [font-family:'Manrope',Helvetica] font-bold text-xs px-3 py-1 rounded-full">
                         {planDetail?.plan ? (planDetail.plan.is_released ? 'RELEASED' : planDetail.plan.is_funded ? 'ACTIVE MONITORING' : 'PENDING') : 'LOADING'}

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@components/ui/card';
 import { Button } from '@components/ui/button';
 import { SkeletonCard } from '@components/ui/skeleton-card';
@@ -61,7 +61,8 @@ export const InheritancePlans = (): JSX.Element => {
     navigate('/beneficiary-details', { state: { id: planId } });
   };
 
-  const onRaiseDispute = (planId: number) => {
+  const onRaiseDispute = (planId: number, isDisputed: boolean) => {
+    if (isDisputed) return; // guard against accidental navigation
     navigate(`/beneficiary-dashboard/disputes/raise/${planId}`);
   };
 
@@ -76,8 +77,8 @@ export const InheritancePlans = (): JSX.Element => {
   if (!plans || plans.length === 0) {
     return (
       <Card className="bg-[#181511] border border-[#392f28] rounded-xl">
-        <CardContent className="p-6">
-          <p className="text-[#8b7b64]">No inheritance plans found.</p>
+        <CardContent className="p-6 text-center">
+          <p className="text-[#8b7b64]">You have no inheritance plans yet.</p>
         </CardContent>
       </Card>
     );
@@ -89,6 +90,9 @@ export const InheritancePlans = (): JSX.Element => {
         const planBeneficiaries = beneficiariesByPlan.get(Number(p.id)) ?? [];
         const created = p.created_at ? new Date(Number(p.created_at) * 1000) : null;
         const isFunded = Boolean(p.is_funded);
+        const isDisputed = Boolean(p.is_disputed);
+        const amountDisplay = p.amount != null ? `${Number(p.amount).toLocaleString(undefined, {maximumFractionDigits: 8})} ${p.crypto_asset ?? ''}` : '—';
+        const releaseDate = p.release_timestamp ? new Date(Number(p.release_timestamp) * 1000) : null;
         return (
           <Card key={p.id} className="bg-[#0f0d0b] border border-[#3b332b] rounded-xl hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200">
             <CardContent className="p-6 flex flex-col gap-4">
@@ -103,6 +107,7 @@ export const InheritancePlans = (): JSX.Element => {
                 </div>
                 <div className="flex flex-col items-end gap-2">
                   <div className={`text-xs font-bold px-3 py-1 rounded-full ${isFunded ? 'bg-green-100 text-green-900' : 'bg-neutral-800 text-neutral-300'}`}>{isFunded ? 'Funded' : 'Unfunded'}</div>
+                  <div className={`text-xs font-semibold px-3 py-1 rounded-full ${isDisputed ? 'bg-red-600 text-white' : 'bg-neutral-800 text-neutral-300'}`}>{isDisputed ? 'Disputed' : 'No dispute'}</div>
                 </div>
               </div>
 
@@ -114,7 +119,7 @@ export const InheritancePlans = (): JSX.Element => {
                     {planBeneficiaries.slice(0,3).map((b:any) => (
                       <div key={`${p.id}-${b.wallet}`} className="px-2 py-1 bg-[#15120f] border border-[#2f2922] rounded-full text-xs text-[#e9dfcc] flex items-center gap-2">
                         <span className="font-medium">{b.name}</span>
-                        <span className="text-[#bdb09a]">{Math.round((b.allocation_percentage ?? b.allocation ?? 0) * 100) / 100}%</span>
+                        <span className="text-[#bdb09a]">{Number(b.allocation_percentage ?? b.allocation ?? 0).toFixed(2)}%</span>
                       </div>
                     ))}
                     {planBeneficiaries.length > 3 && <div className="px-2 py-1 bg-[#15120f] border border-[#2f2922] rounded-full text-xs text-[#bdb09a]">+{planBeneficiaries.length - 3} more</div>}
@@ -122,8 +127,9 @@ export const InheritancePlans = (): JSX.Element => {
                 </div>
                 <div>
                   <p className="text-[#bdb09a] text-xs">Amount</p>
-                  <p className="text-white text-sm font-bold mt-2">{p.amount ? `${p.amount} ${p.crypto_asset ?? ''}` : '—'}</p>
-                  <p className="text-[#8b7b64] text-xs mt-4">Created: {created ? created.toLocaleDateString() : '—'}</p>
+                  <p className="text-white text-sm font-bold mt-2">{amountDisplay}</p>
+                  <p className="text-[#8b7b64] text-xs mt-2">Created: {created ? created.toLocaleDateString() : '—'}</p>
+                  {releaseDate && <p className="text-[#8b7b64] text-xs mt-1">Release: {releaseDate.toLocaleDateString()}</p>}
                 </div>
               </div>
 
@@ -136,7 +142,14 @@ export const InheritancePlans = (): JSX.Element => {
                 </div>
                 <div className="flex gap-2">
                   <Button onClick={() => onDetails(p.id)} className="text-[#2ccd2c] bg-transparent border border-[#2a2a2a]">Details</Button>
-                  <Button onClick={() => onRaiseDispute(p.id)} className="bg-[#2ccd2c]">Raise Dispute</Button>
+                  <Button
+                    onClick={() => onRaiseDispute(p.id, isDisputed)}
+                    disabled={isDisputed}
+                    aria-disabled={isDisputed}
+                    className={`${isDisputed ? 'opacity-50 cursor-not-allowed' : 'bg-[#2ccd2c]'} ${isDisputed ? 'bg-red-600/40' : ''}`}
+                  >
+                    {isDisputed ? 'Dispute Raised' : 'Raise Dispute'}
+                  </Button>
                 </div>
               </div>
             </CardContent>
