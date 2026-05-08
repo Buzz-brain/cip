@@ -103,8 +103,8 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="flex gap-8 mb-8">
-        <div className="w-[65%]">
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 mb-8">
+        <div className="w-full lg:w-[65%]">
           <div className=" flex-1 border border-[#54493B] rounded-xl bg-[#27221C] mb-8">
             <div>
               <div className="flex items-center justify-between p-5">
@@ -227,7 +227,7 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="w-[35%] border-2 border-[#FF660033] rounded-2xl p-6 bg-[#FF66001A]">
+        <div className="w-full lg:w-[35%] border-2 border-[#FF660033] rounded-2xl p-6 bg-[#FF66001A]">
           <div className="flex items-center gap-3 mb-3">
             <img
               src={shieldCheckOrangeIcon}
@@ -272,7 +272,7 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
           <Button
             onClick={handleConfirm}
             disabled={isSubmitting}
-            className="inline-flex w-full mt-8 items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            className="inline-flex w-full mt-6 sm:mt-8 items-center gap-2 px-6 py-3 sm:px-7 sm:py-4 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
           >
             <img src={paperEditIcon} alt="Icon" />
             {isSubmitting ? 'Signing…' : 'Sign & Create Plan'}

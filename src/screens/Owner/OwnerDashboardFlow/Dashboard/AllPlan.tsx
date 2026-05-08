@@ -578,7 +578,6 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                           Delete Inheritance
                         </button>
                       )}
-                      <button className="px-4 py-2 rounded bg-[#393028] text-white" onClick={() => { setModalOpen(false); setSelectedPlanDetail(null); }}>Close</button>
                     </div>
 
                     <div>

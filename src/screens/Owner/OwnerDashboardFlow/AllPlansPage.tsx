@@ -134,6 +134,7 @@ export const AllPlansPage: React.FC = () => {
 
   return (
     <div className="p-4">
+      <button onClick={() => navigate("/owner-dashboard")} className="text-sm text-[#B9B09D] mb-2">← Back</button>
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-white text-2xl font-bold">All Plans</h1>
         <div className="text-sm text-[#B9B09D]">{plans.length} total plans</div>

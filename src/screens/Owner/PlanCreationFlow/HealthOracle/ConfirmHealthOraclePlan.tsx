@@ -23,7 +23,7 @@ export const ConfirmHealthOraclePlan = (): JSX.Element => {
   return (
     <main className="max-w-7xl mx-auto px-4 py-4 text-white">
       <div className="mb-12">
-        <h1 className="text-4xl font-bold mb-3">
+        <h1 className="text-2xl sm:text-4xl font-bold mb-3">
           Confirm Health Oracle Plan
         </h1>
         <p className="text-gray-400 text-base leading-relaxed max-w-2xl">
@@ -50,8 +50,8 @@ export const ConfirmHealthOraclePlan = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6 mb-8">
-        <div className="col-span-2 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="md:col-span-2 space-y-6">
           <div className="border border-gray-800 rounded-2xl p-8 bg-gray-900/50">
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 bg-red-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -208,8 +208,8 @@ export const ConfirmHealthOraclePlan = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <button className="border border-gray-700 hover:border-gray-600 text-gray-300 px-6 py-3 rounded-lg font-medium text-sm transition">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <button className="w-full sm:w-auto border border-gray-700 hover:border-gray-600 text-gray-300 px-6 py-3 rounded-lg font-medium text-sm transition">
           Back to Edit
         </button>
         <span className="text-gray-500 text-xs">

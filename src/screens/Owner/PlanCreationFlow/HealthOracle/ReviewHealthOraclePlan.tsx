@@ -1,6 +1,6 @@
 import { ChevronLeft, AlertCircle, CheckCircle2, Copy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Badge } from "@components/ui/badge";
+// import { Badge } from "@components/ui/badge";
 import rocketIcon from "@assets/rocket.svg";
 import gavelGreenIcon from "@assets/gavel-green.svg";
 import { usePlan } from "../../../../context/usePlan";
@@ -16,7 +16,7 @@ export const ReviewHealthOraclePlan = (): JSX.Element => {
   return (
     <main className="max-w-5xl mx-auto px-4 py-4  text-white [font-family:'Manrope',Helvetica]">
       <div className="mb-12">
-        <h1 className="text-4xl font-bold mb-4">Review Health Oracle Plan</h1>
+        <h1 className="text-2xl sm:text-4xl font-bold mb-4">Review Health Oracle Plan</h1>
         <p className="text-gray-400 text-base leading-relaxed max-w-3xl">
           Please verify the details of your Health Oracle configuration below.
           Ensure the assigned executor and document requirements are correct
@@ -55,7 +55,7 @@ export const ReviewHealthOraclePlan = (): JSX.Element => {
       </div>
 
       <div className="grid grid-cols-1 gap-8 mb-12">
-        <div className="border border-[#54453B] rounded-2xl p-8 bg-[#27221C] ">
+        <div className="border border-[#54453B] rounded-2xl p-6 sm:p-8 bg-[#27221C] ">
           <div className="flex items-center gap-3 mb-8 pb-6 border-b border-[#54453B] ">
             <div className="w-12 h-12 rounded-lg bg-green-600/20 flex items-center justify-center">
               <img src={gavelGreenIcon} className="w-5 h-5" alt="Gavel" />
@@ -64,7 +64,7 @@ export const ReviewHealthOraclePlan = (): JSX.Element => {
           </div>
 
           <div className="text-center py-4">
-            <div className="text-3xl font-bold text-gray-300 mb-6">{(((plan as any)?.executorName ?? 'LE') as string).slice(0,2).toUpperCase()}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-gray-300 mb-6">{(((plan as any)?.executorName ?? 'LE') as string).slice(0,2).toUpperCase()}</div>
 
             <h3 className="text-white font-semibold text-sm">
               {(plan as any)?.executorName ?? 'Legal Executor Node'}
@@ -85,26 +85,22 @@ export const ReviewHealthOraclePlan = (): JSX.Element => {
         </div>
       </div>
 
-      <footer className="flex items-center pt-8 justify-between border-t [border-top-style:solid] border-[#54483b]">
+      <footer className="flex flex-col sm:flex-row items-center pt-6 sm:pt-8 justify-between border-t [border-top-style:solid] border-[#54483b] gap-4">
         <button
           onClick={() => navigate(-1)}
-          className="border border-gray-700 hover:border-gray-600 text-gray-300 px-6 py-3 rounded-lg font-medium text-sm transition flex items-center gap-2"
+          className="w-full sm:w-auto border border-gray-700 hover:border-gray-600 text-gray-300 px-6 py-3 rounded-lg font-medium text-sm transition flex items-center gap-2"
         >
           <ChevronLeft className="w-4 h-4" />
           Back to Selection
         </button>
-        <div className="flex items-center gap-3">
-          <button className="border border-gray-700 hover:border-gray-600 text-gray-300 px-6 py-3 rounded-lg font-medium text-sm transition">
-            Save as Draft
-          </button>
+
           <button
             onClick={() => navigate("/review-plan")}
-            className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-semibold text-sm transition flex items-center gap-2"
+            className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 sm:px-8 sm:py-3 rounded-lg font-semibold text-sm transition flex items-center gap-2 justify-center"
           >
             Confirm & Deploy
             <img src={rocketIcon} alt="" />
           </button>
-        </div>
       </footer>
     </main>
   );

@@ -97,7 +97,7 @@ export const ReviewPlan = (): JSX.Element => {
   }, [plan?.cryptoAsset, plan?.amount]);
 
   const handleBack = () => {
-    navigate("/philanthropy-plan");
+    navigate(-1);
   };
 
   const handleConfirmSign = async () => {
@@ -217,10 +217,9 @@ export const ReviewPlan = (): JSX.Element => {
         <h2 className="text-xl font-bold text-white">
           Plan Configuration Summary
         </h2>
-        {/* <p className="text-orange-600 text-sm">Edit Configuration</p> */}
       </div>
 
-      <div className="flex justify-between gap-8">
+      <div className="md:flex justify-between gap-8">
         <div className="bg-[#27241C] w-full rounded-lg p-8 border border-[#3B352D] mb-8">
           <div className="flex flex-col">
             <div className="flex justify-between mb-4">
@@ -287,7 +286,7 @@ export const ReviewPlan = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-4 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-10">
         <div className="bg-[#27241C] rounded-lg p-4 border border-[#3B352D]">
           <div className="text-gray-400 text-xs font-semibold mb-2">
             TRIGGER TYPE
@@ -331,23 +330,18 @@ export const ReviewPlan = (): JSX.Element => {
       </div>
 
       <div className="bg-[#211C16E6] rounded-lg p-5 border border-[#3B352D] mb-8">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            {/* <Checkbox
-                // checked={isConfirmed}
-                // onCheckedChange={setIsConfirmed}
-                className="mt-1"
-              /> */}
             <p className="text-gray-400 text-sm mt-1">
               I have reviewed the plan and accepted the{" "}
               <span className="text-[#FF6600]">Terms of Service.</span>
             </p>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
             <button
               onClick={handleBack}
-              className="px-8 py-3 text-white border  border-[#3B352D] rounded-lg hover:bg-gray-900 transition-colors font-semibold"
+              className="w-full sm:w-auto px-6 py-3 text-white border border-[#544B3B] rounded-lg hover:bg-gray-900 transition-colors font-semibold"
             >
               Back
             </button>
@@ -356,7 +350,7 @@ export const ReviewPlan = (): JSX.Element => {
               onClick={handleConfirmSign}
               disabled={isSaving}
               aria-busy={isSaving}
-              className={`px-8 py-3 bg-orange-600 text-white rounded-lg transition-colors font-semibold flex items-center gap-2 ${isSaving ? 'opacity-60 cursor-not-allowed' : 'hover:bg-orange-700'}`}
+              className={`w-full sm:w-auto px-6 py-3 bg-orange-600 text-white rounded-lg transition-colors font-semibold flex items-center justify-center gap-2 ${isSaving ? 'opacity-60 cursor-not-allowed' : 'hover:bg-orange-700'}`}
             >
               {isSaving ? (
                 <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

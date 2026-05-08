@@ -16,8 +16,9 @@ export const AssignHealthOracleExec = (): JSX.Element => {
   const [email, setEmail] = useState<string>((plan as any)?.executorEmail ?? "");
   const [wallet, setWallet] = useState<string>((plan as any)?.executorWallet ?? "");
 
+  
   const handleBack = () => {
-    navigate("/choose-plan-type");
+    navigate(-1);
   };
 
   const handleContinue = () => {
@@ -44,7 +45,7 @@ export const AssignHealthOracleExec = (): JSX.Element => {
   return (
     <main className="max-w-5xl mx-auto px-4 py-4 text-white [font-family:'Manrope',Helvetica]">
       <div className="mb-12">
-        <h1 className="text-4xl font-bold mb-4">
+        <h1 className="text-2xl sm:text-4xl font-bold mb-4">
           Assign Health Oracle Executor
         </h1>
         <p className="text-gray-400 text-base leading-relaxed max-w-3xl">
@@ -84,7 +85,7 @@ export const AssignHealthOracleExec = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="bg-[#27221C] border border-[#54453B] rounded-2xl p-8">
+      <div className="bg-[#27221C] border border-[#54453B] rounded-2xl p-6 sm:p-8">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-white font-bold text-lg">Designate Executor</h2>
           <span className="bg-red-600/20 border border-red-600/40 text-red-400 px-3 py-1 rounded-full text-xs font-medium">
@@ -96,7 +97,7 @@ export const AssignHealthOracleExec = (): JSX.Element => {
           Provide details for the person trusted to activate this protocol.
         </p>
 
-        <div className="grid grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
           <div>
             <label className="block text-white font-semibold mb-3 text-sm">
               Executor Full Name
@@ -145,24 +146,24 @@ export const AssignHealthOracleExec = (): JSX.Element => {
         </div>
       </div>
 
-      <footer className="flex mt-12 items-center justify-end pt-8 pb-12 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
-        <div className="inline-flex items-start gap-4 relative flex-[0_0_auto]">
-          <Button
-            className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
-            onClick={handleBack}
-          >
-            Back
-          </Button>
+        <footer className="flex mt-12 items-stretch sm:items-center justify-end pt-6 pb-8 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full justify-end">
+            <Button
+              className="w-full sm:w-auto px-6 py-3 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+              onClick={handleBack}
+            >
+              Back
+            </Button>
 
-          <Button
-            onClick={handleContinue}
-            className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
-          >
-            Continue Executor
-            <span>→</span>
-          </Button>
-        </div>
-      </footer>
+            <Button
+              onClick={handleContinue}
+              className="w-full sm:w-auto inline-flex items-center gap-2 px-6 py-3 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            >
+              Continue Executor
+              <span>→</span>
+            </Button>
+          </div>
+        </footer>
     </main>
   );
 };

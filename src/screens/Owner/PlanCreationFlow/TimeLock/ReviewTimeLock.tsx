@@ -57,13 +57,9 @@ export const ReviewTimeLock = (): JSX.Element => {
   // Get actual beneficiary count from plan or default to 1
   const beneficiaryCount = plan?.beneficiaries?.length || 1;
 
-  const handleEditPlan = () => {
-    navigate("/set-time-lock", {
-      state: {
-        unlockDate,
-        unlockTime,
-      },
-    });
+
+  const handleBack = () => {
+    navigate(-1);
   };
 
   const handleConfirmDeploy = () => {
@@ -197,10 +193,10 @@ export const ReviewTimeLock = (): JSX.Element => {
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mt-12 justify-end">
               <button
-                onClick={handleEditPlan}
+                onClick={handleBack}
                 className="w-full sm:w-auto px-6 py-3 text-white border border-[#544B3B] rounded-lg hover:bg-gray-900 transition-colors font-semibold"
               >
-                Edit Plan
+                Back
               </button>
               <button
                 onClick={handleConfirmDeploy}

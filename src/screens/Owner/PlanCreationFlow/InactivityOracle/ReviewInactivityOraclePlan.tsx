@@ -44,7 +44,7 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
   };
 
   const handleBack = () => {
-    navigate("/set-inactivity-grace-period");
+    navigate(-1);
   };
 
   const handleContinue = () => {
@@ -80,7 +80,7 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6 mb-8">
+      <div className="grid sm:grid-cols-2 gap-6 mb-8">
           <div className="border border-[#54493B] rounded-2xl p-8 bg-[#27221C]">
           <div className="flex items-center gap-3 mb-5">
             <div
@@ -94,7 +94,7 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
             </h2>
           </div>
 
-          <div className="text-5xl font-bold text-white mb-2">{fmtDays(inactivityDays)}</div>
+          <div className="text-3xl font-bold text-white mb-2">{fmtDays(inactivityDays)}</div>
           <p className="text-gray-400 text-sm leading-relaxed">
             The duration of silence before the protocol initiates the check-in
             process.
@@ -114,7 +114,7 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
             </div>
             <h2 className="text-white font-bold text-lg">Grace Period</h2>
           </div>
-          <div className="text-5xl font-bold text-orange-500 mb-2">
+          <div className="text-3xl font-bold text-orange-500 mb-2">
             {displayedGrace != null ? `${displayedGrace} Days` : '14 Days'}
           </div>
           <p className="text-gray-400 text-sm leading-relaxed">
@@ -125,7 +125,7 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
       </div>
 
           <div className="border border-[#54493B] rounded-2xl p-8 bg-[#27221C] mb-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="sm:flex items-center justify-between mb-8">
           <h2 className="text-white font-bold text-lg">
             Selected Proof-of-Life Method(s)
           </h2>
@@ -150,12 +150,12 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
 
                 return (
                   <div key={m} className="border border-[#54493B] rounded-xl p-6 bg-[#181311]">
-                    <div className="flex items-start gap-4">
+                    <div className="sm:flex items-start gap-4">
                       <div className="w-12 h-14 rounded-lg bg-orange-600/20 flex items-center justify-center flex-shrink-0">
                         <img src={icon} alt={title} />
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
+                        <div className="sm:flex items-center justify-between mb-1">
                           <h3 className="text-white font-bold">{title}</h3>
                           <span className={`${isPrimary ? 'bg-green-600/20 text-green-400' : 'bg-gray-700 text-gray-300'} text-xs font-semibold px-2 py-1 rounded`}>
                             {isPrimary ? 'Primary' : 'Secondary'}

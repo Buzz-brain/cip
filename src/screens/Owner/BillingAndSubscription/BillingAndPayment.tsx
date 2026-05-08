@@ -76,9 +76,9 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
     <div className="flex flex-col w-full min-h-screen text-white [font-family:'Manrope',Helvetica]">
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="mb-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
             <div>
-              <p className="text-3xl font-semibold mb-2">Billing & Payments</p>
+              <p className="text-2xl sm:text-3xl font-semibold mb-2">Billing & Payments</p>
               <p className="text-[#AFA89C]">
                 Manage your subscription tier, payment methods, and view
                 transaction history for your inheritance vaults.
@@ -87,8 +87,8 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
-          <div className="col-span-2 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2 space-y-6">
             <div className="bg-[#33261A] rounded-xl border border-[#B5927B]">
               <div className="flex items-start p-6 justify-between">
                 <div>
@@ -163,7 +163,7 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                 </div> */}
               </div>
 
-              <div className="grid grid-cols-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3">
                 <div className="border-t border-[#514437] border-r p-5">
                   <div className="w-10 h-10 bg-[#8A591E4D] rounded-full flex items-center justify-center mb-3">
                     <svg
@@ -284,11 +284,11 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                 Need help with billing?
               </h3>
               <div className="space-y-3">
-                <button className="w-full text-left flex items-center gap-3 text-neutral-400 hover:text-white transition">
+                <button className="w-full text-left flex items-center gap-3 text-neutral-400 hover:text-white transition py-2">
                   <FileText className="w-4 h-4" />
                   <span className="text-sm">Billing FAQ</span>
                 </button>
-                <button className="w-full text-left flex items-center gap-3 text-neutral-400 hover:text-white transition">
+                <button className="w-full text-left flex items-center gap-3 text-neutral-400 hover:text-white transition py-2">
                   <MessageCircle className="w-4 h-4" />
                   <span className="text-sm">Contact Support</span>
                 </button>

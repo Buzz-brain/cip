@@ -37,16 +37,16 @@ const ActivityLogs: React.FC<Props> = ({ userToken, title = 'Activity Logs', sub
   }, [logs, query, planFilter]);
 
   return (
-    <div className="min-h-screen text-white">
-      <div className="flex min-h-screen">
+    <div className="min-h-full text-white">
+      <div className="flex">
         <main className="flex-1 flex flex-col">
           <div className="flex-1 p-4">
             <div className="mb-6">
-              <h1 className="text-3xl font-bold mb-1">{title}</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold mb-1">{title}</h1>
               <p className="text-gray-400">{subtitle ?? 'All protocol activity for your account. Filter by text or Plan ID.'}</p>
             </div>
 
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
               <input
                 aria-label="Search activity"
                 placeholder="Search text"
@@ -60,10 +60,10 @@ const ActivityLogs: React.FC<Props> = ({ userToken, title = 'Activity Logs', sub
                 placeholder="Plan ID"
                 value={planFilter}
                 onChange={(e) => setPlanFilter(e.target.value)}
-                className={`w-40 bg-[#0f0b08] border border-[#2f271f] rounded px-3 py-3 text-sm text-[#d1c3b4] focus:outline-none ${useOrange ? 'focus:ring-2 focus:ring-[#F97316]' : 'focus:ring-2 focus:ring-[#2ccd2c]'}`}
+                className={`w-full sm:w-40 bg-[#0f0b08] border border-[#2f271f] rounded px-3 py-3 text-sm text-[#d1c3b4] focus:outline-none ${useOrange ? 'focus:ring-2 focus:ring-[#F97316]' : 'focus:ring-2 focus:ring-[#2ccd2c]'}`}
               />
 
-              <button onClick={() => refresh()} className={`${useOrange ? 'bg-[#F97316]' : 'bg-[#2ccd2c]'} px-4 py-3 text-black rounded font-medium`}>Refresh</button>
+              <button onClick={() => refresh()} className={`${useOrange ? 'bg-[#F97316]' : 'bg-[#2ccd2c]'} w-full sm:w-auto px-4 py-3 text-black rounded font-medium`}>Refresh</button>
             </div>
 
             {loading ? (
@@ -80,7 +80,7 @@ const ActivityLogs: React.FC<Props> = ({ userToken, title = 'Activity Logs', sub
               <div className="space-y-4">
                 {filtered.slice(0, 500).map((it: any, idx: number) => (
                   <article key={idx} className="p-4 bg-[#241C16] rounded-lg border border-[#392f28]">
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                       <div className="flex-1">
                         <div className="font-semibold text-white text-sm">{it.title ?? it.message ?? it.event ?? it.msg ?? 'Activity'}</div>
                         { (it.body || it.details || it.data) && (
@@ -88,7 +88,7 @@ const ActivityLogs: React.FC<Props> = ({ userToken, title = 'Activity Logs', sub
                         )}
                         <div className="text-xs text-[#b8a494] mt-2">{String(it.user ?? it.actor ?? '')} • <span className="ml-1">Plan: {String(it.plan_id ?? it.inherit_id ?? it.inheritance_id ?? '—')}</span></div>
                       </div>
-                      <div className="text-xs text-[#8b7664] whitespace-nowrap">{formatWhen(it.timestamp ?? it.created_at ?? it.time)}</div>
+                      <div className="text-xs text-[#8b7664] whitespace-nowrap mt-2 sm:mt-0">{formatWhen(it.timestamp ?? it.created_at ?? it.time)}</div>
                     </div>
                   </article>
                 ))}

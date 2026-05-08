@@ -57,17 +57,14 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
   };
   return (
     <main className="max-w-5xl mx-auto px-4 py-4 text-white [font-family:'Manrope',Helvetica]">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">Set Inactivity Grace Period</h1>
-        <p className="text-gray-400 text-base leading-relaxed max-w-2xl">
-          The grace period is a safety buffer that starts after your
-          inactivity threshold is reached. During this time, you will receive
-          urgent notifications to confirm you are alive before the plan
-          executes.
+      <div className="mb-6">
+        <h1 className="text-2xl sm:text-4xl font-bold mb-3">Set Inactivity Grace Period</h1>
+        <p className="text-gray-400 text-sm sm:text-base leading-relaxed max-w-2xl">
+          The grace period is a safety buffer that starts after your inactivity threshold is reached. During this time, you will receive urgent notifications to confirm you are alive before the plan executes.
         </p>
       </div>
 
-      <div className="mb-12">
+      <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5">
             Step 5 of 5: Grace Period
@@ -82,10 +79,10 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="border border-[#393128] rounded-2xl p-8 bg-[#27221C] mb-8">
+      <div className="border border-[#393128] rounded-2xl p-6 bg-[#27221C] mb-6">
         <h2 className="text-white font-bold text-lg mb-12">How it works</h2>
 
-        <div className="flex items-center justify-between relative">
+        <div className="flex flex-col sm:flex-row items-center justify-between relative gap-6">
           <div className="absolute top-1/3 left-0 right-0 h-0.5 bg-gradient-to-r from-gray-700 via-gray-600 to-transparent"></div>
 
           <div className="flex flex-col items-center relative z-10 flex-1">
@@ -125,12 +122,12 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
-        <div className="col-span-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="col-span-1 sm:col-span-2">
           <h3 className="text-white font-bold text-lg mb-6">
             Select Duration
           </h3>
-          <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
             <button
               aria-pressed={selectedGrace === 3}
               onClick={() => { setTouched(true); setSelectedGrace(3); setPlanField('gracePeriod', 3); console.log('[SetInactivityGracePeriod] selectedGrace: 3'); }}
@@ -159,7 +156,7 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
             </button>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <button
               aria-pressed={selectedGrace === 30}
               onClick={() => { setTouched(true); setSelectedGrace(30); setPlanField('gracePeriod', 30); console.log('[SetInactivityGracePeriod] selectedGrace: 30'); }}
@@ -200,7 +197,7 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
           )}
         </div>
 
-          <div className="border border-[#54493B] bg-[#27221C] rounded-xl p-6">
+          <div className="border border-[#54493B] bg-[#27221C] rounded-xl p-6 mt-6 sm:mt-0">
           <div className="flex items-start gap-3 mb-4">
             <div className="text-yellow-600 text-xl mt-0.5">⚠</div>
             <h4 className="text-white font-bold">Important Note</h4>
@@ -227,10 +224,10 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
         </div>
       </div>
 
-      <footer className="flex mt-12 items-center justify-end pt-8 pb-12 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
-        <div className="inline-flex items-start gap-4 relative flex-[0_0_auto]">
+      <footer className="flex mt-8 items-stretch sm:items-center justify-end pt-4 pb-8 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full justify-end">
           <Button
-            className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            className="w-full sm:w-auto px-6 py-3 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
             onClick={handleBack}
           >
             Back
@@ -238,7 +235,7 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
 
           <Button
             onClick={handleContinue}
-            className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
           >
             Continue
             <span>→</span>

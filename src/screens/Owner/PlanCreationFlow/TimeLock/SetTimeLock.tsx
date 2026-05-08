@@ -87,6 +87,11 @@ export const SetTimeLock = (): JSX.Element => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
 
+  
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   return (
     <main className="flex-1 flex flex-col items-center px-4 py-4">
       <div className="w-full max-w-[1040px]">
@@ -297,7 +302,7 @@ export const SetTimeLock = (): JSX.Element => {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mt-8 justify-end">
           <Button
             variant="outline"
-            onClick={() => navigate("/choose-plan-type")}
+                    onClick={handleBack}
             className="h-11 px-6 w-full sm:w-auto [font-family:'Manrope',Helvetica] font-bold text-[#d4ccc6] text-sm bg-[#27211c] border border-[#392f28] hover:bg-[#392f28] hover:text-white rounded-xl"
           >
             Back

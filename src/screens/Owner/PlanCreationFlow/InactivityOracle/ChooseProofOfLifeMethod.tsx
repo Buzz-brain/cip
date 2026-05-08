@@ -22,13 +22,9 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
     console.log('[ChooseProofOfLifeMethod] selectedMethod:', method);
   };
 
+
   const handleBack = () => {
-    navigate("/set-inactivity-period", {
-      state: {
-        inactivityPeriod,
-        daysValue,
-      },
-    });
+    navigate(-1);
   };
 
   const handleContinue = () => {

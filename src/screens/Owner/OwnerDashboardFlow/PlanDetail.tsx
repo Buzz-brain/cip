@@ -173,19 +173,22 @@ export const PlanDetail: React.FC = () => {
 
   return (
     <div className="p-6">
-      <div className="flex items-start justify-between mb-6 gap-4">
+      <div className="flex flex-col sm:flex-row items-start justify-between mb-6 gap-4">
         <div>
-          <button onClick={() => navigate(-1)} className="text-sm text-[#B9B09D] mb-2">← Back</button>
+          <button onClick={() => navigate("/owner-dashboard/plans")} className="text-sm text-[#B9B09D] mb-2">← Back</button>
           <h1 className="text-white text-3xl font-extrabold">{detail?.plan?.name ?? 'Plan Details'}</h1>
           <div className="mt-2 text-sm text-[#B9B09D]">Plan {detail?.plan?.id ?? detail?.plan?.contract_plan_id ?? '—'}</div>
         </div>
 
-        <div className="flex items-center gap-3 ml-auto">
-          {detail?.plan?.plan_type && <Badge className="text-xs font-bold px-3 py-2 bg-[#2b241d] text-[#d1c3b4]">{detail.plan.plan_type}</Badge>}
+        <div className="flex flex-col sm:flex-row gap-3 ml-0 sm:ml-auto mt-4 sm:mt-0">
+          <div className='flex'>
+          {detail?.plan?.plan_type && <Badge className="text-xs font-bold px-3 py-2 bg-[#2b241d] mr-2 text-[#d1c3b4]">{detail.plan.plan_type}</Badge>}
           {detail?.plan?.is_funded ? <Badge className="text-xs font-bold px-3 py-2 bg-green-700 text-white">Funded</Badge> : <Badge className="text-xs font-bold px-3 py-2 bg-yellow-600 text-white">Unfunded</Badge>}
+          </div>
+          
           <div className="flex gap-2">
-            {!detail?.plan?.is_funded && (user?.publicKey && String(user.publicKey).toLowerCase() === String(detail?.plan?.owner_wallet).toLowerCase()) && (
-              <button className="px-4 py-2 rounded bg-[#ff6600] text-white" onClick={() => {
+              {!detail?.plan?.is_funded && (user?.publicKey && String(user.publicKey).toLowerCase() === String(detail?.plan?.owner_wallet).toLowerCase()) && (
+              <button className="w-full sm:w-auto px-4 py-2 rounded bg-[#ff6600] text-white" onClick={() => {
                 const cid = Number(detail?.plan?.contract_plan_id ?? detail?.plan?.id ?? 0);
                 setFundPlanContractId(cid);
                 setFundModalOpen(true);
@@ -193,7 +196,7 @@ export const PlanDetail: React.FC = () => {
             )}
 
             {(user?.publicKey && String(user.publicKey).toLowerCase() === String(detail?.plan?.owner_wallet).toLowerCase()) && (
-              <button className="px-4 py-2 rounded bg-red-700 text-white" onClick={handleDelete}>Delete</button>
+              <button className="w-full sm:w-auto px-4 py-2 rounded bg-red-700 text-white" onClick={handleDelete}>Delete</button>
             )}
           </div>
         </div>
@@ -283,7 +286,7 @@ export const PlanDetail: React.FC = () => {
           <Card className="bg-[#1f1915] border-[#3a2f1e]">
             <CardContent className="p-6">
               <div className="text-sm text-[#d1c3b4] space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <div className="text-xs text-[#8b7664]">Plan ID</div>
                     <div className="font-mono text-white">{detail?.plan?.id ?? detail?.plan?.contract_plan_id ?? '—'}</div>

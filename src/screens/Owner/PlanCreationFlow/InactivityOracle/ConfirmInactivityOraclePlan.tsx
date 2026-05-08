@@ -66,13 +66,12 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-4 text-white [font-family:'Manrope',Helvetica]">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">
+      <div className="mb-6">
+        <h1 className="text-2xl sm:text-4xl font-bold mb-3">
           Confirm Inactivity Oracle Plan
         </h1>
-        <p className="text-gray-400 text-base leading-relaxed max-w-3xl">
-          Confirm the creation of your Inactivity Oracle plan with selected
-          inactivity period. Proof-of-Life methods, and grace period.
+        <p className="text-gray-400 text-sm sm:text-base leading-relaxed max-w-3xl">
+          Confirm the creation of your Inactivity Oracle plan with selected inactivity period. Proof-of-Life methods, and grace period.
         </p>
       </div>
 
@@ -91,8 +90,8 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="flex gap-8 mb-8">
-        <div className="w-[65%]">
+      <div className="flex flex-col md:flex-row gap-6 md:gap-8 mb-8">
+        <div className="w-full md:w-[65%]">
           <div className=" flex-1 border border-[#54493B] rounded-xl bg-[#27221C] mb-8">
             <div>
               <div className="flex items-center justify-between p-5">
@@ -215,7 +214,7 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="w-[35%] border-2 border-[#FF660033] rounded-2xl p-6 bg-[#FF66001A]">
+        <div className="w-full md:w-[35%] border-2 border-[#FF660033] rounded-2xl p-6 bg-[#FF66001A]">
           <div className="flex items-center gap-3 mb-3">
             <img
               src={shieldCheckOrangeIcon}
@@ -273,10 +272,10 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
         </div>
       </div>
 
-      <footer className="flex mt-12 items-center justify-start pt-8 pb-12 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
-        <div className="inline-flex items-start gap-4 relative flex-[0_0_auto]">
+      <footer className="flex mt-8 items-center justify-start pt-4 pb-8 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
+        <div className="inline-flex items-start gap-4 w-full relative flex-[0_0_auto]">
           <Button
-            className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            className="w-full sm:w-auto px-6 py-3 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
             onClick={handleBack}
           >
             &larr; &nbsp; Back

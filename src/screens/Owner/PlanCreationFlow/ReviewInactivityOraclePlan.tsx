@@ -54,14 +54,12 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
 
   return (
     <main className="max-w-5xl text-white  [font-family:'Manrope',Helvetica]  mx-auto px-4 py-4">
-      <div className="mb-12">
-        <h1 className="text-4xl font-bold mb-4">
+      <div className="mb-8">
+        <h1 className="text-2xl sm:text-4xl font-bold mb-3">
           Review Inactivity Oracle Plan
         </h1>
-        <p className="text-gray-400 text-base leading-relaxed max-w-3xl">
-          Please review the configuration for your Inactivity Oracle. Ensure
-          the timing and verification methods meet your security and
-          convenience needs before finalizing.
+        <p className="text-gray-400 text-sm sm:text-base leading-relaxed max-w-3xl">
+          Please review the configuration for your Inactivity Oracle. Ensure the timing and verification methods meet your security and convenience needs before finalizing.
         </p>
       </div>
 
@@ -80,8 +78,8 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6 mb-8">
-          <div className="border border-[#54493B] rounded-2xl p-8 bg-[#27221C]">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="border border-[#54493B] rounded-2xl p-6 md:p-8 bg-[#27221C]">
           <div className="flex items-center gap-3 mb-5">
             <div
               className={`w-10 h-12 bg-[#372F1F] rounded-lg flex items-center mb-2 justify-center`}
@@ -94,14 +92,14 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
             </h2>
           </div>
 
-          <div className="text-5xl font-bold text-white mb-2">{fmtDays(inactivityDays)}</div>
+          <div className="text-lg sm:text-4xl font-bold text-white mb-2">{fmtDays(inactivityDays)}</div>
           <p className="text-gray-400 text-sm leading-relaxed">
             The duration of silence before the protocol initiates the check-in
             process.
           </p>
         </div>
 
-        <div className="border-2 border-orange-600/60 rounded-2xl p-8 bg-orange-600/5">
+        <div className="border-2 border-orange-600/60 rounded-2xl p-6 md:p-8 bg-orange-600/5">
           <div className="flex items-center gap-3 mb-6">
             <div
               className={`w-10 h-12 bg-[#FF66001A] rounded-lg flex items-center mb-2 justify-center`}
@@ -114,7 +112,7 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
             </div>
             <h2 className="text-white font-bold text-lg">Grace Period</h2>
           </div>
-          <div className="text-5xl font-bold text-orange-500 mb-2">
+          <div className="text-lg sm:text-4xl font-bold text-orange-500 mb-2">
             {displayedGrace != null ? `${displayedGrace} Days` : '14 Days'}
           </div>
           <p className="text-gray-400 text-sm leading-relaxed">
@@ -185,10 +183,10 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
         </div>
       </div>
 
-      <footer className="flex mt-12 items-center justify-end pt-8 pb-12 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
-        <div className="inline-flex items-start gap-4 relative flex-[0_0_auto]">
+      <footer className="flex mt-8 items-stretch sm:items-center gap-3 sm:gap-4 pt-4 pb-8 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full justify-end">
           <Button
-            className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            className="w-full sm:w-auto px-6 py-3 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
             onClick={handleBack}
           >
             Back
@@ -196,7 +194,7 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
 
           <Button
             onClick={handleContinue}
-            className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
           >
             Continue
             <span>→</span>
