@@ -53,6 +53,19 @@ const wallets = [
     category: "Multi-chain",
     icon: trustWallet,
   },
+  // {
+  //   id: "coinbase",
+  //   name: "Coinbase Wallet",
+  //   description: "Exchange Connected",
+  //   icon: coinbaseWallet,
+  // },
+  // {
+  //   id: "ledger",
+  //   name: "Ledger",
+  //   description: "Cold Storage",
+  //   category: "Hardware",
+  //   icon: ledger,
+  // },
 ];
 
 /**
