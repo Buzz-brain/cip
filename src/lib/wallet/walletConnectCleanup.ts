@@ -27,14 +27,21 @@ const WC_STORAGE_PATTERNS = [
   /DEEPLINK/i,
   /deeplink/i,
   
-  // Mobile and session-specific
-  /sessionStorage/i,
-  /pairing/i,
-  /session/i,
-  
   // Web3Modal related
   /web3modal/i,
   /w3m/i,
+];
+
+/**
+ * AGGRESSIVE cleanup patterns - only used on retry/failure
+ * Includes patterns that might interfere with active sessions
+ */
+const WC_AGGRESSIVE_PATTERNS = [
+  ...WC_STORAGE_PATTERNS,
+  // Mobile and session-specific - ONLY on aggressive cleanup
+  /sessionStorage/i,
+  /pairing/i,
+  /session/i,
 ];
 
 /**
@@ -53,10 +60,13 @@ const EXPLICIT_WC_KEYS = [
 
 /**
  * Clears a specific storage object (localStorage or sessionStorage)
+ * @param storage Storage object to clear
+ * @param aggressive If true, use broader patterns (only on retry/failure)
  */
-function clearStorage(storage: Storage): { keysCleared: string[]; errors: string[] } {
+function clearStorage(storage: Storage, aggressive: boolean = false): { keysCleared: string[]; errors: string[] } {
   const keysCleared: string[] = [];
   const errors: string[] = [];
+  const patterns = aggressive ? WC_AGGRESSIVE_PATTERNS : WC_STORAGE_PATTERNS;
 
   try {
     const keysToRemove = new Set<string>();
@@ -72,7 +82,7 @@ function clearStorage(storage: Storage): { keysCleared: string[]; errors: string
       }
 
       // Check pattern matches
-      if (WC_STORAGE_PATTERNS.some(pattern => pattern.test(key))) {
+      if (patterns.some(pattern => pattern.test(key))) {
         keysToRemove.add(key);
       }
     }
@@ -130,39 +140,45 @@ async function clearIndexedDB(): Promise<{ cleared: string[]; errors: string[] }
 /**
  * Main WalletConnect cleanup function
  * 
+ * @param aggressive If true, uses broader cleanup patterns (only on retry/failure)
+ * 
  * Call this:
- * - Before attempting a fresh WalletConnect connection
- * - When WalletConnect fails with "Connection declined"
- * - On page load in mobile browsers
- * - When detecting return from external wallet app
+ * - Before attempting a fresh WalletConnect connection (aggressive=false, default)
+ * - When WalletConnect fails with "Connection declined" (aggressive=true recommended)
+ * - On page load in mobile browsers (aggressive=false)
+ * - When detecting return from external wallet app (aggressive=true recommended)
  */
-export async function cleanupWalletConnect(): Promise<CleanupResult> {
+export async function cleanupWalletConnect(aggressive: boolean = false): Promise<CleanupResult> {
   const result: CleanupResult = {
     keysCleared: [],
     sessionsDisconnected: 0,
     errors: [],
   };
 
-  console.log('[WalletConnectCleanup] Starting comprehensive cleanup...');
+  const cleanupMode = aggressive ? 'AGGRESSIVE' : 'CONSERVATIVE';
+  console.log(`[WalletConnectCleanup] Starting ${cleanupMode} cleanup...`);
 
   try {
     // Clean localStorage
-    const localStorageResult = clearStorage(window.localStorage);
+    const localStorageResult = clearStorage(window.localStorage, aggressive);
     result.keysCleared.push(...localStorageResult.keysCleared);
     result.errors.push(...localStorageResult.errors);
-    console.log('[WalletConnectCleanup] localStorage cleared:', localStorageResult.keysCleared.length, 'keys');
+    console.log(`[WalletConnectCleanup] localStorage cleared (${cleanupMode}):`, localStorageResult.keysCleared.length, 'keys');
+    if (localStorageResult.keysCleared.length > 0 && aggressive) {
+      console.log('[WalletConnectCleanup] Cleared keys:', localStorageResult.keysCleared.slice(0, 5).join(', ') + (localStorageResult.keysCleared.length > 5 ? '...' : ''));
+    }
 
     // Clean sessionStorage
-    const sessionStorageResult = clearStorage(window.sessionStorage);
+    const sessionStorageResult = clearStorage(window.sessionStorage, aggressive);
     result.keysCleared.push(...sessionStorageResult.keysCleared);
     result.errors.push(...sessionStorageResult.errors);
-    console.log('[WalletConnectCleanup] sessionStorage cleared:', sessionStorageResult.keysCleared.length, 'keys');
+    console.log(`[WalletConnectCleanup] sessionStorage cleared (${cleanupMode}):`, sessionStorageResult.keysCleared.length, 'keys');
 
     // Clean IndexedDB
     const indexedDBResult = await clearIndexedDB();
     result.keysCleared.push(...indexedDBResult.cleared.map(name => `IndexedDB: ${name}`));
     result.errors.push(...indexedDBResult.errors);
-    console.log('[WalletConnectCleanup] IndexedDB cleaned:', indexedDBResult.cleared.length, 'databases');
+    console.log(`[WalletConnectCleanup] IndexedDB cleaned (${cleanupMode}):`, indexedDBResult.cleared.length, 'databases');
 
     // Attempt to clear any stale WalletConnect SDK state
     try {
@@ -175,9 +191,9 @@ export async function cleanupWalletConnect(): Promise<CleanupResult> {
     }
 
     if (result.errors.length === 0) {
-      console.log('[WalletConnectCleanup] ✅ Cleanup completed successfully. Cleared', result.keysCleared.length, 'entries');
+      console.log(`[WalletConnectCleanup] ✅ ${cleanupMode} cleanup completed successfully. Cleared`, result.keysCleared.length, 'entries');
     } else {
-      console.warn('[WalletConnectCleanup] Cleanup completed with warnings:', result.errors);
+      console.warn(`[WalletConnectCleanup] ${cleanupMode} cleanup completed with warnings:`, result.errors);
     }
   } catch (err) {
     result.errors.push(`Cleanup failed: ${err instanceof Error ? err.message : String(err)}`);
@@ -230,8 +246,10 @@ export function setupMobileReturnListener(onReturn: () => void): () => void {
 /**
  * Mobile-specific cleanup with automatic retry logic
  * Call before opening WalletConnect modal on mobile
+ * 
+ * @param aggressive If true, uses aggressive cleanup patterns (for retries/failures)
  */
-export async function prepareMobileWalletConnect(): Promise<void> {
+export async function prepareMobileWalletConnect(aggressive: boolean = false): Promise<void> {
   // Only on mobile
   if (typeof window === 'undefined') return;
 
@@ -244,14 +262,15 @@ export async function prepareMobileWalletConnect(): Promise<void> {
     return;
   }
 
-  console.log('[WalletConnectCleanup] Mobile detected - running pre-connection cleanup');
+  const mode = aggressive ? 'AGGRESSIVE' : 'CONSERVATIVE';
+  console.log(`[WalletConnectCleanup] Mobile detected - running ${mode} pre-connection cleanup`);
 
   // Clean up before attempting connection
-  const cleanupResult = await cleanupWalletConnect();
+  const cleanupResult = await cleanupWalletConnect(aggressive);
 
   // Log what was cleaned
   if (cleanupResult.keysCleared.length > 0) {
-    console.log('[WalletConnectCleanup] Cleaned', cleanupResult.keysCleared.length, 'stale entries before connection attempt');
+    console.log(`[WalletConnectCleanup] Cleaned ${cleanupResult.keysCleared.length} stale entries before connection attempt (${mode} mode)`);
   }
 
   if (cleanupResult.errors.length > 0) {

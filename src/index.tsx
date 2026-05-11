@@ -1,8 +1,17 @@
 import { StrictMode } from "react";
 // Web3Modal initialization
 import { initWeb3Modal } from "./lib/wallet/web3modalConfig";
+// Mobile debugging tools (Eruda for WalletConnect debugging)
+import { initMobileDebugTools } from "./lib/utils/mobileDebugTools";
+
 // Initialize Web3Modal once at app startup
 initWeb3Modal();
+
+// Initialize mobile debugging tools (Eruda) - loads asynchronously, non-blocking
+// Enabled in DEV mode or if ?debug=true is in URL
+initMobileDebugTools().catch(err => {
+  console.warn('[App Init] Mobile debug tools failed to load (non-critical):', err);
+});
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";

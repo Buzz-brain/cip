@@ -125,6 +125,7 @@ export const ConnectWallet = (): JSX.Element => {
 
   const toastGuard = useRef(new Set<string>());
   const injectedLoginTriggered = useRef(false);
+  const wcAttemptCount = useRef(0);
 
   // Use improved WalletConnect lifecycle hook
   const {
@@ -243,8 +244,9 @@ export const ConnectWallet = (): JSX.Element => {
    */
   useMobileWalletReturn(async () => {
     if (isModalOpen) {
-      console.log('[ConnectWallet] Mobile wallet return detected - running cleanup');
-      await cleanupWalletConnect();
+      console.log('[ConnectWallet] Mobile wallet return detected - running AGGRESSIVE cleanup');
+      // Use aggressive cleanup on return from wallet app (indicates connection attempt)
+      await cleanupWalletConnect(true);
     }
   });
 
@@ -262,10 +264,15 @@ export const ConnectWallet = (): JSX.Element => {
       // WalletConnect flow - use dedicated lifecycle hook
       if (walletId === 'walletconnect') {
         console.log('[ConnectWallet] Opening WalletConnect...');
+        
+        wcAttemptCount.current += 1;
+        const isRetry = wcAttemptCount.current > 1;
+        const aggressiveCleanup = isRetry;
 
         try {
           if (isMobileBrowser()) {
-            await prepareMobileWalletConnect();
+            console.log(`[ConnectWallet] Mobile browser detected - running ${aggressiveCleanup ? 'AGGRESSIVE' : 'CONSERVATIVE'} cleanup (attempt ${wcAttemptCount.current})`);
+            await prepareMobileWalletConnect(aggressiveCleanup);
           }
 
           await openWalletConnectModal();

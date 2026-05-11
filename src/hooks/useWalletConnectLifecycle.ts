@@ -118,11 +118,9 @@ export function useWalletConnectLifecycle(
     try {
       console.log('[useWalletConnectLifecycle] Opening WalletConnect modal');
 
-      // Mobile-specific cleanup before opening
-      if (detectMobileWalletReturn()) {
-        console.log('[useWalletConnectLifecycle] Mobile return detected - running cleanup');
-        await prepareMobileWalletConnect();
-      }
+      // NOTE: Do NOT call prepareMobileWalletConnect here on first attempt
+      // The ConnectWallet component will handle it with conservative cleanup
+      // We only call it here after detecting app return from wallet
 
       // Open modal - loading state persists until connection completes or fails
       openWeb3Modal();
