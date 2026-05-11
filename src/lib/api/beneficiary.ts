@@ -1,4 +1,5 @@
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "https://xcip.name.ng";
+import { extractErrorMessage } from '../utils';
 
 export async function getBeneficiaryInheritances(token?: string): Promise<{ plans: any[]; beneficiaries: any[] } | null> {
   const url = `${BACKEND_API_URL}/bf/inheritances`;
@@ -11,8 +12,8 @@ export async function getBeneficiaryInheritances(token?: string): Promise<{ plan
   });
   if (!res.ok) {
     if (res.status === 404) return null;
-    const txt = await res.text().catch(() => '');
-    throw new Error(`getBeneficiaryInheritances failed: ${res.status} ${txt}`);
+    const err = await extractErrorMessage(res).catch(() => `Error (Status: ${res.status})`);
+    throw new Error(err);
   }
   const json = await res.json().catch(() => null);
   if (!json) return null;
@@ -42,8 +43,8 @@ export async function getBeneficiaryInheritanceById(token: string | undefined, i
   });
   if (!res.ok) {
     if (res.status === 404) return null;
-    const txt = await res.text().catch(() => '');
-    throw new Error(`getBeneficiaryInheritanceById failed: ${res.status} ${txt}`);
+    const err = await extractErrorMessage(res).catch(() => `Error (Status: ${res.status})`);
+    throw new Error(err);
   }
   const json = await res.json().catch(() => null);
   if (!json) return null;
@@ -70,8 +71,8 @@ export async function getBeneficiaryDashboard(token?: string): Promise<{ benefic
   });
   if (!res.ok) {
     if (res.status === 404) return null;
-    const txt = await res.text().catch(() => '');
-    throw new Error(`getBeneficiaryDashboard failed: ${res.status} ${txt}`);
+    const err = await extractErrorMessage(res).catch(() => `Error (Status: ${res.status})`);
+    throw new Error(err);
   }
   const json = await res.json().catch(() => null);
   if (!json) return null;
@@ -98,8 +99,8 @@ export async function nominateMediator(token: string, planId: number, body: { fu
     body: JSON.stringify(body),
   });
   if (!res.ok) {
+    // try to extract friendly error message; preserve special 'dispute_id' validation handling
     const txt = await res.text().catch(() => '');
-    // Parse structured error responses
     try {
       const json = JSON.parse(txt);
       if (json.detail && Array.isArray(json.detail)) {
@@ -108,14 +109,13 @@ export async function nominateMediator(token: string, planId: number, body: { fu
             throw new Error('You must raise a dispute before nominating a mediator. Please raise a dispute first.');
           }
         }
-        throw new Error(json.detail[0]?.msg || `nominateMediator failed: ${res.status}`);
+        throw new Error(json.detail[0]?.msg || (json.message || JSON.stringify(json)));
       }
-    } catch (parseErr: any) {
-      if (parseErr.message && parseErr.message.includes('You must raise')) {
-        throw parseErr;
-      }
+    } catch (_e) {
+      // fall through
     }
-    throw new Error(`nominateMediator failed: ${res.status} ${txt}`);
+    const err = await extractErrorMessage(res).catch(() => `Error (Status: ${res.status})`);
+    throw new Error(err);
   }
   const json = await res.json().catch(() => null);
   return json;

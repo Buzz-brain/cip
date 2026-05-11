@@ -1,5 +1,7 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState, useRef, ReactNode } from "react";
 import { useAuth } from "./useAuth";
+import * as inheritAPI from "../lib/api/inherit";
+import { extractErrorMessage } from '../lib/utils';
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
 
@@ -61,6 +63,8 @@ export interface PlanContextType {
   clearPlan: () => void;
   getProtectorPayload: () => Record<string, string>;
   submitPlan: (opts?: { signal?: AbortSignal }) => Promise<any>;
+  cancelInheritance: (planId: number) => Promise<any>;
+  editInheritance: (payload: any) => Promise<any>;
   /**
    * Subscribe to plan-updated events. Returns an unsubscribe function.
    */
@@ -305,8 +309,8 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
       });
 
       if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`Create inheritance failed: ${res.status} ${text}`);
+        const msg = await extractErrorMessage(res).catch(() => `Error (Status: ${res.status})`);
+        throw new Error(msg || `Create inheritance failed: ${res.status}`);
       }
 
       return res.json();
@@ -315,6 +319,25 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
       throw err;
     }
   }, [plan, user]);
+
+  const cancelInheritance = useCallback(async (planId: number) => {
+    if (!user?.token) throw new Error('Not authenticated');
+    const res = await inheritAPI.cancelInheritance(planId, user.token);
+    // notify subscribers that plans changed
+    listenersRef.current.forEach((cb) => {
+      try { cb({ type: 'cancel', planId, response: res }); } catch (e) { console.error('plansUpdated listener error', e); }
+    });
+    return res;
+  }, [user?.token]);
+
+  const editInheritance = useCallback(async (payload: any) => {
+    if (!user?.token) throw new Error('Not authenticated');
+    const res = await inheritAPI.editInheritance(payload, user.token);
+    listenersRef.current.forEach((cb) => {
+      try { cb({ type: 'edit', detail: res }); } catch (e) { console.error('plansUpdated listener error', e); }
+    });
+    return res;
+  }, [user?.token]);
 
   const value = useMemo(
     () => ({
@@ -335,6 +358,8 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
         listenersRef.current.add(cb);
         return () => listenersRef.current.delete(cb);
       },
+      cancelInheritance,
+      editInheritance,
       emitPlansUpdated: (detail?: any) => {
         listenersRef.current.forEach((cb) => {
           try { cb(detail); } catch (e) { console.error('plansUpdated listener error', e); }

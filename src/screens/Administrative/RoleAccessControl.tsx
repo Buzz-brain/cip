@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import AdminLayout from "./AdminLayout";
 import SkeletonCard from "../../components/ui/skeleton-card";
 import { useAuth } from "../../context/useAuth";
-import { viewAdmins, viewExecutors, viewMediators, viewUsers, viewUser, viewExecutor, viewMediator, approveAdmin, disapproveAdmin, promoteAdmin, approveMediator, disapproveMediator } from "../../lib/api/admin";
+import { viewAdmins, viewExecutors, viewMediators, viewUsers, viewUser, viewExecutor, viewMediator, approveAdmin, disapproveAdmin, promoteAdmin, approveMediator, disapproveMediator, viewEnterprises, approveEnterprise, disapproveAdminByEntrep } from "../../lib/api/admin";
 import AdminDetailModal from "../../components/ui/AdminDetailModal";
 import AdminCreateModal from "../../components/ui/AdminCreateModal";
 import ConfirmModal from "../../components/ui/ConfirmModal";
@@ -26,6 +26,8 @@ function normalizeResponse(data: any): any[] {
   if (Array.isArray(payload.users)) return payload.users;
   if (Array.isArray(payload.mediators)) return payload.mediators;
   if (Array.isArray(payload.admins)) return payload.admins;
+  if (Array.isArray(payload.enterprises)) return payload.enterprises;
+  if (Array.isArray(payload.enterprise)) return payload.enterprise;
   if (Array.isArray(payload.results)) return payload.results;
   if (Array.isArray(payload.data)) return payload.data;
   return [];
@@ -38,7 +40,8 @@ export const RoleAccessControl = (): JSX.Element => {
   const [executors, setExecutors] = useState<any[]>([]);
   const [mediators, setMediators] = useState<any[]>([]);
   const [admins, setAdmins] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<"all-accounts" | "users" | "executors" | "mediators" | "admins">("all-accounts");
+  const [enterprises, setEnterprises] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<"all-accounts" | "users" | "executors" | "mediators" | "admins" | "enterprises">("all-accounts");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -56,17 +59,19 @@ export const RoleAccessControl = (): JSX.Element => {
   async function loadRoleData() {
     setLoading(true);
     try {
-      const [usersResponse, executorResponse, mediatorResponse, adminResponse] = await Promise.all([
+      const [usersResponse, executorResponse, mediatorResponse, adminResponse, enterpriseResponse] = await Promise.all([
         viewUsers(token).catch(() => []),
         viewExecutors(token).catch(() => []),
         viewMediators(token).catch(() => []),
         viewAdmins(token).catch(() => []),
+        viewEnterprises(token).catch(() => []),
       ]);
 
       setUsers(normalizeResponse(usersResponse));
       setExecutors(normalizeResponse(executorResponse));
       setMediators(normalizeResponse(mediatorResponse));
       setAdmins(normalizeResponse(adminResponse));
+      setEnterprises(normalizeResponse(enterpriseResponse));
     } catch (error) {
       console.error("Failed to load role access data", error);
     } finally {
@@ -86,12 +91,17 @@ export const RoleAccessControl = (): JSX.Element => {
       if (action === 'promote-admin') await promoteAdmin(id, token);
       if (action === 'approve-mediator') await approveMediator(id, token);
       if (action === 'disapprove-mediator') await disapproveMediator(id, token);
+      if (action === 'approve-enterprise') await approveEnterprise(id, token);
+      if (action === 'disapprove-admin-by-entrep') await disapproveAdminByEntrep(id, token);
       // refresh
       await loadRoleData();
       setConfirmOpen(false);
     } catch (err:any) {
       console.error('Action failed', err);
-      alert(err?.message || 'Action failed');
+      const raw = err?.message || String(err);
+      let cleaned = raw.replace(/^.*?:\s*/, '').replace(/^\d{3}\s*/, '').trim();
+      try { const parsed = JSON.parse(cleaned); if (parsed && (parsed.detail || parsed.message)) cleaned = parsed.detail || parsed.message; } catch (_e) {}
+      alert(cleaned || 'Action failed');
     } finally {
       setConfirmLoading(false);
     }
@@ -118,11 +128,13 @@ export const RoleAccessControl = (): JSX.Element => {
         return mediators;
       case "admins":
         return admins;
+      case "enterprises":
+        return enterprises;
       case "all-accounts":
       default:
-        return [...users, ...executors, ...mediators, ...admins];
+        return [...users, ...executors, ...mediators, ...admins, ...enterprises];
     }
-  }, [activeTab, users, executors, mediators, admins]);
+  }, [activeTab, users, executors, mediators, admins, enterprises]);
 
   const filteredUsers = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -150,7 +162,8 @@ export const RoleAccessControl = (): JSX.Element => {
   const executorCount = executors.length;
   const mediatorCount = mediators.length;
   const adminCount = admins.length;
-  const allAccountsCount = userCount + executorCount + mediatorCount + adminCount;
+  const enterpriseCount = enterprises.length;
+  const allAccountsCount = userCount + executorCount + mediatorCount + adminCount + enterpriseCount;
 
   return (
     <AdminLayout title="Role & Access Control" subtitle="Manage user roles, permissions and access across all accounts.">
@@ -238,6 +251,19 @@ export const RoleAccessControl = (): JSX.Element => {
               }`}
             >
               Users ({userCount})
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab("enterprises");
+                setCurrentPage(1);
+              }}
+              className={`rounded-t-lg px-3 py-2 text-sm transition-colors ${
+                activeTab === "enterprises"
+                  ? "border-b-2 border-orange-600 text-white"
+                  : "text-gray-400 hover:text-white"
+              }`}
+            >
+              Enterprises ({enterpriseCount})
             </button>
             <button
               onClick={() => {
@@ -443,6 +469,17 @@ export const RoleAccessControl = (): JSX.Element => {
                                 <button onClick={() => user.id && openConfirm('disapprove-admin', Number(user.id))} className="rounded-lg px-3 py-1 text-sm bg-red-600 text-white">Disapprove</button>
                               )}
                               <button onClick={() => user.id && openConfirm('promote-admin', Number(user.id))} className="rounded-lg px-3 py-1 text-sm bg-orange-600 text-white">Promote</button>
+                            </>
+                          )}
+                          {/* enterprise actions */}
+                          {((user.role === 'enterprise') || activeTab === 'enterprises') && (
+                            <>
+                              {user.has_approved === false || user.status === false || user.approved === false ? (
+                                <button onClick={() => user.id && openConfirm('approve-enterprise', Number(user.id))} className="rounded-lg px-3 py-1 text-sm bg-green-600 text-white">Approve</button>
+                              ) : null}
+                              {(user.has_approved === true || user.status === true || user.approved === true) && (
+                                <button onClick={() => user.id && openConfirm('disapprove-admin-by-entrep', Number(user.id))} className="rounded-lg px-3 py-1 text-sm bg-red-600 text-white">Disapprove</button>
+                              )}
                             </>
                           )}
 

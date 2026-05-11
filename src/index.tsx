@@ -72,7 +72,10 @@ import AllPlansPage from "./screens/Owner/OwnerDashboardFlow/AllPlansPage";
 import PlanDetail from "./screens/Owner/OwnerDashboardFlow/PlanDetail";
 
 import { EnterpriseLogin } from "./screens/EnterpriseFlow/EnterpriseLogin";
+import EnterpriseCreate from "./screens/EnterpriseFlow/EnterpriseCreate";
 import { EnterpriseDashboard } from "./screens/EnterpriseFlow/EnterpriseDashboard";
+import EnterpriseDashboardHome from "./screens/EnterpriseFlow/EnterpriseDashboardHome";
+import GenerateApiKey from "./screens/EnterpriseFlow/GenerateApiKey";
 import { ClientManagement } from "./screens/EnterpriseFlow/ClientManagement";
 import { InheritancePlans } from "./screens/EnterpriseFlow/InheritancePlans";
 import BeneficiaryInheritancePlans from "./screens/Beneficiary/InheritancePlans";
@@ -123,6 +126,7 @@ import AdminListPage from "./screens/Administrative/AdminListPage.tsx";
 import { RoleAccessControl } from "./screens/Administrative/RoleAccessControl.tsx";
 import IexecJobs from "./screens/Administrative/IexecJobs.tsx";
 import { viewUsers, viewExecutors, viewMediators, viewAdmins } from "./lib/api/admin";
+// import { viewEnterprises } from "./lib/api/admin";
 import AdministrativeDashboard from "./screens/Administrative/AdministrativeDashboard.tsx";
 
 import { Login } from "./screens/Login";
@@ -260,13 +264,18 @@ createRoot(document.getElementById("app") as HTMLElement).render(
 
         {/* Enterprise Flow */}
         <Route path="/enterprise-login" element={<EnterpriseLogin />} />
-        <Route path="/enterprise-dashboard" element={<EnterpriseDashboard />} />
+        <Route path="/enterprise-create" element={<EnterpriseCreate />} />
         <Route path="/client-management" element={<ClientManagement />} />
         <Route path="/inheritance-plans" element={<InheritancePlans />} />
         <Route path="/access-control" element={<AccessControl />} />
         <Route path="/audit-logs" element={<AuditLogs />} />
         <Route path="/api-dev-tools" element={<ApiDevTools />} />
         <Route path="/support-center" element={<SupportCenter />} />
+
+        <Route path="/enterprise-dashboard" element={<ProtectedRoute><EnterpriseDashboard /></ProtectedRoute>}>
+          <Route index element={<EnterpriseDashboardHome />} />
+          <Route path="generate-api-key" element={<GenerateApiKey />} />
+        </Route>
 
         {/* Proof of Life Configuration  */}
         <Route path="/proof-of-life-config" element={<ProofOfLifeConfig />} /> ✅

@@ -20,7 +20,7 @@ import {
 import { Progress } from "@components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { BrowserProvider, formatEther } from "ethers";
 import { useAuth } from "../../../context/useAuth";
 import { usePlan } from "../../../context/usePlan";
@@ -58,8 +58,8 @@ export const assetData = [
         chainIcon: ethIcon,
         chainIconClass: "w-[75.00%] h-[68.18%] top-[15.91%] left-[12.50%]",
         chain: "Arbitrum Sepolia",
-        balance: "12.5402",
-        value: "$23,199.37",
+        balance: null,
+        value: null,
         bridgeStatus: "Native",
         bridgeBg: "bg-[#22c55e1a]",
         bridgeColor: "text-green-500",
@@ -77,13 +77,13 @@ export const assetData = [
         chainIcon: ethIcon,
         chainIconClass: "w-[91.67%] h-[75.00%] top-[12.50%] left-[4.17%]",
         chain: "Solana",
-        balance: "450.00",
-        value: "$65,250.00",
+        balance: null,
+        value: null,
         bridgeStatus: "Bridge\nReq.",
         bridgeBg: "bg-[#f59e0b1a]",
         bridgeColor: "text-amber-500",
         needsBridge: true,
-        bridgeUrl: "https://portalbridge.com/?fromChain=Solana&fromToken=SOL&toChain=Ethereum&toToken=ARB",
+        bridgeUrl: "https://portalbridge.com/",
         highlighted: true,
     },
     {
@@ -96,13 +96,13 @@ export const assetData = [
         chainIcon: ethIcon,
         chainIconClass: "w-[86.67%] h-[61.36%] top-[19.32%] left-[6.67%]",
         chain: "BNB Chain",
-        balance: "5.2",
-        value: "$2,100.00",
+        balance: null,
+        value: null,
         bridgeStatus: "Bridge\nReq.",
         bridgeBg: "bg-[#f59e0b1a]",
         bridgeColor: "text-amber-500",
         needsBridge: true,
-        bridgeUrl: "https://portalbridge.com/?fromChain=BSC&fromToken=BNB&toChain=Ethereum&toToken=ARB",
+        bridgeUrl: "https://portalbridge.com/",
         highlighted: false,
     },
     {
@@ -115,13 +115,13 @@ export const assetData = [
         chainIcon: ethIcon,
         chainIconClass: "w-[75.00%] h-[68.18%] top-[15.91%] left-[12.50%]",
         chain: "Ethereum",
-        balance: "10000.00",
-        value: "$10,000.00",
+        balance: null,
+        value: null,
         bridgeStatus: "Bridge\nReq.",
         bridgeBg: "bg-[#f59e0b1a]",
         bridgeColor: "text-amber-500",
         needsBridge: true,
-        bridgeUrl: "https://portalbridge.com/?fromChain=Ethereum&fromToken=USDT&toChain=Ethereum&toToken=ARB",
+        bridgeUrl: "https://portalbridge.com/",
         highlighted: false,
     },
     {
@@ -134,8 +134,8 @@ export const assetData = [
         chainIcon: ethIcon,
         chainIconClass: "w-[75.00%] h-[68.18%] top-[15.91%] left-[12.50%]",
         chain: "Arbitrum",
-        balance: "1000.00",
-        value: "$15,000.00",
+        balance: null,
+        value: null,
         bridgeStatus: "Native",
         bridgeBg: "bg-[#22c55e1a]",
         bridgeColor: "text-green-500",
@@ -153,13 +153,13 @@ export const assetData = [
         chainIcon: ethIcon,
         chainIconClass: "w-[75.00%] h-[68.18%] top-[15.91%] left-[12.50%]",
         chain: "COTI Network",
-        balance: "5000.00",
-        value: "$3,500.00",
+        balance: null,
+        value: null,
         bridgeStatus: "Bridge\nReq.",
         bridgeBg: "bg-[#f59e0b1a]",
         bridgeColor: "text-amber-500",
         needsBridge: true,
-        bridgeUrl: "https://portalbridge.com/?fromChain=Ethereum&fromToken=COTI&toChain=Ethereum&toToken=ARB",
+        bridgeUrl: "https://portalbridge.com/",
         highlighted: false,
     },
 ];
@@ -186,6 +186,7 @@ export const SelectAssets = (): JSX.Element => {
     const [ethBalance, setEthBalance] = useState<string | null>(null);
     const [ethUsdAmount, setEthUsdAmount] = useState<number | null>(null);
     const [ethUsdFormatted, setEthUsdFormatted] = useState<string | null>(null);
+    const [ethLoading, setEthLoading] = useState<boolean>(true);
     const { user } = useAuth();
 
     const toggleAsset = (id: string) => {
@@ -218,11 +219,12 @@ export const SelectAssets = (): JSX.Element => {
         .filter(a => a.id === selectedAssets)
         .reduce((sum, asset) => {
             if (asset.id === 'eth' && ethUsdAmount != null) {
-                return sum + ethUsdAmount;
+              return sum + ethUsdAmount;
             }
-            const valueNum = parseFloat(asset.value.replace(/[$,]/g, ''));
+            const raw = asset.value ?? null;
+            const valueNum = raw ? parseFloat(String(raw).replace(/[$,]/g, '')) : 0;
             return sum + (isNaN(valueNum) ? 0 : valueNum);
-        }, 0) : 0;
+          }, 0) : 0;
     const totalValueFormatted = new Intl.NumberFormat('en-US', { 
         style: 'currency', 
         currency: 'USD',
@@ -239,6 +241,7 @@ export const SelectAssets = (): JSX.Element => {
         let mounted = true;
 
         const fetchBalanceAndPrice = async () => {
+          setEthLoading(true);
             try {
                 const addr = ownerAddress || user?.publicKey || null;
                 if (!addr) return;
@@ -259,18 +262,19 @@ export const SelectAssets = (): JSX.Element => {
                 const data = await res.json();
                 const price = data?.ethereum?.usd;
                 if (price && mounted) {
-                    if (ethBalance) {
-                        const usd = parseFloat(ethBalance) * Number(price);
-                        setEthUsdAmount(usd);
-                        setEthUsdFormatted(new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(usd));
-                    } else {
-                        setEthUsdAmount(null);
-                        setEthUsdFormatted(new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price));
-                    }
+                  if (ethBalance) {
+                    const usd = parseFloat(ethBalance) * Number(price);
+                    setEthUsdAmount(usd);
+                    setEthUsdFormatted(new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(usd));
+                  } else {
+                    setEthUsdAmount(null);
+                    setEthUsdFormatted(new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price));
+                  }
                 }
             } catch (err) {
                 console.error('[SelectAssets] fetchPrice error', err);
             }
+              setEthLoading(false);
         };
 
         fetchBalanceAndPrice();
@@ -540,18 +544,34 @@ export const SelectAssets = (): JSX.Element => {
                               </div>
                             </TableCell>
                             <TableCell className="p-4 text-right hidden sm:table-cell">
-                              <span className="[font-family:'Inter',Helvetica] font-normal text-white text-sm">
-                                {asset.id === "eth"
-                                  ? ethBalance ?? asset.balance
-                                  : "—"}
-                              </span>
+                              {asset.id === "eth" ? (
+                                ethLoading ? (
+                                  <div className="inline-block h-4 w-20 bg-[#2a241c] animate-pulse rounded" />
+                                ) : (
+                                  <span className="[font-family:'Inter',Helvetica] font-normal text-white text-sm">{ethBalance ?? '—'}</span>
+                                )
+                              ) : (
+                                asset.balance == null ? (
+                                  <div className="inline-block h-4 w-20 bg-[#2a241c] animate-pulse rounded" />
+                                ) : (
+                                  <span className="[font-family:'Inter',Helvetica] font-normal text-white text-sm">{asset.balance}</span>
+                                )
+                              )}
                             </TableCell>
                             <TableCell className="p-4 text-right hidden sm:table-cell">
-                              <span className="[font-family:'Inter',Helvetica] font-medium text-white text-sm">
-                                {asset.id === "eth"
-                                  ? ethUsdFormatted ?? asset.value
-                                  : "—"}
-                              </span>
+                              {asset.id === "eth" ? (
+                                ethLoading ? (
+                                  <div className="inline-block h-4 w-20 bg-[#2a241c] animate-pulse rounded" />
+                                ) : (
+                                  <span className="[font-family:'Inter',Helvetica] font-medium text-white text-sm">{ethUsdFormatted ?? '—'}</span>
+                                )
+                              ) : (
+                                asset.value == null ? (
+                                  <div className="inline-block h-4 w-20 bg-[#2a241c] animate-pulse rounded" />
+                                ) : (
+                                  <span className="[font-family:'Inter',Helvetica] font-medium text-white text-sm">{asset.value}</span>
+                                )
+                              )}
                             </TableCell>
                             <TableCell className="p-4">
                               <div className="flex items-center justify-center">

@@ -1,5 +1,6 @@
 // src/lib/api/inherit.ts
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
+import { extractErrorMessage } from '../utils';
 
 export async function activateProofOfLife(token: string): Promise<any> {
   const url = `${BACKEND_API_URL}/inherit/proof-of-life`;
@@ -14,8 +15,8 @@ export async function activateProofOfLife(token: string): Promise<any> {
   });
 
   if (!res.ok) {
-    const txt = await res.text().catch(() => "");
-    throw new Error(`activateProofOfLife failed: ${res.status} ${txt}`);
+    const msg = await extractErrorMessage(res).catch(() => `Error (Status: ${res.status})`);
+    throw new Error(msg || `HTTP ${res.status}`);
   }
   return res.json();
 }
@@ -25,7 +26,10 @@ export async function getProofOfLifeTypes(): Promise<string[]> {
   const res = await fetch(`${BACKEND_API_URL}/inherit/proof-of-life-types`, {
     headers: { Accept: "application/json" },
   });
-  if (!res.ok) throw new Error('Failed to fetch proof-of-life types');
+  if (!res.ok) {
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || 'Failed to fetch proof-of-life types');
+    throw new Error(msg || 'Failed to fetch proof-of-life types');
+  }
   return res.json();
 }
 
@@ -49,4 +53,40 @@ export async function getActiveProofPlan(token?: string): Promise<any | null> {
   // Prefer plans that include proof_of_life or have inactivity_period_days
   const found = items.find((p: any) => p.proof_of_life || p.inactivity_period_days || p.plan_type === 'inactivity') || items[0];
   return found;
+}
+
+export async function cancelInheritance(planId: number, token?: string): Promise<any> {
+  const url = `${BACKEND_API_URL}/inherit/cancel-inheritance/${planId}`;
+  const res = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!res.ok) {
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `HTTP ${res.status}`);
+    throw new Error(msg || `HTTP ${res.status}`);
+  }
+  return res.json().catch(() => null);
+}
+
+export async function editInheritance(payload: any, token?: string): Promise<any> {
+  const url = `${BACKEND_API_URL}/inherit/edit-inheritance`;
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `HTTP ${res.status}`);
+    throw new Error(msg || `HTTP ${res.status}`);
+  }
+  return res.json().catch(() => null);
 }

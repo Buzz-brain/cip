@@ -1,4 +1,5 @@
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "https://xcip.name.ng";
+import { extractErrorMessage } from '../utils';
 
 export async function resolveDispute(token: string, disputeId: number, resolution_note: string): Promise<any> {
   if (!token) throw new Error('Not authenticated');
@@ -13,8 +14,8 @@ export async function resolveDispute(token: string, disputeId: number, resolutio
   });
 
   if (!res.ok) {
-    const txt = await res.text().catch(() => '');
-    throw new Error(`resolveDispute failed: ${res.status} ${txt}`);
+    const err = await extractErrorMessage(res).catch(() => `Error (Status: ${res.status})`);
+    throw new Error(err);
   }
 
   const json = await res.json().catch(() => null);

@@ -9,6 +9,7 @@ import { usePlan } from "../../../../context/usePlan";
 import { toast } from "react-toastify";
 import { extractErrorMessage } from "../../../../lib/utils";
 import FundPlanModal from "../../../../components/ui/FundPlanModal";
+import ConfirmModal from '../../../../components/ui/ConfirmModal';
 
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
@@ -95,6 +96,11 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [pendingDeletePlan, setPendingDeletePlan] = useState<any | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editBeneficiaries, setEditBeneficiaries] = useState<any[]>([]);
+  const [editing, setEditing] = useState(false);
+  const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [highlightedPlanId, setHighlightedPlanId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -199,6 +205,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
           const ms = releaseTs * 1000 - Date.now();
           triggerHours = Math.max(0, Math.ceil(ms / (1000 * 60 * 60)));
         }
+        const isCancelled = !!it.is_cancelled;
         return {
           id: String(it.id ?? it.contract_plan_id ?? "-"),
           name: it.name ?? `Plan #${it.id}`,
@@ -208,8 +215,8 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
           beneficiariesPreview: [],
           assets: it.amount ? String(it.amount) : "—",
           assetsDetail: it.crypto_asset ?? "—",
-          status: isReleased ? "Triggered" : isFunded ? "Active" : "Pending",
-          statusColor: isReleased ? "bg-red-500" : isFunded ? "bg-green-500" : "bg-yellow-500",
+          status: isCancelled ? "Cancelled" : (isReleased ? "Triggered" : isFunded ? "Active" : "Pending"),
+          statusColor: isCancelled ? "bg-gray-500" : (isReleased ? "bg-red-500" : isFunded ? "bg-green-500" : "bg-yellow-500"),
           triggerDays: triggerHours || 0,
           raw: it,
         };
@@ -449,6 +456,11 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                 ) : (
                     <div className="space-y-4 text-sm text-[#d1c3b4]">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {selectedPlanDetail.plan?.is_cancelled && (
+                        <div className="col-span-2">
+                          <div className="inline-flex items-center gap-2 px-3 py-2 rounded bg-red-700 text-white font-semibold">Cancelled</div>
+                        </div>
+                      )}
                       <div>
                         <div className="text-xs text-[#8b7664]">Plan Name</div>
                         <div className="font-mono text-white">{selectedPlanDetail.plan?.name ?? `Plan #${selectedPlanDetail.plan?.id}`}</div>
@@ -570,7 +582,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                       )}
                     </div>
 
-                    <div className="flex gap-2 mt-4">
+                      <div className="flex gap-2 mt-4">
                       {!selectedPlanDetail.plan?.is_funded && (user?.publicKey && String(user.publicKey).toLowerCase() === String(selectedPlanDetail.plan?.owner_wallet).toLowerCase()) && (
                         <button className="px-4 py-2 rounded bg-[#ff6600] text-white" onClick={() => {
                           const cid = Number(selectedPlanDetail.plan?.contract_plan_id ?? selectedPlanDetail.plan?.id ?? 0);
@@ -581,14 +593,29 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                           setFundModalOpen(true);
                         }}>Fund Plan</button>
                       )}
-                      {/* Owner-only Delete button */}
+                      {/* Owner-only actions: Edit, Cancel, Delete */}
                       {(user?.publicKey && String(user.publicKey).toLowerCase() === String(selectedPlanDetail.plan?.owner_wallet).toLowerCase()) && (
-                        <button
-                          className="px-4 py-2 rounded bg-red-700 text-white"
-                          onClick={() => handleDelete(selectedPlanDetail)}
-                        >
-                          Delete Inheritance
-                        </button>
+                        <div className="flex gap-2">
+                          {!selectedPlanDetail.plan?.is_cancelled ? (
+                            <>
+                              <button className="px-4 py-2 rounded bg-[#1f6feb] text-white" onClick={() => {
+                                setEditBeneficiaries(Array.isArray(selectedPlanDetail?.beneficiaries) ? selectedPlanDetail.beneficiaries.map((b: any) => ({
+                                  id: b.id,
+                                  name: b.name || '',
+                                  relationship: b.relationship || '',
+                                  email: b.email || '',
+                                  wallet: b.wallet || b.wallet_address || '',
+                                  allocation_percentage: b.allocation_percentage ?? b.allocation ?? 0,
+                                })) : []);
+                                setEditModalOpen(true);
+                              }}>Edit Inheritance</button>
+                              <button className="px-4 py-2 rounded bg-orange-700 text-white" onClick={() => { setConfirmCancelOpen(true); }}>{cancelling ? 'Cancelling...' : 'Cancel Inheritance'}</button>
+                              <button className="px-4 py-2 rounded bg-red-700 text-white" onClick={() => handleDelete(selectedPlanDetail)}>Delete Inheritance</button>
+                            </>
+                          ) : (
+                            <button className="px-4 py-2 rounded bg-gray-600 text-white" disabled>Cancelled</button>
+                          )}
+                        </div>
                       )}
                     </div>
 
@@ -651,6 +678,92 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
               <div className="flex gap-2 justify-end">
                 <button className="px-4 py-2 rounded bg-[#393028] text-white" onClick={() => { if (!deleting) { setConfirmDeleteOpen(false); setPendingDeletePlan(null); } }}>Cancel</button>
                 <button className="px-4 py-2 rounded bg-red-700 text-white" onClick={() => performDelete()} disabled={deleting}>{deleting ? 'Deleting...' : 'Delete'}</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cancel confirmation modal for selected plan */}
+        {confirmCancelOpen && selectedPlanDetail && (
+          <ConfirmModal
+            open={confirmCancelOpen}
+            title="Cancel Inheritance"
+            description="Are you sure you want to cancel this inheritance? This will stop automatic distributions but will not delete the plan."
+            confirmLabel="Yes, cancel"
+            cancelLabel="Keep plan"
+            loading={cancelling}
+            onCancel={() => { if (!cancelling) setConfirmCancelOpen(false); }}
+            onConfirm={async () => {
+              setCancelling(true);
+              try {
+                const pid = Number(selectedPlanDetail.plan?.id ?? selectedPlanDetail.plan?.contract_plan_id ?? 0);
+                if (!pid) throw new Error('Cannot determine plan id');
+                if (planCtx?.cancelInheritance) {
+                  await planCtx.cancelInheritance(pid);
+                } else {
+                  const r = await fetch(`${BACKEND_API_URL}/inherit/cancel-inheritance/${pid}`, { method: 'PATCH', headers: { accept: 'application/json', ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}) } });
+                  if (!r.ok) throw new Error(await extractErrorMessage(r));
+                }
+                toast.success('Inheritance cancelled');
+                setConfirmCancelOpen(false);
+                await fetchPlans();
+                setModalOpen(false);
+                setSelectedPlanDetail(null);
+              } catch (e:any) {
+                const m = e instanceof Error ? e.message : String(e);
+                toast.error(`Cancel failed: ${m}`);
+              } finally {
+                setCancelling(false);
+              }
+            }}
+          />
+        )}
+
+        {/* Edit inheritance modal (similar UI to PlanDetail edit modal) */}
+        {editModalOpen && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/60 z-[10000]" onClick={() => { if (!editing) { setEditModalOpen(false); } }} />
+            <div className="relative bg-[#1f1915] border border-[#3a2f1e] rounded-lg w-[90%] max-w-2xl p-6 z-[10001]">
+              <h3 className="text-white font-bold mb-2">Edit Inheritance Beneficiaries</h3>
+              <div className="text-sm text-[#d1c3b4] mb-4">Update beneficiary details and allocations, then save.</div>
+              <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+                {editBeneficiaries.map((b, idx) => (
+                  <div key={b.id ?? idx} className="p-3 bg-[#14110f] border border-[#2a241c] rounded">
+                    <div className="grid grid-cols-2 gap-2">
+                      <input className="bg-transparent border border-[#2a241c] p-2 text-white" value={b.name} onChange={(e) => { const copy = [...editBeneficiaries]; copy[idx] = { ...copy[idx], name: e.target.value }; setEditBeneficiaries(copy); }} placeholder="Name" />
+                      <input className="bg-transparent border border-[#2a241c] p-2 text-white" value={b.relationship} onChange={(e) => { const copy = [...editBeneficiaries]; copy[idx] = { ...copy[idx], relationship: e.target.value }; setEditBeneficiaries(copy); }} placeholder="Relationship" />
+                      <input className="bg-transparent border border-[#2a241c] p-2 text-white" value={b.email} onChange={(e) => { const copy = [...editBeneficiaries]; copy[idx] = { ...copy[idx], email: e.target.value }; setEditBeneficiaries(copy); }} placeholder="Email" />
+                      <input className="bg-transparent border border-[#2a241c] p-2 text-white" value={b.wallet} onChange={(e) => { const copy = [...editBeneficiaries]; copy[idx] = { ...copy[idx], wallet: e.target.value }; setEditBeneficiaries(copy); }} placeholder="Wallet" />
+                      <input className="bg-transparent border border-[#2a241c] p-2 text-white col-span-2" value={String(b.allocation_percentage ?? '')} onChange={(e) => { const copy = [...editBeneficiaries]; copy[idx] = { ...copy[idx], allocation_percentage: Number(e.target.value) || 0 }; setEditBeneficiaries(copy); }} placeholder="Allocation percentage" />
+                    </div>
+                  </div>
+                ))}
+                {editBeneficiaries.length === 0 && <div className="text-[#b8a494]">No beneficiaries to edit</div>}
+              </div>
+              <div className="flex gap-2 justify-end mt-4">
+                <button className="px-4 py-2 rounded bg-[#393028] text-white" onClick={() => { if (!editing) setEditModalOpen(false); }}>Cancel</button>
+                <button className="px-4 py-2 rounded bg-[#2ccd2c] text-white" onClick={async () => {
+                  if (!selectedPlanDetail?.plan?.id) { toast.error('Cannot determine plan id'); return; }
+                  setEditing(true);
+                  try {
+                    const payload = { id: Number(selectedPlanDetail.plan.id ?? selectedPlanDetail.plan.contract_plan_id ?? 0), beneficiaries: editBeneficiaries.map((b:any) => ({ name: b.name, relationship: b.relationship, email: b.email, wallet: b.wallet, allocation_percentage: Number(b.allocation_percentage || 0) })) };
+                    if (planCtx?.editInheritance) {
+                      await planCtx.editInheritance(payload);
+                    } else {
+                      await fetch(`${BACKEND_API_URL}/inherit/edit-inheritance`, {
+                        method: 'PUT', headers: { 'Content-Type': 'application/json', ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}) }, body: JSON.stringify(payload)
+                      });
+                    }
+                    toast.success('Inheritance updated');
+                    setEditModalOpen(false);
+                    await fetchPlans();
+                    setModalOpen(false);
+                    setSelectedPlanDetail(null);
+                  } catch (e:any) {
+                    const m = e instanceof Error ? e.message : String(e);
+                    toast.error(`Update failed: ${m}`);
+                  } finally { setEditing(false); }
+                }} disabled={editing}>{editing ? 'Saving...' : 'Save Changes'}</button>
               </div>
             </div>
           </div>

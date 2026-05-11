@@ -1,4 +1,4 @@
-import { Bell, Zap, Menu } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ConnectWalletButton } from "../../components/ConnectWalletButton";
 
@@ -27,9 +27,6 @@ export const Header = ({ onToggleSidebar }: HeaderProps): JSX.Element => {
         </div>
 
         <div className="flex items-center gap-4">
-          <button className="hidden sm:inline-flex w-10 h-10 rounded-full bg-[#2D241C] border border-[#393028] hover:bg-[#3a2f1e] flex items-center justify-center">
-            <Zap className="w-5 h-5 text-[#EAB308]" />
-          </button>
           <button
             onClick={() => navigate("/notifications")}
             className="relative w-10 h-10 rounded-full bg-[#332619] hover:bg-[#3a2f1e] flex items-center justify-center"

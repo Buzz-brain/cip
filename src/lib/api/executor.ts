@@ -1,4 +1,5 @@
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL || "https://xcip.name.ng";
+import { extractErrorMessage } from '../utils';
 
 export async function getExecutorInheritances(token?: string): Promise<{ plans: any[]; beneficiaries: any[] } | null> {
   const url = `${BACKEND_API_URL}/exec/inheritances-plan`;
@@ -11,8 +12,8 @@ export async function getExecutorInheritances(token?: string): Promise<{ plans: 
   });
   if (!res.ok) {
     if (res.status === 404) return null;
-    const txt = await res.text().catch(() => '');
-    throw new Error(`getExecutorInheritances failed: ${res.status} ${txt}`);
+    const err = await extractErrorMessage(res).catch(() => `Error (Status: ${res.status})`);
+    throw new Error(err);
   }
   const json = await res.json().catch(() => null);
   if (!json) return null;
@@ -49,8 +50,8 @@ export async function getExecutorInheritanceById(token?: string, id?: number): P
   });
   if (!res.ok) {
     if (res.status === 404) return null;
-    const txt = await res.text().catch(() => '');
-    throw new Error(`getExecutorInheritanceById failed: ${res.status} ${txt}`);
+    const err = await extractErrorMessage(res).catch(() => `Error (Status: ${res.status})`);
+    throw new Error(err);
   }
   const json = await res.json().catch(() => null);
   if (!json) return null;
@@ -70,8 +71,8 @@ export async function postExecutePlan(token: string | undefined, id: number, fil
     body: form,
   });
   if (!res.ok) {
-    const txt = await res.text().catch(() => '');
-    throw new Error(`postExecutePlan failed: ${res.status} ${txt}`);
+    const err = await extractErrorMessage(res).catch(() => `Error (Status: ${res.status})`);
+    throw new Error(err);
   }
   const json = await res.json().catch(() => null);
   return json;

@@ -1,4 +1,6 @@
 export { EnterpriseLogin } from "./EnterpriseLogin";
+export { default as EnterpriseCreate } from "./EnterpriseCreate";
+
 export { EnterpriseDashboard } from "./EnterpriseDashboard";
 export { ClientManagement } from "./ClientManagement";
 export { InheritancePlans } from "./InheritancePlans";

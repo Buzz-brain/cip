@@ -1,5 +1,6 @@
 // src/lib/api/admin.ts
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
+import { extractErrorMessage } from '../utils';
 
 export async function createAdmin(
   token: string | undefined,
@@ -16,9 +17,8 @@ export async function createAdmin(
   });
 
   if (!res.ok) {
-    const json = await res.json().catch(() => null);
-    const errMsg = json?.detail || json || res.statusText;
-    throw new Error(typeof errMsg === "string" ? errMsg : JSON.stringify(errMsg));
+    const err = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(err);
   }
 
   return res.json();
@@ -35,13 +35,7 @@ export async function adminLogin(body: { email_or_username: string; password: st
   });
 
   if (!res.ok) {
-    const json = await res.json().catch(() => null);
-    let msg = res.statusText;
-    if (json) {
-      if (typeof json === "string") msg = json;
-      else if (json.detail) msg = String(json.detail);
-      else if (json.message) msg = String(json.message);
-    }
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
     throw new Error(`Admin login failed: ${msg}`);
   }
 
@@ -62,8 +56,8 @@ export async function getDashboard(token?: string): Promise<any> {
   });
 
   if (!res.ok) {
-    const json = await res.json().catch(() => null);
-    throw new Error(json?.message || res.statusText || "Failed to fetch admin dashboard");
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || "Failed to fetch admin dashboard");
   }
 
   return res.json();
@@ -76,7 +70,10 @@ export async function viewUsers(token?: string): Promise<any[]> {
     method: "GET",
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
-  if (!res.ok) throw new Error(res.statusText || "Failed to fetch users");
+  if (!res.ok) {
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || "Failed to fetch users");
+  }
   return res.json();
 }
 
@@ -85,7 +82,10 @@ export async function viewExecutors(token?: string): Promise<any[]> {
     method: "GET",
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
-  if (!res.ok) throw new Error(res.statusText || "Failed to fetch executors");
+  if (!res.ok) {
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || "Failed to fetch executors");
+  }
   return res.json();
 }
 
@@ -94,7 +94,10 @@ export async function viewMediators(token?: string): Promise<any[]> {
     method: "GET",
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
-  if (!res.ok) throw new Error(res.statusText || "Failed to fetch mediators");
+  if (!res.ok) {
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || "Failed to fetch mediators");
+  }
   return res.json();
 }
 
@@ -103,7 +106,10 @@ export async function viewAdmins(token?: string): Promise<any[]> {
     method: "GET",
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
-  if (!res.ok) throw new Error(res.statusText || "Failed to fetch admins");
+  if (!res.ok) {
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || "Failed to fetch admins");
+  }
   return res.json();
 }
 
@@ -113,8 +119,8 @@ export async function viewUser(userId: number, token?: string): Promise<any> {
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
   if (!res.ok) {
-    const json = await res.json().catch(() => null);
-    throw new Error(json?.message || res.statusText || "Failed to fetch user");
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || "Failed to fetch user");
   }
   return res.json();
 }
@@ -125,8 +131,8 @@ export async function viewUserInheritance(userId: number, planId: number, token?
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
   if (!res.ok) {
-    const json = await res.json().catch(() => null);
-    throw new Error(json?.message || res.statusText || "Failed to fetch user inheritance");
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || "Failed to fetch user inheritance");
   }
   return res.json();
 }
@@ -137,8 +143,8 @@ export async function viewExecutor(execId: number, token?: string): Promise<any>
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
   if (!res.ok) {
-    const json = await res.json().catch(() => null);
-    throw new Error(json?.message || res.statusText || "Failed to fetch executor");
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || "Failed to fetch executor");
   }
   return res.json();
 }
@@ -149,8 +155,8 @@ export async function viewMediator(medId: number, token?: string): Promise<any> 
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
   if (!res.ok) {
-    const json = await res.json().catch(() => null);
-    throw new Error(json?.message || res.statusText || "Failed to fetch mediator");
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || "Failed to fetch mediator");
   }
   return res.json();
 }
@@ -160,7 +166,22 @@ export async function viewIexecJobs(token?: string): Promise<any[]> {
     method: "GET",
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
-  if (!res.ok) throw new Error(res.statusText || "Failed to fetch iexec jobs");
+  if (!res.ok) {
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || "Failed to fetch iexec jobs");
+  }
+  return res.json();
+}
+
+export async function viewEnterprises(token?: string): Promise<any[]> {
+  const res = await fetch(`${BACKEND_API_URL}/admin/view-enterprise`, {
+    method: 'GET',
+    headers: { Accept: 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  });
+  if (!res.ok) {
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || 'Failed to fetch enterprises');
+  }
   return res.json();
 }
 
@@ -170,8 +191,8 @@ export async function disapproveMediator(medId: number, token?: string): Promise
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
   if (!res.ok) {
-    const json = await res.json().catch(() => null);
-    throw new Error(json?.message || res.statusText || "Failed to disapprove mediator");
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || "Failed to disapprove mediator");
   }
   return res.json();
 }
@@ -182,8 +203,8 @@ export async function approveMediator(medId: number, token?: string): Promise<an
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
   if (!res.ok) {
-    const json = await res.json().catch(() => null);
-    throw new Error(json?.message || res.statusText || "Failed to approve mediator");
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || "Failed to approve mediator");
   }
   return res.json();
 }
@@ -194,8 +215,8 @@ export async function disapproveAdmin(adminIdd: number, token?: string): Promise
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
   if (!res.ok) {
-    const json = await res.json().catch(() => null);
-    throw new Error(json?.message || res.statusText || "Failed to disapprove admin");
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || "Failed to disapprove admin");
   }
   return res.json();
 }
@@ -206,8 +227,32 @@ export async function approveAdmin(adminIdd: number, token?: string): Promise<an
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
   if (!res.ok) {
-    const json = await res.json().catch(() => null);
-    throw new Error(json?.message || res.statusText || "Failed to approve admin");
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || "Failed to approve admin");
+  }
+  return res.json();
+}
+
+export async function approveEnterprise(entrepId: number, token?: string): Promise<any> {
+  const res = await fetch(`${BACKEND_API_URL}/admin/approve-enterprise/${entrepId}`, {
+    method: 'PATCH',
+    headers: { Accept: 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  });
+  if (!res.ok) {
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || 'Failed to approve enterprise');
+  }
+  return res.json();
+}
+
+export async function disapproveAdminByEntrep(entrepId: number, token?: string): Promise<any> {
+  const res = await fetch(`${BACKEND_API_URL}/admin/disapprove-admin/${entrepId}`, {
+    method: 'PATCH',
+    headers: { Accept: 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  });
+  if (!res.ok) {
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || 'Failed to disapprove admin/enterprise');
   }
   return res.json();
 }
@@ -218,8 +263,8 @@ export async function promoteAdmin(adminIdd: number, token?: string): Promise<an
     headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });
   if (!res.ok) {
-    const json = await res.json().catch(() => null);
-    throw new Error(json?.message || res.statusText || "Failed to promote admin");
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || `Error (Status: ${res.status})`);
+    throw new Error(msg || "Failed to promote admin");
   }
   return res.json();
 }

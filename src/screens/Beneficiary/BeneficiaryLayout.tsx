@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useState } from 'react';
 import { Bell as BellIcon, FileText as FileTextIcon, LayoutGrid as LayoutGridIcon, LogOut as LogOutIcon, AlertCircle as DisputeIcon, Menu as MenuIcon } from 'lucide-react';
+import { toast } from 'react-toastify';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
 import logoImg from '@assets/cip-logo-full.png';
@@ -170,6 +171,7 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
               } catch (e) {
                 // ignore
               }
+              try { toast.success('Logged out successfully'); } catch(e){}
               navigate("/connect-wallet");
             }}
             className="w-full flex items-center gap-2 px-3 py-2 text-[#2ccd2c] hover:bg-[#27221c] rounded-lg transition-colors"
@@ -253,7 +255,7 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
                   <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs truncate">{user?.email ?? ''}</p>
                 </div>
               </div>
-              <button onClick={() => { try { logout(); } catch(e){}; navigate('/connect-wallet'); }} className="w-full flex items-center gap-2 px-3 py-2 text-[#2ccd2c] hover:bg-[#27221c] rounded-lg transition-colors">
+              <button onClick={() => { try { logout(); } catch(e){}; try { toast.success('Logged out successfully'); } catch(e){}; navigate('/connect-wallet'); }} className="w-full flex items-center gap-2 px-3 py-2 text-[#2ccd2c] hover:bg-[#27221c] rounded-lg transition-colors">
                 <LogOutIcon className="w-4 h-4" />
                 <span className="[font-family:'Manrope',Helvetica] font-normal text-xs">Log out</span>
               </button>

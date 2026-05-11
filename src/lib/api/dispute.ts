@@ -24,8 +24,8 @@ export async function raiseDispute(token: string, params: RaiseDisputeParams): P
   });
 
   if (!res.ok) {
-    const txt = await res.text().catch(() => '');
-    throw new Error(`raiseDispute failed: ${res.status} ${txt}`);
+    const err = await (await import('../utils')).extractErrorMessage(res).catch(() => `Error (Status: ${res.status})`);
+    throw new Error(err);
   }
 
   const json = await res.json().catch(() => null);

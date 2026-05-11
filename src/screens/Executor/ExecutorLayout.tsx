@@ -4,6 +4,7 @@ import ExecutorHeader from "../../components/ui/ExecutorHeader";
 import { useAuth } from "../../context/useAuth";
 import { LogOut, Menu as MenuIcon } from "lucide-react";
 import { useState } from "react";
+import { toast } from 'react-toastify';
 
 const ExecutorLayout = (): JSX.Element => {
     const navigate = useNavigate();
@@ -22,6 +23,7 @@ const ExecutorLayout = (): JSX.Element => {
         } catch (e) {
             // ignore
         }
+        try { toast.success('Logged out successfully'); } catch(e){}
         navigate("/connect-wallet");
     };
 

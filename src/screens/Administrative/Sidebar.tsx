@@ -8,6 +8,8 @@ import {
 import { useEffect } from "react";
 import { useApp } from "./AppContext";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useAuth } from "../../context/useAuth";
+import { toast } from "react-toastify";
 import logoImg from "@assets/cip-logo-full.png";
 
 interface SidebarProps {
@@ -57,6 +59,7 @@ export function Sidebar({ variant = "default", mobile = false, open = false, onC
 
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
 
   const routeForId = (id: string) => {
     switch (id) {
@@ -146,7 +149,15 @@ export function Sidebar({ variant = "default", mobile = false, open = false, onC
         </nav>
 
         <div className="p-3 border-t border-[#2a2520]">
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-[#2a2520] hover:text-gray-300 transition-colors">
+          <button
+            onClick={() => {
+              try { logout(); } catch(e) { /* ignore */ }
+              try { toast.success('Logged out successfully'); } catch(e) {}
+              navigate('/connect-wallet');
+              onClose && onClose();
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-[#2a2520] hover:text-gray-300 transition-colors"
+          >
             <LogOut className="w-4 h-4" />
             <span className="text-sm">Logout</span>
           </button>
@@ -189,7 +200,14 @@ export function Sidebar({ variant = "default", mobile = false, open = false, onC
       </nav>
 
       <div className="p-3 border-t border-[#2a2520]">
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-[#2a2520] hover:text-gray-300 transition-colors">
+        <button
+          onClick={() => {
+            try { const { logout } = useAuth(); logout(); } catch(e) { /* ignore */ }
+            try { toast.success('Logged out successfully'); } catch(e) {}
+            navigate('/connect-wallet');
+          }}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-[#2a2520] hover:text-gray-300 transition-colors"
+        >
           <LogOut className="w-4 h-4" />
           <span className="text-sm">
             {variant === "default" ? "Logout" : "Log Out"}

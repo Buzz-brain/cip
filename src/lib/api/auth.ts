@@ -2,6 +2,7 @@
 // Authentication API utility functions for CIP Portal
 
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
+import { extractErrorMessage } from '../utils';
 
 export async function getNonce(publicKey: string): Promise<string> {
   const url = `${BACKEND_API_URL}/auth/nonce?public_key=${encodeURIComponent(publicKey)}`;
@@ -14,7 +15,10 @@ export async function getNonce(publicKey: string): Promise<string> {
   
   console.log("Nonce endpoint response status:", res.status);
   
-  if (!res.ok) throw new Error("Failed to get nonce");
+  if (!res.ok) {
+    const msg = await extractErrorMessage(res).catch(() => res.statusText || 'Failed to get nonce');
+    throw new Error(msg || 'Failed to get nonce');
+  }
   
   const data = await res.json();
   console.log("Nonce response data:", data);
@@ -57,22 +61,7 @@ export async function login({
   console.log("   📊 Login endpoint response status:", res.status);
   
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    console.log("   ❌ Login failed. Error response:", errorData);
-
-    // Normalize error message for the user
-    let userMessage = "Login failed";
-    if (errorData) {
-      if (typeof errorData === 'string') userMessage = errorData;
-      else if (errorData.detail) userMessage = String(errorData.detail);
-      else if (errorData.message) userMessage = String(errorData.message);
-      else if (errorData.error) userMessage = String(errorData.error);
-      else if (errorData.errors && Array.isArray(errorData.errors)) userMessage = errorData.errors.join(', ');
-      else userMessage = JSON.stringify(errorData);
-    } else {
-      userMessage = res.statusText || userMessage;
-    }
-
+    const userMessage = await extractErrorMessage(res).catch(() => res.statusText || 'Login failed');
     throw new Error(`Login failed: ${userMessage}`);
   }
   
@@ -96,9 +85,8 @@ export async function getUserInfo(token: string): Promise<any> {
     },
   });
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    console.error("auth.getUserInfo failed", res.status, errorData);
-    throw new Error("Failed to fetch user info");
+    const msg = await extractErrorMessage(res).catch(() => 'Failed to fetch user info');
+    throw new Error(msg || "Failed to fetch user info");
   }
   return res.json();
 }
@@ -117,9 +105,8 @@ export async function updateAccountInfo(
     body: JSON.stringify(data),
   });
   if (!res.ok) {
-    const errorData = await res.json().catch(() => null);
-    console.error("auth.updateAccountInfo failed", res.status, errorData);
-    throw new Error("Failed to update account info");
+    const msg = await extractErrorMessage(res).catch(() => 'Failed to update account info');
+    throw new Error(msg || "Failed to update account info");
   }
   return res.json();
 }

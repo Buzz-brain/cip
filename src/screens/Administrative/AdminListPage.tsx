@@ -70,6 +70,8 @@ export default function AdminListPage({ title, fetcher }: { title: string; fetch
       if (action === 'disapprove-admin') await disapproveAdmin(id, token);
       if (action === 'promote-admin') await promoteAdmin(id, token);
       if (action === 'disapprove-mediator') await disapproveMediator(id, token);
+      if (action === 'approve-enterprise') await (await import('../../lib/api/admin')).approveEnterprise(id, token);
+      if (action === 'disapprove-admin-by-entrep') await (await import('../../lib/api/admin')).disapproveAdminByEntrep(id, token);
       // refresh list
       const res = await fetcher(token);
       const list = Array.isArray(res)
@@ -79,7 +81,13 @@ export default function AdminListPage({ title, fetcher }: { title: string; fetch
       setConfirmOpen(false);
     } catch (err:any) {
       console.error('Action failed', err);
-      alert(err?.message || 'Action failed');
+      const raw = err?.message || String(err);
+      let cleaned = raw.replace(/^.*?:\s*/, '').replace(/^\d{3}\s*/, '').trim();
+      try {
+        const parsed = JSON.parse(cleaned);
+        if (parsed && (parsed.detail || parsed.message)) cleaned = parsed.detail || parsed.message;
+      } catch (_e) {}
+      alert(cleaned || 'Action failed');
     } finally { setConfirmLoading(false); }
   }
 
@@ -180,6 +188,12 @@ export default function AdminListPage({ title, fetcher }: { title: string; fetch
                     ) : null}
                     {title.toLowerCase().includes('mediator') || it.role === 'mediator' ? (
                       <button onClick={()=>openConfirm('disapprove-mediator', it.id)} className="px-3 py-1 bg-red-600 rounded text-sm">Disapprove</button>
+                    ) : null}
+                    {title.toLowerCase().includes('enterprise') || title.toLowerCase().includes('enterprises') ? (
+                      <>
+                        <button onClick={()=>openConfirm('approve-enterprise', it.id)} className="px-3 py-1 bg-green-600 rounded text-sm">Approve</button>
+                        <button onClick={()=>openConfirm('disapprove-admin-by-entrep', it.id)} className="px-3 py-1 bg-red-600 rounded text-sm">Disapprove</button>
+                      </>
                     ) : null}
                   </div>
                 </div>

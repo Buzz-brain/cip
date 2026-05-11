@@ -22,6 +22,7 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   loginWithWallet: (publicKey: string, signature: string, message: string) => Promise<User>;
   loginAsAdmin?: (token: string, info?: { email?: string; full_name?: string }) => Promise<User>;
+  loginAsEnterprise?: (token: string, info?: { email?: string; company_name?: string }) => Promise<User>;
   getNonce: (publicKey: string) => Promise<string>;
   logout: () => void;
   clearError: () => void;
@@ -90,6 +91,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return newUser;
     } catch (err) {
       const message = err instanceof Error ? err.message : "Admin login failed";
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const loginAsEnterprise = useCallback(async (token: string, info?: { email?: string; company_name?: string }) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const newUser: User = { publicKey: "", token, userInfo: info || {}, role: "enterprise", name: info?.company_name || info?.email, email: info?.email };
+      setUser(newUser);
+      return newUser;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Enterprise login failed";
       setError(message);
       throw err;
     } finally {
@@ -205,6 +222,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated: !!user,
     loginWithWallet,
     loginAsAdmin,
+    loginAsEnterprise,
     getNonce,
     logout,
     clearError,

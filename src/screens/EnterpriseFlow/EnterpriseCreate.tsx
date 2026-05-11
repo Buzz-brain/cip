@@ -1,0 +1,122 @@
+import React, { useState } from "react";
+import { createEnterprise } from "../../lib/api/enterprise";
+import { toast } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
+import logoImg from "@assets/cip-logo-full.png";
+import loginBgImg from "@assets/login-bg.svg";
+import shieldPadlockIcon from "@assets/shield-padlock-orange.svg";
+import loginArrowIcon from "@assets/login-arrow.svg";
+
+export default function EnterpriseCreate(): JSX.Element {
+  const navigate = useNavigate();
+  const [companyName, setCompanyName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string,string>>({});
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrors({});
+    try {
+      await createEnterprise({ company_name: companyName, email, password });
+      toast.success("Enterprise created");
+      setCompanyName(""); setEmail(""); setPassword("");
+      setTimeout(() => navigate('/enterprise-login'), 800);
+    } catch (err: any) {
+      const message = err?.message || "Failed to create enterprise";
+      try {
+        const parsed = JSON.parse(message);
+        if (parsed && parsed.detail && Array.isArray(parsed.detail)) {
+          const map: Record<string,string> = {};
+          parsed.detail.forEach((d: any) => {
+            const loc = d.loc && Array.isArray(d.loc) ? d.loc[d.loc.length-1] : undefined;
+            const key = loc || d.input || 'general';
+            map[String(key)] = d.msg || String(d);
+          });
+          setErrors(map);
+        } else {
+          toast.error(message);
+        }
+      } catch {
+        toast.error(message);
+      }
+    } finally { setLoading(false); }
+  };
+
+  return (
+    <div className="flex flex-col w-full min-h-screen text-white [font-family:'Manrope',Helvetica]"
+      style={{ backgroundImage: `url(${loginBgImg})`, backgroundSize: "cover", backgroundPosition: "center" }}
+    >
+      <header className="w-full h-[61px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#393028]">
+        <div className="flex items-center gap-3">
+          <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
+        </div>
+        <div />
+      </header>
+
+      <main className="relative z-10 flex items-center justify-center px-4 min-h-screen">
+        <div className="w-full max-w-md">
+          <div className="bg-[#27231C] backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-zinc-800">
+            <div className="flex justify-center mb-6">
+              <div className="w-20 h-20 bg-[#FF66001A] rounded-full flex items-center justify-center">
+                <img src={shieldPadlockIcon} className="w-8 h-8" alt="" />
+              </div>
+            </div>
+
+            <h1 className="text-2xl font-bold text-white text-center mb-4">Create Enterprise</h1>
+            <p className="text-[#B9AF9D] text-sm pl-3 mb-8">Create a new enterprise account.</p>
+
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <input className="w-full bg-[#181411] border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none" placeholder="Company name" value={companyName} onChange={e=>setCompanyName(e.target.value)} />
+                {errors.company_name && <div className="text-red-400 text-sm mt-1">{errors.company_name}</div>}
+              </div>
+
+              <div className="mb-3">
+                <input className="w-full bg-[#181411] border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} />
+                {errors.email && <div className="text-red-400 text-sm mt-1">{errors.email}</div>}
+              </div>
+
+              <div className="mb-3">
+                <input type="password" className="w-full bg-[#181411] border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)} />
+                {errors.password && <div className="text-red-400 text-sm mt-1">{errors.password}</div>}
+              </div>
+
+              <button type="submit" disabled={loading} className={`w-full bg-[#FF6600] text-white font-medium py-3 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2 ${loading ? 'opacity-80 cursor-not-allowed' : ''}`}>
+                {loading ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                    <span>Creating...</span>
+                  </>
+                ) : (
+                  <>
+                    Create Enterprise
+                    <img src={loginArrowIcon} alt="" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="mt-4 text-center">
+              <p className="text-sm text-gray-400">
+                Already have an account?{' '}
+                <Link to="/enterprise-login" className="text-orange-500 hover:underline">Login</Link>
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-center">
+            <div className="bg-zinc-900/50 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2 border border-zinc-800">
+              <span className="text-gray-400 text-xs">© 2026 CIP Foundation</span>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
