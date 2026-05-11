@@ -1,24 +1,22 @@
-import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { Button } from "@components/ui/button";
 import { toast } from "react-toastify";
 import * as walletUtils from "../../lib/wallet/walletUtils";
 import { initEip6963Discovery, getWalletProviderByRdns, waitForWalletProvider, signMessage } from "../../lib/wallet/walletUtils";
-import { useWeb3Modal, useWeb3ModalProvider, useWeb3ModalAccount } from "@web3modal/ethers/react";
+import { useWeb3ModalProvider, useWeb3ModalAccount } from "@web3modal/ethers/react";
 import { normalizeWalletAddress, getDashboardRoute } from "../../lib/utils";
 import { verifyMessage } from "ethers";
 import * as authAPI from "../../lib/api/auth";
+import { useWalletConnectLifecycle, useMobileWalletReturn } from "../../hooks/useWalletConnectLifecycle";
+import { cleanupWalletConnect, prepareMobileWalletConnect } from "../../lib/wallet/walletConnectCleanup";
 import logoImg from "@assets/cip-logo-full.png";
-import helpIcon from "@assets/help.svg";
-import connectWalletOrange from "@assets/connect-wallet.-orange.svg";
-// import cotiWalletIcon from "@assets/coti-wallet.svg";
+import helpIcon from "@assets/help-icon.svg";
+import connectWalletOrange from "@assets/connect-wallet-orange.svg";
 import metamask from "@assets/metamask.svg";
 import trustWallet from "@assets/trust-wallet.svg";
 import phantom from "@assets/phantom.svg";
-// import ledger from "@assets/ledger.svg";
-// import arrowForward from "@assets/arrow-forward.svg";
-import { Link } from "react-router-dom";
 
 
 const navigationItems = [
@@ -78,21 +76,95 @@ const wallets = [
   // },
 ];
 
+/**
+ * Normalizes error messages for user display
+ */
+function normalizeErrorMessage(err: unknown): string {
+  const errStr = err instanceof Error ? err.message : String(err);
+
+  if (/rejected|cancelled|user denied|user declined/i.test(errStr)) {
+    return 'Connection cancelled. Please try again.';
+  }
+
+  if (/already pending|duplicate request|already connecting/i.test(errStr)) {
+    return 'Connection already in progress. Please wait.';
+  }
+
+  if (/stale|expired|outdated/i.test(errStr)) {
+    return 'Session expired. Please refresh and try again.';
+  }
+
+  if (/connection declined|declined/i.test(errStr)) {
+    return 'Connection declined by wallet. Please try again.';
+  }
+
+  if (/not found|not detected|not installed/i.test(errStr)) {
+    const walletName = errStr.includes('MetaMask') ? 'MetaMask' : errStr.includes('Trust') ? 'Trust Wallet' : 'Wallet';
+    return `${walletName} not detected. Install the extension or use WalletConnect.`;
+  }
+
+  return errStr || 'Connection failed. Please try again.';
+}
+
+/**
+ * Detects if running on mobile browser
+ */
+function isMobileBrowser(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+    navigator.userAgent.toLowerCase()
+  );
+}
+
 export const ConnectWallet = (): JSX.Element => {
   const { getNonce, loginWithWallet, fetchUserInfo, user } = useAuth();
   const navigate = useNavigate();
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
-  const { open: openWeb3Modal } = useWeb3Modal();
   const { walletProvider } = useWeb3ModalProvider();
   const { address: wcAddress, isConnected: wcIsConnected } = useWeb3ModalAccount();
-  const wcLoginTriggered = useRef(false);
+
+  const toastGuard = useRef(new Set<string>());
+  const injectedLoginTriggered = useRef(false);
+
+  // Use improved WalletConnect lifecycle hook
+  const {
+    isConnecting: wcIsConnecting,
+    openWalletConnectModal,
+    resetConnection,
+    isModalOpen,
+  } = useWalletConnectLifecycle({
+    onConnected: (address: string) => {
+      console.log('[ConnectWallet] WalletConnect connected to:', address);
+    },
+    onFailed: (error: string) => {
+      console.error('[ConnectWallet] WalletConnect failed:', error);
+      showToastOnce(error, 'error');
+    },
+    onCancelled: () => {
+      console.log('[ConnectWallet] WalletConnect cancelled by user');
+    },
+  });
+
+  /**
+   * Show toast only once per unique message
+   */
+  const showToastOnce = useCallback((message: string, type: 'error' | 'success' | 'info' = 'error') => {
+    const key = `${type}:${message}`;
+    if (toastGuard.current.has(key)) return;
+    toastGuard.current.add(key);
+
+    if (type === 'error') toast.error(message);
+    else if (type === 'success') toast.success(message);
+    else toast.info(message);
+
+    setTimeout(() => toastGuard.current.delete(key), 3000);
+  }, []);
 
   const handleNavigation = (href: string) => {
     if (href === "/") {
       navigate("/");
     } else if (href === "/#core-capabilities") {
       navigate("/", { replace: false });
-      // Scroll after navigation completes
       setTimeout(() => {
         const element = document.getElementById("core-capabilities");
         if (element) {
@@ -102,69 +174,110 @@ export const ConnectWallet = (): JSX.Element => {
     }
   };
 
+  /**
+   * Login with connected WalletConnect account
+   */
+  const loginWithWalletConnectAccount = useCallback(async () => {
+    if (!wcAddress || !walletProvider || injectedLoginTriggered.current) return;
+
+    injectedLoginTriggered.current = true;
+    setIsConnectingWallet(true);
+
+    try {
+      console.log('[ConnectWallet] Logging in with WalletConnect account:', wcAddress);
+
+      const account = normalizeWalletAddress(wcAddress);
+      const nonce = await getNonce(account);
+      const signature = await signMessage(nonce, account, walletProvider);
+
+      const returnedUser = await loginWithWallet(account, signature, nonce);
+      let finalUserInfo = returnedUser?.userInfo ?? null;
+
+      if (!finalUserInfo && returnedUser?.token) {
+        try {
+          finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
+        } catch {
+          try {
+            await fetchUserInfo();
+          } catch {}
+          finalUserInfo = returnedUser?.userInfo ?? null;
+        }
+      }
+
+      const finalUser = { ...(returnedUser || user), userInfo: finalUserInfo || returnedUser?.userInfo || user?.userInfo };
+      const role = ((finalUser?.userInfo?.role ?? (finalUser as any)?.role) || "").toString();
+      const isFullyRegistered = finalUser?.userInfo?.full_reg;
+      const isSetup = finalUser?.userInfo?.is_setup;
+      const roleLower = role.toLowerCase();
+      const likelyUser = roleLower === "user" || roleLower === "";
+      const shouldRequireSetup = likelyUser && (isFullyRegistered !== true || isSetup === false);
+
+      console.log('[ConnectWallet] Login successful, redirecting...', { role, shouldRequireSetup });
+
+      if (shouldRequireSetup) {
+        navigate("/profile-setup");
+      } else {
+        navigate(getDashboardRoute(role));
+      }
+    } catch (err) {
+      const errorMessage = normalizeErrorMessage(err);
+      console.error('[ConnectWallet] WalletConnect login failed:', err);
+      showToastOnce(errorMessage, 'error');
+    } finally {
+      setIsConnectingWallet(false);
+      injectedLoginTriggered.current = false;
+    }
+  }, [wcAddress, walletProvider, getNonce, loginWithWallet, fetchUserInfo, user, navigate, showToastOnce]);
+
+  /**
+   * Listen for successful WalletConnect connection
+   */
   useEffect(() => {
     if (!wcIsConnected || !wcAddress || !walletProvider) return;
-    if (wcLoginTriggered.current) return;
-    wcLoginTriggered.current = true;
 
-    const runWcLogin = async () => {
-      setIsConnectingWallet(true);
-      try {
-        const account = normalizeWalletAddress(wcAddress);
-        const nonce = await getNonce(account);
-        const signature = await signMessage(nonce, account, walletProvider);
-        const returnedUser = await loginWithWallet(account, signature, nonce);
-        let finalUserInfo = returnedUser?.userInfo ?? null;
-        if (!finalUserInfo && returnedUser?.token) {
-          try {
-            finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
-          } catch {
-            try { await fetchUserInfo(); } catch {}
-            finalUserInfo = returnedUser?.userInfo ?? null;
-          }
-        }
-        const finalUser = { ...(returnedUser || user), userInfo: finalUserInfo || returnedUser?.userInfo || user?.userInfo };
-        const role = ((finalUser?.userInfo?.role ?? (finalUser as any)?.role) || '').toString();
-        const isFullyRegistered = finalUser?.userInfo?.full_reg;
-        const isSetup = finalUser?.userInfo?.is_setup;
-        const roleLower = role.toLowerCase();
-        const likelyUser = roleLower === 'user' || roleLower === '';
-        const shouldRequireSetup = likelyUser && (isFullyRegistered !== true || isSetup === false);
-        if (shouldRequireSetup) {
-          navigate('/profile-setup');
-        } else {
-          navigate(getDashboardRoute(role));
-        }
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'WalletConnect login failed';
-        toast.error(errorMessage);
-        wcLoginTriggered.current = false;
-      } finally {
-        setIsConnectingWallet(false);
-      }
-    };
+    loginWithWalletConnectAccount();
+  }, [wcIsConnected, wcAddress, walletProvider, loginWithWalletConnectAccount]);
 
-    runWcLogin();
-  }, [wcIsConnected, wcAddress, walletProvider]);
+  /**
+   * Detect when user returns from wallet app on mobile
+   */
+  useMobileWalletReturn(async () => {
+    if (isModalOpen) {
+      console.log('[ConnectWallet] Mobile wallet return detected - running cleanup');
+      await cleanupWalletConnect();
+    }
+  });
 
+
+
+  /**
+   * Handle injected wallet selection (MetaMask, Trust, etc.)
+   */
   const handleWalletSelect = async (walletId: string) => {
     setIsConnectingWallet(true);
 
     try {
-      // Ensure we discover available injected providers (EIP-6963)
       initEip6963Discovery();
 
-      // If user selected WalletConnect, open the Web3Modal (WalletConnect) flow
+      // WalletConnect flow - use dedicated lifecycle hook
       if (walletId === 'walletconnect') {
+        console.log('[ConnectWallet] Opening WalletConnect...');
+
         try {
-          openWeb3Modal();
-        } finally {
+          if (isMobileBrowser()) {
+            await prepareMobileWalletConnect();
+          }
+
+          await openWalletConnectModal();
+        } catch (err) {
+          console.error('[ConnectWallet] WalletConnect open error:', err);
+          showToastOnce(normalizeErrorMessage(err), 'error');
           setIsConnectingWallet(false);
         }
         return;
       }
 
-      // Map walletId to expected rdns identifiers
+      // Injected wallet flow (MetaMask, Trust, etc.)
       const rdnsMap: Record<string, string> = {
         metamask: "io.metamask",
         trust: "com.trustwallet.app",
@@ -175,97 +288,84 @@ export const ConnectWallet = (): JSX.Element => {
       let provider = null as any;
 
       if (rdns) {
-        // Try to get provider immediately
-        provider = getWalletProviderByRdns(rdns);
+        provider = walletUtils.getWalletProviderByRdns(rdns);
         if (!provider) {
-          // Wait briefly for announcements
           provider = await waitForWalletProvider(rdns, 2000);
         }
       }
 
-      // (handled above for walletconnect)
-
       if (!provider) {
         const walletObj = wallets.find((w) => w.id === walletId);
         const displayName = walletObj?.name ?? walletId;
-        // Show a single, clear toast suggesting fallback to WalletConnect
-        toast.error(`${displayName} not detected. Install the extension or use WalletConnect.`);
-        // Do not throw here to avoid duplicate toasts from the outer catch
+        showToastOnce(`${displayName} not detected. Install the extension or use WalletConnect.`, 'error');
+        setIsConnectingWallet(false);
         return;
       }
 
-      console.log('[ConnectWallet] Using discovered provider for', walletId, provider);
+      console.log('[ConnectWallet] Using discovered provider for:', walletId);
 
-      // Always sign through the discovered provider
       let account = await walletUtils.requestWalletConnection(provider);
-      // Normalize wallet address to lowercase for consistency
       account = normalizeWalletAddress(account);
+
       const nonce = await getNonce(account);
       let signature = await walletUtils.signMessage(nonce, account, provider);
 
-      // Log signature and message details for debugging
       console.log('[ConnectWallet] Signing details:', {
         account,
         nonce,
-        signature,
         signatureLength: signature ? signature.length : 0,
-        providerSummary: {
-          name: provider?.name || provider?.constructor?.name,
-          isMetaMask: !!provider?.isMetaMask,
-          isTrustWallet: !!provider?.isTrustWallet,
-          isCoinbaseWallet: !!provider?.isCoinbaseWallet,
-        },
       });
 
-      // Client-side recovery check to detect mismatches before backend call
+      // Client-side recovery check
       try {
         const recovered = verifyMessage(nonce, signature);
-        console.log('[ConnectWallet] Recovered address from signature:', recovered);
         if (recovered.toLowerCase() !== account.toLowerCase()) {
-          console.warn('[ConnectWallet] ⚠️ Recovered address does not match connected account');
+          console.warn('[ConnectWallet] ⚠️ Recovered address mismatch');
         }
       } catch (recErr) {
-        console.error('[ConnectWallet] Failed to recover address from signature:', recErr);
+        console.error('[ConnectWallet] Recovery check failed:', recErr);
       }
 
       const returnedUser = await loginWithWallet(account, signature, nonce);
-      console.log('[ConnectWallet] login returnedUser', returnedUser, 'context user before fetch:', user);
-      // If login didn't include userInfo, fetch it directly using the returned token
+
       let finalUserInfo = returnedUser?.userInfo ?? null;
       if (!finalUserInfo && returnedUser?.token) {
         try {
           finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
         } catch (e) {
-          // fallback: try context fetch
           try {
             await fetchUserInfo();
           } catch {}
           finalUserInfo = returnedUser?.userInfo ?? null;
         }
       }
+
       const finalUser = { ...(returnedUser || user), userInfo: finalUserInfo || returnedUser?.userInfo || user?.userInfo };
       const role = ((finalUser?.userInfo?.role ?? (finalUser as any)?.role) || "").toString();
       const isFullyRegistered = finalUser?.userInfo?.full_reg;
       const isSetup = finalUser?.userInfo?.is_setup;
-      // Require profile setup when the account is a standard `user` and registration/setup flags are incomplete.
-      // Also treat missing role as needing setup if registration flags are incomplete (new users).
       const roleLower = role.toLowerCase();
       const likelyUser = roleLower === "user" || roleLower === "";
       const shouldRequireSetup = likelyUser && (isFullyRegistered !== true || isSetup === false);
-      console.log('[ConnectWallet] finalUser for redirect', { role, isFullyRegistered, shouldRequireSetup, userInfo: finalUser.userInfo });
+
+      console.log('[ConnectWallet] Login successful, redirecting...', { role, shouldRequireSetup });
+
       if (shouldRequireSetup) {
         navigate("/profile-setup");
       } else {
         navigate(getDashboardRoute(role));
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to connect wallet";
-      console.error("ConnectWallet: failed:", err);
-      toast.error(errorMessage);
+      const errorMessage = normalizeErrorMessage(err);
+      console.error('[ConnectWallet] Wallet select failed:', err);
+      showToastOnce(errorMessage, 'error');
     } finally {
       setIsConnectingWallet(false);
     }
   };
+
+  // Overall loading state combines injected wallet + WalletConnect
+  const isAnyConnecting = isConnectingWallet || wcIsConnecting;
 
   return (
     <div className="w-full min-h-screen bg-[#221810] flex flex-col">
@@ -303,7 +403,7 @@ export const ConnectWallet = (): JSX.Element => {
           </p>
         </div>
 
-        {isConnectingWallet && (
+        {isAnyConnecting && (
           <div className="bg-[#332b22] border border-[#ff6600]/30 rounded-lg p-3 mb-6 flex items-center gap-3 max-w-md mx-auto w-full sm:w-auto">
             <div className="w-5 h-5 border-2 border-[#ff6600] border-t-transparent rounded-full animate-spin" />
             <div className="text-[#ff6600] font-semibold text-sm sm:text-base [font-family:'Manrope',Helvetica]">
@@ -317,9 +417,9 @@ export const ConnectWallet = (): JSX.Element => {
             {wallets.map((wallet) => (
               <button
                 key={wallet.id}
-                disabled={isConnectingWallet}
+                disabled={isAnyConnecting}
                 onClick={() => handleWalletSelect(wallet.id)}
-                className="group relative p-4 sm:p-6 rounded-2xl bg-[#2d2420] border border-[#3d3530] hover:border-[#ff6600] hover:bg-[#332b22] transition-all duration-200 cursor-pointer flex flex-col items-start gap-3 min-h-[140px] sm:min-h-[200px] w-full"
+                className="group relative p-4 sm:p-6 rounded-2xl bg-[#2d2420] border border-[#3d3530] hover:border-[#ff6600] hover:bg-[#332b22] transition-all duration-200 cursor-pointer flex flex-col items-start gap-3 min-h-[140px] sm:min-h-[200px] w-full disabled:opacity-50 disabled:cursor-not-allowed"
               >
               {/* {wallet.badge && (
                 <span className="absolute top-4 right-4 text-[13px] px-3 py-1 rounded-full bg-[#ff660033] border-[#f6b13b33] text-[#ff6600] [font-family:'Manrope',Helvetica]">
