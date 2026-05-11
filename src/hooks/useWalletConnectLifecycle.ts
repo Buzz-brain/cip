@@ -12,7 +12,7 @@
 import { useCallback, useRef, useEffect, useState } from 'react';
 import { useWeb3Modal, useWeb3ModalProvider, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { toast } from 'react-toastify';
-import { cleanupWalletConnect, prepareMobileWalletConnect, detectMobileWalletReturn } from '../wallet/walletConnectCleanup';
+import { cleanupWalletConnect, prepareMobileWalletConnect, detectMobileWalletReturn } from '../lib/wallet/walletConnectCleanup';
 
 interface WalletConnectLifecycleOptions {
   onConnected?: (address: string) => void;
@@ -73,7 +73,7 @@ function normalizeWCError(err: unknown): string {
 export function useWalletConnectLifecycle(
   options: WalletConnectLifecycleOptions = {}
 ): UseWalletConnectLifecycleReturn {
-  const { open: openWeb3Modal, close: closeWeb3Modal, isOpen: isWeb3ModalOpen } = useWeb3Modal();
+  const { open: openWeb3Modal, close: closeWeb3Modal } = useWeb3Modal();
   const { walletProvider } = useWeb3ModalProvider();
   const { address: wcAddress, isConnected: wcIsConnected } = useWeb3ModalAccount();
 
@@ -156,13 +156,20 @@ export function useWalletConnectLifecycle(
       console.warn('[useWalletConnectLifecycle] Cleanup error (non-fatal):', err);
     }
 
+    // Ensure modal is closed if web3modal exposes a close function
+    try {
+      await closeWeb3Modal?.();
+    } catch (err) {
+      console.warn('[useWalletConnectLifecycle] closeWeb3Modal() failed (non-fatal):', err);
+    }
+
     // Clear loading state
     setIsConnecting(false);
     setIsModalOpen(false);
 
     // Small delay to let state settle
     await new Promise(resolve => setTimeout(resolve, 100));
-  }, []);
+  }, [closeWeb3Modal]);
 
   /**
    * Listen for successful WalletConnect connection
@@ -185,19 +192,15 @@ export function useWalletConnectLifecycle(
    * If modal closes without connection, reset state
    */
   useEffect(() => {
-    if (!isWeb3ModalOpen && isModalOpen) {
-      console.log('[useWalletConnectLifecycle] WalletConnect modal closed');
+    // If the modal flag is set but there is no provider/connection and we're not actively connecting,
+    // treat this as the user cancelling the flow and reset local modal state.
+    if (isModalOpen && !isConnecting && !wcIsConnected && !walletProvider) {
+      console.log('[useWalletConnectLifecycle] WalletConnect modal appears closed without connection');
       setIsModalOpen(false);
-
-      // If still in connecting state, user likely cancelled
-      if (isConnecting) {
-        console.log('[useWalletConnectLifecycle] Modal closed without connection - user likely cancelled');
-        setIsConnecting(false);
-        showToastOnce('Connection cancelled.', 'info');
-        options.onCancelled?.();
-      }
+      showToastOnce('Connection cancelled.', 'info');
+      options.onCancelled?.();
     }
-  }, [isWeb3ModalOpen, isModalOpen, isConnecting, showToastOnce, options]);
+  }, [isModalOpen, isConnecting, wcIsConnected, walletProvider, showToastOnce, options]);
 
   return {
     isConnecting,
