@@ -27,7 +27,9 @@ declare global {
  * Check if we should enable mobile debugging tools
  * Returns true if:
  * 1. App is in DEV mode, OR
- * 2. URL contains ?debug=true query parameter
+ * 2. URL contains ?debug=true query parameter, OR
+ * 3. Hostname is localhost/127.0.0.1, OR
+ * 4. Hostname contains vercel.app (preview deployments)
  */
 function shouldEnableMobileDebug(): boolean {
   // Always enable in development
@@ -38,7 +40,23 @@ function shouldEnableMobileDebug(): boolean {
   // Check for ?debug=true in production (e.g., for staging)
   const params = new URLSearchParams(window.location.search);
   const debugParam = params.get('debug');
-  return debugParam === 'true';
+  if (debugParam === 'true') {
+    return true;
+  }
+
+  // Enable on localhost
+  const hostname = window.location.hostname;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return true;
+  }
+
+  // Enable on Vercel preview deployments (staging)
+  if (hostname.includes('vercel.app')) {
+    console.log('[Mobile Debug] 🔍 Vercel deployment detected - enabling debug mode');
+    return true;
+  }
+
+  return false;
 }
 
 /**
