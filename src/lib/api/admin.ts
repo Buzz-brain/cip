@@ -246,7 +246,7 @@ export async function approveEnterprise(entrepId: number, token?: string): Promi
 }
 
 export async function disapproveAdminByEntrep(entrepId: number, token?: string): Promise<any> {
-  const res = await fetch(`${BACKEND_API_URL}/admin/disapprove-admin/${entrepId}`, {
+  const res = await fetch(`${BACKEND_API_URL}/admin/disapprove-enterprise/${entrepId}`, {
     method: 'PATCH',
     headers: { Accept: 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
   });

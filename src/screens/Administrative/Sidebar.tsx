@@ -153,7 +153,7 @@ export function Sidebar({ variant = "default", mobile = false, open = false, onC
             onClick={() => {
               try { logout(); } catch(e) { /* ignore */ }
               try { toast.success('Logged out successfully'); } catch(e) {}
-              navigate('/connect-wallet');
+              navigate('/administrative-login');
               onClose && onClose();
             }}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-[#2a2520] hover:text-gray-300 transition-colors"
@@ -204,7 +204,7 @@ export function Sidebar({ variant = "default", mobile = false, open = false, onC
           onClick={() => {
             try { const { logout } = useAuth(); logout(); } catch(e) { /* ignore */ }
             try { toast.success('Logged out successfully'); } catch(e) {}
-            navigate('/connect-wallet');
+            navigate('/administrative-login');
           }}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-[#2a2520] hover:text-gray-300 transition-colors"
         >
