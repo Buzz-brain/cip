@@ -1,4 +1,4 @@
-import { Search, Bell, User, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 
 interface HeaderProps {
   title?: string;
@@ -13,7 +13,6 @@ export function Header({
   subtitle,
   showBreadcrumb,
   breadcrumbItems,
-  rightContent,
   onToggleMenu,
 }: HeaderProps & { onToggleMenu?: () => void }) {
   return (
