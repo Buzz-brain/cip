@@ -4,7 +4,7 @@ import { useAuth } from "../../context/useAuth";
 import { Button } from "@components/ui/button";
 import { toast } from "react-toastify";
 import * as walletUtils from "../../lib/wallet/walletUtils";
-import { initEip6963Discovery, getWalletProviderByRdns, waitForWalletProvider, signMessage } from "../../lib/wallet/walletUtils";
+import { initEip6963Discovery, waitForWalletProvider, signMessage, ensureArbitrumSepoliaWithFallback } from "../../lib/wallet/walletUtils";
 import { useWeb3ModalProvider, useWeb3ModalAccount } from "@web3modal/ethers/react";
 import { normalizeWalletAddress, getDashboardRoute } from "../../lib/utils";
 import { verifyMessage } from "ethers";
@@ -16,7 +16,6 @@ import helpIcon from "@assets/help.svg";
 import connectWalletOrange from "@assets/connect-wallet.-orange.svg";
 import metamask from "@assets/metamask.svg";
 import trustWallet from "@assets/trust-wallet.svg";
-import phantom from "@assets/phantom.svg";
 
 
 const navigationItems = [
@@ -41,32 +40,25 @@ const wallets = [
     icon: metamask,
   },
   {
-    id: "trust",
-    name: "Trust Wallet",
-    description: "Broad Asset Support",
-    category: "Multi-chain",
-    icon: trustWallet,
-  },
-  {
-    id: "phantom",
-    name: "Phantom",
-    description: "Solana & Bitcoin",
-    category: "Solana",
-    icon: phantom,
-  },
-  {
     id: "walletconnect",
     name: "WalletConnect",
     description: "Connect mobile wallets via QR or deep link",
     category: "Mobile",
     icon: connectWalletOrange,
   },
-    // {
-    //   id: "coinbase",
-    //   name: "Coinbase Wallet",
-    //   description: "Exchange Connected",
-    //   icon: coinbaseWallet,
-    // },
+  {
+    id: "trust",
+    name: "Trust Wallet",
+    description: "Broad Asset Support",
+    category: "Multi-chain",
+    icon: trustWallet,
+  },
+  // {
+  //   id: "coinbase",
+  //   name: "Coinbase Wallet",
+  //   description: "Exchange Connected",
+  //   icon: coinbaseWallet,
+  // },
   // {
   //   id: "ledger",
   //   name: "Ledger",
@@ -131,7 +123,6 @@ export const ConnectWallet = (): JSX.Element => {
   const {
     isConnecting: wcIsConnecting,
     openWalletConnectModal,
-    resetConnection,
     isModalOpen,
   } = useWalletConnectLifecycle({
     onConnected: (address: string) => {
@@ -188,6 +179,8 @@ export const ConnectWallet = (): JSX.Element => {
       console.log('[ConnectWallet] Logging in with WalletConnect account:', wcAddress);
 
       const account = normalizeWalletAddress(wcAddress);
+      // Ensure user is on Arbitrum Sepolia before signing — silent if rejected
+      await ensureArbitrumSepoliaWithFallback(walletProvider);
       const nonce = await getNonce(account);
       const signature = await signMessage(nonce, account, walletProvider);
 
@@ -276,6 +269,7 @@ export const ConnectWallet = (): JSX.Element => {
           }
 
           await openWalletConnectModal();
+          setIsConnectingWallet(false);
         } catch (err) {
           console.error('[ConnectWallet] WalletConnect open error:', err);
           showToastOnce(normalizeErrorMessage(err), 'error');
@@ -314,6 +308,8 @@ export const ConnectWallet = (): JSX.Element => {
       let account = await walletUtils.requestWalletConnection(provider);
       account = normalizeWalletAddress(account);
 
+      // Ensure user is on Arbitrum Sepolia before signing — silent if rejected
+      await ensureArbitrumSepoliaWithFallback(provider);
       const nonce = await getNonce(account);
       let signature = await walletUtils.signMessage(nonce, account, provider);
 

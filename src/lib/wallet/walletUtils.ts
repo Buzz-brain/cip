@@ -237,6 +237,50 @@ export async function getCurrentChainId(provider?: any): Promise<string> {
   return await ethereumProvider.request({ method: "eth_chainId" });
 }
 
+const ARBITRUM_SEPOLIA_CHAIN_ID_HEX = '0x66eee'; // 421614
+
+export async function ensureArbitrumSepoliaWithFallback(provider?: any): Promise<void> {
+  const ethereumProvider = provider || (window as any).ethereum;
+  if (!ethereumProvider) return;
+
+  try {
+    const currentChainId = await ethereumProvider.request({ method: 'eth_chainId' });
+    if (currentChainId === ARBITRUM_SEPOLIA_CHAIN_ID_HEX) return; // already on correct chain
+
+    try {
+      await ethereumProvider.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: ARBITRUM_SEPOLIA_CHAIN_ID_HEX }],
+      });
+      console.log('[WalletUtils] ✅ Switched to Arbitrum Sepolia');
+    } catch (switchError: any) {
+      if (switchError.code === 4902) {
+        // Chain not added to wallet — add it
+        try {
+          await ethereumProvider.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: ARBITRUM_SEPOLIA_CHAIN_ID_HEX,
+              chainName: 'Arbitrum Sepolia',
+              nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+              rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
+              blockExplorerUrls: ['https://sepolia.arbiscan.io'],
+            }],
+          });
+          console.log('[WalletUtils] ✅ Added and switched to Arbitrum Sepolia');
+        } catch (addError) {
+          console.warn('[WalletUtils] User rejected adding Arbitrum Sepolia — continuing anyway');
+        }
+      } else {
+        // User rejected switch — continue anyway (do not block login)
+        console.warn('[WalletUtils] User rejected chain switch — continuing anyway');
+      }
+    }
+  } catch (err) {
+    console.warn('[WalletUtils] Chain switch check failed — continuing anyway', err);
+  }
+}
+
 export async function switchToEthereumMainnet(provider?: any): Promise<void> {
   // Use provided provider, fallback to window.ethereum
   const ethereumProvider = provider || window.ethereum;
