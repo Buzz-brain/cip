@@ -400,7 +400,7 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
 
       // Small delay to allow AuthContext to update before redirecting
       // This prevents ProtectedRoute from redirecting back due to timing issues
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       if (shouldRequireSetup) {
         navigate("/profile-setup");
