@@ -257,22 +257,104 @@ export function useWalletConnectLifecycle(
   }, [wcIsConnected, wcAddress, walletProvider, options]);
 
   /**
-   * Listen for modal closure / connection failure
+   * Monitor for stuck/failed modal state
+   * If modal is open but relay fails or times out, force reset
    */
   useEffect(() => {
-    // If modal is open but no connection after timeout, likely user cancelled
-    if (isModalOpen && !isConnecting && !wcIsConnected && !walletProvider) {
-      console.log('[useWalletConnectLifecycle] Modal open but no connection detected');
-      setIsModalOpen(false);
-      showToastOnce('Connection cancelled.', 'info');
-      options.onCancelled?.();
+    if (!isModalOpen || isConnecting === false) return;
 
-      // Reset lock if not already handled
-      if (!walletConnectLock.isIdle()) {
+    const checkInterval = setInterval(() => {
+      // Check if modal element still exists and is visible
+      const modalElement = document.querySelector('w3m-modal');
+      const isModalDOMOpen = modalElement?.hasAttribute('open');
+      
+      // Check console for relay errors (WebSocket failures)
+      const windowAny = window as any;
+      const walletConnectErrors = (windowAny.__wc_errors || []).filter(
+        (err: string) => /relay|websocket|connection failed/i.test(err)
+      );
+      
+      // If modal is open but relay has errors, close and reset
+      if (isModalDOMOpen && walletConnectErrors.length > 0) {
+        console.log('[useWalletConnectLifecycle] ⚠️ Relay error detected while modal open - forcing reset');
+        clearInterval(checkInterval);
+        
+        // Force close modal and reset everything
+        try {
+          closeWeb3Modal?.();
+        } catch (e) {
+          console.warn('[useWalletConnectLifecycle] Error closing modal:', e);
+        }
+        
+        setIsModalOpen(false);
+        setIsConnecting(false);
         walletConnectLock.completeDisconnect();
+        
+        showToastOnce('WalletConnect relay unreachable. Try a VPN, or use MetaMask / Trust Wallet directly.', 'error');
+        options.onFailed?.('Relay error detected');
+      }
+    }, 2000); // Check every 2 seconds
+
+    return () => clearInterval(checkInterval);
+  }, [isModalOpen, isConnecting, closeWeb3Modal, showToastOnce, options]);
+
+  /**
+   * Listen for modal closure / connection failure
+   * Detects when modal is closed without connecting (user cancelled)
+   */
+  useEffect(() => {
+    // Modal was opened but is now closed (modal element removed from DOM)
+    if (isModalOpen) {
+      // Check if Web3Modal has closed by looking for the modal DOM element
+      const modalElement = document.querySelector('w3m-modal');
+      const isModalVisible = modalElement?.hasAttribute('open');
+      
+      // If modal is not visible/open anymore, user likely closed it
+      if (!isModalVisible) {
+        console.log('[useWalletConnectLifecycle] Modal closed by user (not connected)');
+        setIsModalOpen(false);
+        
+        // Only call cancelled if we were trying to connect (no connection yet)
+        if (!wcIsConnected || !wcAddress) {
+          showToastOnce('Connection cancelled.', 'info');
+          options.onCancelled?.();
+        }
+
+        // Reset lock to allow next attempt
+        if (!walletConnectLock.isIdle()) {
+          console.log('[useWalletConnectLifecycle] Resetting lock due to modal closure');
+          walletConnectLock.completeDisconnect();
+        }
+        
+        // Reset connecting flag
+        setIsConnecting(false);
       }
     }
-  }, [isModalOpen, isConnecting, wcIsConnected, walletProvider, showToastOnce, options]);
+  }, [isModalOpen, wcIsConnected, wcAddress, showToastOnce, options]);
+
+  /**
+   * Fallback: If modal has been open for too long (>60s) without connection, 
+   * assume user abandoned the attempt
+   */
+  useEffect(() => {
+    if (!isModalOpen) return;
+
+    const timeout = setTimeout(() => {
+      // If modal is still open but no connection after 60 seconds
+      if (isModalOpen && !wcIsConnected) {
+        console.log('[useWalletConnectLifecycle] Modal timeout - no connection after 60s');
+        setIsModalOpen(false);
+        setIsConnecting(false);
+        showToastOnce('Connection timeout - please try again.', 'error');
+        
+        if (!walletConnectLock.isIdle()) {
+          walletConnectLock.completeDisconnect();
+        }
+      }
+    }, 60000); // 60 second timeout
+
+    return () => clearTimeout(timeout);
+  }, [isModalOpen, wcIsConnected, showToastOnce]);
 
   return {
     isConnecting,

@@ -125,6 +125,7 @@ export const ConnectWallet = (): JSX.Element => {
     },
     onCancelled: () => {
       console.log('[ConnectWallet] WalletConnect cancelled by user');
+      setIsConnectingWallet(false); // Hide spinner if modal is cancelled
     },
   });
 
@@ -136,11 +137,23 @@ export const ConnectWallet = (): JSX.Element => {
     const resetPageState = async () => {
       console.log('[ConnectWallet] Page mounted - resetting wallet state for fresh login...');
       
-      // Reset the global connection lock
-      walletConnectLock.hardReset();
+      try {
+        // Reset the global connection lock
+        console.log('[ConnectWallet] Calling hardReset on lock');
+        walletConnectLock.hardReset();
+        console.log('[ConnectWallet] ✅ Lock hardReset complete');
+      } catch (err) {
+        console.warn('[ConnectWallet] Lock hardReset error:', err);
+      }
       
-      // Clear all WalletConnect/Web3Modal storage
-      await clearAllWalletConnectState();
+      try {
+        // Clear all WalletConnect/Web3Modal storage
+        console.log('[ConnectWallet] Clearing all WalletConnect state');
+        await clearAllWalletConnectState();
+        console.log('[ConnectWallet] ✅ WalletConnect state cleared');
+      } catch (err) {
+        console.warn('[ConnectWallet] State clear error:', err);
+      }
       
       // Reset local login flags
       injectedLoginTriggered.current = false;
@@ -281,6 +294,14 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
         wcAttemptCount.current += 1;
         const isRetry = wcAttemptCount.current > 1;
         const aggressiveCleanup = isRetry;
+
+        // Safety check: if lock is stuck, force reset it before attempting connection
+        const lockState = walletConnectLock.getState();
+        if (lockState.state !== 'idle') {
+          console.log(`[ConnectWallet] ⚠️ Lock is in state "${lockState.state}" - forcing reset before attempt`);
+          walletConnectLock.hardReset();
+          await clearAllWalletConnectState();
+        }
 
         try {
           if (isMobileBrowser()) {
