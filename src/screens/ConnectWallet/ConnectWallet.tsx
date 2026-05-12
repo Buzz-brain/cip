@@ -239,6 +239,10 @@ export const ConnectWallet = (): JSX.Element => {
 
       console.log('[ConnectWallet] Login successful, redirecting...', { role, shouldRequireSetup });
 
+      // Small delay to allow AuthContext to update before redirecting
+      // This prevents ProtectedRoute from redirecting back due to timing issues
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       if (shouldRequireSetup) {
         navigate("/profile-setup");
       } else {
@@ -393,6 +397,10 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
       const shouldRequireSetup = likelyUser && (isFullyRegistered !== true || isSetup === false);
 
       console.log('[ConnectWallet] Login successful, redirecting...', { role, shouldRequireSetup });
+
+      // Small delay to allow AuthContext to update before redirecting
+      // This prevents ProtectedRoute from redirecting back due to timing issues
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       if (shouldRequireSetup) {
         navigate("/profile-setup");
