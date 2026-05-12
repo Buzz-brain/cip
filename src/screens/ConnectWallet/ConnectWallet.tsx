@@ -70,7 +70,7 @@ function resolvePostLoginRoute(userInfo: any, role: string): string {
 }
 
 export const ConnectWallet = (): JSX.Element => {
-  const { getNonce, loginWithWallet, fetchUserInfo } = useAuth();
+  const { getNonce, loginWithWallet, fetchUserInfo, user, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
   const { walletProvider } = useAppKitProvider('eip155');
@@ -97,6 +97,25 @@ export const ConnectWallet = (): JSX.Element => {
       setIsConnectingWallet(false);
     },
   });
+
+  // If user is already authenticated on mount, redirect to dashboard
+  useEffect(() => {
+    if (!loading && isAuthenticated && user) {
+      const role = user?.userInfo?.role ?? '';
+      const isFullyRegistered = user?.userInfo?.full_reg;
+      const roleLower = role.toLowerCase();
+      const likelyUser = roleLower === 'user' || roleLower === '';
+      const shouldRequireSetup = likelyUser && isFullyRegistered !== true;
+
+      console.log('[ConnectWallet] 🔄 User already authenticated from localStorage, redirecting...', { role, shouldRequireSetup });
+
+      if (shouldRequireSetup) {
+        navigate('/profile-setup', { replace: true });
+      } else {
+        navigate(getDashboardRoute(role), { replace: true });
+      }
+    }
+  }, [loading, isAuthenticated, user, navigate]);
 
   useEffect(() => {
     injectedLoginTriggered.current = false;
@@ -275,6 +294,18 @@ export const ConnectWallet = (): JSX.Element => {
   };
 
   const isAnyConnecting = isConnectingWallet || wcIsConnecting;
+
+  // Show loading screen while auth is initializing (on mount or if already authenticated)
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen bg-[#221810] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-12 h-12 border-4 border-[#ff6600] border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-gray-400">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen bg-[#221810] flex flex-col">

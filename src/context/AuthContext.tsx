@@ -42,20 +42,57 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [error, setError] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Initialize from localStorage on mount
+  // Initialize from localStorage on mount and validate token
   useEffect(() => {
-    const storedUser = localStorage.getItem(STORAGE_KEY);
-    if (storedUser) {
+    const initializeAuth = async () => {
       try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-      } catch (err) {
-        console.error("Failed to parse stored user:", err);
-        localStorage.removeItem(STORAGE_KEY);
+        const storedUser = localStorage.getItem(STORAGE_KEY);
+        if (storedUser) {
+          try {
+            const parsedUser = JSON.parse(storedUser);
+            
+            // Validate token by attempting to fetch user info
+            if (parsedUser.token) {
+              try {
+                console.log('[AuthContext] 🔍 Validating stored token on mount...');
+                const userInfo = await authAPI.getUserInfo(parsedUser.token);
+                // Token is valid, restore user with fresh info
+                const restoredUser: User = {
+                  ...parsedUser,
+                  userInfo,
+                  name: userInfo?.full_name || userInfo?.name || parsedUser.name,
+                  email: userInfo?.email || parsedUser.email,
+                };
+                console.log('[AuthContext] ✅ Token validated, user restored:', restoredUser.publicKey);
+                setUser(restoredUser);
+              } catch (validationErr) {
+                // Token is invalid or expired
+                console.warn('[AuthContext] ⚠️ Stored token is invalid/expired, clearing:', validationErr);
+                localStorage.removeItem(STORAGE_KEY);
+                setUser(null);
+              }
+            } else {
+              // No token in stored user, clear it
+              console.warn('[AuthContext] ⚠️ Stored user has no token, clearing');
+              localStorage.removeItem(STORAGE_KEY);
+              setUser(null);
+            }
+          } catch (parseErr) {
+            console.error('[AuthContext] Failed to parse stored user:', parseErr);
+            localStorage.removeItem(STORAGE_KEY);
+            setUser(null);
+          }
+        } else {
+          console.log('[AuthContext] No stored user found');
+          setUser(null);
+        }
+      } finally {
+        setIsInitialized(true);
+        setLoading(false);
       }
-    }
-    setIsInitialized(true);
-      setLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   // Persist user to localStorage whenever it changes
