@@ -10,6 +10,7 @@ import { normalizeWalletAddress, getDashboardRoute } from "../../lib/utils";
 import { verifyMessage } from "ethers";
 import * as authAPI from "../../lib/api/auth";
 import { useWalletConnectLifecycle } from "../../hooks/useWalletConnectLifecycle";
+import { useAutoResumeWalletConnection, savePendingWalletState, getPendingWalletState, clearPendingWalletState } from "../../hooks/useMobileWalletRecovery";
 import logoImg from "@assets/cip-logo-full.png";
 import helpIcon from "@assets/help.svg";
 import connectWalletOrange from "@assets/connect-wallet-orange.svg";
@@ -98,6 +99,24 @@ export const ConnectWallet = (): JSX.Element => {
     },
   });
 
+  // Handle mobile wallet return and auto-resume
+  const handleWalletReturnResume = useCallback(() => {
+    console.log('[ConnectWallet] 🔄 Wallet return detected, checking for pending connection...');
+    
+    const pendingState = getPendingWalletState();
+    if (pendingState) {
+      console.log('[ConnectWallet] Found pending wallet state, resuming login...');
+      // Resume the login with the saved account and nonce
+      resumePendingLogin(pendingState.account, pendingState.nonce, pendingState.method);
+    }
+  }, []);
+
+  useAutoResumeWalletConnection(
+    wcIsConnected,
+    wcAddress,
+    handleWalletReturnResume
+  );
+
   // If user is already authenticated on mount, redirect to dashboard
   useEffect(() => {
     if (!loading && isAuthenticated && user) {
@@ -133,6 +152,49 @@ export const ConnectWallet = (): JSX.Element => {
     setTimeout(() => toastGuard.current.delete(key), 3000);
   }, []);
 
+  // Resume login from pending state (used after mobile wallet return)
+  const resumePendingLogin = useCallback(async (account: string, nonce: string, method: 'injected' | 'walletconnect') => {
+    try {
+      console.log('[ConnectWallet] 📖 Resuming pending login after wallet return:', account);
+      setIsConnectingWallet(true);
+
+      // Get fresh signature after wallet return
+      if (!walletProvider) {
+        throw new Error('Wallet provider not available');
+      }
+
+      const signature = await signMessage(nonce, account, walletProvider);
+      console.log('[ConnectWallet] ✅ Got signature after wallet return, sending to backend...');
+
+      const returnedUser = await loginWithWallet(account, signature, nonce);
+
+      let finalUserInfo = returnedUser?.userInfo ?? null;
+      if (!finalUserInfo && returnedUser?.token) {
+        try {
+          finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
+        } catch {
+          try { await fetchUserInfo(); } catch {}
+          finalUserInfo = returnedUser?.userInfo ?? null;
+        }
+      }
+
+      const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
+      const route = resolvePostLoginRoute(finalUserInfo, role);
+      console.log('[ConnectWallet] ✅ Resumed login successful, redirecting to:', route);
+      
+      clearPendingWalletState();
+      navigate(route);
+    } catch (err) {
+      const errorMessage = normalizeErrorMessage(err);
+      console.error('[ConnectWallet] Resume pending login failed:', err);
+      showToastOnce(errorMessage, 'error');
+      clearPendingWalletState();
+    } finally {
+      setIsConnectingWallet(false);
+      injectedLoginTriggered.current = false;
+    }
+  }, [walletProvider, loginWithWallet, fetchUserInfo, navigate, showToastOnce]);
+
   const handleNavigation = (href: string) => {
     if (href === '/') {
       navigate('/');
@@ -157,6 +219,15 @@ export const ConnectWallet = (): JSX.Element => {
       const account = normalizeWalletAddress(wcAddress);
       await ensureArbitrumSepoliaWithFallback(walletProvider);
       const nonce = await getNonce(account);
+      
+      // ⚠️ CRITICAL: Save pending state BEFORE attempting to sign (may switch apps on mobile)
+      savePendingWalletState({
+        account,
+        nonce,
+        method: 'walletconnect',
+        timestamp: Date.now(),
+      });
+
       const signature = await signMessage(nonce, account, walletProvider);
 
       const returnedUser = await loginWithWallet(account, signature, nonce);
@@ -174,11 +245,14 @@ export const ConnectWallet = (): JSX.Element => {
       const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
       const route = resolvePostLoginRoute(finalUserInfo, role);
       console.log('[ConnectWallet] Login successful, redirecting to:', route);
+      
+      clearPendingWalletState();
       navigate(route);
     } catch (err) {
       const errorMessage = normalizeErrorMessage(err);
       console.error('[ConnectWallet] WalletConnect login failed:', err);
       showToastOnce(errorMessage, 'error');
+      clearPendingWalletState();
     } finally {
       setIsConnectingWallet(false);
       injectedLoginTriggered.current = false;
@@ -249,6 +323,15 @@ export const ConnectWallet = (): JSX.Element => {
 
       await ensureArbitrumSepoliaWithFallback(provider);
       const nonce = await getNonce(account);
+      
+      // ⚠️ CRITICAL: Save pending state BEFORE attempting to sign (may switch apps on mobile)
+      savePendingWalletState({
+        account,
+        nonce,
+        method: 'injected',
+        timestamp: Date.now(),
+      });
+
       const signature = await walletUtils.signMessage(nonce, account, provider);
 
       console.log('[ConnectWallet] Signing details:', {
@@ -282,12 +365,15 @@ export const ConnectWallet = (): JSX.Element => {
       const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
       const route = resolvePostLoginRoute(finalUserInfo, role);
       console.log('[ConnectWallet] Login successful, redirecting to:', route);
+      
+      clearPendingWalletState();
       navigate(route);
 
     } catch (err) {
       const errorMessage = normalizeErrorMessage(err);
       console.error('[ConnectWallet] Wallet select failed:', err);
       showToastOnce(errorMessage, 'error');
+      clearPendingWalletState();
     } finally {
       setIsConnectingWallet(false);
     }
