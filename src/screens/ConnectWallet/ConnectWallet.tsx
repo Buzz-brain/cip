@@ -11,6 +11,8 @@ import { verifyMessage } from "ethers";
 import * as authAPI from "../../lib/api/auth";
 import { useWalletConnectLifecycle, useMobileWalletReturn } from "../../hooks/useWalletConnectLifecycle";
 import { cleanupWalletConnect, prepareMobileWalletConnect } from "../../lib/wallet/walletConnectCleanup";
+import { walletConnectLock } from "../../lib/wallet/walletConnectLock";
+import { clearAllWalletConnectState } from "../../lib/wallet/walletConnectDisconnect";
 import logoImg from "@assets/cip-logo-full.png";
 import helpIcon from "@assets/help.svg";
 import connectWalletOrange from "@assets/connect-wallet-orange.svg";
@@ -125,6 +127,33 @@ export const ConnectWallet = (): JSX.Element => {
       console.log('[ConnectWallet] WalletConnect cancelled by user');
     },
   });
+
+  /**
+   * On page mount, reset all wallet state to ensure fresh login experience
+   * This prevents carryover from previous sessions
+   */
+  useEffect(() => {
+    const resetPageState = async () => {
+      console.log('[ConnectWallet] Page mounted - resetting wallet state for fresh login...');
+      
+      // Reset the global connection lock
+      walletConnectLock.hardReset();
+      
+      // Clear all WalletConnect/Web3Modal storage
+      await clearAllWalletConnectState();
+      
+      // Reset local login flags
+      injectedLoginTriggered.current = false;
+      walletConnectLoginAttempted.current = false;
+      wcAttemptCount.current = 0;
+      
+      console.log('[ConnectWallet] ✅ Page state reset complete - ready for fresh login');
+    };
+    
+    resetPageState().catch(err => {
+      console.warn('[ConnectWallet] State reset had an error (non-critical):', err);
+    });
+  }, []); // Run only on mount
 
   /**
    * Show toast only once per unique message
