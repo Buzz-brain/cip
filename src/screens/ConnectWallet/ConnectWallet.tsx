@@ -13,7 +13,8 @@ import { useWalletConnectLifecycle, useMobileWalletReturn } from "../../hooks/us
 import { cleanupWalletConnect, prepareMobileWalletConnect } from "../../lib/wallet/walletConnectCleanup";
 import logoImg from "@assets/cip-logo-full.png";
 import helpIcon from "@assets/help.svg";
-import connectWalletOrange from "@assets/connect-wallet.-orange.svg";
+import connectWalletOrange from "@assets/connect-wallet-orange.svg";
+import walletConnect from "@assets/walletconnect-logo.svg";
 import metamask from "@assets/metamask.svg";
 import trustWallet from "@assets/trust-wallet.svg";
 
@@ -44,7 +45,7 @@ const wallets = [
     name: "WalletConnect",
     description: "Connect mobile wallets via QR or deep link",
     category: "Mobile",
-    icon: connectWalletOrange,
+    icon: walletConnect,
   },
   {
     id: "trust",
@@ -53,7 +54,6 @@ const wallets = [
     category: "Multi-chain",
     icon: trustWallet,
   },
-
 ];
 
 /**
@@ -105,6 +105,7 @@ export const ConnectWallet = (): JSX.Element => {
 
   const toastGuard = useRef(new Set<string>());
   const injectedLoginTriggered = useRef(false);
+  const walletConnectLoginAttempted = useRef(false);
   const wcAttemptCount = useRef(0);
 
   // Use improved WalletConnect lifecycle hook
@@ -208,6 +209,7 @@ export const ConnectWallet = (): JSX.Element => {
     } finally {
       setIsConnectingWallet(false);
       injectedLoginTriggered.current = false;
+      walletConnectLoginAttempted.current = false;
     }
   }, [wcAddress, walletProvider, getNonce, loginWithWallet, fetchUserInfo, user, navigate, showToastOnce]);
 
@@ -215,7 +217,7 @@ export const ConnectWallet = (): JSX.Element => {
    * Listen for successful WalletConnect connection
    */
   useEffect(() => {
-    if (!wcIsConnected || !wcAddress || !walletProvider) return;
+if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttempted.current) return;
 
     loginWithWalletConnectAccount();
   }, [wcIsConnected, wcAddress, walletProvider, loginWithWalletConnectAccount]);
@@ -245,6 +247,7 @@ export const ConnectWallet = (): JSX.Element => {
       // WalletConnect flow - use dedicated lifecycle hook
       if (walletId === 'walletconnect') {
         console.log('[ConnectWallet] Opening WalletConnect...');
+        walletConnectLoginAttempted.current = true;
         
         wcAttemptCount.current += 1;
         const isRetry = wcAttemptCount.current > 1;
@@ -412,11 +415,6 @@ export const ConnectWallet = (): JSX.Element => {
                 onClick={() => handleWalletSelect(wallet.id)}
                 className="group relative p-4 sm:p-6 rounded-2xl bg-[#2d2420] border border-[#3d3530] hover:border-[#ff6600] hover:bg-[#332b22] transition-all duration-200 cursor-pointer flex flex-col items-start gap-3 min-h-[140px] sm:min-h-[200px] w-full disabled:opacity-50 disabled:cursor-not-allowed"
               >
-              {/* {wallet.badge && (
-                <span className="absolute top-4 right-4 text-[13px] px-3 py-1 rounded-full bg-[#ff660033] border-[#f6b13b33] text-[#ff6600] [font-family:'Manrope',Helvetica]">
-                  {wallet.badge}
-                </span>
-              )} */}
 
               {wallet.category && (
                 <span className="absolute top-4 right-4 text-[13px] px-3 py-1 rounded-full bg-[#554233] text-gray-300 font-medium [font-family:'Manrope',Helvetica]">
@@ -424,7 +422,8 @@ export const ConnectWallet = (): JSX.Element => {
                 </span>
               )}
 
-                <img className="w-12 h-12 sm:w-16 sm:h-16 rounded-md bg-white" src={wallet.icon} alt={wallet.name} />
+                {/* <img className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white" src={wallet.icon} alt={wallet.name} /> */}
+                <img className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black" src={wallet.icon} alt={wallet.name} />
 
                 <h3 className="text-base sm:text-lg font-bold text-white text-left [font-family:'Manrope',Helvetica]">
                   {wallet.name}
