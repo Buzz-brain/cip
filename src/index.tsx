@@ -1,11 +1,8 @@
 import { StrictMode } from "react";
-// Web3Modal initialization
-import { initWeb3Modal } from "./lib/wallet/web3modalConfig";
+// AppKit initialization - import pre-configured provider wrapper
+import { AppKitProviderComponent } from "./lib/wallet/web3modalConfig.tsx";
 // Mobile debugging tools (Eruda for WalletConnect debugging)
 import { initMobileDebugTools } from "./lib/utils/mobileDebugTools";
-
-// Initialize Web3Modal once at app startup
-initWeb3Modal();
 
 // Initialize mobile debugging tools (Eruda) - loads asynchronously, non-blocking
 // Enabled in DEV mode or if ?debug=true is in URL
@@ -143,11 +140,12 @@ import { Login } from "./screens/Login";
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
-    <AuthProvider>
-      <ToastProvider>
-      <PlanProvider>
-        <BrowserRouter>
-          <Routes>
+    <AppKitProviderComponent>
+      <AuthProvider>
+        <ToastProvider>
+          <PlanProvider>
+            <BrowserRouter>
+              <Routes>
 
         {/* Landing Page */}
         <Route path="/" element={<Home />} /> ✅
@@ -357,9 +355,10 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         draggable
         pauseOnHover
       />
-    </BrowserRouter>
-      </PlanProvider>
-      </ToastProvider>
-    </AuthProvider>
+            </BrowserRouter>
+          </PlanProvider>
+        </ToastProvider>
+      </AuthProvider>
+    </AppKitProviderComponent>
   </StrictMode>
 );

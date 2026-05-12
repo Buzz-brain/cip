@@ -1,20 +1,16 @@
 /**
- * useWalletConnectLifecycle Hook - ENHANCED FOR MOBILE STABILITY
+ * useWalletConnectLifecycle Hook - APPKIT VERSION
  * 
  * Manages WalletConnect connection lifecycle with:
- * - Global connection lock (prevents simultaneous attempts)
- * - Hard session reset before connection
- * - Relayer failure detection & exponential backoff
- * - Mobile app switching support
- * - Safe error handling with proper cleanup
+ * - AppKit modal control
+ * - Connection state monitoring
+ * - Mobile wallet return detection
+ * - Error handling with user-friendly messages
  */
 
 import { useCallback, useRef, useEffect, useState } from 'react';
-import { useWeb3Modal, useWeb3ModalProvider, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useAppKit, useAppKitAccount, useAppKitProvider, useDisconnect } from '@reown/appkit/react';
 import { toast } from 'react-toastify';
-import { cleanupWalletConnect, detectMobileWalletReturn } from '../lib/wallet/walletConnectCleanup';
-import { walletConnectLock } from '../lib/wallet/walletConnectLock';
-import { hardDisconnectWeb3Modal, clearAllWalletConnectState } from '../lib/wallet/walletConnectDisconnect';
 
 interface WalletConnectLifecycleOptions {
   onConnected?: (address: string) => void;
@@ -31,91 +27,59 @@ interface UseWalletConnectLifecycleReturn {
 
 /**
  * Normalizes WalletConnect error messages to user-friendly strings
- * Also detects relayer failures and other critical errors
  */
-function normalizeWCError(err: unknown): { message: string; isRelayerError: boolean; isCritical: boolean } {
+function normalizeWCError(err: unknown): string {
   const errStr = err instanceof Error ? err.message : String(err);
 
-  // Relayer errors - these need special handling
+  // Relayer errors
   if (/relayer|relay|connection timeout|no response/i.test(errStr)) {
-    return {
-      message: 'WalletConnect relay unreachable. Try a VPN, or use MetaMask / Trust Wallet directly.',
-      isRelayerError: true,
-      isCritical: true,
-    };
+    return 'WalletConnect relay unreachable. Try a VPN, or use MetaMask / Trust Wallet directly.';
   }
 
   // User cancelled
-  if (/cancelled|rejected|user rejected|user denied/i.test(errStr)) {
-    return {
-      message: 'Connection cancelled. Please try again.',
-      isRelayerError: false,
-      isCritical: false,
-    };
+  if (/cancelled|rejected|user rejected|user denied|user closed/i.test(errStr)) {
+    return 'Connection cancelled. Please try again.';
   }
 
-  // Already pending - should never happen with our lock
-  if (/already pending|duplicate request|connection already|already connecting/i.test(errStr)) {
-    return {
-      message: 'Connection already in progress. Please wait.',
-      isRelayerError: false,
-      isCritical: true,
-    };
+  // Already pending
+  if (/already pending|duplicate request|already connecting/i.test(errStr)) {
+    return 'Connection already in progress. Please wait.';
   }
 
-  // Stale pairing
+  // Stale session
   if (/stale|expired|outdated|no pairing/i.test(errStr)) {
-    return {
-      message: 'Session expired. Please try reconnecting.',
-      isRelayerError: false,
-      isCritical: false,
-    };
+    return 'Session expired. Please try reconnecting.';
   }
 
   // Connection declined
-  if (/connection declined|declined|not allowed|rejected by peer/i.test(errStr)) {
-    return {
-      message: 'Connection declined. Try again or use another wallet.',
-      isRelayerError: false,
-      isCritical: false,
-    };
+  if (/declined|not allowed|rejected by peer/i.test(errStr)) {
+    return 'Connection declined. Try again or use another wallet.';
   }
 
   // Modal closed
-  if (/modal closed|user closed|closed|aborted/i.test(errStr)) {
-    return {
-      message: 'Connection closed. Please try again.',
-      isRelayerError: false,
-      isCritical: false,
-    };
+  if (/modal closed|closed|aborted/i.test(errStr)) {
+    return 'Connection closed. Please try again.';
   }
 
   // Provider unavailable
-  if (/no provider|provider not found|unavailable|not detected/i.test(errStr)) {
-    return {
-      message: 'Wallet provider unavailable. Install a Web3 wallet.',
-      isRelayerError: false,
-      isCritical: false,
-    };
+  if (/no provider|not found|unavailable|not detected/i.test(errStr)) {
+    return 'Wallet provider unavailable. Install a Web3 wallet.';
   }
 
   // Default
-  return {
-    message: 'Connection failed. Please try again.',
-    isRelayerError: false,
-    isCritical: false,
-  };
+  return 'Connection failed. Please try again.';
 }
 
 /**
- * Main WalletConnect lifecycle hook - MOBILE STABLE VERSION
+ * Main WalletConnect lifecycle hook - APPKIT VERSION
  */
 export function useWalletConnectLifecycle(
   options: WalletConnectLifecycleOptions = {}
 ): UseWalletConnectLifecycleReturn {
-  const { open: openWeb3Modal, close: closeWeb3Modal } = useWeb3Modal();
-  const { walletProvider } = useWeb3ModalProvider();
-  const { address: wcAddress, isConnected: wcIsConnected } = useWeb3ModalAccount();
+  const { open, close } = useAppKit();
+  const { address: wcAddress, isConnected: wcIsConnected } = useAppKitAccount();
+  const { walletProvider } = useAppKitProvider('eip155');
+  const { disconnect } = useDisconnect();
 
   const [isConnecting, setIsConnecting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -131,7 +95,7 @@ export function useWalletConnectLifecycle(
     const key = `${type}:${message}`;
     if (toastGuard.current.has(key)) return;
     toastGuard.current.add(key);
-    
+
     if (type === 'error') toast.error(message);
     else if (type === 'success') toast.success(message);
     else toast.info(message);
@@ -141,75 +105,45 @@ export function useWalletConnectLifecycle(
   }, []);
 
   /**
-   * Opens WalletConnect modal with global connection lock
-   * This ensures ONLY ONE connection attempt happens at a time
+   * Opens AppKit modal for wallet connection
    */
   const openWalletConnectModal = useCallback(async () => {
-    const sessionId = walletConnectLock.getSessionId();
-    console.log(`[useWalletConnectLifecycle] openWalletConnectModal called (session: ${sessionId})`);
-
-    // Try to acquire connection lock
-    if (!walletConnectLock.tryAcquire()) {
-      const lockState = walletConnectLock.getState();
-      console.warn(`[useWalletConnectLifecycle] Lock not available. State: ${lockState.state}`);
-
-      if (lockState.state === 'error') {
-        const backoffSec = Math.ceil((lockState.lastErrorTime ? 60000 - (Date.now() - lockState.lastErrorTime) : 10000) / 1000);
-        showToastOnce(`Please wait ${backoffSec}s before retrying...`, 'info');
-      }
-      return;
-    }
+    console.log('[useWalletConnectLifecycle] Opening AppKit modal');
 
     setIsConnecting(true);
 
     try {
-      console.log('[useWalletConnectLifecycle] Lock acquired - opening modal');
-
-      // HARD DISCONNECT: Ensure absolutely NO stale state
-      console.log('[useWalletConnectLifecycle] Performing hard disconnect...');
-      await clearAllWalletConnectState();
-      await new Promise(r => setTimeout(r, 200)); // Let state settle
-
-      // Mobile-specific pre-connection cleanup
-      if (detectMobileWalletReturn()) {
-        console.log('[useWalletConnectLifecycle] Mobile return detected - running preparation');
-        await cleanupWalletConnect(false); // Conservative on first attempt
-      }
-
-      // Open Web3Modal - loading state persists until connection succeeds/fails
-      console.log('[useWalletConnectLifecycle] Opening Web3Modal');
-      openWeb3Modal();
+      // Open AppKit modal - it handles connection internally
+      open?.({ view: 'Connect' });
       setIsModalOpen(true);
 
       console.log('[useWalletConnectLifecycle] Modal opened - waiting for connection...');
     } catch (err) {
       console.error('[useWalletConnectLifecycle] Error opening modal:', err);
-      const { message } = normalizeWCError(err);
-      walletConnectLock.markError(err instanceof Error ? err : new Error(String(err)));
+      const message = normalizeWCError(err);
       showToastOnce(message, 'error');
       setIsConnecting(false);
+      setIsModalOpen(false);
     }
-  }, [openWeb3Modal, showToastOnce]);
+  }, [open, showToastOnce]);
 
   /**
    * Resets WalletConnect connection completely
-   * Cleans up and unlocks for next attempt
    */
   const resetConnection = useCallback(async () => {
     console.log('[useWalletConnectLifecycle] Resetting connection...');
 
     try {
-      // Hard disconnect Web3Modal
-      await hardDisconnectWeb3Modal();
-
-      // Clear all state
-      await clearAllWalletConnectState();
+      // Disconnect if connected
+      if (wcIsConnected) {
+        await disconnect?.();
+      }
 
       // Close modal if open
       try {
-        await closeWeb3Modal?.();
+        close?.();
       } catch (err) {
-        console.warn('[useWalletConnectLifecycle] closeWeb3Modal failed:', err instanceof Error ? err.message : err);
+        console.warn('[useWalletConnectLifecycle] closeModal failed:', err instanceof Error ? err.message : err);
       }
     } catch (err) {
       console.warn('[useWalletConnectLifecycle] Reset error (non-fatal):', err instanceof Error ? err.message : err);
@@ -220,18 +154,14 @@ export function useWalletConnectLifecycle(
     setIsModalOpen(false);
     wcLoginGuard.current = false;
 
-    // Unlock connection lock
-    walletConnectLock.completeDisconnect();
-
     console.log('[useWalletConnectLifecycle] ✅ Reset complete');
 
     // Small delay for state consistency
     await new Promise(r => setTimeout(r, 100));
-  }, [closeWeb3Modal]);
+  }, [wcIsConnected, disconnect, close]);
 
   /**
-   * Listen for successful WalletConnect connection
-   * Fires only once when connection succeeds
+   * Listen for successful connection
    */
   useEffect(() => {
     if (!wcIsConnected || !wcAddress || !walletProvider) {
@@ -246,9 +176,6 @@ export function useWalletConnectLifecycle(
     wcLoginGuard.current = true;
     console.log('[useWalletConnectLifecycle] ✅ Connected:', wcAddress);
 
-    // Mark connection as successful in lock
-    walletConnectLock.markConnected();
-
     setIsConnecting(false);
     setIsModalOpen(false);
 
@@ -257,83 +184,39 @@ export function useWalletConnectLifecycle(
   }, [wcIsConnected, wcAddress, walletProvider, options]);
 
   /**
-   * Monitor for stuck/failed modal state
-   * If modal is open but relay fails or times out, force reset
+   * Listen for modal closure / connection cancellation
+   * Detects when modal closes without connecting
    */
   useEffect(() => {
-    if (!isModalOpen || isConnecting === false) return;
+    if (!isModalOpen) return;
 
+    // Check if AppKit modal is still open via DOM
     const checkInterval = setInterval(() => {
-      // Check if modal element still exists and is visible
-      const modalElement = document.querySelector('w3m-modal');
-      const isModalDOMOpen = modalElement?.hasAttribute('open');
-      
-      // Check console for relay errors (WebSocket failures)
-      const windowAny = window as any;
-      const walletConnectErrors = (windowAny.__wc_errors || []).filter(
-        (err: string) => /relay|websocket|connection failed/i.test(err)
-      );
-      
-      // If modal is open but relay has errors, close and reset
-      if (isModalDOMOpen && walletConnectErrors.length > 0) {
-        console.log('[useWalletConnectLifecycle] ⚠️ Relay error detected while modal open - forcing reset');
-        clearInterval(checkInterval);
-        
-        // Force close modal and reset everything
-        try {
-          closeWeb3Modal?.();
-        } catch (e) {
-          console.warn('[useWalletConnectLifecycle] Error closing modal:', e);
-        }
-        
-        setIsModalOpen(false);
-        setIsConnecting(false);
-        walletConnectLock.completeDisconnect();
-        
-        showToastOnce('WalletConnect relay unreachable. Try a VPN, or use MetaMask / Trust Wallet directly.', 'error');
-        options.onFailed?.('Relay error detected');
-      }
-    }, 2000); // Check every 2 seconds
-
-    return () => clearInterval(checkInterval);
-  }, [isModalOpen, isConnecting, closeWeb3Modal, showToastOnce, options]);
-
-  /**
-   * Listen for modal closure / connection failure
-   * Detects when modal is closed without connecting (user cancelled)
-   */
-  useEffect(() => {
-    // Modal was opened but is now closed (modal element removed from DOM)
-    if (isModalOpen) {
-      // Check if Web3Modal has closed by looking for the modal DOM element
       const modalElement = document.querySelector('w3m-modal');
       const isModalVisible = modalElement?.hasAttribute('open');
-      
-      // If modal is not visible/open anymore, user likely closed it
-      if (!isModalVisible) {
+
+      // If modal is not visible anymore, user closed it
+      if (!isModalVisible && wcLoginGuard.current === false) {
         console.log('[useWalletConnectLifecycle] Modal closed by user (not connected)');
+        clearInterval(checkInterval);
         setIsModalOpen(false);
-        
+
         // Only call cancelled if we were trying to connect (no connection yet)
         if (!wcIsConnected || !wcAddress) {
           showToastOnce('Connection cancelled.', 'info');
           options.onCancelled?.();
         }
 
-        // Reset lock to allow next attempt
-        if (!walletConnectLock.isIdle()) {
-          console.log('[useWalletConnectLifecycle] Resetting lock due to modal closure');
-          walletConnectLock.completeDisconnect();
-        }
-        
         // Reset connecting flag
         setIsConnecting(false);
       }
-    }
+    }, 500);
+
+    return () => clearInterval(checkInterval);
   }, [isModalOpen, wcIsConnected, wcAddress, showToastOnce, options]);
 
   /**
-   * Fallback: If modal has been open for too long (>60s) without connection, 
+   * Fallback: If modal has been open for too long (>60s) without connection,
    * assume user abandoned the attempt
    */
   useEffect(() => {
@@ -347,14 +230,16 @@ export function useWalletConnectLifecycle(
         setIsConnecting(false);
         showToastOnce('Connection timeout - please try again.', 'error');
         
-        if (!walletConnectLock.isIdle()) {
-          walletConnectLock.completeDisconnect();
+        try {
+          close?.();
+        } catch (e) {
+          console.warn('[useWalletConnectLifecycle] Error closing modal on timeout:', e);
         }
       }
     }, 60000); // 60 second timeout
 
     return () => clearTimeout(timeout);
-  }, [isModalOpen, wcIsConnected, showToastOnce]);
+  }, [isModalOpen, wcIsConnected, close, showToastOnce]);
 
   return {
     isConnecting,
@@ -371,8 +256,8 @@ export function useWalletConnectLifecycle(
 export function useMobileWalletReturn(onReturn: () => void): void {
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (!document.hidden && detectMobileWalletReturn()) {
-        console.log('[useMobileWalletReturn] User returned from wallet app');
+      if (!document.hidden) {
+        console.log('[useMobileWalletReturn] Page regained focus');
         onReturn();
       }
     };

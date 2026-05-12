@@ -1,61 +1,40 @@
-// src/lib/wallet/web3modalConfig.ts
-// Web3Modal v2 configuration for multi-wallet support
+import { createAppKit } from '@reown/appkit/react';
+import { EthersAdapter } from '@reown/appkit-adapter-ethers';
+import { arbitrumSepolia, arbitrum } from '@reown/appkit/networks';
 
-import { createWeb3Modal, defaultConfig, useWeb3Modal } from '@web3modal/ethers/react';
+const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
 
-// Get your project ID from https://cloud.walletconnect.com
-const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID';
+if (!projectId) {
+  console.warn('[AppKit] VITE_WALLETCONNECT_PROJECT_ID not set. Get one at https://cloud.reown.com');
+}
 
-const arbitrumSepolia = {
-  chainId: 421614,
-  name: 'Arbitrum Sepolia',
-  currency: 'ETH',
-  explorerUrl: 'https://sepolia.arbiscan.io',
-  rpcUrl: 'https://sepolia-rollup.arbitrum.io/rpc',
+const metadata = {
+  name: 'CIP - Crypto Inheritance Protocol',
+  description: 'Secure your digital legacy with CIP',
+  url: typeof window !== 'undefined' ? window.location.origin : 'https://xcip.name.ng',
+  icons: ['https://avatar.vercel.sh/cip'],
 };
 
-const arbitrumOne = {
-  chainId: 42161,
-  name: 'Arbitrum One',
-  currency: 'ETH',
-  explorerUrl: 'https://arbiscan.io',
-  rpcUrl: 'https://arb1.arbitrum.io/rpc',
-};
+const ethersAdapter = new EthersAdapter();
 
-const chains = [arbitrumSepolia, arbitrumOne];
+// Initialize AppKit — just importing this file initializes AppKit globally
+export const appKit = createAppKit({
+  adapters: [ethersAdapter],
+  networks: [arbitrumSepolia, arbitrum],
+  defaultNetwork: arbitrumSepolia,
+  projectId: projectId || '',
+  metadata,
+  features: {
+    analytics: true,
+    onramp: false,
+    swaps: false,
+    email: false,
+    socials: false,
+  },
+  enableEIP6963: true,
+  enableCoinbase: false,
+});
 
-export const initWeb3Modal = () => {
-  console.log('[Web3Modal] Initializing Web3Modal configuration...');
-  
-  if (!projectId || projectId === 'YOUR_PROJECT_ID') {
-    console.warn(
-      '[Web3Modal] ⚠️ VITE_WALLETCONNECT_PROJECT_ID not set. Please set it in your .env file. Get one at https://cloud.walletconnect.com'
-    );
-  } else {
-    console.log('[Web3Modal] ✅ Project ID configured:', projectId.substring(0, 10) + '...');
-  }
-
-  // cast to any because some options like multiInjectedProviderDiscovery
-  // may not be present in the current type definitions
-  createWeb3Modal(({
-    ethersConfig: defaultConfig({
-      metadata: {
-        name: 'CIP - Crypto Inheritance Protocol',
-        description: 'Secure your digital legacy with CIP',
-        url: window.location.origin,
-        icons: ['https://avatar.vercel.sh/cip'],
-      },
-    }),
-    chains,
-    defaultChain: arbitrumSepolia,
-    projectId,
-    enableAnalytics: true,
-    enableOnramp: false,
-    enableSwaps: false,
-    multiInjectedProviderDiscovery: true,
-  } as any));
-  
-  console.log('[Web3Modal] ✅ Web3Modal initialized with EIP-6963 support (multiInjectedProviderDiscovery: true)');
-};
-
-export { useWeb3Modal };
+export function initWeb3Modal() {
+  console.log('[AppKit] ✅ Reown AppKit initialized');
+}

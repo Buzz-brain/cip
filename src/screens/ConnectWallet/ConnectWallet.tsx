@@ -5,21 +5,17 @@ import { Button } from "@components/ui/button";
 import { toast } from "react-toastify";
 import * as walletUtils from "../../lib/wallet/walletUtils";
 import { initEip6963Discovery, waitForWalletProvider, signMessage, ensureArbitrumSepoliaWithFallback } from "../../lib/wallet/walletUtils";
-import { useWeb3ModalProvider, useWeb3ModalAccount } from "@web3modal/ethers/react";
+import { useAppKitProvider, useAppKitAccount } from "@reown/appkit/react";
 import { normalizeWalletAddress, getDashboardRoute } from "../../lib/utils";
 import { verifyMessage } from "ethers";
 import * as authAPI from "../../lib/api/auth";
-import { useWalletConnectLifecycle, useMobileWalletReturn } from "../../hooks/useWalletConnectLifecycle";
-import { cleanupWalletConnect, prepareMobileWalletConnect } from "../../lib/wallet/walletConnectCleanup";
-import { walletConnectLock } from "../../lib/wallet/walletConnectLock";
-import { clearAllWalletConnectState } from "../../lib/wallet/walletConnectDisconnect";
+import { useWalletConnectLifecycle } from "../../hooks/useWalletConnectLifecycle";
 import logoImg from "@assets/cip-logo-full.png";
 import helpIcon from "@assets/help.svg";
 import connectWalletOrange from "@assets/connect-wallet-orange.svg";
 import walletConnect from "@assets/walletconnect-logo.svg";
 import metamask from "@assets/metamask-icon.svg";
 import trustWallet from "@assets/trust-wallet-icon.svg";
-
 
 const navigationItems = [
   { label: "Home", href: "/" },
@@ -28,13 +24,6 @@ const navigationItems = [
 ];
 
 const wallets = [
-  // {
-  //   id: "coti",
-  //   name: "COTI Wallet",
-  //   description: "Native Protocol Support",
-  //   icon: cotiWalletIcon,
-  //   badge: "Recommended",
-  // },
   {
     id: "metamask",
     name: "MetaMask",
@@ -58,59 +47,39 @@ const wallets = [
   },
 ];
 
-/**
- * Normalizes error messages for user display
- */
 function normalizeErrorMessage(err: unknown): string {
   const errStr = err instanceof Error ? err.message : String(err);
-
-  if (/rejected|cancelled|user denied|user declined/i.test(errStr)) {
-    return 'Connection cancelled. Please try again.';
-  }
-
-  if (/already pending|duplicate request|already connecting/i.test(errStr)) {
-    return 'Connection already in progress. Please wait.';
-  }
-
-  if (/stale|expired|outdated/i.test(errStr)) {
-    return 'Session expired. Please refresh and try again.';
-  }
-
-  if (/connection declined|declined/i.test(errStr)) {
-    return 'Connection declined by wallet. Please try again.';
-  }
-
+  if (/rejected|cancelled|user denied|user declined/i.test(errStr)) return 'Connection cancelled. Please try again.';
+  if (/already pending|duplicate request|already connecting/i.test(errStr)) return 'Connection already in progress. Please wait.';
+  if (/stale|expired|outdated/i.test(errStr)) return 'Session expired. Please refresh and try again.';
+  if (/connection declined|declined/i.test(errStr)) return 'Connection declined by wallet. Please try again.';
   if (/not found|not detected|not installed/i.test(errStr)) {
     const walletName = errStr.includes('MetaMask') ? 'MetaMask' : errStr.includes('Trust') ? 'Trust Wallet' : 'Wallet';
     return `${walletName} not detected. Install the extension or use WalletConnect.`;
   }
-
   return errStr || 'Connection failed. Please try again.';
 }
 
-/**
- * Detects if running on mobile browser
- */
-function isMobileBrowser(): boolean {
-  if (typeof navigator === 'undefined') return false;
-  return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
-    navigator.userAgent.toLowerCase()
-  );
+// Resolves the correct route after login based on user info
+function resolvePostLoginRoute(userInfo: any, role: string): string {
+  const roleLower = (role || '').toLowerCase();
+  const likelyUser = roleLower === 'user' || roleLower === '';
+  const isFullyRegistered = userInfo?.full_reg;
+  const shouldRequireSetup = likelyUser && isFullyRegistered !== true;
+  return shouldRequireSetup ? '/profile-setup' : getDashboardRoute(role);
 }
 
 export const ConnectWallet = (): JSX.Element => {
-  const { getNonce, loginWithWallet, fetchUserInfo, user } = useAuth();
+  const { getNonce, loginWithWallet, fetchUserInfo } = useAuth();
   const navigate = useNavigate();
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
-  const { walletProvider } = useWeb3ModalProvider();
-  const { address: wcAddress, isConnected: wcIsConnected } = useWeb3ModalAccount();
+  const { walletProvider } = useAppKitProvider('eip155');
+  const { address: wcAddress, isConnected: wcIsConnected } = useAppKitAccount();
 
   const toastGuard = useRef(new Set<string>());
   const injectedLoginTriggered = useRef(false);
   const walletConnectLoginAttempted = useRef(false);
-  const wcAttemptCount = useRef(0);
 
-  // Use improved WalletConnect lifecycle hook
   const {
     isConnecting: wcIsConnecting,
     openWalletConnectModal,
@@ -125,81 +94,38 @@ export const ConnectWallet = (): JSX.Element => {
     },
     onCancelled: () => {
       console.log('[ConnectWallet] WalletConnect cancelled by user');
-      setIsConnectingWallet(false); // Hide spinner if modal is cancelled
+      setIsConnectingWallet(false);
     },
   });
 
-  /**
-   * On page mount, reset all wallet state to ensure fresh login experience
-   * This prevents carryover from previous sessions
-   */
   useEffect(() => {
-    const resetPageState = async () => {
-      console.log('[ConnectWallet] Page mounted - resetting wallet state for fresh login...');
-      
-      try {
-        // Reset the global connection lock
-        console.log('[ConnectWallet] Calling hardReset on lock');
-        walletConnectLock.hardReset();
-        console.log('[ConnectWallet] ✅ Lock hardReset complete');
-      } catch (err) {
-        console.warn('[ConnectWallet] Lock hardReset error:', err);
-      }
-      
-      try {
-        // Clear all WalletConnect/Web3Modal storage
-        console.log('[ConnectWallet] Clearing all WalletConnect state');
-        await clearAllWalletConnectState();
-        console.log('[ConnectWallet] ✅ WalletConnect state cleared');
-      } catch (err) {
-        console.warn('[ConnectWallet] State clear error:', err);
-      }
-      
-      // Reset local login flags
-      injectedLoginTriggered.current = false;
-      walletConnectLoginAttempted.current = false;
-      wcAttemptCount.current = 0;
-      
-      console.log('[ConnectWallet] ✅ Page state reset complete - ready for fresh login');
-    };
-    
-    resetPageState().catch(err => {
-      console.warn('[ConnectWallet] State reset had an error (non-critical):', err);
-    });
-  }, []); // Run only on mount
+    injectedLoginTriggered.current = false;
+    walletConnectLoginAttempted.current = false;
+    console.log('[ConnectWallet] ✅ Page mounted - reset flags for fresh login');
+  }, []);
 
-  /**
-   * Show toast only once per unique message
-   */
   const showToastOnce = useCallback((message: string, type: 'error' | 'success' | 'info' = 'error') => {
     const key = `${type}:${message}`;
     if (toastGuard.current.has(key)) return;
     toastGuard.current.add(key);
-
     if (type === 'error') toast.error(message);
     else if (type === 'success') toast.success(message);
     else toast.info(message);
-
     setTimeout(() => toastGuard.current.delete(key), 3000);
   }, []);
 
   const handleNavigation = (href: string) => {
-    if (href === "/") {
-      navigate("/");
-    } else if (href === "/#core-capabilities") {
-      navigate("/", { replace: false });
+    if (href === '/') {
+      navigate('/');
+    } else if (href === '/#core-capabilities') {
+      navigate('/', { replace: false });
       setTimeout(() => {
-        const element = document.getElementById("core-capabilities");
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
-        }
+        document.getElementById('core-capabilities')?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     }
   };
 
-  /**
-   * Login with connected WalletConnect account
-   */
+  // ─── WalletConnect login ───────────────────────────────────────────────────
   const loginWithWalletConnectAccount = useCallback(async () => {
     if (!wcAddress || !walletProvider || injectedLoginTriggered.current) return;
 
@@ -210,70 +136,26 @@ export const ConnectWallet = (): JSX.Element => {
       console.log('[ConnectWallet] Logging in with WalletConnect account:', wcAddress);
 
       const account = normalizeWalletAddress(wcAddress);
-      // Ensure user is on Arbitrum Sepolia before signing — silent if rejected
       await ensureArbitrumSepoliaWithFallback(walletProvider);
       const nonce = await getNonce(account);
       const signature = await signMessage(nonce, account, walletProvider);
 
       const returnedUser = await loginWithWallet(account, signature, nonce);
-      let finalUserInfo = returnedUser?.userInfo ?? null;
 
+      let finalUserInfo = returnedUser?.userInfo ?? null;
       if (!finalUserInfo && returnedUser?.token) {
         try {
           finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
         } catch {
-          try {
-            await fetchUserInfo();
-          } catch {}
+          try { await fetchUserInfo(); } catch {}
           finalUserInfo = returnedUser?.userInfo ?? null;
         }
       }
 
-      const finalUser = { ...(returnedUser || user), userInfo: finalUserInfo || returnedUser?.userInfo || user?.userInfo };
-      const role = ((finalUser?.userInfo?.role ?? (finalUser as any)?.role) || "").toString();
-      const isFullyRegistered = finalUser?.userInfo?.full_reg;
-      const isSetup = finalUser?.userInfo?.is_setup;
-      const roleLower = role.toLowerCase();
-      const likelyUser = roleLower === "user" || roleLower === "";
-      const shouldRequireSetup = likelyUser && (isFullyRegistered !== true || isSetup === false);
-
-      console.log('[ConnectWallet] Login successful, redirecting...', { role, shouldRequireSetup });
-
-      // Wait for AuthContext to be fully updated and persisted to localStorage
-      // This ensures ProtectedRoute sees the authenticated user
-      let authVerified = false;
-      let attempts = 0;
-      const maxAttempts = 20; // Max 2 seconds wait (20 * 100ms)
-      
-      while (!authVerified && attempts < maxAttempts) {
-        const storedUser = localStorage.getItem("cip_auth_user");
-        if (storedUser) {
-          try {
-            const parsed = JSON.parse(storedUser);
-            if (parsed.token && parsed.publicKey) {
-              console.log('[ConnectWallet] ✅ Auth verified in localStorage:', parsed.publicKey.substring(0, 10) + '...');
-              authVerified = true;
-              break;
-            }
-          } catch (e) {
-            console.warn('[ConnectWallet] Failed to parse stored user:', e);
-          }
-        }
-        
-        // Wait 100ms before checking again
-        await new Promise(resolve => setTimeout(resolve, 100));
-        attempts++;
-      }
-      
-      if (!authVerified) {
-        console.warn('[ConnectWallet] ⚠️ Auth not verified in localStorage after 2s, navigating anyway');
-      }
-
-      if (shouldRequireSetup) {
-        navigate("/profile-setup");
-      } else {
-        navigate(getDashboardRoute(role));
-      }
+      const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
+      const route = resolvePostLoginRoute(finalUserInfo, role);
+      console.log('[ConnectWallet] Login successful, redirecting to:', route);
+      navigate(route);
     } catch (err) {
       const errorMessage = normalizeErrorMessage(err);
       console.error('[ConnectWallet] WalletConnect login failed:', err);
@@ -283,62 +165,32 @@ export const ConnectWallet = (): JSX.Element => {
       injectedLoginTriggered.current = false;
       walletConnectLoginAttempted.current = false;
     }
-  }, [wcAddress, walletProvider, getNonce, loginWithWallet, fetchUserInfo, user, navigate, showToastOnce]);
+  }, [wcAddress, walletProvider, getNonce, loginWithWallet, fetchUserInfo, navigate, showToastOnce]);
 
-  /**
-   * Listen for successful WalletConnect connection
-   */
+  // Trigger WalletConnect login only after user explicitly clicked WalletConnect
   useEffect(() => {
-if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttempted.current) return;
-
+    if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttempted.current) return;
     loginWithWalletConnectAccount();
   }, [wcIsConnected, wcAddress, walletProvider, loginWithWalletConnectAccount]);
 
-  /**
-   * Detect when user returns from wallet app on mobile
-   */
-  useMobileWalletReturn(async () => {
+  useEffect(() => {
     if (isModalOpen) {
-      console.log('[ConnectWallet] Mobile wallet return detected - running AGGRESSIVE cleanup');
-      // Use aggressive cleanup on return from wallet app (indicates connection attempt)
-      await cleanupWalletConnect(true);
+      console.log('[ConnectWallet] WalletConnect modal is open');
     }
-  });
+  }, [isModalOpen]);
 
-
-
-  /**
-   * Handle injected wallet selection (MetaMask, Trust, etc.)
-   */
+  // ─── Injected wallet login (MetaMask, Trust) ───────────────────────────────
   const handleWalletSelect = async (walletId: string) => {
     setIsConnectingWallet(true);
 
     try {
       initEip6963Discovery();
 
-      // WalletConnect flow - use dedicated lifecycle hook
+      // WalletConnect path
       if (walletId === 'walletconnect') {
         console.log('[ConnectWallet] Opening WalletConnect...');
         walletConnectLoginAttempted.current = true;
-        
-        wcAttemptCount.current += 1;
-        const isRetry = wcAttemptCount.current > 1;
-        const aggressiveCleanup = isRetry;
-
-        // Safety check: if lock is stuck, force reset it before attempting connection
-        const lockState = walletConnectLock.getState();
-        if (lockState.state !== 'idle') {
-          console.log(`[ConnectWallet] ⚠️ Lock is in state "${lockState.state}" - forcing reset before attempt`);
-          walletConnectLock.hardReset();
-          await clearAllWalletConnectState();
-        }
-
         try {
-          if (isMobileBrowser()) {
-            console.log(`[ConnectWallet] Mobile browser detected - running ${aggressiveCleanup ? 'AGGRESSIVE' : 'CONSERVATIVE'} cleanup (attempt ${wcAttemptCount.current})`);
-            await prepareMobileWalletConnect(aggressiveCleanup);
-          }
-
           await openWalletConnectModal();
           setIsConnectingWallet(false);
         } catch (err) {
@@ -349,26 +201,23 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
         return;
       }
 
-      // Injected wallet flow (MetaMask, Trust, etc.)
+      // Injected wallet path
       const rdnsMap: Record<string, string> = {
-        metamask: "io.metamask",
-        trust: "com.trustwallet.app",
-        coinbase: "com.coinbase.wallet",
+        metamask: 'io.metamask',
+        trust: 'com.trustwallet.app',
+        coinbase: 'com.coinbase.wallet',
       };
 
       const rdns = rdnsMap[walletId];
-      let provider = null as any;
+      let provider: any = null;
 
       if (rdns) {
         provider = walletUtils.getWalletProviderByRdns(rdns);
-        if (!provider) {
-          provider = await waitForWalletProvider(rdns, 2000);
-        }
+        if (!provider) provider = await waitForWalletProvider(rdns, 2000);
       }
 
       if (!provider) {
-        const walletObj = wallets.find((w) => w.id === walletId);
-        const displayName = walletObj?.name ?? walletId;
+        const displayName = wallets.find((w) => w.id === walletId)?.name ?? walletId;
         showToastOnce(`${displayName} not detected. Install the extension or use WalletConnect.`, 'error');
         setIsConnectingWallet(false);
         return;
@@ -379,10 +228,9 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
       let account = await walletUtils.requestWalletConnection(provider);
       account = normalizeWalletAddress(account);
 
-      // Ensure user is on Arbitrum Sepolia before signing — silent if rejected
       await ensureArbitrumSepoliaWithFallback(provider);
       const nonce = await getNonce(account);
-      let signature = await walletUtils.signMessage(nonce, account, provider);
+      const signature = await walletUtils.signMessage(nonce, account, provider);
 
       console.log('[ConnectWallet] Signing details:', {
         account,
@@ -390,7 +238,7 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
         signatureLength: signature ? signature.length : 0,
       });
 
-      // Client-side recovery check
+      // Client-side recovery check (non-blocking)
       try {
         const recovered = verifyMessage(nonce, signature);
         if (recovered.toLowerCase() !== account.toLowerCase()) {
@@ -407,58 +255,16 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
         try {
           finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
         } catch (e) {
-          try {
-            await fetchUserInfo();
-          } catch {}
+          try { await fetchUserInfo(); } catch {}
           finalUserInfo = returnedUser?.userInfo ?? null;
         }
       }
 
-      const finalUser = { ...(returnedUser || user), userInfo: finalUserInfo || returnedUser?.userInfo || user?.userInfo };
-      const role = ((finalUser?.userInfo?.role ?? (finalUser as any)?.role) || "").toString();
-      const isFullyRegistered = finalUser?.userInfo?.full_reg;
-      const isSetup = finalUser?.userInfo?.is_setup;
-      const roleLower = role.toLowerCase();
-      const likelyUser = roleLower === "user" || roleLower === "";
-      const shouldRequireSetup = likelyUser && (isFullyRegistered !== true || isSetup === false);
+      const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
+      const route = resolvePostLoginRoute(finalUserInfo, role);
+      console.log('[ConnectWallet] Login successful, redirecting to:', route);
+      navigate(route);
 
-      console.log('[ConnectWallet] Login successful, redirecting...', { role, shouldRequireSetup });
-
-      // Wait for AuthContext to be fully updated and persisted to localStorage
-      // This ensures ProtectedRoute sees the authenticated user
-      let authVerified = false;
-      let attempts = 0;
-      const maxAttempts = 20; // Max 2 seconds wait (20 * 100ms)
-      
-      while (!authVerified && attempts < maxAttempts) {
-        const storedUser = localStorage.getItem("cip_auth_user");
-        if (storedUser) {
-          try {
-            const parsed = JSON.parse(storedUser);
-            if (parsed.token && parsed.publicKey) {
-              console.log('[ConnectWallet] ✅ Auth verified in localStorage:', parsed.publicKey.substring(0, 10) + '...');
-              authVerified = true;
-              break;
-            }
-          } catch (e) {
-            console.warn('[ConnectWallet] Failed to parse stored user:', e);
-          }
-        }
-        
-        // Wait 100ms before checking again
-        await new Promise(resolve => setTimeout(resolve, 100));
-        attempts++;
-      }
-      
-      if (!authVerified) {
-        console.warn('[ConnectWallet] ⚠️ Auth not verified in localStorage after 2s, navigating anyway');
-      }
-
-      if (shouldRequireSetup) {
-        navigate("/profile-setup");
-      } else {
-        navigate(getDashboardRoute(role));
-      }
     } catch (err) {
       const errorMessage = normalizeErrorMessage(err);
       console.error('[ConnectWallet] Wallet select failed:', err);
@@ -468,7 +274,6 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
     }
   };
 
-  // Overall loading state combines injected wallet + WalletConnect
   const isAnyConnecting = isConnectingWallet || wcIsConnecting;
 
   return (
@@ -495,20 +300,13 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
       <section className="w-full flex-1 flex flex-col items-center justify-start px-4 sm:px-8 py-8 sm:py-12">
         <div className="flex flex-col items-center gap-4 mb-8 sm:mb-12">
           <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#ff660033] flex items-center justify-center flex-shrink-0 mt-1">
-            <img
-              src={connectWalletOrange}
-              alt="Icon"
-              className="w-8 h-8 sm:w-10 sm:h-10"
-            />
+            <img src={connectWalletOrange} alt="Icon" className="w-8 h-8 sm:w-10 sm:h-10" />
           </div>
-
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white text-center [font-family:'Manrope',Helvetica] leading-tight">
             Connect your Wallet
           </h1>
-
           <p className="text-center text-gray-400 max-w-xl sm:max-w-2xl [font-family:'Manrope',Helvetica] text-sm sm:text-base leading-relaxed">
-            Select a provider to securely access your inheritance dashboard and
-            manage your digital legacy across chains.
+            Select a provider to securely access your inheritance dashboard and manage your digital legacy across chains.
           </p>
         </div>
 
@@ -535,18 +333,14 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
                     {wallet.category}
                   </span>
                 )}
-
-                {/* <img className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white" src={wallet.icon} alt={wallet.name} /> */}
                 <img
                   className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[#1a1715] p-2"
                   src={wallet.icon}
                   alt={wallet.name}
                 />
-
                 <h3 className="text-base sm:text-lg font-bold text-white text-left [font-family:'Manrope',Helvetica]">
                   {wallet.name}
                 </h3>
-
                 <p className="text-xs sm:text-sm text-gray-400 text-left [font-family:'Manrope',Helvetica]">
                   {wallet.description}
                 </p>
@@ -557,17 +351,14 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
 
         <div className="flex flex-col items-center gap-4 w-full max-w-md">
           <Button
-            onClick={() => navigate("/connect-wallet")}
+            onClick={() => navigate('/connect-wallet')}
             className="w-full h-12 px-6 bg-[#ff6600] hover:bg-[#ff7700] [font-family:'Manrope',Helvetica] font-bold text-white text-base leading-[21px] rounded-lg gap-2 flex items-center justify-center"
           >
             <img src={helpIcon} alt="Icon" className="w-4 h-4 mr-2" />
             Forgot Access
           </Button>
-
           <div className="flex flex-col sm:flex-row gap-2 items-center text-center">
-            <p className="text-gray-400 [font-family:'Manrope',Helvetica] text-sm">
-              New here?
-            </p>
+            <p className="text-gray-400 [font-family:'Manrope',Helvetica] text-sm">New here?</p>
             <a className="text-[#ff6600] [font-family:'Manrope',Helvetica] text-sm hover:text-[#ff7700]">
               Learn how to create a wallet
             </a>
@@ -576,19 +367,9 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
 
         <p className="text-center text-gray-500 text-xs mt-8 [font-family:'Manrope',Helvetica] leading-relaxed max-w-md">
           By connecting your wallet, you agree to our{" "}
-          <a
-            href="#tos"
-            className="text-gray-400 hover:text-gray-300 underline"
-          >
-            Terms of Service
-          </a>{" "}
+          <a href="#tos" className="text-gray-400 hover:text-gray-300 underline">Terms of Service</a>{" "}
           and{" "}
-          <a
-            href="#privacy"
-            className="text-gray-400 hover:text-gray-300 underline"
-          >
-            Privacy Policy.
-          </a>
+          <a href="#privacy" className="text-gray-400 hover:text-gray-300 underline">Privacy Policy.</a>
         </p>
       </section>
     </div>

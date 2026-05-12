@@ -28,6 +28,7 @@ export default defineConfig({
           if (id.includes('node_modules')) {
             if (id.includes('react') && (id.includes('react-dom') || id.includes('react-router'))) return 'vendor-react';
             if (id.includes('@radix-ui')) return 'vendor-radix';
+            if (id.includes('@reown')) return 'vendor-appkit';
           }
         }
       }
