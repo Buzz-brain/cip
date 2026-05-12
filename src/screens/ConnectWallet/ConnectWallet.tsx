@@ -15,8 +15,8 @@ import logoImg from "@assets/cip-logo-full.png";
 import helpIcon from "@assets/help.svg";
 import connectWalletOrange from "@assets/connect-wallet-orange.svg";
 import walletConnect from "@assets/walletconnect-logo.svg";
-import metamask from "@assets/metamask.svg";
-import trustWallet from "@assets/trust-wallet.svg";
+import metamask from "@assets/metamask-icon.svg";
+import trustWallet from "@assets/trust-wallet-icon.svg";
 
 
 const navigationItems = [
@@ -385,7 +385,11 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
       <section className="w-full flex-1 flex flex-col items-center justify-start px-4 sm:px-8 py-8 sm:py-12">
         <div className="flex flex-col items-center gap-4 mb-8 sm:mb-12">
           <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#ff660033] flex items-center justify-center flex-shrink-0 mt-1">
-            <img src={connectWalletOrange} alt="Icon" className="w-8 h-8 sm:w-10 sm:h-10" />
+            <img
+              src={connectWalletOrange}
+              alt="Icon"
+              className="w-8 h-8 sm:w-10 sm:h-10"
+            />
           </div>
 
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white text-center [font-family:'Manrope',Helvetica] leading-tight">
@@ -393,7 +397,8 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
           </h1>
 
           <p className="text-center text-gray-400 max-w-xl sm:max-w-2xl [font-family:'Manrope',Helvetica] text-sm sm:text-base leading-relaxed">
-            Select a provider to securely access your inheritance dashboard and manage your digital legacy across chains.
+            Select a provider to securely access your inheritance dashboard and
+            manage your digital legacy across chains.
           </p>
         </div>
 
@@ -415,15 +420,18 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
                 onClick={() => handleWalletSelect(wallet.id)}
                 className="group relative p-4 sm:p-6 rounded-2xl bg-[#2d2420] border border-[#3d3530] hover:border-[#ff6600] hover:bg-[#332b22] transition-all duration-200 cursor-pointer flex flex-col items-start gap-3 min-h-[140px] sm:min-h-[200px] w-full disabled:opacity-50 disabled:cursor-not-allowed"
               >
-
-              {wallet.category && (
-                <span className="absolute top-4 right-4 text-[13px] px-3 py-1 rounded-full bg-[#554233] text-gray-300 font-medium [font-family:'Manrope',Helvetica]">
-                  {wallet.category}
-                </span>
-              )}
+                {wallet.category && (
+                  <span className="absolute top-4 right-4 text-[13px] px-3 py-1 rounded-full bg-[#554233] text-gray-300 font-medium [font-family:'Manrope',Helvetica]">
+                    {wallet.category}
+                  </span>
+                )}
 
                 {/* <img className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white" src={wallet.icon} alt={wallet.name} /> */}
-                <img className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black" src={wallet.icon} alt={wallet.name} />
+                <img
+                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[#1a1715] p-2"
+                  src={wallet.icon}
+                  alt={wallet.name}
+                />
 
                 <h3 className="text-base sm:text-lg font-bold text-white text-left [font-family:'Manrope',Helvetica]">
                   {wallet.name}
@@ -447,8 +455,12 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
           </Button>
 
           <div className="flex flex-col sm:flex-row gap-2 items-center text-center">
-            <p className="text-gray-400 [font-family:'Manrope',Helvetica] text-sm">New here?</p>
-            <a className="text-[#ff6600] [font-family:'Manrope',Helvetica] text-sm hover:text-[#ff7700]">Learn how to create a wallet</a>
+            <p className="text-gray-400 [font-family:'Manrope',Helvetica] text-sm">
+              New here?
+            </p>
+            <a className="text-[#ff6600] [font-family:'Manrope',Helvetica] text-sm hover:text-[#ff7700]">
+              Learn how to create a wallet
+            </a>
           </div>
         </div>
 
