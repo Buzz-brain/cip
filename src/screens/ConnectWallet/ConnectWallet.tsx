@@ -239,9 +239,35 @@ export const ConnectWallet = (): JSX.Element => {
 
       console.log('[ConnectWallet] Login successful, redirecting...', { role, shouldRequireSetup });
 
-      // Small delay to allow AuthContext to update before redirecting
-      // This prevents ProtectedRoute from redirecting back due to timing issues
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait for AuthContext to be fully updated and persisted to localStorage
+      // This ensures ProtectedRoute sees the authenticated user
+      let authVerified = false;
+      let attempts = 0;
+      const maxAttempts = 20; // Max 2 seconds wait (20 * 100ms)
+      
+      while (!authVerified && attempts < maxAttempts) {
+        const storedUser = localStorage.getItem("cip_auth_user");
+        if (storedUser) {
+          try {
+            const parsed = JSON.parse(storedUser);
+            if (parsed.token && parsed.publicKey) {
+              console.log('[ConnectWallet] ✅ Auth verified in localStorage:', parsed.publicKey.substring(0, 10) + '...');
+              authVerified = true;
+              break;
+            }
+          } catch (e) {
+            console.warn('[ConnectWallet] Failed to parse stored user:', e);
+          }
+        }
+        
+        // Wait 100ms before checking again
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+      }
+      
+      if (!authVerified) {
+        console.warn('[ConnectWallet] ⚠️ Auth not verified in localStorage after 2s, navigating anyway');
+      }
 
       if (shouldRequireSetup) {
         navigate("/profile-setup");
@@ -398,9 +424,35 @@ if (!wcIsConnected || !wcAddress || !walletProvider || !walletConnectLoginAttemp
 
       console.log('[ConnectWallet] Login successful, redirecting...', { role, shouldRequireSetup });
 
-      // Small delay to allow AuthContext to update before redirecting
-      // This prevents ProtectedRoute from redirecting back due to timing issues
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait for AuthContext to be fully updated and persisted to localStorage
+      // This ensures ProtectedRoute sees the authenticated user
+      let authVerified = false;
+      let attempts = 0;
+      const maxAttempts = 20; // Max 2 seconds wait (20 * 100ms)
+      
+      while (!authVerified && attempts < maxAttempts) {
+        const storedUser = localStorage.getItem("cip_auth_user");
+        if (storedUser) {
+          try {
+            const parsed = JSON.parse(storedUser);
+            if (parsed.token && parsed.publicKey) {
+              console.log('[ConnectWallet] ✅ Auth verified in localStorage:', parsed.publicKey.substring(0, 10) + '...');
+              authVerified = true;
+              break;
+            }
+          } catch (e) {
+            console.warn('[ConnectWallet] Failed to parse stored user:', e);
+          }
+        }
+        
+        // Wait 100ms before checking again
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+      }
+      
+      if (!authVerified) {
+        console.warn('[ConnectWallet] ⚠️ Auth not verified in localStorage after 2s, navigating anyway');
+      }
 
       if (shouldRequireSetup) {
         navigate("/profile-setup");
