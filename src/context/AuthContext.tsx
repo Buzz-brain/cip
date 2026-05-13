@@ -100,11 +100,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (isInitialized) {
       if (user) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+        console.log('[AuthContext] 💾 User persisted to localStorage:', { publicKey: user.publicKey, hasToken: !!user.token });
       } else {
         localStorage.removeItem(STORAGE_KEY);
+        console.log('[AuthContext] 🗑️ User removed from localStorage');
       }
     }
   }, [user, isInitialized]);
+
+  // Helper: Synchronously persist user and return flag
+  const persistUserSync = useCallback((newUser: User | null): boolean => {
+    try {
+      if (newUser) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
+        console.log('[AuthContext] 💾 User SYNC persisted to localStorage:', { publicKey: newUser.publicKey, hasToken: !!newUser.token });
+        return true;
+      } else {
+        localStorage.removeItem(STORAGE_KEY);
+        console.log('[AuthContext] 🗑️ User SYNC removed from localStorage');
+        return true;
+      }
+    } catch (err) {
+      console.error('[AuthContext] Failed to sync persist user:', err);
+      return false;
+    }
+  }, []);
 
   // Get nonce for wallet signing
   const getNonce = useCallback(async (publicKey: string): Promise<string> => {
@@ -125,6 +145,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(true);
       setError(null);
       const newUser: User = { publicKey: "", token, userInfo: info || {}, role: "admin", name: info?.full_name, email: info?.email };
+      
+      // ⚠️ CRITICAL: Synchronously persist before state update
+      const persistSuccess = persistUserSync(newUser);
+      if (!persistSuccess) {
+        throw new Error("Failed to persist authentication state");
+      }
+      
       setUser(newUser);
       return newUser;
     } catch (err) {
@@ -134,13 +161,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [persistUserSync]);
 
   const loginAsEnterprise = useCallback(async (token: string, info?: { email?: string; company_name?: string }) => {
     try {
       setLoading(true);
       setError(null);
       const newUser: User = { publicKey: "", token, userInfo: info || {}, role: "enterprise", name: info?.company_name || info?.email, email: info?.email };
+      
+      // ⚠️ CRITICAL: Synchronously persist before state update
+      const persistSuccess = persistUserSync(newUser);
+      if (!persistSuccess) {
+        throw new Error("Failed to persist authentication state");
+      }
+      
       setUser(newUser);
       return newUser;
     } catch (err) {
@@ -150,7 +184,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [persistUserSync]);
 
   // Login with wallet signature
   const loginWithWallet = useCallback(
@@ -178,6 +212,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.warn("Failed to fetch user info after login:", err);
         }
 
+        // ⚠️ CRITICAL: Synchronously persist BEFORE state update to ensure localStorage is written
+        // before any navigation or component unmount happens
+        const persistSuccess = persistUserSync(newUser);
+        if (!persistSuccess) {
+          throw new Error("Failed to persist authentication state");
+        }
+
         // Debug: log user object right before persisting
         try { console.log('[AuthContext] loginWithWallet - setting user', { publicKey, token, userInfo: newUser.userInfo }); } catch {}
         setUser(newUser);
@@ -190,7 +231,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setLoading(false);
       }
     },
-    [],
+    [persistUserSync],
   );
 
   // Fetch user info

@@ -154,7 +154,7 @@ export const ConnectWallet = (): JSX.Element => {
   }, []);
 
   // Resume login from pending state (used after mobile wallet return)
-  const resumePendingLogin = useCallback(async (account: string, nonce: string, method: 'injected' | 'walletconnect') => {
+  const resumePendingLogin = useCallback(async (account: string, nonce: string, _method: 'injected' | 'walletconnect') => {
     try {
       console.log('[ConnectWallet] 📖 Resuming pending login after wallet return:', account);
       setIsConnectingWallet(true);
@@ -168,6 +168,7 @@ export const ConnectWallet = (): JSX.Element => {
       console.log('[ConnectWallet] ✅ Got signature after wallet return, sending to backend...');
 
       const returnedUser = await loginWithWallet(account, signature, nonce);
+      // ⚠️ loginWithWallet now synchronously persists to localStorage
 
       let finalUserInfo = returnedUser?.userInfo ?? null;
       if (!finalUserInfo && returnedUser?.token) {
@@ -232,6 +233,7 @@ export const ConnectWallet = (): JSX.Element => {
       const signature = await signMessage(nonce, account, walletProvider);
 
       const returnedUser = await loginWithWallet(account, signature, nonce);
+      // ⚠️ loginWithWallet now synchronously persists to localStorage
 
       let finalUserInfo = returnedUser?.userInfo ?? null;
       if (!finalUserInfo && returnedUser?.token) {
@@ -352,6 +354,7 @@ export const ConnectWallet = (): JSX.Element => {
       }
 
       const returnedUser = await loginWithWallet(account, signature, nonce);
+      // ⚠️ loginWithWallet now synchronously persists to localStorage
 
       let finalUserInfo = returnedUser?.userInfo ?? null;
       if (!finalUserInfo && returnedUser?.token) {
