@@ -339,7 +339,6 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <Route path="/administrative/admins" element={<AdminListPage title="Admins" fetcher={viewAdmins} />} /> ✅
         <Route path="/administrative/iexec-jobs" element={<IexecJobs />} /> ✅
 
-        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
         <Route path="/asset-registry" element={<AssetRegistry />} />
 
 

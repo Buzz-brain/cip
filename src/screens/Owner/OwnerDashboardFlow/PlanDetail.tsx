@@ -208,27 +208,35 @@ export const PlanDetail: React.FC = () => {
 
                 {(user?.publicKey && String(user.publicKey).toLowerCase() === String(detail?.plan?.owner_wallet).toLowerCase()) && (
               <>
-                {!detail?.plan?.is_cancelled ? (
+                {/* Hide edit/cancel/delete depending on release/should_release states */}
+                {!(detail?.plan?.is_released) && !detail?.plan?.is_cancelled && (
                   <>
-                    <button className="w-full sm:w-auto px-4 py-2 rounded bg-[#1f6feb] text-white mr-2" onClick={() => {
-                      setEditBeneficiaries(Array.isArray(detail?.beneficiaries) ? detail.beneficiaries.map((b: any) => ({
-                        id: b.id,
-                        name: b.name || '',
-                        relationship: b.relationship || '',
-                        email: b.email || '',
-                        wallet: b.wallet || b.wallet_address || '',
-                        allocation_percentage: b.allocation_percentage ?? b.allocation ?? 0,
-                      })) : []);
-                      setEditModalOpen(true);
-                    }}>Edit Inheritance</button>
+                    {!detail?.plan?.should_release && (
+                      <button className="w-full sm:w-auto px-4 py-2 rounded bg-[#1f6feb] text-white mr-2" onClick={() => {
+                        setEditBeneficiaries(Array.isArray(detail?.beneficiaries) ? detail.beneficiaries.map((b: any) => ({
+                          id: b.id,
+                          name: b.name || '',
+                          relationship: b.relationship || '',
+                          email: b.email || '',
+                          wallet: b.wallet || b.wallet_address || '',
+                          allocation_percentage: b.allocation_percentage ?? b.allocation ?? 0,
+                        })) : []);
+                        setEditModalOpen(true);
+                      }}>Edit Inheritance</button>
+                    )}
 
-                    <button className="w-full sm:w-auto px-4 py-2 rounded bg-orange-700 text-white mr-2" onClick={() => {
-                      if (!detail?.plan?.id && !detail?.plan?.contract_plan_id) { toast.error('Cannot determine plan id'); return; }
-                      setConfirmCancelOpen(true);
-                    }} disabled={cancelling}>{cancelling ? 'Cancelling...' : 'Cancel Inheritance'}</button>
+                    {!detail?.plan?.should_release && (
+                      <button className="w-full sm:w-auto px-4 py-2 rounded bg-orange-700 text-white mr-2" onClick={() => {
+                        if (!detail?.plan?.id && !detail?.plan?.contract_plan_id) { toast.error('Cannot determine plan id'); return; }
+                        setConfirmCancelOpen(true);
+                      }} disabled={cancelling}>{cancelling ? 'Cancelling...' : 'Cancel Inheritance'}</button>
+                    )}
+
+                    {/* delete should not be allowed if plan is already released */}
                     <button className="w-full sm:w-auto px-4 py-2 rounded bg-red-700 text-white" onClick={handleDelete}>Delete</button>
                   </>
-                ) : null}
+                )}
+                {/* If plan is released, show no owner actions */}
               </>
             )}
           </div>

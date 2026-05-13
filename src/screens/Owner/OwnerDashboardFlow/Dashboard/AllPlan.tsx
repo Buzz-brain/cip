@@ -598,19 +598,28 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                         <div className="flex gap-2">
                           {!selectedPlanDetail.plan?.is_cancelled && (
                             <>
-                              <button className="px-4 py-2 rounded bg-[#1f6feb] text-white" onClick={() => {
-                                setEditBeneficiaries(Array.isArray(selectedPlanDetail?.beneficiaries) ? selectedPlanDetail.beneficiaries.map((b: any) => ({
-                                  id: b.id,
-                                  name: b.name || '',
-                                  relationship: b.relationship || '',
-                                  email: b.email || '',
-                                  wallet: b.wallet || b.wallet_address || '',
-                                  allocation_percentage: b.allocation_percentage ?? b.allocation ?? 0,
-                                })) : []);
-                                setEditModalOpen(true);
-                              }}>Edit Inheritance</button>
-                              <button className="px-4 py-2 rounded bg-orange-700 text-white" onClick={() => { setConfirmCancelOpen(true); }}>{cancelling ? 'Cancelling...' : 'Cancel Inheritance'}</button>
-                              <button className="px-4 py-2 rounded bg-red-700 text-white" onClick={() => handleDelete(selectedPlanDetail)}>Delete Inheritance</button>
+                              {/* Hide if released; show edit only if should_release is false */}
+                              {!selectedPlanDetail.plan?.is_released && !selectedPlanDetail.plan?.should_release && (
+                                <button className="px-4 py-2 rounded bg-[#1f6feb] text-white" onClick={() => {
+                                  setEditBeneficiaries(Array.isArray(selectedPlanDetail?.beneficiaries) ? selectedPlanDetail.beneficiaries.map((b: any) => ({
+                                    id: b.id,
+                                    name: b.name || '',
+                                    relationship: b.relationship || '',
+                                    email: b.email || '',
+                                    wallet: b.wallet || b.wallet_address || '',
+                                    allocation_percentage: b.allocation_percentage ?? b.allocation ?? 0,
+                                  })) : []);
+                                  setEditModalOpen(true);
+                                }}>Edit Inheritance</button>
+                              )}
+                              {/* Hide cancel if should_release is true */}
+                              {!selectedPlanDetail.plan?.is_released && !selectedPlanDetail.plan?.should_release && (
+                                <button className="px-4 py-2 rounded bg-orange-700 text-white" onClick={() => { setConfirmCancelOpen(true); }}>{cancelling ? 'Cancelling...' : 'Cancel Inheritance'}</button>
+                              )}
+                              {/* Show delete unless already released */}
+                              {!selectedPlanDetail.plan?.is_released && (
+                                <button className="px-4 py-2 rounded bg-red-700 text-white" onClick={() => handleDelete(selectedPlanDetail)}>Delete Inheritance</button>
+                              )}
                             </>
                           )}
                         </div>
@@ -832,12 +841,15 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                   <button disabled={viewLoadingId === String(plan.raw?.id ?? plan.id)} onClick={() => openPlanDetail(plan.raw?.id ?? plan.raw?.contract_plan_id)} className="w-full sm:w-auto px-3 py-2 rounded bg-[#393028] text-sm text-white">
                     {viewLoadingId === String(plan.raw?.id ?? plan.id) ? 'Opening...' : 'View'}
                   </button>
-                  {user?.publicKey && String(user.publicKey).toLowerCase() === String(plan.raw?.owner_wallet).toLowerCase() && (
+                  {(user?.publicKey && String(user.publicKey).toLowerCase() === String(plan.raw?.owner_wallet).toLowerCase()) && (
                     <div className="flex gap-2 w-full sm:w-auto">
                       {!plan.raw?.is_funded && (
                         <button disabled={Boolean(fundLoadingId)} onClick={() => { const cid = Number(plan.raw?.contract_plan_id ?? plan.raw?.id ?? 0); setFundLoadingId(String(plan.id)); setFundPlanContractId(cid); setFundPlanDbId(Number(plan.raw?.id ?? plan.raw?.contract_plan_id ?? 0)); setFundPlanDefaultAmount(String(plan.raw?.amount ?? '0.0')); setFundPlanOwnerWallet(plan.raw?.owner_wallet ?? null); setFundModalOpen(true); }} className="flex-1 px-3 py-2 rounded bg-[#ff6600] text-sm text-white">{fundLoadingId === String(plan.id) ? 'Opening...' : 'Fund'}</button>
                       )}
-                      <button disabled={deleteOpeningId === String(plan.id)} onClick={() => { setDeleteOpeningId(String(plan.id)); setPendingDeletePlan({ plan: plan.raw }); setConfirmDeleteOpen(true); setDeleteOpeningId(null); }} className="flex-1 px-3 py-2 rounded bg-red-700 text-sm text-white">{deleteOpeningId === String(plan.id) ? 'Opening...' : 'Delete'}</button>
+                      {/* hide delete if plan is already released */}
+                      {!plan.raw?.is_released && (
+                        <button disabled={deleteOpeningId === String(plan.id)} onClick={() => { setDeleteOpeningId(String(plan.id)); setPendingDeletePlan({ plan: plan.raw }); setConfirmDeleteOpen(true); setDeleteOpeningId(null); }} className="flex-1 px-3 py-2 rounded bg-red-700 text-sm text-white">{deleteOpeningId === String(plan.id) ? 'Opening...' : 'Delete'}</button>
+                      )}
                     </div>
                   )}
                 </div>
