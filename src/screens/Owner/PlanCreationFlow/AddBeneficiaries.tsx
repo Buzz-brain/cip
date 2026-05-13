@@ -325,7 +325,7 @@ export const AddBeneficiaries = (): JSX.Element => {
 
                         <div className="flex flex-col gap-2 mb-6">
                           <label className="[font-family:'Manrope',Helvetica] font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
-                            Email (optional)
+                            Email
                           </label>
                           <Input
                             value={beneficiary.email || ''}

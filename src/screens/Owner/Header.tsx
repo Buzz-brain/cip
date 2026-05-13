@@ -19,11 +19,11 @@ export const Header = ({ onToggleSidebar }: HeaderProps): JSX.Element => {
           >
             <Menu className="w-5 h-5" />
           </button>
-          <div className="flex hidden md:block items-center gap-2">
+          {/* <div className="flex hidden md:block items-center gap-2">
             <span className="text-sm">Protocol</span>
             <span>&gt;</span>
             <span className="text-white text-sm">Owner Dashboard</span>
-          </div>
+          </div> */}
         </div>
 
         <div className="flex items-center gap-4">

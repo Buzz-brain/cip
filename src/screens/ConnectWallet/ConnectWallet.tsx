@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { Button } from "@components/ui/button";
+import { ChainAlert } from "@components/ui/ChainAlert";
 import { toast } from "react-toastify";
 import * as walletUtils from "../../lib/wallet/walletUtils";
 import { initEip6963Discovery, waitForWalletProvider, signMessage, ensureArbitrumSepoliaWithFallback } from "../../lib/wallet/walletUtils";
@@ -395,6 +396,7 @@ export const ConnectWallet = (): JSX.Element => {
 
   return (
     <div className="w-full min-h-screen bg-[#221810] flex flex-col">
+      <ChainAlert />
       <header className="w-full h-[65px] flex items-center justify-between px-4 sm:px-10 bg-[#0d0501] border-b border-[#392f28]">
         <div className="flex items-center gap-2">
           <Link to="/">

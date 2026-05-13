@@ -63,6 +63,7 @@ import { SubscriptionRenewal } from "./screens/Owner/BillingAndSubscription/Subs
 import { BillingHistory } from "./screens/Owner/BillingAndSubscription/BillingHistory";
 import { GracePeriodActive } from "./screens/Owner/BillingAndSubscription/GracePeriodActive";
 import { ChildrensTrustAccount } from "./screens/Owner/OwnerDashboardFlow/ChildrensTrustAccount"; 
+import TrustsList from "./screens/Owner/OwnerDashboardFlow/TrustsList";
 import { ComplianceSummary } from "./screens/Owner/OwnerDashboardFlow/ComplianceSummary"; 
 import { OwnerDisputePlanExecution } from "./screens/Owner/OwnerDashboardFlow/OwnerDisputePlanExecution.tsx"; 
 import { LegalComplianceCheck } from "./screens/Owner/OwnerDashboardFlow/LegalComplianceCheck.tsx"; 
@@ -193,7 +194,8 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           <Route index element={<OwnerDashboard />} />
           <Route path="activity-logs" element={<OwnerActivityLogs />} />
           <Route path="view-plan-history" element={<ViewPlanHistory />} />
-          <Route path="childrens-trust-account" element={<ChildrensTrustAccount />} />
+          <Route path="trusts" element={<TrustsList />} />
+          <Route path="trusts/:trustId" element={<ChildrensTrustAccount />} />
           <Route path="market-volatility-alert" element={<MarketVolatilityAlert />} />
           <Route path="real-time-volatility" element={<RealTimeVolatility />} />
           <Route path="main-estate-fund" element={<MainEstateFund />} />
@@ -242,7 +244,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
 
         {/* Legacy top-level owner routes redirect to the new nested paths for backward compatibility */}
         <Route path="/view-plan-history" element={<Navigate to="/owner-dashboard/view-plan-history" replace />} />
-        <Route path="/childrens-trust-account" element={<Navigate to="/owner-dashboard/childrens-trust-account" replace />} />
+        <Route path="/childrens-trust-account" element={<Navigate to="/owner-dashboard/trusts" replace />} />
         <Route path="/market-volatility-alert" element={<Navigate to="/owner-dashboard/market-volatility-alert" replace />} />
         <Route path="/real-time-volatility" element={<Navigate to="/owner-dashboard/real-time-volatility" replace />} />
         <Route path="/main-estate-fund" element={<Navigate to="/owner-dashboard/main-estate-fund" replace />} />

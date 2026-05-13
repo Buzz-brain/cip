@@ -225,9 +225,7 @@ export const PlanDetail: React.FC = () => {
                     }} disabled={cancelling}>{cancelling ? 'Cancelling...' : 'Cancel Inheritance'}</button>
                     <button className="w-full sm:w-auto px-4 py-2 rounded bg-red-700 text-white" onClick={handleDelete}>Delete</button>
                   </>
-                ) : (
-                  <button className="w-full sm:w-auto px-4 py-2 rounded bg-gray-600 text-white" disabled>Cancelled</button>
-                )}
+                ) : null}
               </>
             )}
           </div>

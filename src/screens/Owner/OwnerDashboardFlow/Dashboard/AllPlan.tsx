@@ -164,7 +164,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
     }
   };
 
-  const tabs = ["All Plans", "Active", "Pending", "Triggered"] as const;
+  const tabs = ["All Plans", "Active", "Pending", "Triggered", "Cancelled"] as const;
 
   const formatTs = (ts?: number | null) => {
     if (!ts) return "—";
@@ -596,7 +596,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                       {/* Owner-only actions: Edit, Cancel, Delete */}
                       {(user?.publicKey && String(user.publicKey).toLowerCase() === String(selectedPlanDetail.plan?.owner_wallet).toLowerCase()) && (
                         <div className="flex gap-2">
-                          {!selectedPlanDetail.plan?.is_cancelled ? (
+                          {!selectedPlanDetail.plan?.is_cancelled && (
                             <>
                               <button className="px-4 py-2 rounded bg-[#1f6feb] text-white" onClick={() => {
                                 setEditBeneficiaries(Array.isArray(selectedPlanDetail?.beneficiaries) ? selectedPlanDetail.beneficiaries.map((b: any) => ({
@@ -612,8 +612,6 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                               <button className="px-4 py-2 rounded bg-orange-700 text-white" onClick={() => { setConfirmCancelOpen(true); }}>{cancelling ? 'Cancelling...' : 'Cancel Inheritance'}</button>
                               <button className="px-4 py-2 rounded bg-red-700 text-white" onClick={() => handleDelete(selectedPlanDetail)}>Delete Inheritance</button>
                             </>
-                          ) : (
-                            <button className="px-4 py-2 rounded bg-gray-600 text-white" disabled>Cancelled</button>
                           )}
                         </div>
                       )}
@@ -795,7 +793,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                   <div className="text-right">
                     <div className="text-white text-sm">{showValues ? plan.assets : '••••'}</div>
                     <div className="mt-1">
-                      <Badge className={`${plan.status === "Active" ? "bg-green-500/20 text-green-400 border-green-500/30" : plan.status === "Pending" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"} [font-family:'Noto_Sans',Helvetica] font-bold text-xs`}>{plan.status === "Active" ? "● Active" : plan.status === "Pending" ? "● Pending" : "● Triggered"}</Badge>
+                          <Badge className={`${plan.status === "Active" ? "bg-green-500/20 text-green-400 border-green-500/30" : plan.status === "Pending" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" : plan.status === "Cancelled" ? "bg-red-500/20 text-red-400 border-red-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"} [font-family:'Noto_Sans',Helvetica] font-bold text-xs`}>{plan.status === "Active" ? "● Active" : plan.status === "Pending" ? "● Pending" : plan.status === "Cancelled" ? "● Cancelled" : "● Triggered"}</Badge>
                     </div>
                   </div>
                 </div>
@@ -911,7 +909,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                     </div>
                   </td>
                   <td className="py-4 px-4">
-                    <Badge className={`${plan.status === "Active" ? "bg-green-500/20 text-green-400 border-green-500/30" : plan.status === "Pending" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"} [font-family:'Noto_Sans',Helvetica] font-bold text-xs`}>{plan.status === "Active" ? "● Active" : plan.status === "Pending" ? "● Pending" : "● Triggered"}</Badge>
+                      <Badge className={`${plan.status === "Active" ? "bg-green-500/20 text-green-400 border-green-500/30" : plan.status === "Pending" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" : plan.status === "Cancelled" ? "bg-red-500/20 text-red-400 border-red-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"} [font-family:'Noto_Sans',Helvetica] font-bold text-xs`}>{plan.status === "Active" ? "● Active" : plan.status === "Pending" ? "● Pending" : plan.status === "Cancelled" ? "● Cancelled" : "● Triggered"}</Badge>
                   </td>
                   <td className="py-4 px-4"><span className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">{plan.triggerDays}h</span></td>
                 </tr>

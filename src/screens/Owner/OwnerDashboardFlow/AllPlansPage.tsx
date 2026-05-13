@@ -39,11 +39,11 @@ export const AllPlansPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [plans, setPlans] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState<"All Plans" | "Active" | "Pending" | "Triggered">("All Plans");
+  const [selectedFilter, setSelectedFilter] = useState<"All Plans" | "Active" | "Pending" | "Triggered" | "Cancelled">("All Plans");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const tabs = ["All Plans", "Active", "Pending", "Triggered"] as const;
+  const tabs = ["All Plans", "Active", "Pending", "Triggered", "Cancelled"] as const;
 
   const fetchPlans = async () => {
     setLoading(true);
@@ -66,6 +66,7 @@ export const AllPlansPage: React.FC = () => {
       const mapped = items.map((it: any) => {
         const isFunded = !!it.is_funded;
         const isReleased = !!it.is_released;
+        const isCancelled = !!it.is_cancelled;
         const releaseTs = it.release_timestamp ? Number(it.release_timestamp) : null;
         let triggerHours = 0;
         if (releaseTs) {
@@ -81,8 +82,8 @@ export const AllPlansPage: React.FC = () => {
           beneficiariesPreview: [],
           assets: it.amount ? String(it.amount) : "—",
           assetsDetail: it.crypto_asset ?? "—",
-          status: isReleased ? "Triggered" : isFunded ? "Active" : "Pending",
-          statusColor: isReleased ? "bg-red-500" : isFunded ? "bg-green-500" : "bg-yellow-500",
+          status: isCancelled ? "Cancelled" : isReleased ? "Triggered" : isFunded ? "Active" : "Pending",
+          statusColor: isCancelled ? "bg-gray-500" : isReleased ? "bg-red-500" : isFunded ? "bg-green-500" : "bg-yellow-500",
           triggerDays: triggerHours || 0,
           raw: it,
         };
@@ -223,7 +224,7 @@ export const AllPlansPage: React.FC = () => {
                         </div>
                       </td>
                       <td className="py-4 px-4">
-                        <Badge className={`${plan.status === "Active" ? "bg-green-500/20 text-green-400" : plan.status === "Pending" ? "bg-yellow-500/20 text-yellow-400" : "bg-red-500/20 text-red-400"} font-bold text-xs`}>{plan.status}</Badge>
+                        <Badge className={`${plan.status === "Active" ? "bg-green-500/20 text-green-400" : plan.status === "Pending" ? "bg-yellow-500/20 text-yellow-400" : plan.status === "Cancelled" ? "bg-red-500/20 text-red-400" : "bg-red-500/20 text-red-400"} font-bold text-xs`}>{plan.status}</Badge>
                       </td>
                       <td className="py-4 px-4"><span className="text-[#8b7664] text-sm">{plan.triggerDays}h</span></td>
                     </tr>

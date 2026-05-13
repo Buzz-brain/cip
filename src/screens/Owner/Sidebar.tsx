@@ -13,6 +13,7 @@ const sidebarMenuItems = [
   { icon: dashboardIcon, label: "Dashboard", id: "dashboard" },
   { icon: plusCircleIcon, label: "Create Plan", id: "create-plan" },
   { icon: fileTextIcon, label: "Activity Logs", id: "activity-logs" },
+  { icon: fileTextIcon, label: "Trusts", id: "trusts" },
 ];
 
 const systemMenuItems = [
@@ -47,6 +48,7 @@ export const Sidebar = ({ mobile = false, open = false, onClose }: SidebarProps)
     if (item.id === "dashboard") href = "/owner-dashboard";
     if (item.id === "create-plan") href = "/owner-dashboard/select-assets";
     if (item.id === "activity-logs") href = "/owner-dashboard/activity-logs";
+    if (item.id === "trusts") href = "/owner-dashboard/trusts";
     return { ...item, href };
   });
 

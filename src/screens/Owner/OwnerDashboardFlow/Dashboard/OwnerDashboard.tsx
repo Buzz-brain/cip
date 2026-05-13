@@ -147,20 +147,20 @@ export const OwnerDashboard = (): JSX.Element => {
 
   return (
     <div className="p-4 sm:p-8 space-y-8">
-
       {/* Welcome Section */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl mb-2">
-            Welcome back, {
-              auth.user?.userInfo?.full_name 
-                ? auth.user.userInfo.full_name 
-                : auth.user?.userInfo?.email
-                ? auth.user.userInfo.email
-                : auth.user?.publicKey 
-                ? auth.user.publicKey.slice(0, 6) + "..." + auth.user.publicKey.slice(-4)
-                : "User"
-            }
+            Welcome back,{" "}
+            {auth.user?.userInfo?.full_name
+              ? auth.user.userInfo.full_name
+              : auth.user?.userInfo?.email
+              ? auth.user.userInfo.email
+              : auth.user?.publicKey
+              ? auth.user.publicKey.slice(0, 6) +
+                "..." +
+                auth.user.publicKey.slice(-4)
+              : "User"}
           </h1>
           <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D]">
             Manage your active inheritance plans and monitor asset security.
@@ -187,9 +187,11 @@ export const OwnerDashboard = (): JSX.Element => {
           <Button
             onClick={() => {
               if (statsLoading) return;
-              const hasActiveSubscription = !!(stats?.latestSubscription?.is_active === true);
+              const hasActiveSubscription = !!(
+                stats?.latestSubscription?.is_active === true
+              );
               if (hasActiveSubscription) {
-                navigate('/owner-dashboard/select-assets');
+                navigate("/owner-dashboard/select-assets");
                 return;
               }
               setShowSubscribeModal(true);
@@ -203,275 +205,402 @@ export const OwnerDashboard = (): JSX.Element => {
         </div>
       </div>
 
-              {/* Stats Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="bg-[#2D241C] border-[#393028]">
-                  <CardContent className="p-6 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
-                        Total Value Secured
-                      </span>
-                    </div>
-                    {(statsLoading || stats == null) ? (
-                      <div className="space-y-2">
-                        <div className="h-8 w-40 bg-[#3a2f1e] rounded animate-pulse" />
-                        <div className="h-4 w-20 bg-[#3a2f1e] rounded animate-pulse mt-2" />
-                      </div>
-                    ) : (
-                      <div className="space-y-1 flex gap-2 items-end">
-                        <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
-                          {showValues ? (stats?.userTotalInheritanceFormatted ?? stats?.totalValueSecuredFormatted ?? '$0.00') : "••••••"}
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-[#2D241C] border-[#393028]">
+          <CardContent className="p-6 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
+                Total Value Secured
+              </span>
+            </div>
+            {statsLoading || stats == null ? (
+              <div className="space-y-2">
+                <div className="h-8 w-40 bg-[#3a2f1e] rounded animate-pulse" />
+                <div className="h-4 w-20 bg-[#3a2f1e] rounded animate-pulse mt-2" />
+              </div>
+            ) : (
+              <div className="space-y-1 flex gap-2 items-end">
+                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                  {showValues
+                    ? stats?.userTotalInheritanceFormatted ??
+                      stats?.totalValueSecuredFormatted ??
+                      "$0.00"
+                    : "••••••"}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-                <Card className="bg-[#2D241C] border-[#393028]">
-                  <CardContent className="p-6 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
-                        All Inheritance Plans
-                      </span>
-                    </div>
-                    {(statsLoading || stats == null) ? (
-                      <div className="space-y-2">
-                        <div className="h-8 w-12 bg-[#3a2f1e] rounded animate-pulse" />
-                        <div className="h-4 w-24 bg-[#3a2f1e] rounded animate-pulse mt-2" />
-                      </div>
-                    ) : (
-                      <div className="space-y-1 flex items-start gap-2">
-                        <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
-                          {showValues ? Number(stats?.totalPlansCount ?? stats?.plansCount ?? stats?.globalTotalInheritance ?? 0) : '••••'}
-                        </div>
-                        <Badge className="bg-green-500/10 text-green-300 border-green-500/20 [font-family:'Noto_Sans',Helvetica] text-sm px-2">
-                          {`${stats?.activePlansCount ?? 0} active`}
-                        </Badge>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+        <Card className="bg-[#2D241C] border-[#393028]">
+          <CardContent className="p-6 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
+                All Inheritance Plans
+              </span>
+            </div>
+            {statsLoading || stats == null ? (
+              <div className="space-y-2">
+                <div className="h-8 w-12 bg-[#3a2f1e] rounded animate-pulse" />
+                <div className="h-4 w-24 bg-[#3a2f1e] rounded animate-pulse mt-2" />
+              </div>
+            ) : (
+              <div className="space-y-1 flex items-start gap-2">
+                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                  {showValues
+                    ? Number(
+                        stats?.totalPlansCount ??
+                          stats?.plansCount ??
+                          stats?.globalTotalInheritance ??
+                          0,
+                      )
+                    : "••••"}
+                </div>
+                <Badge className="bg-green-500/10 text-green-300 border-green-500/20 [font-family:'Noto_Sans',Helvetica] text-sm px-2">
+                  {`${stats?.activePlansCount ?? 0} active`}
+                </Badge>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-                <Card className="bg-[#2D241C] border-[#393028]">
-                  <CardContent className="p-6 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
-                        Next Trigger Check
-                      </span>
-                    </div>
-                    {(statsLoading || stats == null) ? (
-                      <div className="space-y-2">
-                        <div className="h-8 w-28 bg-[#3a2f1e] rounded animate-pulse" />
-                        <div className="h-4 w-20 bg-[#3a2f1e] rounded animate-pulse mt-2" />
-                      </div>
-                    ) : (
-                      <div className="space-y-1 gap-2 items-end">
-                        <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
-                          {(stats == null || stats.nextTriggerDays == null) ? '—' : `${stats.nextTriggerDays} Days`}
-                        </div>
-                        <div className="text-[#EAB308] text-sm">{stats?.nextTriggerPlanId ? `Plan #${String(stats.nextTriggerPlanId).padStart(4, '0')}` : '—'}</div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+        <Card className="bg-[#2D241C] border-[#393028]">
+          <CardContent className="p-6 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
+                Next Trigger Check
+              </span>
+            </div>
+            {statsLoading || stats == null ? (
+              <div className="space-y-2">
+                <div className="h-8 w-28 bg-[#3a2f1e] rounded animate-pulse" />
+                <div className="h-4 w-20 bg-[#3a2f1e] rounded animate-pulse mt-2" />
+              </div>
+            ) : (
+              <div className="space-y-1 gap-2 items-end">
+                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                  {stats == null || stats.nextTriggerDays == null
+                    ? "—"
+                    : `${stats.nextTriggerDays} Days`}
+                </div>
+                <div className="text-[#EAB308] text-sm">
+                  {stats?.nextTriggerPlanId
+                    ? `Plan #${String(stats.nextTriggerPlanId).padStart(
+                        4,
+                        "0",
+                      )}`
+                    : "—"}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-                <Card className="bg-[#2D241C] border-[#393028]">
-                  <CardContent className="p-6 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
-                        Subscription
-                      </span>
+        <Card className="bg-[#2D241C] border-[#393028]">
+          <CardContent
+            className="p-6 space-y-2 cursor-pointer hover:opacity-95"
+            role="button"
+            tabIndex={0}
+            onClick={() => navigate("/owner-dashboard/billing-and-payments")}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ")
+                navigate("/owner-dashboard/billing-and-payments");
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
+                Subscription
+              </span>
+            </div>
+            {statsLoading || stats == null ? (
+              <div className="space-y-2">
+                <div className="h-6 w-6 bg-[#3a2f1e] rounded-full animate-pulse inline-block mr-3" />
+                <div className="h-4 w-24 bg-[#3a2f1e] rounded animate-pulse inline-block" />
+              </div>
+            ) : (
+              <div className="space-y-1">
+                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                  {(() => {
+                    const name =
+                      stats?.latestSubscription?.name ??
+                      (stats?.latestSubscription?.pricing_id
+                        ? `Plan #${stats.latestSubscription.pricing_id}`
+                        : null);
+                    if (!name) return "No subscription";
+                    return (
+                      String(name).charAt(0).toUpperCase() +
+                      String(name).slice(1)
+                    );
+                  })()}
+                </div>
+                <div className="flex items-center gap-2 mt-2">
+                  <Badge
+                    className={`${
+                      stats?.latestSubscription?.is_active
+                        ? "bg-green-500/20 text-green-400 border-green-500/30"
+                        : "bg-gray-700/20 text-gray-300 border-gray-600/30"
+                    } [font-family:'Noto_Sans',Helvetica] text-xs`}
+                  >
+                    {stats?.latestSubscription?.is_active
+                      ? "ACTIVE"
+                      : "INACTIVE"}
+                  </Badge>
+                  {stats?.latestSubscription?.duration_months && (
+                    <div className="text-[#B9B09D] text-sm">{`${
+                      stats.latestSubscription.duration_months
+                    } month${
+                      stats.latestSubscription.duration_months > 1 ? "s" : ""
+                    }`}</div>
+                  )}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Plans Table Section */}
+      <AllPlan showValues={showValues} />
+
+      {/* Subscribe Modal */}
+      {showSubscribeModal && (
+        <SubscriptionModal
+          open={showSubscribeModal}
+          onClose={() => setShowSubscribeModal(false)}
+        />
+      )}
+
+      {/* Proof of Life Section */}
+      <Card className="bg-gradient-to-b from-[#2B1E15] to-[#916547] border-[#554433]">
+        <CardContent className="p-6 space-y-4">
+          {polLoading ? (
+            <div className="space-y-4">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="h-6 bg-[#3a2f1e] rounded w-32 mb-2 animate-pulse"></div>
+                  <div className="h-4 bg-[#3a2f1e] rounded w-64 animate-pulse"></div>
+                </div>
+                <div className="h-6 bg-[#3a2f1e] rounded w-20 animate-pulse"></div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="h-4 bg-[#3a2f1e] rounded w-40 animate-pulse"></div>
+                  <div className="h-4 bg-[#3a2f1e] rounded w-12 animate-pulse"></div>
+                </div>
+                <div className="w-full bg-[#393028] rounded-full h-2 overflow-hidden">
+                  <div className="bg-[#3a2f1e] h-full rounded-full w-1/3 animate-pulse"></div>
+                </div>
+                <div className="h-3 bg-[#3a2f1e] rounded w-40 ml-auto animate-pulse"></div>
+              </div>
+              <div className="h-10 bg-[#3a2f1e] rounded animate-pulse"></div>
+            </div>
+          ) : polStatus === null ? (
+            <div className="text-center py-8">
+              <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D]">
+                No active proof-of-life plan. Create a plan to activate.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                    Proof of Life
+                  </h3>
+                  <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm mt-1">
+                    {polStatus === null
+                      ? "No active proof-of-life plan. Create a plan to activate."
+                      : polStatus === "active"
+                      ? "Your heartbeat status is active. Next confirmation required via wallet signature."
+                      : polStatus === "missed"
+                      ? "Proof-of-life check missed. Immediate action required."
+                      : "Critical: Please confirm your status immediately."}
+                  </p>
+                </div>
+                {polStatus && (
+                  <Badge
+                    className={`${
+                      polStatus === "active"
+                        ? "bg-green-500/20 text-green-400 border-green-500/30"
+                        : polStatus === "missed"
+                        ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                        : "bg-red-500/20 text-red-400 border-red-500/30"
+                    } [font-family:'Noto_Sans',Helvetica] text-xs`}
+                  >
+                    <div className="[font-family:'Noto_Sans',Helvetica] flex items-center gap-1 text-xs">
+                      <div
+                        className={`w-2 h-2 rounded-full animate-pulse ${
+                          polStatus === "active"
+                            ? "bg-[#22C55E]"
+                            : polStatus === "missed"
+                            ? "bg-[#EAB308]"
+                            : "bg-[#EF4444]"
+                        }`}
+                      ></div>
+                      <p>
+                        {polStatus === "active"
+                          ? "ONLINE"
+                          : polStatus === "missed"
+                          ? "MISSED"
+                          : "CRITICAL"}
+                      </p>
                     </div>
-                    {(statsLoading || stats == null) ? (
-                      <div className="space-y-2">
-                        <div className="h-6 w-6 bg-[#3a2f1e] rounded-full animate-pulse inline-block mr-3" />
-                        <div className="h-4 w-24 bg-[#3a2f1e] rounded animate-pulse inline-block" />
-                      </div>
-                    ) : (
-                      <div className="space-y-1">
-                        <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
-                          {(() => {
-                            const name = stats?.latestSubscription?.name ?? (stats?.latestSubscription?.pricing_id ? `Plan #${stats.latestSubscription.pricing_id}` : null);
-                            if (!name) return 'No subscription';
-                            return String(name).charAt(0).toUpperCase() + String(name).slice(1);
-                          })()}
-                        </div>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Badge className={`${stats?.latestSubscription?.is_active ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-gray-700/20 text-gray-300 border-gray-600/30'} [font-family:'Noto_Sans',Helvetica] text-xs`}>
-                            {stats?.latestSubscription?.is_active ? 'ACTIVE' : 'INACTIVE'}
-                          </Badge>
-                          {stats?.latestSubscription?.duration_months && (
-                            <div className="text-[#B9B09D] text-sm">{`${stats.latestSubscription.duration_months} month${stats.latestSubscription.duration_months > 1 ? 's' : ''}`}</div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                  </Badge>
+                )}
               </div>
 
-              {/* Plans Table Section */}
-              <AllPlan showValues={showValues} />
-
-              {/* Subscribe Modal */}
-              {showSubscribeModal && (
-                <SubscriptionModal open={showSubscribeModal} onClose={() => setShowSubscribeModal(false)} />
-              )}
-
-              {/* Proof of Life Section */}
-              <Card className="bg-gradient-to-b from-[#2B1E15] to-[#916547] border-[#554433]">
-                <CardContent className="p-6 space-y-4">
-                  {polLoading ? (
-                    <div className="space-y-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="h-6 bg-[#3a2f1e] rounded w-32 mb-2 animate-pulse"></div>
-                          <div className="h-4 bg-[#3a2f1e] rounded w-64 animate-pulse"></div>
-                        </div>
-                        <div className="h-6 bg-[#3a2f1e] rounded w-20 animate-pulse"></div>
-                      </div>
-                      <div className="space-y-3">
+              {polStatus && (
+                <div className="space-y-3">
+                  {(() => {
+                    const baseTs =
+                      (polPlan?.last_active_at ?? polPlan?.created_at ?? 0) *
+                      1000;
+                    const progressPct =
+                      polPlan && baseTs
+                        ? Math.min(
+                            100,
+                            Math.max(
+                              0,
+                              Math.round(
+                                ((Date.now() - baseTs) /
+                                  (Number(
+                                    polPlan.inactivity_period_days ?? 30,
+                                  ) *
+                                    86400000)) *
+                                  100,
+                              ),
+                            ),
+                          )
+                        : 0;
+                    return (
+                      <>
                         <div className="flex items-center justify-between">
-                          <div className="h-4 bg-[#3a2f1e] rounded w-40 animate-pulse"></div>
-                          <div className="h-4 bg-[#3a2f1e] rounded w-12 animate-pulse"></div>
+                          <span className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm">
+                            Heartbeat Progress
+                          </span>
+                          <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                            {progressPct}%
+                          </span>
                         </div>
                         <div className="w-full bg-[#393028] rounded-full h-2 overflow-hidden">
-                          <div className="bg-[#3a2f1e] h-full rounded-full w-1/3 animate-pulse"></div>
+                          <div
+                            className={`h-full rounded-full ${
+                              polStatus === "active"
+                                ? "bg-[#FF6600]"
+                                : polStatus === "missed"
+                                ? "bg-[#EAB308]"
+                                : "bg-[#EF4444]"
+                            }`}
+                            style={{ width: `${progressPct}%` }}
+                          />
                         </div>
-                        <div className="h-3 bg-[#3a2f1e] rounded w-40 ml-auto animate-pulse"></div>
-                      </div>
-                      <div className="h-10 bg-[#3a2f1e] rounded animate-pulse"></div>
-                    </div>
-                  ) : polStatus === null ? (
-                    <div className="text-center py-8">
-                      <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D]">No active proof-of-life plan. Create a plan to activate.</p>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
-                            Proof of Life
-                          </h3>
-                          <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm mt-1">
-                            {polStatus === null ? "No active proof-of-life plan. Create a plan to activate." : polStatus === "active" ? "Your heartbeat status is active. Next confirmation required via wallet signature." : polStatus === "missed" ? "Proof-of-life check missed. Immediate action required." : "Critical: Please confirm your status immediately."}
-                          </p>
-                        </div>
-                        {polStatus && (
-                          <Badge className={`${polStatus === "active" ? "bg-green-500/20 text-green-400 border-green-500/30" : polStatus === "missed" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"} [font-family:'Noto_Sans',Helvetica] text-xs`}>
-                            <div className="[font-family:'Noto_Sans',Helvetica] flex items-center gap-1 text-xs">
-                              <div className={`w-2 h-2 rounded-full animate-pulse ${ polStatus === "active" ? "bg-[#22C55E]" : polStatus === "missed" ? "bg-[#EAB308]" : "bg-[#EF4444]"}`}></div>
-                              <p>{polStatus === "active" ? "ONLINE" : polStatus === "missed" ? "MISSED" : "CRITICAL"}</p>
-                            </div>
-                          </Badge>
-                        )}
-                      </div>
+                      </>
+                    );
+                  })()}
+                  <div className="[font-family:'Noto_Sans',Helvetica] text-right text-[#B9B09D] text-xs">
+                    {polStatus === "active"
+                      ? polPlan
+                        ? `Next check in ${Number(
+                            polPlan.inactivity_period_days ?? 30,
+                          )} day${
+                            Number(polPlan.inactivity_period_days ?? 30) !== 1
+                              ? "s"
+                              : ""
+                          }`
+                        : "No active plan"
+                      : polStatus === "missed"
+                      ? "Action required immediately"
+                      : "Critical - action needed now"}
+                  </div>
+                </div>
+              )}
 
-                      {polStatus && (
-                        <div className="space-y-3">
-                          {(() => {
-                            const baseTs = (polPlan?.last_active_at ?? polPlan?.created_at ?? 0) * 1000;
-                            const progressPct = polPlan && baseTs ? Math.min(100, Math.max(0, Math.round(((Date.now() - baseTs) / ((Number(polPlan.inactivity_period_days ?? 30)) * 86400000)) * 100))) : 0;
-                            return (
-                              <>
-                                <div className="flex items-center justify-between">
-                                  <span className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm">
-                                    Heartbeat Progress
-                                  </span>
-                                  <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
-                                    {progressPct}%
-                                  </span>
-                                </div>
-                                <div className="w-full bg-[#393028] rounded-full h-2 overflow-hidden">
-                                  <div
-                                    className={`h-full rounded-full ${ polStatus === "active" ? "bg-[#FF6600]" : polStatus === "missed" ? "bg-[#EAB308]" : "bg-[#EF4444]"}`}
-                                    style={{ width: `${progressPct}%` }}
-                                  />
-                                </div>
-                              </>
-                            );
-                          })()}
-                          <div className="[font-family:'Noto_Sans',Helvetica] text-right text-[#B9B09D] text-xs">
-                            {polStatus === "active" ? (
-                              polPlan ? `Next check in ${Number(polPlan.inactivity_period_days ?? 30)} day${Number(polPlan.inactivity_period_days ?? 30) !== 1 ? 's' : ''}` : "No active plan"
-                            ) : polStatus === "missed" ? "Action required immediately" : "Critical - action needed now"}
-                          </div>
-                        </div>
-                      )}
-                      
-                      <Button 
-                        onClick={() => {
-                          if (polStatus === "missed") setModalType("missed");
-                          else if (polStatus === "critical") setModalType("critical");
-                          else setModalType("check");
-                          setShowPoLModal(true);
-                        }}
-                        className="w-full bg-[#393028] hover:bg-[#393028] text-white [font-family:'Noto_Sans',Helvetica] mt-4"
-                      >
-                        Confirm Now
-                      </Button>
-                    </>
-                  )}
-                  {showPoLModal && modalType === "check" && polDeadlineTs !== null && (
-                    <ProofOfLifeCheck open onClose={() => setShowPoLModal(false)} plan={polPlan} deadlineTs={polDeadlineTs ?? undefined} />
-                  )}
-                  {showPoLModal && modalType === "missed" && (
-                    <ProofOfLifeCheckMissed open onClose={() => setShowPoLModal(false)} timeRemaining={polTimeRemaining || undefined} missedCheckCount={missedCheckCount} />
-                  )}
-                  {showPoLModal && modalType === "critical" && (
-                    <CriticalAlert open onClose={() => setShowPoLModal(false)} />
-                  )}
+              <Button
+                onClick={() => {
+                  if (polStatus === "missed") setModalType("missed");
+                  else if (polStatus === "critical") setModalType("critical");
+                  else setModalType("check");
+                  setShowPoLModal(true);
+                }}
+                className="w-full bg-[#393028] hover:bg-[#393028] text-white [font-family:'Noto_Sans',Helvetica] mt-4"
+              >
+                Confirm Now
+              </Button>
+            </>
+          )}
+          {showPoLModal && modalType === "check" && polDeadlineTs !== null && (
+            <ProofOfLifeCheck
+              open
+              onClose={() => setShowPoLModal(false)}
+              plan={polPlan}
+              deadlineTs={polDeadlineTs ?? undefined}
+            />
+          )}
+          {showPoLModal && modalType === "missed" && (
+            <ProofOfLifeCheckMissed
+              open
+              onClose={() => setShowPoLModal(false)}
+              timeRemaining={polTimeRemaining || undefined}
+              missedCheckCount={missedCheckCount}
+            />
+          )}
+          {showPoLModal && modalType === "critical" && (
+            <CriticalAlert open onClose={() => setShowPoLModal(false)} />
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Recent Activity Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+            Recent Activity
+          </h2>
+          <a
+            href="#"
+            className="[font-family:'Noto_Sans',Helvetica] font-bold text-[#ff6600] hover:text-[#ff6600]/80 text-sm"
+          >
+            View All
+          </a>
+        </div>
+
+        <div className="space-y-2">
+          {activities.length > 0 ? (
+            activities.map((activity) => (
+              <Card
+                key={activity.id}
+                className="bg-[#2D241C] border-[#393028] hover:border-[#554433] transition-colors"
+              >
+                <CardContent className="p-4 flex items-center gap-4">
+                  <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center text-green-400 text-sm flex-shrink-0">
+                    {activity.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
+                      {activity.title}
+                    </h4>
+                    <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs mt-1">
+                      {activity.description}
+                    </p>
+                  </div>
+                  <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs flex-shrink-0">
+                    {activity.timestamp}
+                  </span>
                 </CardContent>
               </Card>
-
-              {/* Recent Activity Section */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
-                    Recent Activity
-                  </h2>
-                  <a
-                    href="#"
-                    className="[font-family:'Noto_Sans',Helvetica] font-bold text-[#ff6600] hover:text-[#ff6600]/80 text-sm"
-                  >
-                    View All
-                  </a>
-                </div>
-
-                <div className="space-y-2">
-                  {activities.length > 0 ? (
-                    activities.map((activity) => (
-                      <Card
-                        key={activity.id}
-                        className="bg-[#2D241C] border-[#393028] hover:border-[#554433] transition-colors"
-                      >
-                        <CardContent className="p-4 flex items-center gap-4">
-                          <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center text-green-400 text-sm flex-shrink-0">
-                            {activity.icon}
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
-                              {activity.title}
-                            </h4>
-                            <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs mt-1">
-                              {activity.description}
-                            </p>
-                          </div>
-                          <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs flex-shrink-0">
-                            {activity.timestamp}
-                          </span>
-                        </CardContent>
-                      </Card>
-                    ))
-                  ) : (
-                    <Card className="bg-[#2D241C] border-[#393028]">
-                      <CardContent className="p-8 flex items-center justify-center">
-                        <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">No recent activity</p>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              </div>
+            ))
+          ) : (
+            <Card className="bg-[#2D241C] border-[#393028]">
+              <CardContent className="p-8 flex items-center justify-center">
+                <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
+                  No recent activity
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
+    </div>
   );
 };
