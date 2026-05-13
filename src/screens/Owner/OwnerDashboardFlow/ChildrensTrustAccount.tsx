@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { flushSync } from "react-dom";
 import { assetData } from "../PlanCreationFlow/SelectAssets";
 import { useParams, useNavigate } from "react-router-dom";
 import { usePlan } from "../../../context/usePlan";
@@ -134,37 +135,53 @@ export const ChildrensTrustAccount = (): JSX.Element => {
         setSubmitting(false);
         return;
       }
-      // prepare plan
-      setPlanType('timelock');
-      const planName = `${viewingLabel} - ${beneficiaryName || 'Beneficiary'}`;
-      setPlanField('name', planName);
-      setAssets(selectedAsset, contributionAmount);
+      if (!selectedAsset) {
+        toast.error('Please select an asset');
+        setSubmitting(false);
+        return;
+      }
+
+      // Compute release timestamp
+      const releaseTs = computeReleaseTimestamp(dateOfBirth || null, releaseAge);
+
+      // Build beneficiary object with correct field names for backend
       const beneficiary = {
         id: 'b1',
-        name: beneficiaryName || 'Beneficiary',
+        name: beneficiaryName,
         relationship: 'child',
         email: email || '',
-        walletAddress: walletAddress || '',
+        walletAddress: walletAddress,
         allocation: 100,
         color: '#8b7664',
         initial: (beneficiaryName || 'B').charAt(0).toUpperCase(),
       };
-      setBeneficiaries([beneficiary as any]);
 
-      const releaseTs = computeReleaseTimestamp(dateOfBirth || null, releaseAge);
-      setPlanField('releaseTimestamp', releaseTs);
+      // Prepare plan data - use flushSync to ensure state updates are processed synchronously
+      const planName = `${viewingLabel} - ${beneficiaryName}`;
+      
+      flushSync(() => {
+        setPlanType('timelock');
+        setPlanField('name', planName);
+        setPlanField('cryptoAsset', selectedAsset);
+        setPlanField('amount', contributionAmount);
+        setPlanField('releaseTimestamp', releaseTs);
+        setBeneficiaries([beneficiary as any]);
+      });
 
-      // submit using existing plan flow
+      console.log('[Trust] Plan state updated, submitting...');
+
+      // Now submit with updated plan state
       const res = await submitPlan();
+      console.log('[Trust] Plan created successfully:', res);
+      
       toast.success('Trust plan created — processing');
-      // clear draft and navigate to plans list
       clearPlan();
       navigate('/owner-dashboard/plans');
       return res;
     } catch (err: any) {
       console.error('Create trust failed', err);
       toast.error(err?.message || 'Failed to create trust plan');
-      throw err;
+      setSubmitting(false);
     } finally {
       setSubmitting(false);
     }

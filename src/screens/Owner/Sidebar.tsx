@@ -12,8 +12,8 @@ import { useState } from "react";
 const sidebarMenuItems = [
   { icon: dashboardIcon, label: "Dashboard", id: "dashboard" },
   { icon: plusCircleIcon, label: "Create Plan", id: "create-plan" },
-  { icon: fileTextIcon, label: "Activity Logs", id: "activity-logs" },
   { icon: fileTextIcon, label: "Trusts", id: "trusts" },
+  { icon: fileTextIcon, label: "Activity Logs", id: "activity-logs" },
 ];
 
 const systemMenuItems = [
@@ -47,8 +47,8 @@ export const Sidebar = ({ mobile = false, open = false, onClose }: SidebarProps)
     let href = "#";
     if (item.id === "dashboard") href = "/owner-dashboard";
     if (item.id === "create-plan") href = "/owner-dashboard/select-assets";
-    if (item.id === "activity-logs") href = "/owner-dashboard/activity-logs";
     if (item.id === "trusts") href = "/owner-dashboard/trusts";
+    if (item.id === "activity-logs") href = "/owner-dashboard/activity-logs";
     return { ...item, href };
   });
 
