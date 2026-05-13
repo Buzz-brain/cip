@@ -13,6 +13,7 @@ export const YourInheritances = (): JSX.Element => {
   const [beneficiaries, setBeneficiaries] = useState<any[] | null>([]);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [taxByPlan, setTaxByPlan] = useState<Record<number, { beneficiary_id?: number; country?: string | null; asset?: string; amount?: number; tax_rate?: number; estimated_tax?: number } | null>>({});
   const navigate = useNavigate();
 
   const beneficiariesByPlan = useMemo(() => {
@@ -44,6 +45,24 @@ export const YourInheritances = (): JSX.Element => {
         setPlans(res?.plans ?? []);
         setBeneficiaries(res?.beneficiaries ?? []);
         setLoaded(true);
+
+        // Fetch tax estimates for each plan (fire-and-forget per-plan)
+        try {
+          const mod = await import('../../lib/api/beneficiary');
+          const planList = res?.plans ?? [];
+          planList.forEach(async (p: any) => {
+            try {
+              const tax = await mod.getPlanTax(user.token, Number(p.id));
+              if (!mounted) return;
+              setTaxByPlan(prev => ({ ...prev, [Number(p.id)]: tax ?? null }));
+            } catch (e) {
+              console.warn('[YourInheritances] tax fetch failed for plan', p.id, e);
+              setTaxByPlan(prev => ({ ...prev, [Number(p.id)]: null }));
+            }
+          });
+        } catch (e) {
+          console.warn('[YourInheritances] Failed to import beneficiary API for tax fetch', e);
+        }
       } catch (err: any) {
         console.warn("Failed to fetch beneficiary inheritances", err);
         toast.error("Failed to load inheritances");
@@ -107,7 +126,12 @@ export const YourInheritances = (): JSX.Element => {
                 <div className="flex items-start gap-4 flex-1">
                   <div className="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-[#1f1b16] to-[#2b261f] rounded-lg text-2xl">🏛️</div>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-white text-lg mb-1">{p.plan_name ?? p.name ?? `Plan #${p.id}`}</h4>
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-semibold text-white text-lg mb-1">{p.plan_name ?? p.name ?? `Plan #${p.id}`}</h4>
+                      {p.is_child_trust && (
+                        <div className="text-xs px-2 py-1 bg-[#0b3b2e] rounded text-[#9fe8c9] font-bold">Child Trust</div>
+                      )}
+                    </div>
                     <p className="text-[#bdb09a] text-sm">{(p.plan_type ?? '—').toString().replace('_', ' ').toUpperCase()}</p>
                     <p className="text-[#8b7b64] text-xs mt-1">Grantor: {p.grantor_name ?? p.owner_name ?? p.grantor ?? '—'}</p>
                   </div>
@@ -135,6 +159,11 @@ export const YourInheritances = (): JSX.Element => {
                 <div>
                   <p className="text-[#bdb09a] text-xs">Amount</p>
                   <p className="text-white text-sm font-bold mt-2">{p.amount ? `${p.amount} ${p.crypto_asset ?? ''}` : '—'}</p>
+                  {taxByPlan[Number(p.id)] ? (
+                    <p className="text-xs text-[#8b7b64] mt-2">Estimated Tax: {taxByPlan[Number(p.id)]?.estimated_tax ?? '—'} {taxByPlan[Number(p.id)]?.asset ?? ''}</p>
+                  ) : (
+                    <p className="text-xs text-[#8b7b64] mt-2">Estimated Tax: —</p>
+                  )}
                   <p className="text-[#8b7b64] text-xs mt-4">Created: {created ? created.toLocaleDateString() : '—'}</p>
                   <p className="text-[#8b7b64] text-xs">Last Active: {lastActive ? lastActive.toLocaleString() : '—'}</p>
                 </div>

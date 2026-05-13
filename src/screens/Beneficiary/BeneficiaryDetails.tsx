@@ -20,6 +20,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
   const [nominateLoading, setNominateLoading] = useState(false);
   const [disputes, setDisputes] = useState<any[]>([]);
   const [disputeId, setDisputeId] = useState<number | null>(null);
+  const [taxInfo, setTaxInfo] = useState<{ beneficiary_id?: number; country?: string | null; asset?: string; amount?: number; tax_rate?: number; estimated_tax?: number } | null>(null);
 
   const formatTs = (ts?: number | null) => {
     if (!ts) return '—';
@@ -27,6 +28,18 @@ export const BeneficiaryDetails = (): JSX.Element => {
       return new Date(Number(ts) * 1000).toLocaleString();
     } catch (e) {
       return String(ts);
+    }
+
+    async function fetchTaxForPlan(token: string, planId?: number) {
+      if (!token || !planId) return;
+      try {
+        const mod = await import('../../lib/api/beneficiary');
+        const data = await mod.getPlanTax(token, planId);
+        if (!mounted) return;
+        setTaxInfo(data ?? null);
+      } catch (err) {
+        console.error('[BeneficiaryDetails] Failed to fetch tax info:', err);
+      }
     }
   };
   const getInitials = (name?: string) => {
@@ -93,6 +106,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
         
         // Fetch disputes for this plan
         fetchDisputesForPlan(user.token, res?.plan?.id);
+        fetchTaxForPlan(user.token, res?.plan?.id);
       } catch (err) {
         console.error(err);
         toast.error('Failed to load plan details');
@@ -197,6 +211,9 @@ export const BeneficiaryDetails = (): JSX.Element => {
                       <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-3xl">
                         {planDetail?.plan ? (planDetail.plan.name ?? `Plan #${planDetail.plan.id ?? planDetail.plan.contract_plan_id}`) : 'Plan Details'}
                       </h1>
+                      {planDetail?.plan?.is_child_trust && (
+                        <div className="text-xs px-2 py-1 bg-[#0b3b2e] rounded text-[#9fe8c9] font-bold">Child Trust</div>
+                      )}
                       <span className="bg-[#2ccd2c] text-[#0d0501] [font-family:'Manrope',Helvetica] font-bold text-xs px-3 py-1 rounded-full">
                         {planDetail?.plan ? (planDetail.plan.is_released ? 'RELEASED' : planDetail.plan.is_funded ? 'ACTIVE MONITORING' : 'PENDING') : 'LOADING'}
                       </span>
@@ -286,8 +303,17 @@ export const BeneficiaryDetails = (): JSX.Element => {
 
                 <div className="p-4 bg-[#181511] border border-[#392f28] rounded-lg">
                   <p className="text-xs text-[#8b7664]">📊 Tax Status</p>
-                  <p className="font-bold text-white mt-1">{planDetail ? 'Pending' : '—'}</p>
-                  <p className="text-xs text-[#8b7664] mt-1">Assessment upon execution</p>
+                  {taxInfo ? (
+                    <>
+                      <p className="font-bold text-white mt-1">{taxInfo.estimated_tax != null ? `${taxInfo.estimated_tax} ${taxInfo.asset ?? ''}` : '—'}</p>
+                      <p className="text-xs text-[#8b7b64] mt-1">Rate: {taxInfo.tax_rate != null ? `${(taxInfo.tax_rate * 100).toFixed(2)}%` : '—'}</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="font-bold text-white mt-1">{planDetail ? 'Pending' : '—'}</p>
+                      <p className="text-xs text-[#8b7b64] mt-1">Assessment upon execution</p>
+                    </>
+                  )}
                 </div>
 
                 <div className="p-4 bg-[#181511] border border-[#392f28] rounded-lg">

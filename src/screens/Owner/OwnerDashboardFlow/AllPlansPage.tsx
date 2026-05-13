@@ -67,6 +67,7 @@ export const AllPlansPage: React.FC = () => {
         const isFunded = !!it.is_funded;
         const isReleased = !!it.is_released;
         const isCancelled = !!it.is_cancelled;
+        const isChildTrust = !!it.is_child_trust;
         const releaseTs = it.release_timestamp ? Number(it.release_timestamp) : null;
         let triggerHours = 0;
         if (releaseTs) {
@@ -85,6 +86,7 @@ export const AllPlansPage: React.FC = () => {
           status: isCancelled ? "Cancelled" : isReleased ? "Triggered" : isFunded ? "Active" : "Pending",
           statusColor: isCancelled ? "bg-gray-500" : isReleased ? "bg-red-500" : isFunded ? "bg-green-500" : "bg-yellow-500",
           triggerDays: triggerHours || 0,
+          isChildTrust,
           raw: it,
         };
       });
@@ -207,7 +209,12 @@ export const AllPlansPage: React.FC = () => {
                           <div className="w-10 h-10 bg-[#332619] rounded-lg flex items-center justify-center text-lg">{plan.chainIcon}</div>
                           <div>
                             <div className="font-bold text-white text-sm">{plan.name}</div>
-                            <div className="text-[#8b7664] text-xs">#{plan.id} • {plan.chainName}</div>
+                              <div className="flex items-center gap-2">
+                                <div className="text-[#8b7664] text-xs">#{plan.id} • {plan.chainName}</div>
+                                {plan.isChildTrust && (
+                                  <div className="text-xs px-2 py-1 bg-[#2b3940] rounded text-[#9fe8c9] font-bold">Child Trust</div>
+                                )}
+                              </div>
                           </div>
                         </div>
                       </td>

@@ -121,6 +121,27 @@ export async function nominateMediator(token: string, planId: number, body: { fu
   return json;
 }
 
+export async function getPlanTax(token: string | undefined, planId: number): Promise<{ beneficiary_id?: number; country?: string | null; asset?: string; amount?: number; tax_rate?: number; estimated_tax?: number } | null> {
+  if (!token) throw new Error('Not authenticated');
+  const url = `${BACKEND_API_URL}/bf/plans/${planId}/tax`;
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) {
+    if (res.status === 404) return null;
+    const err = await extractErrorMessage(res).catch(() => `Error (Status: ${res.status})`);
+    throw new Error(err);
+  }
+  const json = await res.json().catch(() => null);
+  if (!json) return null;
+  // If API returns envelope { ... } or direct
+  return json;
+}
+
 export default {
   getBeneficiaryInheritances,
   getBeneficiaryInheritanceById,

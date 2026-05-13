@@ -159,7 +159,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
       const planName = `${viewingLabel} - ${beneficiaryName}`;
       
       // Use an explicit payload to avoid any state synchronization race conditions
-      const overrideBody = {
+      const overrideBody: Record<string, any> = {
         name: planName,
         crypto_asset: selectedAsset,
         plan_type: 'timelock',
@@ -174,6 +174,11 @@ export const ChildrensTrustAccount = (): JSX.Element => {
           },
         ],
       };
+
+      // Mark as child trust when using the child template so backend can identify it
+      if (trustId === 'template-child') {
+        overrideBody.is_child_trust = true;
+      }
 
       // Also update local plan draft synchronously for UX consistency
       flushSync(() => {

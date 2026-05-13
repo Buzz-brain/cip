@@ -189,6 +189,9 @@ export const PlanDetail: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-3 ml-0 sm:ml-auto mt-4 sm:mt-0">
           <div className='flex'>
           {detail?.plan?.plan_type && <Badge className="text-xs font-bold px-3 py-2 bg-[#2b241d] mr-2 text-[#d1c3b4]">{detail.plan.plan_type}</Badge>}
+          {detail?.plan?.is_child_trust ? (
+            <Badge className="text-xs font-bold px-3 py-2 bg-[#0b3b2e] text-[#9fe8c9]">Child Trust</Badge>
+          ) : null}
           {detail?.plan?.is_cancelled ? (
             <Badge className="text-xs font-bold px-3 py-2 bg-red-700 text-white">Cancelled</Badge>
           ) : (detail?.plan?.is_funded ? <Badge className="text-xs font-bold px-3 py-2 bg-green-700 text-white">Funded</Badge> : <Badge className="text-xs font-bold px-3 py-2 bg-yellow-600 text-white">Unfunded</Badge>)}
