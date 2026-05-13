@@ -62,7 +62,7 @@ export interface PlanContextType {
   setProtectedDataAddress: (protectedDataAddress: string) => void;
   clearPlan: () => void;
   getProtectorPayload: () => Record<string, string>;
-  submitPlan: (opts?: { signal?: AbortSignal }) => Promise<any>;
+  submitPlan: (opts?: { signal?: AbortSignal; overrideBody?: Record<string, any> }) => Promise<any>;
   cancelInheritance: (planId: number) => Promise<any>;
   editInheritance: (payload: any) => Promise<any>;
   /**
@@ -219,7 +219,7 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
     return payload;
   }, [plan, user?.publicKey]);
 
-  const submitPlan = useCallback(async ({ signal }: { signal?: AbortSignal } = {}) => {
+  const submitPlan = useCallback(async ({ signal, overrideBody }: { signal?: AbortSignal; overrideBody?: Record<string, any> } = {}) => {
 
     const url = `${BACKEND_API_URL}/inherit/create-inheritance`;
 
@@ -249,6 +249,29 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
       wallet: b.walletAddress,
       allocation_percentage: b.allocation,
     }));
+
+    // If caller provided an explicit payload, use it (useful to avoid stale state race conditions)
+    if (overrideBody && typeof overrideBody === 'object') {
+      console.log('[PlanContext] submitPlan using override body:', overrideBody);
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (user?.token) headers["Authorization"] = `Bearer ${user.token}`;
+      try {
+        const res = await fetch(`${BACKEND_API_URL}/inherit/create-inheritance`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify(overrideBody),
+          signal,
+        });
+        if (!res.ok) {
+          const msg = await extractErrorMessage(res).catch(() => `Error (Status: ${res.status})`);
+          throw new Error(msg || `Create inheritance failed: ${res.status}`);
+        }
+        return res.json();
+      } catch (err) {
+        console.error('[PlanContext] submitPlan override error:', err);
+        throw err;
+      }
+    }
 
     // Build payload according to selected plan type (backend expects different shapes)
     const planType = plan.planType;

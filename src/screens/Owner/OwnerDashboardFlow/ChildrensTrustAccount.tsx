@@ -4,11 +4,10 @@ import { assetData } from "../PlanCreationFlow/SelectAssets";
 import { useParams, useNavigate } from "react-router-dom";
 import { usePlan } from "../../../context/usePlan";
 import { toast } from "react-toastify";
-// Sidebar removed — layout provides it
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
 import { Badge } from "@components/ui/badge";
-import { Settings as SettingsIcon, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 export const ChildrensTrustAccount = (): JSX.Element => {
   const [releaseAge, setReleaseAge] = useState(18);
@@ -33,7 +32,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
   const [walletAddress, setWalletAddress] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const { setPlanType, setPlanField, setAssets, setBeneficiaries, submitPlan, clearPlan } = usePlan();
+  const { setPlanType, setPlanField, setBeneficiaries, submitPlan, clearPlan } = usePlan();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -159,6 +158,24 @@ export const ChildrensTrustAccount = (): JSX.Element => {
       // Prepare plan data - use flushSync to ensure state updates are processed synchronously
       const planName = `${viewingLabel} - ${beneficiaryName}`;
       
+      // Use an explicit payload to avoid any state synchronization race conditions
+      const overrideBody = {
+        name: planName,
+        crypto_asset: selectedAsset,
+        plan_type: 'timelock',
+        release_timestamp: releaseTs,
+        beneficiaries: [
+          {
+            name: beneficiary.name,
+            relationship: beneficiary.relationship,
+            email: beneficiary.email || '',
+            wallet: beneficiary.walletAddress,
+            allocation_percentage: beneficiary.allocation,
+          },
+        ],
+      };
+
+      // Also update local plan draft synchronously for UX consistency
       flushSync(() => {
         setPlanType('timelock');
         setPlanField('name', planName);
@@ -168,13 +185,12 @@ export const ChildrensTrustAccount = (): JSX.Element => {
         setBeneficiaries([beneficiary as any]);
       });
 
-      console.log('[Trust] Plan state updated, submitting...');
+      console.log('[Trust] Submitting explicit override payload to backend...', overrideBody);
 
-      // Now submit with updated plan state
-      const res = await submitPlan();
+      const res = await submitPlan({ overrideBody });
       console.log('[Trust] Plan created successfully:', res);
       
-      toast.success('Trust plan created — processing');
+      toast.success('Trust Plan Created Successfully');
       clearPlan();
       navigate('/owner-dashboard/plans');
       return res;

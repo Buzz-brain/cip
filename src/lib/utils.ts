@@ -24,21 +24,33 @@ export function normalizeWalletAddress(address: string): string {
 // Tries to parse JSON and extract 'detail' field, falls back to plain text
 export async function extractErrorMessage(response: Response): Promise<string> {
   const defaultMsg = `Error (Status: ${response.status})`;
-  // Handle common status codes with friendlier UX messages
-  if (response.status === 401) return 'Not authenticated. Please connect your wallet or log in.';
-  if (response.status === 403) return 'Access denied. Your account does not have permission.';
+
+  // Try to parse JSON response and prefer explicit backend `detail` message when present
   try {
-    const data = await response.json();
-    if (data?.detail) return String(data.detail);
-    if (typeof data === 'string') return data;
+    const text = await response.text();
+
+    // Attempt JSON parse first
+    try {
+      const data = text ? JSON.parse(text) : null;
+      if (data && data.detail) return String(data.detail);
+      if (typeof data === 'string' && data.length > 0) return data;
+    } catch {
+      // not JSON, fall through to plain text handling
+    }
+
+    // If plain text body exists, use it
+    if (text && text.trim().length > 0) return text.trim();
+
+    // Fallback messages for common status codes
+    if (response.status === 401) return 'Not authenticated. Please connect your wallet or log in.';
+    if (response.status === 403) return 'Access denied. Your account does not have permission.';
+
     return defaultMsg;
   } catch {
-    try {
-      const text = await response.text();
-      return text || defaultMsg;
-    } catch {
-      return defaultMsg;
-    }
+    // Final fallback
+    if (response.status === 401) return 'Not authenticated. Please connect your wallet or log in.';
+    if (response.status === 403) return 'Access denied. Your account does not have permission.';
+    return defaultMsg;
   }
 }
 
