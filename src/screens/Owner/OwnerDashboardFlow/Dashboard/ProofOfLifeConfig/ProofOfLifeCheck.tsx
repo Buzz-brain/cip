@@ -224,7 +224,7 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center text-white [font-family:'Manrope',Helvetica]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center text-white">
       {/* backdrop captures pointer events to allow click-to-close */}
       <div className="absolute inset-0 bg-black/60" onClick={() => onClose && onClose()} />
       <div className="relative w-full max-w-2xl mx-4 pointer-events-auto max-h-[90vh] overflow-auto">

@@ -186,10 +186,10 @@ export const AddBeneficiaries = (): JSX.Element => {
           <div className="w-full max-w-6xl">
             <div className="mb-8">
               <div className="flex flex-col gap-2">
-                <h1 className="[font-family:'Manrope',Helvetica] font-extrabold text-white text-2xl sm:text-[35.7px] tracking-[-1.19px] leading-8 sm:leading-10">
+                <h1 className="font-extrabold text-white text-2xl sm:text-[35.7px] tracking-[-1.19px] leading-8 sm:leading-10">
                   Add Beneficiaries
                 </h1>
-                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] text-sm sm:text-base leading-6">
+                <p className="font-normal text-[#9dabb9] text-sm sm:text-base leading-6">
                   Define who will inherit your digital assets. You can assign different percentages to multiple beneficiaries. Ensure the total allocation equals 100%.
                 </p>
               </div>
@@ -213,10 +213,10 @@ export const AddBeneficiaries = (): JSX.Element => {
                               {beneficiary.initial}
                             </div>
                             <div>
-                              <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base">
+                              <h3 className="font-bold text-white text-base">
                                 Beneficiary #{index + 1}
                               </h3>
-                              <p className="[font-family:'Manrope',Helvetica] font-normal text-[#80796b] text-xs uppercase tracking-wide">
+                              <p className="font-normal text-[#80796b] text-xs uppercase tracking-wide">
                                 {index === 0
                                   ? "Primary Allocator"
                                   : "Secondary Allocator"}
@@ -235,7 +235,7 @@ export const AddBeneficiaries = (): JSX.Element => {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                           <div className="flex flex-col gap-2">
-                            <label className="[font-family:'Manrope',Helvetica] font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
+                            <label className="font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
                               Legal Name / Alias
                             </label>
                             <div className="relative">
@@ -256,7 +256,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                           </div>
 
                           <div className="flex flex-col gap-2">
-                            <label className="[font-family:'Manrope',Helvetica] font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
+                            <label className="font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
                               Relationship
                             </label>
                             <Select
@@ -289,7 +289,7 @@ export const AddBeneficiaries = (): JSX.Element => {
 
                         <div className="flex flex-col gap-2 mb-6">
                           <div className="flex items-center justify-between">
-                            <label className="[font-family:'Manrope',Helvetica] font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
+                            <label className="font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
                               Wallet Address (ETH/EVM)
                             </label>
                             {beneficiary.walletAddress ? (
@@ -324,7 +324,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                         </div>
 
                         <div className="flex flex-col gap-2 mb-6">
-                          <label className="[font-family:'Manrope',Helvetica] font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
+                          <label className="font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
                             Email
                           </label>
                           <Input
@@ -343,7 +343,7 @@ export const AddBeneficiaries = (): JSX.Element => {
 
                         <div className="flex flex-col gap-3">
                           <div className="flex items-center justify-between">
-                            <label className="[font-family:'Manrope',Helvetica] font-medium text-white text-sm">
+                            <label className="font-medium text-white text-sm">
                               Allocation Share
                             </label>
                             <div className="flex items-center gap-2">
@@ -398,7 +398,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#2c231a] group-hover:bg-[#ff6600] transition-colors">
                       <PlusIcon className="w-5 h-5 text-[#80796b] group-hover:text-white transition-colors" />
                     </div>
-                    <span className="[font-family:'Manrope',Helvetica] font-medium text-[#80796b] group-hover:text-[#ff6600] text-base transition-colors">
+                    <span className="font-medium text-[#80796b] group-hover:text-[#ff6600] text-base transition-colors">
                       Add Another Beneficiary
                     </span>
                   </button>
@@ -412,7 +412,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                       <div className="flex items-center justify-center w-8 h-8 rounded-lg">
                         <img src={pieCircleIcon} alt="" />
                       </div>
-                      <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base">
+                      <h3 className="font-bold text-white text-base">
                         Allocation Summary
                       </h3>
                     </div>
@@ -457,10 +457,10 @@ export const AddBeneficiaries = (): JSX.Element => {
                           })}
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-3xl sm:text-4xl">
+                          <span className="font-bold text-white text-3xl sm:text-4xl">
                             {totalAllocated}%
                           </span>
-                          <span className="[font-family:'Manrope',Helvetica] font-medium text-[#80796b] text-sm uppercase tracking-wide">
+                          <span className="font-medium text-[#80796b] text-sm uppercase tracking-wide">
                             Allocated
                           </span>
                         </div>
@@ -478,11 +478,11 @@ export const AddBeneficiaries = (): JSX.Element => {
                               className="w-3 h-3 rounded-full"
                               style={{ backgroundColor: b.color }}
                             />
-                            <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm">
+                            <span className="font-normal text-white text-sm">
                               {b.name || "Unnamed"}
                             </span>
                           </div>
-                          <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">
+                          <span className="font-bold text-white text-sm">
                             {b.allocation}%
                           </span>
                         </div>
@@ -491,11 +491,11 @@ export const AddBeneficiaries = (): JSX.Element => {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <div className="w-3 h-3 rounded-full bg-[#54483b]" />
-                            <span className="[font-family:'Manrope',Helvetica] font-normal text-[#80796b] text-sm">
+                            <span className="font-normal text-[#80796b] text-sm">
                               Unallocated
                             </span>
                           </div>
-                          <span className="[font-family:'Manrope',Helvetica] font-bold text-[#80796b] text-sm">
+                          <span className="font-bold text-[#80796b] text-sm">
                             {unallocated}%
                           </span>
                         </div>
@@ -518,10 +518,10 @@ export const AddBeneficiaries = (): JSX.Element => {
                           </svg>
                         </div>
                         <div className="flex flex-col gap-1">
-                          <span className="[font-family:'Manrope',Helvetica] font-bold text-[#f59e0b] text-xs uppercase tracking-wide">
+                          <span className="font-bold text-[#f59e0b] text-xs uppercase tracking-wide">
                             Action Required
                           </span>
-                          <p className="[font-family:'Manrope',Helvetica] font-normal text-[#fef3c7] text-sm leading-5">
+                          <p className="font-normal text-[#fef3c7] text-sm leading-5">
                             You have {unallocated}% of your assets unallocated.
                             Total allocation must equal 100% to proceed.
                           </p>
@@ -571,7 +571,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                   disabled={unallocated !== 0}
                   className="w-full py-4 sm:py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 disabled:bg-[#54483b] disabled:text-[#80796b] disabled:cursor-not-allowed rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40]"
                 >
-                  <span className="[font-family:'Manrope',Helvetica] font-bold text-base">
+                  <span className="font-bold text-base">
                     Next: Review Plan
                   </span>
                   <ChevronRightIcon className="w-5 h-5" />

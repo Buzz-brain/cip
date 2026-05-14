@@ -120,10 +120,10 @@ export const RealTimeVolatility = (): JSX.Element => {
                 <span className="text-white font-bold">🛡️</span>
               </div>
               <div>
-                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                <div className="font-bold text-white text-sm">
                   CIP Protocol
                 </div>
-                <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                <div className="text-[#8b7664] text-xs">
                   Secure Legacy Management
                 </div>
               </div>
@@ -153,7 +153,7 @@ export const RealTimeVolatility = (): JSX.Element => {
                   }`}
                 >
                   <span className="text-lg">{item.icon}</span>
-                  <span className="[font-family:'Noto_Sans',Helvetica] font-medium text-sm">
+                  <span className="font-medium text-sm">
                     {item.label}
                   </span>
                 </Link>
@@ -162,11 +162,11 @@ export const RealTimeVolatility = (): JSX.Element => {
           </div>
 
           <div className="border-t border-[#3a2f1e] p-4 space-y-3">
-            <div className="text-[#8b7664] text-xs [font-family:'Noto_Sans',Helvetica]">
+            <div className="text-[#8b7664] text-xs">
               STORAGE STATUS
             </div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm [font-family:'Noto_Sans',Helvetica]">
+              <div className="flex items-center justify-between text-sm">
                 <span className="text-[#8b7664]">45% Used</span>
                 <span className="text-[#8b7664]">120GB Free</span>
               </div>
@@ -182,10 +182,10 @@ export const RealTimeVolatility = (): JSX.Element => {
                 A
               </div>
               <div className="flex-1 min-w-0">
-                <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-xs truncate">
+                <div className="font-bold text-white text-xs truncate">
                   alex.eth
                 </div>
-                <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                <div className="text-[#8b7664] text-xs">
                   Online
                 </div>
               </div>
@@ -203,12 +203,12 @@ export const RealTimeVolatility = (): JSX.Element => {
                 <input
                   type="text"
                   placeholder="Search assets..."
-                  className="w-full max-w-sm bg-[#0d0b08] border border-[#3a2f1e] rounded-lg pl-10 pr-4 py-2 text-[#b8a494] placeholder-[#695d47] [font-family:'Noto_Sans',Helvetica] text-sm focus:outline-none focus:border-[#ff6600]"
+                  className="w-full max-w-sm bg-[#0d0b08] border border-[#3a2f1e] rounded-lg pl-10 pr-4 py-2 text-[#b8a494] placeholder-[#695d47] text-sm focus:outline-none focus:border-[#ff6600]"
                 />
               </div>
 
               <div className="flex items-center gap-4">
-                <button className="px-3 py-2 rounded-lg bg-[#332619] text-[#ff6600] [font-family:'Noto_Sans',Helvetica] font-bold text-sm hover:bg-[#3a2f1e]">
+                <button className="px-3 py-2 rounded-lg bg-[#332619] text-[#ff6600] font-bold text-sm hover:bg-[#3a2f1e]">
                   Assets
                 </button>
                 <button className="w-10 h-10 rounded-full bg-[#332619] hover:bg-[#3a2f1e] flex items-center justify-center">
@@ -226,14 +226,14 @@ export const RealTimeVolatility = (): JSX.Element => {
             <div className="p-8 space-y-8">
               {/* Beta Feature Banner */}
               <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#332619]/50 border border-[#ff6600]/30">
-                <div className="px-2 py-1 bg-[#ff6600] rounded text-white text-xs [font-family:'Noto_Sans',Helvetica] font-bold">
+                <div className="px-2 py-1 bg-[#ff6600] rounded text-white text-xs font-bold">
                   Beta Feature
                 </div>
                 <div className="flex-1">
-                  <h1 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                  <h1 className="font-bold text-white text-2xl">
                     Real-Time Volatility Assessment
                   </h1>
-                  <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm mt-1">
+                  <p className="text-[#b8a494] text-sm mt-1">
                     Analyze asset stability before securing them in the inheritance vault. Select assets with lower volatility scores to ensure consistent value preservation for your beneficiaries.
                   </p>
                 </div>
@@ -248,10 +248,10 @@ export const RealTimeVolatility = (): JSX.Element => {
                         🛡️
                       </div>
                       <div>
-                        <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                        <div className="font-bold text-white text-2xl">
                           {safeCount}
                         </div>
-                        <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                        <div className="text-[#8b7664] text-xs">
                           Safe Assets
                         </div>
                       </div>
@@ -266,10 +266,10 @@ export const RealTimeVolatility = (): JSX.Element => {
                         ⚠️
                       </div>
                       <div>
-                        <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                        <div className="font-bold text-white text-2xl">
                           {cautionaryCount}
                         </div>
-                        <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                        <div className="text-[#8b7664] text-xs">
                           Medium Risk
                         </div>
                       </div>
@@ -284,10 +284,10 @@ export const RealTimeVolatility = (): JSX.Element => {
                         ⚡
                       </div>
                       <div>
-                        <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                        <div className="font-bold text-white text-2xl">
                           {highRiskCount}
                         </div>
-                        <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                        <div className="text-[#8b7664] text-xs">
                           High Risk
                         </div>
                       </div>
@@ -300,7 +300,7 @@ export const RealTimeVolatility = (): JSX.Element => {
               <div className="flex gap-3 justify-end">
                 <button
                   onClick={() => setTimeframe("7")}
-                  className={`px-4 py-2 rounded-lg [font-family:'Noto_Sans',Helvetica] font-bold text-sm transition-colors ${
+                  className={`px-4 py-2 rounded-lg font-bold text-sm transition-colors ${
                     timeframe === "7"
                       ? "bg-[#ff6600] text-white"
                       : "bg-[#332619] text-[#8b7664] hover:text-white"
@@ -310,7 +310,7 @@ export const RealTimeVolatility = (): JSX.Element => {
                 </button>
                 <button
                   onClick={() => setTimeframe("30")}
-                  className={`px-4 py-2 rounded-lg [font-family:'Noto_Sans',Helvetica] font-bold text-sm transition-colors ${
+                  className={`px-4 py-2 rounded-lg font-bold text-sm transition-colors ${
                     timeframe === "30"
                       ? "bg-[#ff6600] text-white"
                       : "bg-[#332619] text-[#8b7664] hover:text-white"
@@ -336,17 +336,17 @@ export const RealTimeVolatility = (): JSX.Element => {
                               {asset.icon}
                             </div>
                             <div>
-                              <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
+                              <div className="font-bold text-white text-sm">
                                 {asset.name}
                               </div>
-                              <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                              <div className="text-[#8b7664] text-xs">
                                 {asset.symbol}
                               </div>
                             </div>
                           </div>
                         </div>
                         <div
-                          className={`px-2 py-1 rounded text-xs [font-family:'Noto_Sans',Helvetica] font-bold ${
+                          className={`px-2 py-1 rounded text-xs font-bold ${
                             asset.category === "Safe"
                               ? "bg-green-500/20 text-green-400"
                               : asset.category === "Cautionary"
@@ -364,13 +364,13 @@ export const RealTimeVolatility = (): JSX.Element => {
 
                       {/* Price */}
                       <div className="space-y-2">
-                        <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-3xl">
+                        <div className="font-bold text-white text-3xl">
                           {asset.price}
                         </div>
                         <div
                           className={`flex items-center gap-1 ${
                             asset.changeDirection === "up" ? "text-green-400" : "text-red-400"
-                          } [font-family:'Noto_Sans',Helvetica] font-bold text-sm`}
+                          } font-bold text-sm`}
                         >
                           {asset.changeDirection === "up" ? "↑" : "↓"} {asset.changePercent}
                         </div>
@@ -404,10 +404,10 @@ export const RealTimeVolatility = (): JSX.Element => {
 
                       {/* Volatility Score */}
                       <div className="space-y-2">
-                        <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                        <div className="text-[#8b7664] text-xs">
                           Volatility Score
                         </div>
-                        <div className={`flex items-center gap-2 [font-family:'Noto_Sans',Helvetica] font-bold text-sm ${asset.volatilityColor}`}>
+                        <div className={`flex items-center gap-2 font-bold text-sm ${asset.volatilityColor}`}>
                           <span>{asset.volatilityIcon}</span>
                           {asset.volatility}
                         </div>
@@ -424,7 +424,7 @@ export const RealTimeVolatility = (): JSX.Element => {
                                   : [...prev, asset.id]
                               )
                             }
-                            className={`flex-1 [font-family:'Noto_Sans',Helvetica] font-bold text-sm ${
+                            className={`flex-1 font-bold text-sm ${
                               selectedAssets.includes(asset.id)
                                 ? "bg-[#ff6600] hover:bg-[#ff6600]/90 text-white"
                                 : "bg-[#ff6600] hover:bg-[#ff6600]/90 text-white"
@@ -433,7 +433,7 @@ export const RealTimeVolatility = (): JSX.Element => {
                             Select
                           </Button>
                         ) : (
-                          <Button className="flex-1 bg-[#332619] hover:bg-[#3a2f1e] text-[#8b7664] [font-family:'Noto_Sans',Helvetica] font-bold text-sm">
+                          <Button className="flex-1 bg-[#332619] hover:bg-[#3a2f1e] text-[#8b7664] font-bold text-sm">
                             Details
                           </Button>
                         )}
@@ -449,10 +449,10 @@ export const RealTimeVolatility = (): JSX.Element => {
                       ➕
                     </div>
                     <div>
-                      <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                      <div className="font-bold text-white text-sm">
                         Monitor New Asset
                       </div>
-                      <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs mt-2">
+                      <div className="text-[#8b7664] text-xs mt-2">
                         Add a new token to your volatility dashboard to track its risk profile.
                       </div>
                     </div>

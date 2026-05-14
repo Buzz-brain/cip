@@ -193,10 +193,10 @@ export const ChoosePlanType = (): JSX.Element => {
                 <div className="w-full max-w-6xl">
                     <div className="flex flex-col gap-8">
                         <div className="flex flex-col gap-4">
-                            <h1 className="[font-family:'Manrope',Helvetica] text-4xl font-bold text-white">
+                            <h1 className="text-4xl font-bold text-white">
                                 Choose Contract or Plan Type
                             </h1>
-                            <p className="[font-family:'Manrope',Helvetica] text-gray-400 text-lg max-w-2xl">
+                            <p className="text-gray-400 text-lg max-w-2xl">
                                 Select the type of smart contract structure for your inheritance plan.
                                 Each option offers different security models, trigger mechanisms, and
                                 distribution logic.
@@ -205,7 +205,7 @@ export const ChoosePlanType = (): JSX.Element => {
 
                         <section className="flex flex-col items-start gap-3 w-full">
                             <header className="flex items-end justify-between w-full">
-                                <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base tracking-[0] leading-6 whitespace-nowrap">
+                                <h2 className="font-bold text-white text-base tracking-[0] leading-6 whitespace-nowrap">
                                     Step 3 of 5: Choose Plan Type
                                 </h2>
 
@@ -309,7 +309,7 @@ export const ChoosePlanType = (): JSX.Element => {
 
                                 <div className="inline-flex items-start gap-4 relative flex-[0_0_auto]">
                                     <Button
-                                        className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+                                        className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent font-bold text-white text-base text-center leading-6"
                                         onClick={handleBack}
                                     >
                                         Back
@@ -317,7 +317,7 @@ export const ChoosePlanType = (): JSX.Element => {
 
                                     <Button
                                         onClick={handleContinue}
-                                        className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+                                        className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg font-bold text-white text-base text-center leading-6"
                                         disabled={!selectedPlan}
                                     >
                                         Continue

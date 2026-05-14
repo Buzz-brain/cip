@@ -59,7 +59,7 @@ const ExecutorLayout = (): JSX.Element => {
         const [showMobileNav, setShowMobileNav] = useState(false);
 
         return (
-                <div className="min-h-screen bg-[#1a1410] text-white flex [font-family:'Manrope',Helvetica]">
+                <div className="min-h-screen bg-[#1a1410] text-white flex">
                         {/* Desktop sidebar */}
                         <div className="hidden sm:block">
                             <ExecutorSidebar items={sidebarItems} footer={footerContent} />

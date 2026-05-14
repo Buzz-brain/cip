@@ -202,7 +202,7 @@ export const ReviewPlan = (): JSX.Element => {
   };
 
   return (
-    <div className="font-family:'Manrope',Helvetica] flex flex-col w-full px-4 py-4 max-w-[1200px] mx-auto">
+    <div className="flex flex-col w-full px-4 py-4 max-w-[1200px] mx-auto">
       <div className="mb-8">
         <h1 className="text-5xl font-bold text-white mb-4 ">
           Review & Confirm Plan
@@ -213,7 +213,7 @@ export const ReviewPlan = (): JSX.Element => {
         </p>
       </div>
 
-      <div className="font-family:'Manrope',Helvetica] flex justify-between items-center mb-6 gap-3">
+      <div className="flex justify-between items-center mb-6 gap-3">
         <h2 className="text-xl font-bold text-white">
           Plan Configuration Summary
         </h2>

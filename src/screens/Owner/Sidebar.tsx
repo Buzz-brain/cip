@@ -110,7 +110,7 @@ export const Sidebar = ({ mobile = false, open = false, onClose }: SidebarProps)
                   className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg transition-colors block ${isActive ? "bg-[#332619] text-white" : "text-[#B9B09D] hover:bg-[#2a1f10] hover:text-white"}`}
                 >
                   <img src={item.icon} />
-                  <span className="[font-family:'Noto_Sans',Helvetica] font-medium text-sm">{item.label}</span>
+                  <span className="font-medium text-sm">{item.label}</span>
                 </button>
               );
             }
@@ -118,7 +118,7 @@ export const Sidebar = ({ mobile = false, open = false, onClose }: SidebarProps)
             return (
               <Link key={item.id} to={item.href} onClick={onClose} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors block ${isActive ? "bg-[#332619] text-white" : "text-[#B9B09D] hover:bg-[#2a1f10] hover:text-white"}`}>
                 <img src={item.icon} />
-                <span className="[font-family:'Noto_Sans',Helvetica] font-medium text-sm">{item.label}</span>
+                <span className="font-medium text-sm">{item.label}</span>
               </Link>
             );
           })}
@@ -130,7 +130,7 @@ export const Sidebar = ({ mobile = false, open = false, onClose }: SidebarProps)
             return (
               <Link key={item.id} to={item.href} onClick={onClose} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive ? "bg-[#332619] text-white" : "text-[#B9B09D] hover:bg-[#2a1f10] hover:text-white"}`}>
                 <img src={item.icon} />
-                <span className="[font-family:'Noto_Sans',Helvetica] font-medium text-sm">{item.label}</span>
+                <span className="font-medium text-sm">{item.label}</span>
               </Link>
             );
           })}
@@ -140,9 +140,9 @@ export const Sidebar = ({ mobile = false, open = false, onClose }: SidebarProps)
           <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#2D241C]">
             <div className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center text-white font-bold text-sm">{avatarInitial}</div>
             <div className="flex-1 min-w-0">
-              <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-xs truncate">{displayName}</div>
-              <div className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs truncate">{displayEmail || (user?.publicKey ? `${user.publicKey.slice(0, 6)}...${user.publicKey.slice(-4)}` : "")}</div>
-              <div className="[font-family:'Noto_Sans',Helvetica] flex items-center gap-1 text-[#B9B09D] text-xs mt-1"><div className={`w-2 h-2 rounded-full ${isAuthenticated ? "bg-[#22C55E] animate-pulse" : "bg-gray-400"}`}></div><p>{isAuthenticated ? "Online" : "Offline"}</p></div>
+              <div className="font-bold text-white text-xs truncate">{displayName}</div>
+              <div className="text-[#B9B09D] text-xs truncate">{displayEmail || (user?.publicKey ? `${user.publicKey.slice(0, 6)}...${user.publicKey.slice(-4)}` : "")}</div>
+              <div className="flex items-center gap-1 text-[#B9B09D] text-xs mt-1"><div className={`w-2 h-2 rounded-full ${isAuthenticated ? "bg-[#22C55E] animate-pulse" : "bg-gray-400"}`}></div><p>{isAuthenticated ? "Online" : "Offline"}</p></div>
             </div>
           </div>
         </div>
@@ -151,7 +151,7 @@ export const Sidebar = ({ mobile = false, open = false, onClose }: SidebarProps)
   }
 
   return (
-    <div className="hidden md:flex w-56 bg-[#1a1410] border-r border-[#3a2f1e] flex-col [font-family:'Manrope',Helvetica]">
+    <div className="hidden md:flex w-56 bg-[#1a1410] border-r border-[#3a2f1e] flex-col">
             {/* Logo */}
             <div className="p-6 border-b border-[#3a2f1e]">
                 <div className="flex items-center gap-2">
@@ -183,7 +183,7 @@ export const Sidebar = ({ mobile = false, open = false, onClose }: SidebarProps)
                     }`}
                   >
                     <img src={item.icon} />
-                    <span className="[font-family:'Noto_Sans',Helvetica] font-medium text-sm">
+                    <span className="font-medium text-sm">
                       {item.label}
                     </span>
                   </button>
@@ -199,7 +199,7 @@ export const Sidebar = ({ mobile = false, open = false, onClose }: SidebarProps)
                   }`}
                 >
                   <img src={item.icon} />
-                  <span className="[font-family:'Noto_Sans',Helvetica] font-medium text-sm">
+                  <span className="font-medium text-sm">
                     {item.label}
                   </span>
                 </Link>
@@ -222,7 +222,7 @@ export const Sidebar = ({ mobile = false, open = false, onClose }: SidebarProps)
                   }`}
                 >
                   <img src={item.icon} />
-                  <span className="[font-family:'Noto_Sans',Helvetica] font-medium text-sm">
+                  <span className="font-medium text-sm">
                     {item.label}
                   </span>
                 </Link>
@@ -237,13 +237,13 @@ export const Sidebar = ({ mobile = false, open = false, onClose }: SidebarProps)
                 {avatarInitial}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-xs truncate">
+                <div className="font-bold text-white text-xs truncate">
                   {displayName}
                 </div>
-                <div className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs truncate">
+                <div className="text-[#B9B09D] text-xs truncate">
                   {displayEmail || (user?.publicKey ? `${user.publicKey.slice(0, 6)}...${user.publicKey.slice(-4)}` : "")}
                 </div>
-                <div className="[font-family:'Noto_Sans',Helvetica] flex items-center gap-1 text-[#B9B09D] text-xs mt-1">
+                <div className="flex items-center gap-1 text-[#B9B09D] text-xs mt-1">
                     <div className={`w-2 h-2 rounded-full ${isAuthenticated ? "bg-[#22C55E] animate-pulse" : "bg-gray-400"}`}></div>
                     <p>{isAuthenticated ? "Online" : "Offline"}</p>
                 </div>

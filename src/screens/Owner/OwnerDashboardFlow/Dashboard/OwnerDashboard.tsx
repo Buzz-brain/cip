@@ -150,7 +150,7 @@ export const OwnerDashboard = (): JSX.Element => {
       {/* Welcome Section */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl mb-2">
+          <h1 className="font-bold text-white text-4xl mb-2">
             Welcome back,{" "}
             {auth.user?.userInfo?.full_name
               ? auth.user.userInfo.full_name
@@ -162,7 +162,7 @@ export const OwnerDashboard = (): JSX.Element => {
                 auth.user.publicKey.slice(-4)
               : "User"}
           </h1>
-          <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D]">
+          <p className="text-[#B9B09D]">
             Manage your active inheritance plans and monitor asset security.
           </p>
         </div>
@@ -170,7 +170,7 @@ export const OwnerDashboard = (): JSX.Element => {
         <div className="flex w-full sm:w-auto flex-col sm:flex-row gap-2">
           <button
             onClick={() => setShowValues(!showValues)}
-            className="px-5 py-3 rounded-lg bg-[#393028] hover:bg-[#3a2f1e] text-[#FFFFFF] hover:text-white transition-colors flex items-center gap-2 [font-family:'Noto_Sans',Helvetica] font-medium text-md"
+            className="px-5 py-3 rounded-lg bg-[#393028] hover:bg-[#3a2f1e] text-[#FFFFFF] hover:text-white transition-colors flex items-center gap-2 font-medium text-md"
           >
             {showValues ? (
               <>
@@ -197,7 +197,7 @@ export const OwnerDashboard = (): JSX.Element => {
               setShowSubscribeModal(true);
             }}
             disabled={statsLoading}
-            className="w-full sm:w-auto px-5 py-3 sm:py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Noto_Sans',Helvetica] text-md gap-2"
+            className="w-full sm:w-auto px-5 py-3 sm:py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 text-md gap-2"
           >
             <Plus className="w-4 h-4" />
             Create New Plan
@@ -210,7 +210,7 @@ export const OwnerDashboard = (): JSX.Element => {
         <Card className="bg-[#2D241C] border-[#393028]">
           <CardContent className="p-6 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
+              <span className="text-[#B9B09D] text-sm">
                 Total Value Secured
               </span>
             </div>
@@ -221,7 +221,7 @@ export const OwnerDashboard = (): JSX.Element => {
               </div>
             ) : (
               <div className="space-y-1 flex gap-2 items-end">
-                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                <div className="font-bold text-white text-2xl">
                   {showValues
                     ? stats?.userTotalInheritanceFormatted ??
                       stats?.totalValueSecuredFormatted ??
@@ -236,7 +236,7 @@ export const OwnerDashboard = (): JSX.Element => {
         <Card className="bg-[#2D241C] border-[#393028]">
           <CardContent className="p-6 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
+              <span className="text-[#B9B09D] text-sm">
                 All Inheritance Plans
               </span>
             </div>
@@ -247,7 +247,7 @@ export const OwnerDashboard = (): JSX.Element => {
               </div>
             ) : (
               <div className="space-y-1 flex items-start gap-2">
-                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                <div className="font-bold text-white text-2xl">
                   {showValues
                     ? Number(
                         stats?.totalPlansCount ??
@@ -257,7 +257,7 @@ export const OwnerDashboard = (): JSX.Element => {
                       )
                     : "••••"}
                 </div>
-                <Badge className="bg-green-500/10 text-green-300 border-green-500/20 [font-family:'Noto_Sans',Helvetica] text-sm px-2">
+                <Badge className="bg-green-500/10 text-green-300 border-green-500/20 text-sm px-2">
                   {`${stats?.activePlansCount ?? 0} active`}
                 </Badge>
               </div>
@@ -268,7 +268,7 @@ export const OwnerDashboard = (): JSX.Element => {
         <Card className="bg-[#2D241C] border-[#393028]">
           <CardContent className="p-6 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
+              <span className="text-[#B9B09D] text-sm">
                 Next Trigger Check
               </span>
             </div>
@@ -279,7 +279,7 @@ export const OwnerDashboard = (): JSX.Element => {
               </div>
             ) : (
               <div className="space-y-1 gap-2 items-end">
-                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                <div className="font-bold text-white text-2xl">
                   {stats == null || stats.nextTriggerDays == null
                     ? "—"
                     : `${stats.nextTriggerDays} Days`}
@@ -309,7 +309,7 @@ export const OwnerDashboard = (): JSX.Element => {
             }}
           >
             <div className="flex items-center justify-between">
-              <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
+              <span className="text-[#B9B09D] text-sm">
                 Subscription
               </span>
             </div>
@@ -320,7 +320,7 @@ export const OwnerDashboard = (): JSX.Element => {
               </div>
             ) : (
               <div className="space-y-1">
-                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                <div className="font-bold text-white text-2xl">
                   {(() => {
                     const name =
                       stats?.latestSubscription?.name ??
@@ -340,7 +340,7 @@ export const OwnerDashboard = (): JSX.Element => {
                       stats?.latestSubscription?.is_active
                         ? "bg-green-500/20 text-green-400 border-green-500/30"
                         : "bg-gray-700/20 text-gray-300 border-gray-600/30"
-                    } [font-family:'Noto_Sans',Helvetica] text-xs`}
+                    } text-xs`}
                   >
                     {stats?.latestSubscription?.is_active
                       ? "ACTIVE"
@@ -397,7 +397,7 @@ export const OwnerDashboard = (): JSX.Element => {
             </div>
           ) : polStatus === null ? (
             <div className="text-center py-8">
-              <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D]">
+              <p className="text-[#B9B09D]">
                 No active proof-of-life plan. Create a plan to activate.
               </p>
             </div>
@@ -405,10 +405,10 @@ export const OwnerDashboard = (): JSX.Element => {
             <>
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                  <h3 className="font-bold text-white text-lg">
                     Proof of Life
                   </h3>
-                  <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm mt-1">
+                  <p className="text-[#B9B09D] text-sm mt-1">
                     {polStatus === null
                       ? "No active proof-of-life plan. Create a plan to activate."
                       : polStatus === "active"
@@ -426,9 +426,9 @@ export const OwnerDashboard = (): JSX.Element => {
                         : polStatus === "missed"
                         ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
                         : "bg-red-500/20 text-red-400 border-red-500/30"
-                    } [font-family:'Noto_Sans',Helvetica] text-xs`}
+                    } text-xs`}
                   >
-                    <div className="[font-family:'Noto_Sans',Helvetica] flex items-center gap-1 text-xs">
+                    <div className="flex items-center gap-1 text-xs">
                       <div
                         className={`w-2 h-2 rounded-full animate-pulse ${
                           polStatus === "active"
@@ -476,10 +476,10 @@ export const OwnerDashboard = (): JSX.Element => {
                     return (
                       <>
                         <div className="flex items-center justify-between">
-                          <span className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm">
+                          <span className="text-[#b8a494] text-sm">
                             Heartbeat Progress
                           </span>
-                          <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                          <span className="font-bold text-white text-sm">
                             {progressPct}%
                           </span>
                         </div>
@@ -498,7 +498,7 @@ export const OwnerDashboard = (): JSX.Element => {
                       </>
                     );
                   })()}
-                  <div className="[font-family:'Noto_Sans',Helvetica] text-right text-[#B9B09D] text-xs">
+                  <div className="text-right text-[#B9B09D] text-xs">
                     {polStatus === "active"
                       ? polPlan
                         ? `Next check in ${Number(
@@ -523,7 +523,7 @@ export const OwnerDashboard = (): JSX.Element => {
                   else setModalType("check");
                   setShowPoLModal(true);
                 }}
-                className="w-full bg-[#393028] hover:bg-[#393028] text-white [font-family:'Noto_Sans',Helvetica] mt-4"
+                className="w-full bg-[#393028] hover:bg-[#393028] text-white mt-4"
               >
                 Confirm Now
               </Button>
@@ -554,12 +554,12 @@ export const OwnerDashboard = (): JSX.Element => {
       {/* Recent Activity Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+          <h2 className="font-bold text-white text-lg">
             Recent Activity
           </h2>
           <a
             href="#"
-            className="[font-family:'Noto_Sans',Helvetica] font-bold text-[#ff6600] hover:text-[#ff6600]/80 text-sm"
+            className="font-bold text-[#ff6600] hover:text-[#ff6600]/80 text-sm"
           >
             View All
           </a>
@@ -577,14 +577,14 @@ export const OwnerDashboard = (): JSX.Element => {
                     {activity.icon}
                   </div>
                   <div className="flex-1">
-                    <h4 className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
+                    <h4 className="font-bold text-white text-sm">
                       {activity.title}
                     </h4>
-                    <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs mt-1">
+                    <p className="text-[#B9B09D] text-xs mt-1">
                       {activity.description}
                     </p>
                   </div>
-                  <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs flex-shrink-0">
+                  <span className="text-[#B9B09D] text-xs flex-shrink-0">
                     {activity.timestamp}
                   </span>
                 </CardContent>
@@ -593,7 +593,7 @@ export const OwnerDashboard = (): JSX.Element => {
           ) : (
             <Card className="bg-[#2D241C] border-[#393028]">
               <CardContent className="p-8 flex items-center justify-center">
-                <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">
+                <p className="text-[#B9B09D] text-sm">
                   No recent activity
                 </p>
               </CardContent>

@@ -183,7 +183,7 @@ export const Home = (): JSX.Element => {
   };
 
   return (
-    <div className="min-h-screen bg-[#1e1e1e] [font-family:'Sora',Helvetica]">
+    <div className="min-h-screen bg-[#1e1e1e]">
       <div className="bg-black">
         <Navbar
           logo={logoImg}
@@ -191,7 +191,7 @@ export const Home = (): JSX.Element => {
           logoHref="/"
           rightActions={
             <Button
-              className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 [font-family:'Sora',Helvetica] font-bold text-sm"
+              className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 font-bold text-sm"
               onClick={() => navigate("/onboarding/step-one")}
             >
               Launch App
@@ -218,7 +218,7 @@ export const Home = (): JSX.Element => {
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
                 <motion.h2
-                  className="[font-family:'Sora',Helvetica] font-bold text-3xl sm:text-4xl md:text-7xl leading-[38px] sm:leading-[44px] md:leading-[72px]"
+                  className="font-bold text-3xl sm:text-4xl md:text-7xl leading-[38px] sm:leading-[44px] md:leading-[72px]"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.4 }}
@@ -226,7 +226,7 @@ export const Home = (): JSX.Element => {
                   <span className="text-white">Secure Your Digital Legacy</span>
                 </motion.h2>
                 <motion.div
-                  className="[font-family:'Sora',Helvetica] font-light text-slate-300 text-sm sm:text-base md:text-xl max-w-xl sm:max-w-2xl mx-auto flex items-center justify-center text-center"
+                  className="font-light text-slate-300 text-sm sm:text-base md:text-xl max-w-xl sm:max-w-2xl mx-auto flex items-center justify-center text-center"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.6 }}
@@ -260,7 +260,7 @@ export const Home = (): JSX.Element => {
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   <Button
-                    className="w-full sm:w-auto bg-gradient-to-r px-6 py-3 sm:px-7 sm:py-5 from-[#ff6600] to-[#993d00] hover:opacity-90 shadow-[0px_0px_20px_#ff6633cc] [font-family:'Sora',Helvetica] font-bold text-sm sm:text-base"
+                    className="w-full sm:w-auto bg-gradient-to-r px-6 py-3 sm:px-7 sm:py-5 from-[#ff6600] to-[#993d00] hover:opacity-90 shadow-[0px_0px_20px_#ff6633cc] font-bold text-sm sm:text-base"
                     onClick={() => navigate("/onboarding/step-one")}
                   >
                     Start Plan
@@ -277,7 +277,7 @@ export const Home = (): JSX.Element => {
                 >
                   <Button
                     variant="outline"
-                    className="w-full sm:w-auto bg-[#111111] px-4 py-3 sm:px-5 sm:py-5 border-[#bd4b00] [font-family:'Sora',Helvetica] font-bold text-sm sm:text-base"
+                    className="w-full sm:w-auto bg-[#111111] px-4 py-3 sm:px-5 sm:py-5 border-[#bd4b00] font-bold text-sm sm:text-base"
                   >
                     <motion.svg
                       width="18"
@@ -305,7 +305,7 @@ export const Home = (): JSX.Element => {
           <div className="container mx-auto px-4 sm:px-6">
             <div className="text-center space-y-4">
               <motion.p
-                className="[font-family:'Sora',Helvetica] font-bold text-[#8b7664] text-xs"
+                className="font-bold text-[#8b7664] text-xs"
                 initial={{ y: 30, scale: 0.9 }}
                 whileInView={{ y: 0, scale: 1 }}
                 transition={{
@@ -390,7 +390,7 @@ export const Home = (): JSX.Element => {
                       />
                     </motion.div>
                     <motion.span
-                      className="[font-family:'Sora',Helvetica] font-bold text-[#b8a494] text-sm sm:text-base"
+                      className="font-bold text-[#b8a494] text-sm sm:text-base"
                       whileHover={{
                         color: "#ff6600",
                         scale: 1.05,
@@ -421,7 +421,7 @@ export const Home = (): JSX.Element => {
                 viewport={{}}
               >
                 <motion.h2
-                  className="[font-family:'Sora',Helvetica] font-bold text-white text-4xl"
+                  className="font-bold text-white text-4xl"
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{
@@ -435,7 +435,7 @@ export const Home = (): JSX.Element => {
                   Core Capabilities
                 </motion.h2>
                 <motion.p
-                  className="[font-family:'Sora',Helvetica] text-[#b8a494] text-lg max-w-2xl"
+                  className="text-[#b8a494] text-lg max-w-2xl"
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
@@ -494,10 +494,10 @@ export const Home = (): JSX.Element => {
                               transition={{ duration: 0.4, ease: "easeInOut" }}
                             />
                           </motion.div>
-                          <h3 className="[font-family:'Sora',Helvetica] font-bold text-white text-xl mb-2 text-center">
+                          <h3 className="font-bold text-white text-xl mb-2 text-center">
                             {capability.title}
                           </h3>
-                          <p className="[font-family:'Sora',Helvetica] text-[#b8a494] text-sm leading-[22px] text-center">
+                          <p className="text-[#b8a494] text-sm leading-[22px] text-center">
                             {capability.description}
                           </p>
                         </div>
@@ -518,10 +518,10 @@ export const Home = (): JSX.Element => {
                               transition={{ duration: 0.4, ease: "easeInOut" }}
                             />
                           </motion.div>
-                          <h3 className="[font-family:'Sora',Helvetica] font-bold text-white text-xl mb-2 text-center">
+                          <h3 className="font-bold text-white text-xl mb-2 text-center">
                             {capability.title}
                           </h3>
-                          <p className="[font-family:'Sora',Helvetica] text-white text-sm leading-[22px] text-center">
+                          <p className="text-white text-sm leading-[22px] text-center">
                             {capability.description}
                           </p>
                         </div>
@@ -567,13 +567,13 @@ export const Home = (): JSX.Element => {
                     }}
                     viewport={{}}
                   >
-                    <Badge className="bg-[#f6a83b1a] border-[#f6b13b33] !pl-4 !pr-20 !pt-2 !pb-2 text-[#faaf60] [font-family:'Sora',Helvetica] font-bold rounded-3xl">
+                    <Badge className="bg-[#f6a83b1a] border-[#f6b13b33] !pl-4 !pr-20 !pt-2 !pb-2 text-[#faaf60] font-bold rounded-3xl">
                       <img src={barChartIcon} alt="" className="w-4 h-4 mr-2" />
                       Infrastructure for Accountants
                     </Badge>
                   </motion.div>
                   <motion.h2
-                    className="[font-family:'Sora',Helvetica] font-bold text-white text-5xl"
+                    className="font-bold text-white text-5xl"
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{
@@ -590,7 +590,7 @@ export const Home = (): JSX.Element => {
                     TaxCore Intelligence
                   </motion.h2>
                   <motion.p
-                    className="[font-family:'Sora',Helvetica] text-[#b8a494] text-lg leading-[29px]"
+                    className="text-[#b8a494] text-lg leading-[29px]"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.3 }}
@@ -620,7 +620,7 @@ export const Home = (): JSX.Element => {
                       className="space-y-2"
                     >
                       <motion.h3
-                        className="[font-family:'Sora',Helvetica] font-bold text-white text-lg"
+                        className="font-bold text-white text-lg"
                         whileHover={{
                           scale: 1.1,
                           textShadow: "0 0 20px #ff6600",
@@ -629,7 +629,7 @@ export const Home = (): JSX.Element => {
                         {step.title}
                       </motion.h3>
                       <motion.p
-                        className="[font-family:'Sora',Helvetica] text-[#b8a494] text-sm"
+                        className="text-[#b8a494] text-sm"
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: index * 0.3 + 0.2 }}
@@ -649,7 +649,7 @@ export const Home = (): JSX.Element => {
                       <div className="w-8 h-8 bg-[#f6b13b33] rounded flex items-center justify-center">
                         <img src={calculatorIcon} alt="" className="w-4 h-4" />
                       </div>
-                      <span className="[font-family:'Sora',Helvetica] font-bold text-white">
+                      <span className="font-bold text-white">
                         TaxCore CalculatorIcon
                       </span>
                     </div>
@@ -662,21 +662,21 @@ export const Home = (): JSX.Element => {
                 <CardContent className="p-4 sm:p-6 space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="[font-family:'Sora',Helvetica] text-[#8b7664] text-xs">
+                      <label className="text-[#8b7664] text-xs">
                         Origin Jurisdiction
                       </label>
                       <div className="bg-[#221911] border border-[#674932] rounded px-3 py-2">
-                        <span className="[font-family:'Sora',Helvetica] text-white text-sm">
+                        <span className="text-white text-sm">
                           United Kingdom
                         </span>
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <label className="[font-family:'Sora',Helvetica] text-[#8b7664] text-xs">
+                      <label className="text-[#8b7664] text-xs">
                         Beneficiary Residency
                       </label>
                       <div className="bg-[#221911] border border-[#674932] rounded px-3 py-2">
-                        <span className="[font-family:'Sora',Helvetica] text-white text-sm">
+                        <span className="text-white text-sm">
                           Germany
                         </span>
                       </div>
@@ -694,7 +694,7 @@ export const Home = (): JSX.Element => {
                         </p>
                         <div className="flex items-center gap-1">
                           <img src={chartIcon} alt="" className="w-3 h-3" />
-                          <span className="[font-family:'Noto_Sans',Helvetica] text-red-400 text-[10px]">
+                          <span className="text-red-400 text-[10px]">
                             +12% since inception
                           </span>
                         </div>
@@ -722,10 +722,10 @@ export const Home = (): JSX.Element => {
                       className="w-6 h-6 flex-shrink-0"
                     />
                     <div className="space-y-1">
-                      <p className="[font-family:'Sora',Helvetica] font-bold text-[#ff6600] text-xs">
+                      <p className="font-bold text-[#ff6600] text-xs">
                         TaxCore AI Insight
                       </p>
-                      <p className="[font-family:'Sora',Helvetica] text-slate-300 text-xs leading-[19px]">
+                      <p className="text-slate-300 text-xs leading-[19px]">
                         Based on the double taxation treaty between UK and
                         Germany, the beneficiary may claim credit for tax paid
                         in the UK.
@@ -741,7 +741,7 @@ export const Home = (): JSX.Element => {
                     whileTap={{ scale: 0.98 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   >
-                    <Button className="w-full bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Sora',Helvetica] font-bold transition-all duration-300">
+                    <Button className="w-full bg-[#ff6600] hover:bg-[#ff6600]/90 font-bold transition-all duration-300">
                       Generate Preliminary Report
                     </Button>
                   </motion.div>
@@ -1070,25 +1070,25 @@ export const Home = (): JSX.Element => {
                             >
                               {plan.badge && (
                                 <div className="absolute top-0 right-0 bg-[#ff6600] px-3 py-1">
-                                  <span className="[font-family:'Sora',Helvetica] font-bold text-white text-xs">
+                                  <span className="font-bold text-white text-xs">
                                     {plan.badge}
                                   </span>
                                 </div>
                               )}
                               <CardContent className="p-6 sm:p-8 space-y-6">
                                 <div className="space-y-2">
-                                  <h3 className="[font-family:'Sora',Helvetica] font-bold text-white text-xl">
+                                  <h3 className="font-bold text-white text-xl">
                                     {plan.name}
                                   </h3>
-                                  <p className="[font-family:'Sora',Helvetica] text-[#8b7664] text-sm">
+                                  <p className="text-[#8b7664] text-sm">
                                     {plan.description}
                                   </p>
                                 </div>
                                 <div className="flex items-baseline gap-1">
-                                  <span className="[font-family:'Sora',Helvetica] font-bold text-white text-3xl">
+                                  <span className="font-bold text-white text-3xl">
                                     {plan.price}
                                   </span>
-                                  <span className="[font-family:'Sora',Helvetica] font-bold text-[#b8a494] text-sm">
+                                  <span className="font-bold text-[#b8a494] text-sm">
                                     {plan.period}
                                   </span>
                                 </div>
@@ -1121,7 +1121,7 @@ export const Home = (): JSX.Element => {
                                           />
                                           <div className="flex-1">
                                             <span
-                                              className={`[font-family:'Sora',Helvetica] text-sm ${
+                                              className={`text-sm ${
                                                 included
                                                   ? "font-medium text-slate-200"
                                                   : "font-normal text-[#8b7964]"
@@ -1181,7 +1181,7 @@ export const Home = (): JSX.Element => {
                                       plan.highlighted
                                         ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
                                         : "border border-[#674932] bg-transparent"
-                                    } [font-family:'Sora',Helvetica] font-bold transition-all duration-300`}
+                                    } font-bold transition-all duration-300`}
                                     onClick={() => navigate("/pricing")}
                                   >
                                     {plan.buttonText}
@@ -1203,17 +1203,17 @@ export const Home = (): JSX.Element => {
             <Card className="max-w-5xl mx-auto bg-gradient-to-r from-[#332319] to-[#99684b] [#332319] border-[#674932]">
               <CardContent className="p-12 md:flex items-center justify-between gap-12">
                 <div className="flex-1 space-y-6">
-                  <h2 className="[font-family:'Sora',Helvetica] font-bold text-white text-3xl">
+                  <h2 className="font-bold text-white text-3xl">
                     For Family Offices & Custodians
                   </h2>
-                  <p className="[font-family:'Sora',Helvetica] text-[#b8a494] text-lg leading-7">
+                  <p className="text-[#b8a494] text-lg leading-7">
                     Manage high-net-worth digital estates with enterprise-grade
                     multi-sig coordination, dedicated account managers, and
                     custom legal framework integration.
                   </p>
                   <div className="flex items-center gap-2">
                     <motion.span
-                      className="[font-family:'Sora',Helvetica] font-bold text-[#ff6600] text-base cursor-pointer"
+                      className="font-bold text-[#ff6600] text-base cursor-pointer"
                       initial={{ opacity: 0.85, scale: 1 }}
                       whileHover={{
                         scale: 1.08,
@@ -1305,7 +1305,7 @@ export const Home = (): JSX.Element => {
                   <div className="flex items-center padding 3 gap-2">
                     <img src={logoImgFull} alt="Logo" />
                   </div>
-                  <p className="[font-family:'Sora',Helvetica] text-[#8b7664] text-sm leading-[22px]">
+                  <p className="text-[#8b7664] text-sm leading-[22px]">
                     The standard for sovereign digital inheritance. Securing the
                     future of decentralized wealth.
                   </p>
@@ -1320,7 +1320,7 @@ export const Home = (): JSX.Element => {
                       <a
                         key={link}
                         href="#"
-                        className="block [font-family:'Sora',Helvetica] text-[#b8a494] text-sm hover:text-white transition-colors"
+                        className="block text-[#b8a494] text-sm hover:text-white transition-colors"
                       >
                         {link}
                       </a>
@@ -1337,7 +1337,7 @@ export const Home = (): JSX.Element => {
                       <a
                         key={link}
                         href="#"
-                        className="block [font-family:'Sora',Helvetica] text-[#b8a494] text-sm hover:text-white transition-colors"
+                        className="block text-[#b8a494] text-sm hover:text-white transition-colors"
                       >
                         {link}
                       </a>
@@ -1354,7 +1354,7 @@ export const Home = (): JSX.Element => {
                       <a
                         key={link}
                         href="#"
-                        className="block [font-family:'Sora',Helvetica] text-[#b8a494] text-sm hover:text-white transition-colors"
+                        className="block text-[#b8a494] text-sm hover:text-white transition-colors"
                       >
                         {link}
                       </a>
@@ -1366,14 +1366,14 @@ export const Home = (): JSX.Element => {
               <Separator className="bg-[#483423]" />
 
               <div className="flex items-center justify-between">
-                <p className="[font-family:'Sora',Helvetica] text-[#695d47] text-sm">
+                <p className="text-[#695d47] text-sm">
                   © 2024 CIP Protocol. All rights reserved.
                 </p>
                 <div className="flex items-center gap-4">
-                  <span className="[font-family:'Sora',Helvetica] text-[#8b7664] text-xs">
+                  <span className="text-[#8b7664] text-xs">
                     public
                   </span>
-                  <span className="[font-family:'Sora',Helvetica] text-[#8b7664] text-sm">
+                  <span className="text-[#8b7664] text-sm">
                     mail
                   </span>
                 </div>

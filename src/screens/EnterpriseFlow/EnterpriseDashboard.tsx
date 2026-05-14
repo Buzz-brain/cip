@@ -16,7 +16,7 @@ export const EnterpriseDashboard: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#0f0c0a] [font-family:'Manrope',Helvetica]">
+    <div className="flex min-h-screen bg-[#0f0c0a]">
       <AppProvider>
         <aside className="hidden sm:block w-64 bg-[#0f0c0a] text-white p-6 border-r border-[#2a2520]">
         <div className="p-4 border-b border-[#3a2f1e] flex items-center justify-between">

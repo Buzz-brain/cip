@@ -14,7 +14,7 @@ export const ReviewHealthOraclePlan = (): JSX.Element => {
     console.log('[ReviewHealthOraclePlan] plan snapshot:', plan);
   }, [plan]);
   return (
-    <main className="max-w-5xl mx-auto px-4 py-4  text-white [font-family:'Manrope',Helvetica]">
+    <main className="max-w-5xl mx-auto px-4 py-4  text-white">
       <div className="mb-12">
         <h1 className="text-2xl sm:text-4xl font-bold mb-4">Review Health Oracle Plan</h1>
         <p className="text-gray-400 text-base leading-relaxed max-w-3xl">
@@ -26,10 +26,10 @@ export const ReviewHealthOraclePlan = (): JSX.Element => {
 
       <div className="mb-12">
         <div className="flex items-center justify-between mb-4">
-          <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5">
+          <span className="font-normal text-white text-sm tracking-[0] leading-5">
             Step 4 of 5: Review
           </span>
-          <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
+          <span className="font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
             80% Completed
           </span>
         </div>

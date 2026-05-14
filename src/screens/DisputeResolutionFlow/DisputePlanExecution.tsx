@@ -105,15 +105,15 @@ export const DisputePlanExecution = ({ initialPlanId, redirectPath, onSuccess, u
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen [font-family:'Manrope',Helvetica]">
+    <div className="flex flex-col w-full min-h-screen">
       <main className="flex-1 flex flex-col items-center px-4 py-4">
         <div className="w-full max-w-[1040px]">
           <div className="flex items-center justify-between mb-10">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-4 [font-family:'Manrope',Helvetica]">
+              <h1 className="text-4xl font-bold text-white mb-4">
                 Dispute Plan Execution
               </h1>
-              <div className="[font-family:'Manrope',Helvetica]">
+              <div>
                 <span className="text-[#9DB8A6] pr-1">Plan ID:</span>{' '}
                 <span className="text-white bg-[#FFFFFF1A] px-2 py-1 rounded-md">{`#${planId ?? ''}`}</span>
               </div>
@@ -125,8 +125,8 @@ export const DisputePlanExecution = ({ initialPlanId, redirectPath, onSuccess, u
                   <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
                 </svg>
                 <div>
-                  <h3 className={`font-bold ${useOrange ? 'text-[#F97316]' : 'text-[#2ccd2c]'} mb-1 [font-family:'Manrope',Helvetica]`}>Escrow Freeze Imminent</h3>
-                  <p className="text-[#9DB8A6] text-sm [font-family:'Manrope',Helvetica]">Initiating a dispute will immediately pause asset distribution. Assets will be locked in the smart contract until resolution.</p>
+                  <h3 className={`font-bold ${useOrange ? 'text-[#F97316]' : 'text-[#2ccd2c]'} mb-1`}>Escrow Freeze Imminent</h3>
+                  <p className="text-[#9DB8A6] text-sm">Initiating a dispute will immediately pause asset distribution. Assets will be locked in the smart contract until resolution.</p>
                 </div>
               </div>
             </div>
@@ -134,7 +134,7 @@ export const DisputePlanExecution = ({ initialPlanId, redirectPath, onSuccess, u
 
           <div className="col-span-2">
             <div className="bg-[#1C2620] border border-[#2a2420] rounded-2xl p-8">
-              <h2 className="text-lg font-bold text-white mb-6 [font-family:'Manrope',Helvetica]">Reason for Dispute</h2>
+              <h2 className="text-lg font-bold text-white mb-6">Reason for Dispute</h2>
 
               <div className="grid grid-cols-3 gap-4 mb-6">
                 {reasonsLoading ? ( 
@@ -169,8 +169,8 @@ export const DisputePlanExecution = ({ initialPlanId, redirectPath, onSuccess, u
                           </div>
                         </div>
 
-                        <h3 className="text-white font-semibold [font-family:'Manrope',Helvetica] text-sm">{disp.title}</h3>
-                        <p className="text-[#9CA3AF] text-xs mt-1 [font-family:'Manrope',Helvetica]">{disp.description}</p>
+                        <h3 className="text-white font-semibold text-sm">{disp.title}</h3>
+                        <p className="text-[#9CA3AF] text-xs mt-1">{disp.description}</p>
                       </label>
                     );
                   })
@@ -179,18 +179,18 @@ export const DisputePlanExecution = ({ initialPlanId, redirectPath, onSuccess, u
             </div>
 
             <div className="bg-[#1C2620] border border-[#2a2420] rounded-2xl p-8 mt-6">
-                <h2 className="text-lg font-bold text-white mb-2 [font-family:'Manrope',Helvetica]">Dispute Details</h2>
-              <p className="text-[#9DB8A6] text-sm mb-4 [font-family:'Manrope',Helvetica]">Provide a detailed explanation of your claim</p>
-              <textarea value={details} onChange={(e) => setDetails(e.target.value)} className={`w-full h-32 bg-[#111813] border border-[#3C5344] rounded-lg p-4 text-[#9CA3AF] [font-family:'Manrope',Helvetica] focus:outline-none ${useOrange ? 'focus:border-[#F97316]' : 'focus:border-[#2ccd2c]'}`} placeholder="Enter dispute details..." />
+                <h2 className="text-lg font-bold text-white mb-2">Dispute Details</h2>
+              <p className="text-[#9DB8A6] text-sm mb-4">Provide a detailed explanation of your claim</p>
+              <textarea value={details} onChange={(e) => setDetails(e.target.value)} className={`w-full h-32 bg-[#111813] border border-[#3C5344] rounded-lg p-4 text-[#9CA3AF] focus:outline-none ${useOrange ? 'focus:border-[#F97316]' : 'focus:border-[#2ccd2c]'}`} placeholder="Enter dispute details..." />
             </div>
 
             <div className="bg-[#1C2620] border border-[#2a2420] rounded-2xl p-8 mt-6">
-                <h2 className="text-lg font-bold text-white mb-4 [font-family:'Manrope',Helvetica]">Evidence Upload</h2>
+                <h2 className="text-lg font-bold text-white mb-4">Evidence Upload</h2>
               <div onClick={() => fileInputRef.current?.click()} className={`border-2 bg-[#111813] border-dashed border-[#3C5344] rounded-lg p-12 text-center ${useOrange ? 'hover:border-[#F97316]' : 'hover:border-[#2ccd2c]'} transition-colors cursor-pointer`}>
                 <svg className="w-12 h-12 text-gray-500 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                <p className="text-white font-semibold [font-family:'Manrope',Helvetica] mb-1">Click to upload or drag and drop</p>
-                <p className="text-[#9DB8A6] text-xs [font-family:'Manrope',Helvetica]">SVG, PNG, JPG, PDF or MP3 (max. 10MB)</p>
-                <button onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }} className="mt-4 px-4 py-2 bg-[#29382E] border border-[#3C5344] rounded-lg text-gray-300 hover:text-white hover:border-[#ffffff] transition-colors [font-family:'Manrope',Helvetica] text-sm font-semibold">Select Files</button>
+                <p className="text-white font-semibold mb-1">Click to upload or drag and drop</p>
+                <p className="text-[#9DB8A6] text-xs">SVG, PNG, JPG, PDF or MP3 (max. 10MB)</p>
+                <button onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }} className="mt-4 px-4 py-2 bg-[#29382E] border border-[#3C5344] rounded-lg text-gray-300 hover:text-white hover:border-[#ffffff] transition-colors text-sm font-semibold">Select Files</button>
                 <input ref={fileInputRef} onChange={(e) => onFileChange(e.target.files)} type="file" className="hidden" />
               </div>
 
@@ -201,8 +201,8 @@ export const DisputePlanExecution = ({ initialPlanId, redirectPath, onSuccess, u
                       <img src={pdfRedIcon} alt="PDF" />
                     </div>
                     <div>
-                      <p className="text-white text-sm font-semibold [font-family:'Manrope',Helvetica]">{evidence.name}</p>
-                      <p className="text-[#6B7280] text-xs [font-family:'Manrope',Helvetica]">{(evidence.size/1024/1024).toFixed(2)} MB • Uploaded just now</p>
+                      <p className="text-white text-sm font-semibold">{evidence.name}</p>
+                      <p className="text-[#6B7280] text-xs">{(evidence.size/1024/1024).toFixed(2)} MB • Uploaded just now</p>
                     </div>
                   </div>
                   <button onClick={removeEvidence} className="text-gray-400 hover:text-red-500 transition-colors"><Trash2 className="w-5 h-5 text-gray-400 hover:text-red-500 transition-colors" /></button>
@@ -212,7 +212,7 @@ export const DisputePlanExecution = ({ initialPlanId, redirectPath, onSuccess, u
 
             <div className="bg-[#111813] border border-[#2a2420] rounded-2xl p-8 mt-6">
               <div className="flex gap-4 justify-between">
-                <p className="text-[#9DB8A6] text-sm [font-family:'Manrope',Helvetica] self-center">By submitting this dispute, you initiate an on-chain arbitration process.<br/>You will be required to sign a transaction. <span className="text-white">Gas fees apply.</span></p>
+                <p className="text-[#9DB8A6] text-sm self-center">By submitting this dispute, you initiate an on-chain arbitration process.<br/>You will be required to sign a transaction. <span className="text-white">Gas fees apply.</span></p>
                 <div className="flex gap-4">
                   <Button className="bg-transparent px-8 py-2 border-transparent hover:bg-[#9DB8A6] hover:text-[#221810] gap-2" onClick={() => navigate(-1)}>Cancel</Button>
 

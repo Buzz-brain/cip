@@ -92,25 +92,25 @@ export const RecoveryProgress = (): JSX.Element => {
         <nav className="flex items-center gap-8">
           <a
             href="#"
-            className="[font-family:'Manrope',Helvetica] font-medium text-white text-sm tracking-[0] leading-5 whitespace-nowrap"
+            className="font-medium text-white text-sm tracking-[0] leading-5 whitespace-nowrap"
           >
             Dashboard
           </a>
           <a
             href="#"
-            className="[font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-sm tracking-[0] leading-5 whitespace-nowrap hover:text-white transition-colors"
+            className="font-medium text-[#afa49c] text-sm tracking-[0] leading-5 whitespace-nowrap hover:text-white transition-colors"
           >
             Plans
           </a>
           <a
             href="#"
-            className="[font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-sm tracking-[0] leading-5 whitespace-nowrap hover:text-white transition-colors"
+            className="font-medium text-[#afa49c] text-sm tracking-[0] leading-5 whitespace-nowrap hover:text-white transition-colors"
           >
             Vault
           </a>
           <a
             href="#"
-            className="[font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-sm tracking-[0] leading-5 whitespace-nowrap hover:text-white transition-colors"
+            className="font-medium text-[#afa49c] text-sm tracking-[0] leading-5 whitespace-nowrap hover:text-white transition-colors"
           >
             Settings
           </a>
@@ -118,7 +118,7 @@ export const RecoveryProgress = (): JSX.Element => {
 
         <div className="flex items-center gap-3">
           <div className="px-3 py-1.5 bg-[#1a1410] border border-[#392f28] rounded-lg">
-            <span className="[font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-sm">
+            <span className="font-medium text-[#afa49c] text-sm">
               0x4a...3b21
             </span>
           </div>
@@ -129,17 +129,17 @@ export const RecoveryProgress = (): JSX.Element => {
       <main className="flex-1 flex flex-col items-center px-4 py-12">
         <div className="w-full max-w-[1040px]">
           <div className="flex items-center gap-3 mb-6">
-            <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-[31.7px] tracking-[0] leading-[38px]">
+            <h1 className="font-bold text-white text-[31.7px] tracking-[0] leading-[38px]">
               Recovery in Progress
             </h1>
             <span className="px-3 py-0.1 \bg-[#ff660033] border border-[#ff660066] rounded-md">
-              <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-xs">
+              <span className="font-semibold text-[#ff6600] text-xs">
                 Action Required
               </span>
             </span>
           </div>
 
-          <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b9ac9d] text-base tracking-[0] leading-[26px] mb-8 max-w-[720px]">
+          <p className="font-normal text-[#b9ac9d] text-base tracking-[0] leading-[26px] mb-8 max-w-[720px]">
             The recovery sequence for Main Family Vault has been initiated.
             Requests have been broadcast to your guardians. The Multi-Party
             Computation (MPC) protocol is currently gathering shares to
@@ -172,19 +172,19 @@ export const RecoveryProgress = (): JSX.Element => {
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <div className="[font-family:'Manrope',Helvetica] font-bold text-white text-[42px] tracking-[0] leading-[50px]">
+                      <div className="font-bold text-white text-[42px] tracking-[0] leading-[50px]">
                         {formatTime(timeRemaining.hours)}:
                         {formatTime(timeRemaining.minutes)}:
                         {formatTime(timeRemaining.seconds)}
                       </div>
-                      <div className="[font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-sm tracking-[0] leading-5 mt-1">
+                      <div className="font-medium text-[#afa49c] text-sm tracking-[0] leading-5 mt-1">
                         Remaining
                       </div>
                     </div>
                   </div>
 
                   <div className="text-center">
-                    <div className="[font-family:'Manrope',Helvetica] font-semibold text-[#afa49c] text-sm tracking-[0] leading-5">
+                    <div className="font-semibold text-[#afa49c] text-sm tracking-[0] leading-5">
                       Estimated Completion
                     </div>
                   </div>
@@ -192,10 +192,10 @@ export const RecoveryProgress = (): JSX.Element => {
 
                 <div className="flex-1 flex flex-col gap-6">
                   <div>
-                    <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg tracking-[0] leading-[26px] mb-2">
+                    <h3 className="font-bold text-white text-lg tracking-[0] leading-[26px] mb-2">
                       Status: Awaiting Guardian Approval
                     </h3>
-                    <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b9ac9d] text-sm tracking-[0] leading-[22px] mb-4">
+                    <p className="font-normal text-[#b9ac9d] text-sm tracking-[0] leading-[22px] mb-4">
                       We need 2 out of 3 guardians to sign the recovery
                       transaction to proceed to the time-lock phase.
                     </p>
@@ -205,10 +205,10 @@ export const RecoveryProgress = (): JSX.Element => {
                     </div>
 
                     <div className="flex justify-between">
-                      <span className="[font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-xs tracking-[0] leading-4">
+                      <span className="font-medium text-[#afa49c] text-xs tracking-[0] leading-4">
                         1 signature received
                       </span>
-                      <span className="[font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-xs tracking-[0] leading-4">
+                      <span className="font-medium text-[#afa49c] text-xs tracking-[0] leading-4">
                         Threshold: 2/3
                       </span>
                     </div>
@@ -219,7 +219,7 @@ export const RecoveryProgress = (): JSX.Element => {
                       <div className="flex items-center justify-center w-12 h-12 bg-[#22C55E] rounded-full">
                         <img src={initiatedIcon} className="w-6" />
                       </div>
-                      <span className="[font-family:'Manrope',Helvetica] font-bold text-[#22C55E] text-xs tracking-[0] leading-4">
+                      <span className="font-bold text-[#22C55E] text-xs tracking-[0] leading-4">
                         Initiated
                       </span>
                     </div>
@@ -231,7 +231,7 @@ export const RecoveryProgress = (): JSX.Element => {
 
                         <img src={guardiansIcon} className="w-6" />
                       </div>
-                      <span className="[font-family:'Manrope',Helvetica] font-bold text-[#ff6600] text-xs tracking-[0] leading-4">
+                      <span className="font-bold text-[#ff6600] text-xs tracking-[0] leading-4">
                         Guardians
                       </span>
                     </div>
@@ -242,7 +242,7 @@ export const RecoveryProgress = (): JSX.Element => {
                       <div className="flex items-center justify-center w-12 h-12 bg-[#544B3B] rounded-full">
                         <img src={delayIcon} className="w-5" />
                       </div>
-                      <span className="[font-family:'Manrope',Helvetica] font-medium text-[#63564b] text-xs tracking-[0] leading-4">
+                      <span className="font-medium text-[#63564b] text-xs tracking-[0] leading-4">
                         48h Delay
                       </span>
                     </div>
@@ -253,7 +253,7 @@ export const RecoveryProgress = (): JSX.Element => {
                       <div className="flex items-center justify-center w-12 h-12 bg-[#544B3B] rounded-full">
                         <img src={regenerateIcon} className="w-6" />
                       </div>
-                      <span className="[font-family:'Manrope',Helvetica] font-medium text-[#63564b] text-xs tracking-[0] leading-4">
+                      <span className="font-medium text-[#63564b] text-xs tracking-[0] leading-4">
                         Regeneration
                       </span>
                     </div>
@@ -264,7 +264,7 @@ export const RecoveryProgress = (): JSX.Element => {
               <div className="mt-8 pt-8 border-t border-[#392f28]">
                 <div className="flex items-center gap-2 mb-4">
                   <img src={shieldUserFullIcon} className="w-5 h-5" />
-                  <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base tracking-[0] leading-[26px]">
+                  <h3 className="font-bold text-white text-base tracking-[0] leading-[26px]">
                     Guardian Responses
                   </h3>
                 </div>
@@ -290,21 +290,21 @@ export const RecoveryProgress = (): JSX.Element => {
                           )}
                         </div>
                         <div>
-                          <div className="[font-family:'Manrope',Helvetica] font-semibold text-white text-sm tracking-[0] leading-5">
+                          <div className="font-semibold text-white text-sm tracking-[0] leading-5">
                             {guardian.name}
                           </div>
-                          <div className="[font-family:'Manrope',Helvetica] font-normal text-[#afa49c] text-xs tracking-[0] leading-4">
+                          <div className="font-normal text-[#afa49c] text-xs tracking-[0] leading-4">
                             {guardian.email}
                           </div>
                         </div>
                       </div>
                       <div>
                         {guardian.status === "signed" ? (
-                          <span className="[font-family:'Manrope',Helvetica] bg-[#14532D33] px-5 py-2 rounded-full font-semibold text-[#22c55e] text-sm tracking-[0] leading-5">
+                          <span className="bg-[#14532D33] px-5 py-2 rounded-full font-semibold text-[#22c55e] text-sm tracking-[0] leading-5">
                             Signed
                           </span>
                         ) : (
-                          <span className="[font-family:'Manrope',Helvetica] bg-[#78350F33] px-5 py-2 rounded-full font-semibold text-[#ff9800] text-sm tracking-[0] leading-5">
+                          <span className="bg-[#78350F33] px-5 py-2 rounded-full font-semibold text-[#ff9800] text-sm tracking-[0] leading-5">
                             Pending
                           </span>
                         )}
@@ -315,7 +315,7 @@ export const RecoveryProgress = (): JSX.Element => {
 
                 <div className="flex items-start gap-2 mt-4 p-3 bg-[#0f0c09] border border-[#392f28] rounded-lg">
                   <InfoIcon className="w-4 h-4 text-[#afa49c]" />
-                  <p className="[font-family:'Manrope',Helvetica] font-normal text-[#afa49c] text-xs tracking-[0] leading-4">
+                  <p className="font-normal text-[#afa49c] text-xs tracking-[0] leading-4">
                     If guardians do not respond within 7 days, the backup delay
                     protocol will activate.
                   </p>
@@ -326,11 +326,11 @@ export const RecoveryProgress = (): JSX.Element => {
                 <Button
                   onClick={() => navigate("/guardian-approval")}
                   variant="outline"
-                  className="h-11 px-6 [font-family:'Manrope',Helvetica] font-bold text-[#ef4444] text-sm bg-transparent border-[#ef444433] hover:bg-[#ef444433] hover:text-[#ef4444] rounded-xl"
+                  className="h-11 px-6 font-bold text-[#ef4444] text-sm bg-transparent border-[#ef444433] hover:bg-[#ef444433] hover:text-[#ef4444] rounded-xl"
                 >
                   Cancel Recovery
                 </Button>
-                <Button className="h-11 px-6 [font-family:'Manrope',Helvetica] font-bold text-white text-sm bg-[#27211c] border border-[#392f28] hover:bg-[#392f28] rounded-xl">
+                <Button className="h-11 px-6 font-bold text-white text-sm bg-[#27211c] border border-[#392f28] hover:bg-[#392f28] rounded-xl">
                   Refresh Status
                 </Button>
               </div>
@@ -338,7 +338,7 @@ export const RecoveryProgress = (): JSX.Element => {
 
             <div className="flex items-center justify-center gap-2 h-[45px] bg-[#0f0c09] border-t border-[#392f28] rounded-b-2xl">
               <LockIcon className="w-4 h-4 text-[#afa49c]" />
-              <span className="[font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-[11.9px] tracking-[0] leading-4">
+              <span className="font-medium text-[#afa49c] text-[11.9px] tracking-[0] leading-4">
                 This process is secured by on-chain verification and
                 Zero-Knowledge Proofs.
               </span>

@@ -80,10 +80,10 @@ export const SetInactivityPeriod = (): JSX.Element => {
     <main className="flex-1 flex flex-col items-center px-4 py-4">
       <div className="w-full max-w-[1040px]">
         <div className="mb-8">
-          <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-[31.7px] tracking-[0] leading-[38px] mb-2">
+          <h1 className="font-bold text-white text-[31.7px] tracking-[0] leading-[38px] mb-2">
             Set Inactivity Period
           </h1>
-          <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b9ac9d] text-base tracking-[0] leading-[26px]">
+          <p className="font-normal text-[#b9ac9d] text-base tracking-[0] leading-[26px]">
             Configure the "Dead Man's Switch" timing for your Inactivity
             Oracle trigger.
           </p>
@@ -91,10 +91,10 @@ export const SetInactivityPeriod = (): JSX.Element => {
 
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5">
+            <span className="font-normal text-white text-sm tracking-[0] leading-5">
               Step 4 of 5: Trigger Configuration
             </span>
-            <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
+            <span className="font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
               80% Completed
             </span>
           </div>
@@ -103,7 +103,7 @@ export const SetInactivityPeriod = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="flex-1 mb-10 max-w-6xl mx-auto w-full [font-family:'Manrope',Helvetica]">
+        <div className="flex-1 mb-10 max-w-6xl mx-auto w-full">
           <div className="space-y-8 mt-12">
             <div className="bg-[#7C2D121A] rounded-lg p-6 border border-[#7C2D1233] flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
@@ -121,7 +121,7 @@ export const SetInactivityPeriod = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-6 [font-family:'Manrope',Helvetica]">
+        <div className="grid sm:grid-cols-2 gap-6">
           {periodOptions.map((option) => (
             <button
               key={option.id}
@@ -169,7 +169,7 @@ export const SetInactivityPeriod = (): JSX.Element => {
         <footer className="flex mt-12 items-center justify-end pt-8 pb-12 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
           <div className="inline-flex items-start gap-4 relative flex-[0_0_auto]">
             <Button
-              className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+              className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent font-bold text-white text-base text-center leading-6"
               onClick={handleBack}
             >
               Back
@@ -177,7 +177,7 @@ export const SetInactivityPeriod = (): JSX.Element => {
 
             <Button
               onClick={handleContinue}
-              className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+              className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg font-bold text-white text-base text-center leading-6"
               disabled={
                 !selectedPeriod ||
                 (selectedPeriod === "custom" && !customDays)

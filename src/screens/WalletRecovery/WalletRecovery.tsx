@@ -40,7 +40,7 @@ export const WalletRecovery = (): JSX.Element => {
                             <a
                                 key={index}
                                 href={link.href}
-                                className="[font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-sm tracking-[0] leading-5 whitespace-nowrap hover:text-white transition-colors"
+                                className="font-medium text-[#afa49c] text-sm tracking-[0] leading-5 whitespace-nowrap hover:text-white transition-colors"
                             >
                                 {link.label}
                             </a>
@@ -50,7 +50,7 @@ export const WalletRecovery = (): JSX.Element => {
                     <Button
                         onClick={() => navigate("/time-lock")}
                         variant="outline"
-                        className="h-9 px-[17px] [font-family:'Manrope',Helvetica] font-bold text-white text-sm bg-transparent border-[#392f28] hover:bg-[#392f28] hover:text-white rounded-lg"
+                        className="h-9 px-[17px] font-bold text-white text-sm bg-transparent border-[#392f28] hover:bg-[#392f28] hover:text-white rounded-lg"
                     >
                         Login
                     </Button>
@@ -67,10 +67,10 @@ export const WalletRecovery = (): JSX.Element => {
                             </div>
 
                             <div className="flex flex-col gap-3">
-                                <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-[28.3px] tracking-[0] leading-[37px]">
+                                <h1 className="font-bold text-white text-[28.3px] tracking-[0] leading-[37px]">
                                     Initiate Wallet Recovery
                                 </h1>
-                                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b9ac9d] text-base tracking-[0] leading-[26px]">
+                                <p className="font-normal text-[#b9ac9d] text-base tracking-[0] leading-[26px]">
                                     Lost access? Enter your registered details below to verify
                                     your identity and alert your Guardians to begin the MPC share
                                     restoration process.
@@ -81,7 +81,7 @@ export const WalletRecovery = (): JSX.Element => {
                                 <div className="flex flex-col gap-2">
                                     <Label
                                         htmlFor="email-wallet"
-                                        className="[font-family:'Manrope',Helvetica] font-semibold text-gray-300 text-sm tracking-[0] leading-5"
+                                        className="font-semibold text-gray-300 text-sm tracking-[0] leading-5"
                                     >
                                         Registered Email or Wallet Address
                                     </Label>
@@ -90,10 +90,10 @@ export const WalletRecovery = (): JSX.Element => {
                                             id="email-wallet"
                                             type="text"
                                             placeholder="name@example.com or 0x..."
-                                            className="h-14 [font-family:'Manrope',Helvetica] font-normal text-white text-base bg-[#181411] border-[#54493b] rounded-xl placeholder:text-white focus-visible:ring-[#ff6600]"
+                                            className="h-14 font-normal text-white text-base bg-[#181411] border-[#54493b] rounded-xl placeholder:text-white focus-visible:ring-[#ff6600]"
                                         />
                                     </div>
-                                    <p className="[font-family:'Manrope',Helvetica] font-normal text-[#afa49c] text-[11.9px] tracking-[0] leading-4">
+                                    <p className="font-normal text-[#afa49c] text-[11.9px] tracking-[0] leading-4">
                                         We will send a secure verification link if the account
                                         exists.
                                     </p>
@@ -102,7 +102,7 @@ export const WalletRecovery = (): JSX.Element => {
                                 <Alert className="bg-[#ff66001a] border-[#ff660033] rounded-xl flex items-start gap-3 p-4">
                                     <img src={infoIcon} className="w-4 h-4 pt-1" />
 
-                                    <AlertDescription className="[font-family:'Manrope',Helvetica] text-[#ebe6e5] text-sm">
+                                    <AlertDescription className="text-[#ebe6e5] text-sm">
                                         <span className="font-bold">
                                             Guardian Notification Protocol
                                         </span>
@@ -125,18 +125,18 @@ export const WalletRecovery = (): JSX.Element => {
                             <div className="flex flex-col gap-4 mt-2">
                                 <Button
                                     onClick={handleSendRecovery}
-                                    className="h-12 [font-family:'Manrope',Helvetica] font-bold text-white text-base bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-xl"
+                                    className="h-12 font-bold text-white text-base bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-xl"
                                 >
                                     Send Recovery Request
                                     <ArrowRightIcon className="w-4 h-4 ml-1.5" />
                                 </Button>
 
                                 <div className="flex items-center justify-between mt-3">
-                                    <button className="flex items-center gap-1.5 [font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-sm hover:text-white transition-colors">
+                                    <button className="flex items-center gap-1.5 font-medium text-[#afa49c] text-sm hover:text-white transition-colors">
                                         <ArrowLeftIcon className="w-4 h-4" />
                                         Back to Login
                                     </button>
-                                    <button className="[font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-[13.9px] hover:text-white transition-colors">
+                                    <button className="font-medium text-[#afa49c] text-[13.9px] hover:text-white transition-colors">
                                         Contact Support
                                     </button>
                                 </div>
@@ -146,13 +146,13 @@ export const WalletRecovery = (): JSX.Element => {
 
                     <div className="flex items-center justify-center gap-[6.5px] h-[45px] bg-[#211c16] border-t border-[#392f28] rounded-b-2xl">
                         <img src={lockGreen} className="w-4 h-4" />
-                        <span className="[font-family:'Manrope',Helvetica] font-medium text-[#afa49c] text-[11.9px] tracking-[0] leading-4">
+                        <span className="font-medium text-[#afa49c] text-[11.9px] tracking-[0] leading-4">
                             Encrypted via AES-256 &amp; MPC Protocol
                         </span>
                     </div>
                 </Card>
 
-                <footer className="mt-8 [font-family:'Manrope',Helvetica] font-normal text-[#63564b] text-[11.9px] tracking-[0] leading-4">
+                <footer className="mt-8 font-normal text-[#63564b] text-[11.9px] tracking-[0] leading-4">
                     © 2024 CIP Protocol. All rights reserved.
                 </footer>
             </main>

@@ -149,7 +149,7 @@ export const Dashboard = (): JSX.Element => {
                   }`}
                 >
                   <span className="text-lg">{item.icon}</span>
-                  <span className="[font-family:'Noto_Sans',Helvetica] font-medium text-sm">
+                  <span className="font-medium text-sm">
                     {item.label}
                   </span>
                 </Link>
@@ -165,7 +165,7 @@ export const Dashboard = (): JSX.Element => {
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[#8b7664] hover:bg-[#2a1f10] hover:text-white transition-colors"
               >
                 <span className="text-lg">{item.icon}</span>
-                <span className="[font-family:'Noto_Sans',Helvetica] font-medium text-sm">
+                <span className="font-medium text-sm">
                   {item.label}
                 </span>
               </button>
@@ -179,10 +179,10 @@ export const Dashboard = (): JSX.Element => {
                 A
               </div>
               <div className="flex-1 min-w-0">
-                <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-xs truncate">
+                <div className="font-bold text-white text-xs truncate">
                   alex.eth
                 </div>
-                <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                <div className="text-[#8b7664] text-xs">
                   Online
                 </div>
               </div>
@@ -196,11 +196,11 @@ export const Dashboard = (): JSX.Element => {
           <header className="bg-[#1a1410] border-b border-[#3a2f1e] px-8 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-[#8b7664]">
-                <span className="[font-family:'Noto_Sans',Helvetica] text-sm">
+                <span className="text-sm">
                   Protocol
                 </span>
                 <span>&gt;</span>
-                <span className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
+                <span className="font-bold text-white text-sm">
                   Dashboard
                 </span>
               </div>
@@ -224,17 +224,17 @@ export const Dashboard = (): JSX.Element => {
               {/* Welcome Section */}
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl mb-2">
+                  <h1 className="font-bold text-white text-4xl mb-2">
                     Welcome back, igwe.eth
                   </h1>
-                  <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494]">
+                  <p className="text-[#b8a494]">
                     Manage your active inheritance plans and monitor asset security.
                   </p>
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowValues(!showValues)}
-                    className="px-4 py-2 rounded-lg bg-[#332619] hover:bg-[#3a2f1e] text-[#8b7664] hover:text-white transition-colors flex items-center gap-2 [font-family:'Noto_Sans',Helvetica] font-medium text-sm"
+                    className="px-4 py-2 rounded-lg bg-[#332619] hover:bg-[#3a2f1e] text-[#8b7664] hover:text-white transition-colors flex items-center gap-2 font-medium text-sm"
                   >
                     {showValues ? (
                       <>
@@ -249,7 +249,7 @@ export const Dashboard = (): JSX.Element => {
                     )}
                   </button>
                   <Link to="/create-plan">
-                    <Button className="bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Noto_Sans',Helvetica] font-bold text-sm gap-2">
+                    <Button className="bg-[#ff6600] hover:bg-[#ff6600]/90 font-bold text-sm gap-2">
                       <Plus className="w-4 h-4" />
                       Create New Plan
                     </Button>
@@ -262,7 +262,7 @@ export const Dashboard = (): JSX.Element => {
                 <Card className="bg-[#1a1410] border-[#3a2f1e]">
                   <CardContent className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                      <span className="text-[#8b7664] text-sm">
                         Total Value Secured
                       </span>
                       <div className="w-8 h-8 bg-[#ff66001a] rounded flex items-center justify-center">
@@ -270,7 +270,7 @@ export const Dashboard = (): JSX.Element => {
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                      <div className="font-bold text-white text-2xl">
                         {showValues ? "$142,500.00" : "••••••"}
                       </div>
                       <div className="flex items-center gap-1">
@@ -283,7 +283,7 @@ export const Dashboard = (): JSX.Element => {
                 <Card className="bg-[#1a1410] border-[#3a2f1e]">
                   <CardContent className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                      <span className="text-[#8b7664] text-sm">
                         Active Plans
                       </span>
                       <div className="w-8 h-8 bg-[#135bec1a] rounded flex items-center justify-center">
@@ -291,7 +291,7 @@ export const Dashboard = (): JSX.Element => {
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                      <div className="font-bold text-white text-2xl">
                         3
                       </div>
                       <div className="text-[#8b7664] text-sm">plans monitored</div>
@@ -302,7 +302,7 @@ export const Dashboard = (): JSX.Element => {
                 <Card className="bg-[#1a1410] border-[#3a2f1e]">
                   <CardContent className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                      <span className="text-[#8b7664] text-sm">
                         Next Trigger Check
                       </span>
                       <div className="w-8 h-8 bg-[#f6a83b1a] rounded flex items-center justify-center">
@@ -310,7 +310,7 @@ export const Dashboard = (): JSX.Element => {
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                      <div className="font-bold text-white text-2xl">
                         12 Days
                       </div>
                       <div className="text-[#8b7664] text-sm">Plan #0042</div>
@@ -321,7 +321,7 @@ export const Dashboard = (): JSX.Element => {
                 <Card className="bg-[#1a1410] border-[#3a2f1e]">
                   <CardContent className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                      <span className="text-[#8b7664] text-sm">
                         Network Status
                       </span>
                       <div className="w-8 h-8 bg-[#22c55e1a] rounded flex items-center justify-center">
@@ -329,7 +329,7 @@ export const Dashboard = (): JSX.Element => {
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl flex items-center gap-2">
+                      <div className="font-bold text-white text-2xl flex items-center gap-2">
                         <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                         Healthy
                       </div>
@@ -342,13 +342,13 @@ export const Dashboard = (): JSX.Element => {
               <Card className="bg-[#1a1410] border-[#3a2f1e]">
                 <CardContent className="p-6 space-y-6">
                   <div className="flex items-center gap-4">
-                    <button className="px-4 py-2 rounded-lg bg-[#332619] text-white [font-family:'Noto_Sans',Helvetica] font-medium text-sm">
+                    <button className="px-4 py-2 rounded-lg bg-[#332619] text-white font-medium text-sm">
                       All Plans
                     </button>
                     {["Active", "Pending", "Triggered"].map((status) => (
                       <button
                         key={status}
-                        className="px-4 py-2 rounded-lg text-[#8b7664] hover:bg-[#2a1f10] [font-family:'Noto_Sans',Helvetica] font-medium text-sm"
+                        className="px-4 py-2 rounded-lg text-[#8b7664] hover:bg-[#2a1f10] font-medium text-sm"
                       >
                         {status}
                       </button>
@@ -361,7 +361,7 @@ export const Dashboard = (): JSX.Element => {
                         placeholder="Search plans..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="bg-[#0d0b08] border border-[#3a2f1e] rounded-lg pl-10 pr-4 py-2 text-[#b8a494] placeholder-[#695d47] [font-family:'Noto_Sans',Helvetica] text-sm focus:outline-none focus:border-[#ff6600]"
+                        className="bg-[#0d0b08] border border-[#3a2f1e] rounded-lg pl-10 pr-4 py-2 text-[#b8a494] placeholder-[#695d47] text-sm focus:outline-none focus:border-[#ff6600]"
                       />
                     </div>
                   </div>
@@ -371,19 +371,19 @@ export const Dashboard = (): JSX.Element => {
                     <table className="w-full">
                       <thead>
                         <tr className="border-b border-[#3a2f1e]">
-                          <th className="text-left py-3 px-4 [font-family:'Noto_Sans',Helvetica] font-bold text-[#8b7664] text-xs uppercase tracking-wider">
+                          <th className="text-left py-3 px-4 font-bold text-[#8b7664] text-xs uppercase tracking-wider">
                             Plan ID & Chain
                           </th>
-                          <th className="text-left py-3 px-4 [font-family:'Noto_Sans',Helvetica] font-bold text-[#8b7664] text-xs uppercase tracking-wider">
+                          <th className="text-left py-3 px-4 font-bold text-[#8b7664] text-xs uppercase tracking-wider">
                             Beneficiary
                           </th>
-                          <th className="text-left py-3 px-4 [font-family:'Noto_Sans',Helvetica] font-bold text-[#8b7664] text-xs uppercase tracking-wider">
+                          <th className="text-left py-3 px-4 font-bold text-[#8b7664] text-xs uppercase tracking-wider">
                             Assets
                           </th>
-                          <th className="text-left py-3 px-4 [font-family:'Noto_Sans',Helvetica] font-bold text-[#8b7664] text-xs uppercase tracking-wider">
+                          <th className="text-left py-3 px-4 font-bold text-[#8b7664] text-xs uppercase tracking-wider">
                             Status
                           </th>
-                          <th className="text-left py-3 px-4 [font-family:'Noto_Sans',Helvetica] font-bold text-[#8b7664] text-xs uppercase tracking-wider">
+                          <th className="text-left py-3 px-4 font-bold text-[#8b7664] text-xs uppercase tracking-wider">
                             Trig
                           </th>
                         </tr>
@@ -400,10 +400,10 @@ export const Dashboard = (): JSX.Element => {
                                   {plan.chainIcon}
                                 </div>
                                 <div>
-                                  <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
+                                  <div className="font-bold text-white text-sm">
                                     {plan.name ? `${plan.name.charAt(0).toUpperCase()}${plan.name.slice(1)}` : plan.name}
                                   </div>
-                                  <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                                  <div className="text-[#8b7664] text-xs">
                                     #{plan.id} • {plan.chainName}
                                   </div>
                                 </div>
@@ -414,17 +414,17 @@ export const Dashboard = (): JSX.Element => {
                                 <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
                                   {plan.beneficiary.avatar}
                                 </div>
-                                <span className="[font-family:'Noto_Sans',Helvetica] text-white text-sm">
+                                <span className="text-white text-sm">
                                   {plan.beneficiary.name}
                                 </span>
                               </div>
                             </td>
                             <td className="py-4 px-4">
                               <div>
-                                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                                <div className="font-bold text-white text-sm">
                                   {showValues ? plan.assets : "••••••"}
                                 </div>
-                                <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                                <div className="text-[#8b7664] text-xs">
                                   {plan.assetsDetail}
                                 </div>
                               </div>
@@ -437,7 +437,7 @@ export const Dashboard = (): JSX.Element => {
                                     : plan.status === "Pending"
                                       ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
                                       : "bg-red-500/20 text-red-400 border-red-500/30"
-                                } [font-family:'Noto_Sans',Helvetica] font-bold text-xs`}
+                                } font-bold text-xs`}
                               >
                                 {plan.status === "Active"
                                   ? "● Active"
@@ -447,7 +447,7 @@ export const Dashboard = (): JSX.Element => {
                               </Badge>
                             </td>
                             <td className="py-4 px-4">
-                              <span className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                              <span className="text-[#8b7664] text-sm">
                                 {plan.triggerDays}h
                               </span>
                             </td>
@@ -459,7 +459,7 @@ export const Dashboard = (): JSX.Element => {
 
                   {/* Pagination */}
                   <div className="flex items-center justify-between pt-4">
-                    <span className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                    <span className="text-[#8b7664] text-sm">
                       Showing 1-3 of 3 plans
                     </span>
                     <div className="flex items-center gap-2">
@@ -479,24 +479,24 @@ export const Dashboard = (): JSX.Element => {
                 <CardContent className="p-6 space-y-4">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                      <h3 className="font-bold text-white text-lg">
                         Proof of Life
                       </h3>
-                      <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm mt-1">
+                      <p className="text-[#b8a494] text-sm mt-1">
                         Your heartbeat status is active. Next confirmation required via wallet signature.
                       </p>
                     </div>
-                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30 [font-family:'Noto_Sans',Helvetica] font-bold text-xs">
+                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30 font-bold text-xs">
                       ● ONLINE
                     </Badge>
                   </div>
 
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm">
+                      <span className="text-[#b8a494] text-sm">
                         Heartbeat Progress
                       </span>
-                      <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                      <span className="font-bold text-white text-sm">
                         85%
                       </span>
                     </div>
@@ -506,12 +506,12 @@ export const Dashboard = (): JSX.Element => {
                         style={{ width: "85%" }}
                       />
                     </div>
-                    <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                    <div className="text-[#8b7664] text-xs">
                       Refreshes in 48 hours
                     </div>
                   </div>
 
-                  <Button className="w-full bg-[#332619] hover:bg-[#3a2f1e] text-white [font-family:'Noto_Sans',Helvetica] font-bold mt-4">
+                  <Button className="w-full bg-[#332619] hover:bg-[#3a2f1e] text-white font-bold mt-4">
                     Confirm Now
                   </Button>
                 </CardContent>
@@ -520,12 +520,12 @@ export const Dashboard = (): JSX.Element => {
               {/* Recent Activity Section */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                  <h2 className="font-bold text-white text-lg">
                     Recent Activity
                   </h2>
                   <a
                     href="#"
-                    className="[font-family:'Noto_Sans',Helvetica] font-bold text-[#ff6600] hover:text-[#ff6600]/80 text-sm"
+                    className="font-bold text-[#ff6600] hover:text-[#ff6600]/80 text-sm"
                   >
                     View All
                   </a>
@@ -542,14 +542,14 @@ export const Dashboard = (): JSX.Element => {
                           {activity.icon}
                         </div>
                         <div className="flex-1">
-                          <h4 className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
+                          <h4 className="font-bold text-white text-sm">
                             {activity.title}
                           </h4>
-                          <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs mt-1">
+                          <p className="text-[#8b7664] text-xs mt-1">
                             {activity.description}
                           </p>
                         </div>
-                        <span className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs flex-shrink-0">
+                        <span className="text-[#8b7664] text-xs flex-shrink-0">
                           {activity.timestamp}
                         </span>
                       </CardContent>

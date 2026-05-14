@@ -15,7 +15,7 @@ export const Header = (): JSX.Element => {
   };
 
   return (
-    <header className="relative z-20 bg-[#0d0501] backdrop-blur-xl border-b border-zinc-800 sticky top-0 [font-family:'Manrope',Helvetica]">
+    <header className="relative z-20 bg-[#0d0501] backdrop-blur-xl border-b border-zinc-800 sticky top-0">
       <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-3">
@@ -26,11 +26,11 @@ export const Header = (): JSX.Element => {
         </div>
 
         <nav className="flex items-center gap-8">
-          <a href="#dashboard" className="[font-family:'Manrope',Helvetica] text-white text-sm hover:text-white transition-colors">Dashboard</a>
-          <a href="#plans" className="[font-family:'Manrope',Helvetica] text-white text-sm hover:text-white transition-colors">Vaults</a>
-          <a href="#tasks" className="[font-family:'Manrope',Helvetica] text-white text-sm hover:text-white transition-colors">Beneficiaries</a>
-          <a href="#tasks" className="[font-family:'Manrope',Helvetica] text-[#FF6600] text-sm hover:text-white transition-colors">Settings</a>
-          <a href="#tasks" className="[font-family:'Manrope',Helvetica] text-white text-sm hover:text-white transition-colors">Help</a>
+          <a href="#dashboard" className="text-white text-sm hover:text-white transition-colors">Dashboard</a>
+          <a href="#plans" className="text-white text-sm hover:text-white transition-colors">Vaults</a>
+          <a href="#tasks" className="text-white text-sm hover:text-white transition-colors">Beneficiaries</a>
+          <a href="#tasks" className="text-[#FF6600] text-sm hover:text-white transition-colors">Settings</a>
+          <a href="#tasks" className="text-white text-sm hover:text-white transition-colors">Help</a>
         </nav>
 
         <div className="flex items-center gap-4">

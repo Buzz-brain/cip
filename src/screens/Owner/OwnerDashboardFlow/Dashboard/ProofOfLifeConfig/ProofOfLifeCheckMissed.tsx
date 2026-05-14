@@ -176,7 +176,7 @@ export const ProofOfLifeCheckMissed = (props?: ProofOfLifeMissedProps): JSX.Elem
 
   if (open) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center text-white [font-family:'Manrope',Helvetica]">
+      <div className="fixed inset-0 z-50 flex items-center justify-center text-white">
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative w-full max-w-md mx-4 pointer-events-auto">
           <div className="border-t-4 border-[#F2930D] rounded-lg p-5 bg-[#2E261C] relative">
@@ -189,7 +189,7 @@ export const ProofOfLifeCheckMissed = (props?: ProofOfLifeMissedProps): JSX.Elem
   }
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#221810] text-white [font-family:'Manrope',Helvetica]">
+    <div className="flex flex-col w-full min-h-screen bg-[#221810] text-white">
       <header className="w-full h-[61px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#393028]">
         <div className="flex items-center gap-3">
           <Link to="/dashboard">

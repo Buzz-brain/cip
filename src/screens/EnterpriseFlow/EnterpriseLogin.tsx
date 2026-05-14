@@ -43,7 +43,7 @@ export const EnterpriseLogin = (): JSX.Element => {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen text-white [font-family:'Manrope',Helvetica]"
+    <div className="flex flex-col w-full min-h-screen text-white"
       style={{ backgroundImage: `url(${loginBgImg})`, backgroundSize: "cover", backgroundPosition: "center" }}
     >
 

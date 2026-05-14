@@ -10,7 +10,7 @@ interface ConfirmationPageProps {
 export const SubscriptionRenewal = ({ onConfirm }: ConfirmationPageProps): JSX.Element => {
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#221710] text-white [font-family:'Manrope',Helvetica]">
+    <div className="flex flex-col w-full min-h-screen bg-[#221710] text-white">
       <Header />
 
       <div className="max-w-7xl mx-auto px-6 py-12">

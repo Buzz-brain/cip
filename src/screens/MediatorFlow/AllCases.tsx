@@ -61,7 +61,7 @@ export const AllCases = (): JSX.Element => {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#221710] text-white [font-family:'Manrope',Helvetica]">
+    <div className="flex flex-col w-full min-h-screen bg-[#221710] text-white">
       <Header />
 
       <div className="relative z-10 flex">
@@ -266,7 +266,7 @@ export const AllCases = (): JSX.Element => {
                       ></div>
                     </div>
 
-                    <span className="text-[#B9AB9D] [font-family:'Manrope',Helvetica] text-xs font-medium">
+                    <span className="text-[#B9AB9D] text-xs font-medium">
                       40% Consensus Reached
                     </span>
                   </div>
@@ -305,15 +305,15 @@ export const AllCases = (): JSX.Element => {
                             <Check className="text-[#16A34A] w-4 h-4" />
                           </div>
                           <div>
-                            <p className="[font-family:'Manrope',Helvetica] font-semibold text-white text-xs">
+                            <p className="font-semibold text-white text-xs">
                               Approve Distribution
                             </p>
-                            <p className="[font-family:'Manrope',Helvetica] text-[#16A34A] text-xs">
+                            <p className="text-[#16A34A] text-xs">
                               Execute original plan
                             </p>
                           </div>
                         </div>
-                        <button className="[font-family:'Manrope',Helvetica] text-[#B9AB9D] text-sm tracking-[0] leading-4">
+                        <button className="text-[#B9AB9D] text-sm tracking-[0] leading-4">
                           &gt;
                         </button>
                       </div>
@@ -326,15 +326,15 @@ export const AllCases = (): JSX.Element => {
                             <img src={timeClockYellowicon} alt="" />
                           </div>
                           <div>
-                            <p className="[font-family:'Manrope',Helvetica] font-semibold text-white text-xs">
+                            <p className="font-semibold text-white text-xs">
                               Delay / Request Info
                             </p>
-                            <p className="[font-family:'Manrope',Helvetica] text-[#D97706] text-xs">
+                            <p className="text-[#D97706] text-xs">
                               +7 Days extension
                             </p>
                           </div>
                         </div>
-                        <button className="[font-family:'Manrope',Helvetica] text-[#B9AB9D] text-sm tracking-[0] leading-4">
+                        <button className="text-[#B9AB9D] text-sm tracking-[0] leading-4">
                           &gt;
                         </button>
                       </div>
@@ -347,15 +347,15 @@ export const AllCases = (): JSX.Element => {
                             <img src={notAllowedIcon} alt="" />
                           </div>
                           <div>
-                            <p className="[font-family:'Manrope',Helvetica] font-semibold text-white text-xs">
+                            <p className="font-semibold text-white text-xs">
                               Delay / Request Info
                             </p>
-                            <p className="[font-family:'Manrope',Helvetica] text-[#DC2626] text-xs">
+                            <p className="text-[#DC2626] text-xs">
                               +7 Days extension
                             </p>
                           </div>
                         </div>
-                        <button className="[font-family:'Manrope',Helvetica] text-[#B9AB9D] text-sm tracking-[0] leading-4">
+                        <button className="text-[#B9AB9D] text-sm tracking-[0] leading-4">
                           &gt;
                         </button>
                       </div>

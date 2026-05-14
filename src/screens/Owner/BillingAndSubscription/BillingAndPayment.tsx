@@ -73,7 +73,7 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
   }, [user?.token]);
   
   return (
-    <div className="flex flex-col w-full min-h-screen text-white [font-family:'Manrope',Helvetica]">
+    <div className="flex flex-col w-full min-h-screen text-white">
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">

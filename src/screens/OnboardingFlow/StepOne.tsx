@@ -64,9 +64,13 @@ export const StepOne = (): JSX.Element => {
         <header className="sticky top-0 z-50 w-full border-b border-[#37291f] bg-[#0d0501] backdrop-blur-[6px]">
           <div className="container flex h-16 items-center justify-between px-4 sm:px-8">
             <div className="flex items-center gap-3">
-                                    <Link to="/">
-                            <img src={logoImg} alt="Logo" className="h-[45px] object-cover" />
-                          </Link>
+              <Link to="/">
+                <img
+                  src={logoImg}
+                  alt="Logo"
+                  className="h-[45px] object-cover"
+                />
+              </Link>
             </div>
 
             <nav className="flex items-center gap-8">
@@ -75,7 +79,7 @@ export const StepOne = (): JSX.Element => {
                   <a
                     key={link.label}
                     href={link.href}
-                    className="text-sm font-medium leading-5 text-slate-400 transition-colors hover:text-white [font-family:'Manrope',Helvetica]"
+                    className="text-sm font-medium leading-5 text-slate-400 transition-colors hover:text-white"
                   >
                     {link.label}
                   </a>
@@ -84,7 +88,7 @@ export const StepOne = (): JSX.Element => {
 
               <Button
                 onClick={() => navigate("/connect-wallet")}
-                className="h-10 px-4 bg-[#ff6600] hover:bg-[#ff7700] [font-family:'Manrope',Helvetica] font-bold text-white text-sm leading-[21px] rounded-lg"
+                className="h-10 px-4 bg-[#ff6600] hover:bg-[#ff7700] font-bold text-white text-sm leading-[21px] rounded-lg"
               >
                 Connect Wallet
               </Button>
@@ -108,20 +112,22 @@ export const StepOne = (): JSX.Element => {
                         <div className="absolute inset-0 rounded-full bg-green-400 opacity-75" />
                         <div className="relative h-2 w-2 rounded-full bg-green-500" />
                       </div>
-                      <span className="text-xs font-medium leading-4 tracking-[0.60px] text-slate-400 [font-family:'Manrope',Helvetica]">
+                      <span className="text-xs font-medium leading-4 tracking-[0.60px] text-slate-400">
                         PROTOCOL LIVE V1.2
                       </span>
                     </Badge>
 
                     <div>
-                      <h1 className="[font-family:'Manrope',Helvetica] font-bold text-3xl sm:text-4xl md:text-[68px] text-white mt-3 mb-2 leading-tight md:leading-[66px]">
+                      <h1 className="font-bold text-3xl sm:text-4xl md:text-[68px] text-white mt-3 mb-2 leading-tight md:leading-[66px]">
                         Secure Your Legacy
                         <span className="block bg-gradient-to-r from-[#FF6600] to-[#FAB060] text-transparent bg-clip-text">
                           Across Chains.
                         </span>
                       </h1>
-                      <p className="text-sm sm:text-base font-normal text-slate-400 [font-family:'Manrope',Helvetica] leading-6 sm:leading-7">
-                        Ensure your digital assets are safely transferred to your loved ones using advanced decentralized cryptography and automated inheritance planning.
+                      <p className="text-sm sm:text-base font-normal text-slate-400 leading-6 sm:leading-7">
+                        Ensure your digital assets are safely transferred to
+                        your loved ones using advanced decentralized
+                        cryptography and automated inheritance planning.
                       </p>
                     </div>
                   </div>
@@ -138,7 +144,7 @@ export const StepOne = (): JSX.Element => {
                           src={plusIcon}
                         />
                       </div>
-                      <span className="text-base font-bold leading-6 text-white [font-family:'Manrope',Helvetica]">
+                      <span className="text-base font-bold leading-6 text-white">
                         Launch App
                       </span>
                     </Button>
@@ -154,7 +160,7 @@ export const StepOne = (): JSX.Element => {
                           src={playIcon}
                         />
                       </div>
-                      <span className="text-base font-bold leading-6 text-white [font-family:'Manrope',Helvetica]">
+                      <span className="text-base font-bold leading-6 text-white">
                         Try Demo Mode
                       </span>
                     </Button>
@@ -163,7 +169,7 @@ export const StepOne = (): JSX.Element => {
                   <div className="flex w-full flex-col items-start px-0 pb-0 pt-4">
                     <div className="flex w-full flex-col items-start gap-4 border-t border-[#3b2e1e] px-0 pb-0 pt-6">
                       <div className="flex w-full flex-col items-start">
-                        <p className="text-xs font-semibold leading-4 tracking-[0.60px] text-[#8b7c64] [font-family:'Manrope',Helvetica]">
+                        <p className="text-xs font-semibold leading-4 tracking-[0.60px] text-[#8b7c64]">
                           POWERED BY LEADING TECHNOLOGY
                         </p>
                       </div>
@@ -181,7 +187,7 @@ export const StepOne = (): JSX.Element => {
                                 src={partner.icon}
                               />
                             </div>
-                            <span className="text-sm font-bold leading-5 text-white [font-family:'Manrope',Helvetica]">
+                            <span className="text-sm font-bold leading-5 text-white">
                               {partner.name}
                             </span>
                           </div>
@@ -235,7 +241,7 @@ export const StepOne = (): JSX.Element => {
                         <Card className="relative w-full sm:w-[320px] md:absolute md:left-[calc(50%-32px)] md:top-[calc(50%-94px)] h-auto md:h-[123px] w-[219px] overflow-hidden border-[#ff66004c] bg-[#221810] shadow-[0px_25px_50px_-12px_#00000040] mt-4 md:mt-0">
                           <CardContent className="flex h-full flex-col p-4 md:p-0">
                             <div className="mx-0 sm:mx-[17px] mt-0 sm:mt-[17px] flex max-h-5 items-center justify-between">
-                              <span className="text-xs font-bold leading-4 text-slate-400 [font-family:'Manrope',Helvetica]">
+                              <span className="text-xs font-bold leading-4 text-slate-400">
                                 Transfer Status
                               </span>
                               <Badge className="rounded-full bg-[#4ade801a] px-2 py-0.5 text-xs font-normal leading-4 text-green-400 hover:bg-[#4ade801a]">
@@ -244,10 +250,10 @@ export const StepOne = (): JSX.Element => {
                             </div>
 
                             <div className="mx-0 sm:mx-[17px] mt-3 sm:mt-4 flex max-h-5 items-center justify-between">
-                              <span className="text-sm font-medium leading-5 text-white [font-family:'Manrope',Helvetica]">
+                              <span className="text-sm font-medium leading-5 text-white">
                                 Assets Locked
                               </span>
-                              <span className="text-sm font-bold leading-5 text-white [font-family:'Manrope',Helvetica]">
+                              <span className="text-sm font-bold leading-5 text-white">
                                 $124,500.00
                               </span>
                             </div>
@@ -255,10 +261,10 @@ export const StepOne = (): JSX.Element => {
                             <div className="mx-0 sm:mx-[17px] mt-2 w-full sm:w-[185px] h-[6px] rounded-full bg-[#FF6600]" />
 
                             <div className="mx-0 sm:mx-[17px] mt-2 flex max-h-[15px] items-start justify-between">
-                              <span className="text-[10px] font-normal leading-[15px] text-[#8b7c64] [font-family:'Manrope',Helvetica]">
+                              <span className="text-[10px] font-normal leading-[15px] text-[#8b7c64]">
                                 Vault #8821
                               </span>
-                              <span className="text-[10px] font-normal leading-[15px] text-[#8b7c64] [font-family:'Manrope',Helvetica]">
+                              <span className="text-[10px] font-normal leading-[15px] text-[#8b7c64]">
                                 Optimized by MPC
                               </span>
                             </div>
@@ -275,7 +281,7 @@ export const StepOne = (): JSX.Element => {
 
         <footer className="z-0 w-full border-t border-[#3b2e1e] bg-[#221810] p-8">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-normal leading-5 text-slate-400 [font-family:'Manrope',Helvetica]">
+            <p className="text-sm font-normal leading-5 text-slate-400">
               © 2026 Legacy Protocol. All rights reserved.
             </p>
 
@@ -284,7 +290,7 @@ export const StepOne = (): JSX.Element => {
                 <a
                   key={link.label}
                   href={link.href}
-                  className="flex h-[21px] items-center gap-[3.99px] text-sm font-normal leading-5 text-slate-400 transition-colors hover:text-white [font-family:'Manrope',Helvetica]"
+                  className="flex h-[21px] items-center gap-[3.99px] text-sm font-normal leading-5 text-slate-400 transition-colors hover:text-white"
                 >
                   {link.label}
                   {link.hasIcon && (

@@ -18,7 +18,7 @@ export const Header = (): JSX.Element => {
   };
 
   return (
-    <header className="relative z-20 bg-[#0d0501] backdrop-blur-xl border-b border-zinc-800 sticky top-0 [font-family:'Manrope',Helvetica]">
+    <header className="relative z-20 bg-[#0d0501] backdrop-blur-xl border-b border-zinc-800 sticky top-0">
       <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-3">

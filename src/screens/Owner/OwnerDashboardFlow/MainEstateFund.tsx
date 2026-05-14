@@ -72,10 +72,10 @@ export const MainEstateFund = (): JSX.Element => {
                 <span className="text-white font-bold">🛡️</span>
               </div>
               <div>
-                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                <div className="font-bold text-white text-sm">
                   CIP Protocol
                 </div>
-                <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                <div className="text-[#8b7664] text-xs">
                   Secure Multi-Chain Legacy
                 </div>
               </div>
@@ -100,7 +100,7 @@ export const MainEstateFund = (): JSX.Element => {
                 }`}
               >
                 <span className="text-lg">{item.icon}</span>
-                <span className="[font-family:'Noto_Sans',Helvetica] font-medium text-sm">
+                <span className="font-medium text-sm">
                   {item.label}
                 </span>
               </Link>
@@ -113,10 +113,10 @@ export const MainEstateFund = (): JSX.Element => {
                 A
               </div>
               <div className="flex-1 min-w-0">
-                <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-xs truncate">
+                <div className="font-bold text-white text-xs truncate">
                   alex.eth
                 </div>
-                <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                <div className="text-[#8b7664] text-xs">
                   Online
                 </div>
               </div>
@@ -130,17 +130,17 @@ export const MainEstateFund = (): JSX.Element => {
           <header className="bg-[#1a1410] border-b border-[#3a2f1e] px-8 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-[#8b7664]">
-                <span className="[font-family:'Noto_Sans',Helvetica] text-sm">Protocol</span>
+                <span className="text-sm">Protocol</span>
                 <span>&gt;</span>
-                <span className="[font-family:'Noto_Sans',Helvetica] text-sm">Dashboard</span>
+                <span className="text-sm">Dashboard</span>
                 <span>&gt;</span>
-                <span className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
+                <span className="font-bold text-white text-sm">
                   Plan Details
                 </span>
               </div>
 
               <div className="flex items-center gap-4">
-                <Button className="bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Noto_Sans',Helvetica] font-bold text-sm gap-2">
+                <Button className="bg-[#ff6600] hover:bg-[#ff6600]/90 font-bold text-sm gap-2">
                   <span>🔌</span>
                   Connect Wallet
                 </Button>
@@ -153,7 +153,7 @@ export const MainEstateFund = (): JSX.Element => {
             <div className="p-8 space-y-8">
               {/* Back and Title */}
               <div className="space-y-4">
-                <Link to="/asset-selection" className="flex items-center gap-2 text-[#ff6600] hover:text-[#ff6600]/80 [font-family:'Noto_Sans',Helvetica] font-bold text-sm">
+                <Link to="/asset-selection" className="flex items-center gap-2 text-[#ff6600] hover:text-[#ff6600]/80 font-bold text-sm">
                   <ArrowLeft className="w-4 h-4" />
                   Back to Plans
                 </Link>
@@ -161,14 +161,14 @@ export const MainEstateFund = (): JSX.Element => {
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center gap-3 mb-3">
-                      <h1 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl">
+                      <h1 className="font-bold text-white text-4xl">
                         Main Estate Fund
                       </h1>
-                      <Badge className="bg-green-500/20 text-green-400 border-green-500/30 [font-family:'Noto_Sans',Helvetica] font-bold">
+                      <Badge className="bg-green-500/20 text-green-400 border-green-500/30 font-bold">
                         ● Active
                       </Badge>
                     </div>
-                    <div className="flex items-center gap-4 [font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                    <div className="flex items-center gap-4 text-[#8b7664] text-sm">
                       <div className="flex items-center gap-2">
                         <span>🏷️</span>
                         <span>tag ID: #0042</span>
@@ -185,7 +185,7 @@ export const MainEstateFund = (): JSX.Element => {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <Button className="bg-[#332619] hover:bg-[#3a2f1e] text-white [font-family:'Noto_Sans',Helvetica] font-bold text-sm gap-2">
+                    <Button className="bg-[#332619] hover:bg-[#3a2f1e] text-white font-bold text-sm gap-2">
                       <Share2 className="w-4 h-4" />
                       Share Summary
                     </Button>
@@ -202,15 +202,15 @@ export const MainEstateFund = (): JSX.Element => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <span className="text-2xl">🏦</span>
-                          <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                          <h3 className="font-bold text-white text-lg">
                             Assets Breakdown
                           </h3>
                         </div>
                         <div className="text-right">
-                          <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                          <div className="text-[#8b7664] text-sm">
                             Total Value Secured
                           </div>
-                          <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                          <div className="font-bold text-white text-2xl">
                             $32,450.00
                           </div>
                         </div>
@@ -219,16 +219,16 @@ export const MainEstateFund = (): JSX.Element => {
                       {/* Assets Table */}
                       <div className="space-y-3">
                         <div className="grid grid-cols-4 gap-4 pb-3 border-b border-[#3a2f1e]">
-                          <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-[#8b7664] text-xs uppercase">
+                          <div className="font-bold text-[#8b7664] text-xs uppercase">
                             Asset Name
                           </div>
-                          <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-[#8b7664] text-xs uppercase">
+                          <div className="font-bold text-[#8b7664] text-xs uppercase">
                             Type
                           </div>
-                          <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-[#8b7664] text-xs uppercase">
+                          <div className="font-bold text-[#8b7664] text-xs uppercase">
                             Balance
                           </div>
-                          <div className="text-right [font-family:'Noto_Sans',Helvetica] font-bold text-[#8b7664] text-xs uppercase">
+                          <div className="text-right font-bold text-[#8b7664] text-xs uppercase">
                             Current Value
                           </div>
                         </div>
@@ -240,21 +240,21 @@ export const MainEstateFund = (): JSX.Element => {
                                 {asset.icon}
                               </div>
                               <div>
-                                <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
+                                <div className="font-bold text-white text-sm">
                                   {asset.name}
                                 </div>
-                                <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                                <div className="text-[#8b7664] text-xs">
                                   {asset.symbol}
                                 </div>
                               </div>
                             </div>
-                            <div className="[font-family:'Noto_Sans',Helvetica] text-white text-sm">
+                            <div className="text-white text-sm">
                               {asset.type}
                             </div>
-                            <div className="[font-family:'Noto_Sans',Helvetica] text-white text-sm">
+                            <div className="text-white text-sm">
                               {asset.balance}
                             </div>
-                            <div className="text-right [font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                            <div className="text-right font-bold text-white text-sm">
                               {asset.value}
                             </div>
                           </div>
@@ -269,11 +269,11 @@ export const MainEstateFund = (): JSX.Element => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <span className="text-2xl">🏷️</span>
-                          <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                          <h3 className="font-bold text-white text-lg">
                             Estimated Tax Report
                           </h3>
                         </div>
-                        <Button className="bg-[#332619] hover:bg-[#3a2f1e] text-[#ff6600] [font-family:'Noto_Sans',Helvetica] font-bold text-sm gap-2">
+                        <Button className="bg-[#332619] hover:bg-[#3a2f1e] text-[#ff6600] font-bold text-sm gap-2">
                           <Download className="w-4 h-4" />
                           Download PDF
                         </Button>
@@ -281,29 +281,29 @@ export const MainEstateFund = (): JSX.Element => {
 
                       <div className="grid grid-cols-3 gap-4">
                         <div className="bg-[#0d0b08] rounded-lg p-4 space-y-2">
-                          <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                          <div className="text-[#8b7664] text-sm">
                             Jurisdiction
                           </div>
-                          <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                          <div className="font-bold text-white text-lg">
                             United States (Federal)
                           </div>
                         </div>
 
                         <div className="bg-[#0d0b08] rounded-lg p-4 space-y-2">
-                          <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                          <div className="text-[#8b7664] text-sm">
                             Est. Estate Tax
                           </div>
-                          <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                          <div className="font-bold text-white text-lg">
                             $0.00
                             <span className="text-[#8b7664] text-xs ml-2">(Below threshold)</span>
                           </div>
                         </div>
 
                         <div className="bg-[#0d0b08] rounded-lg p-4 space-y-2">
-                          <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                          <div className="text-[#8b7664] text-sm">
                             Est. Capital Gains
                           </div>
-                          <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                          <div className="font-bold text-white text-lg">
                             ~$4,250.00
                           </div>
                         </div>
@@ -312,7 +312,7 @@ export const MainEstateFund = (): JSX.Element => {
                       <div className="bg-[#332619]/50 border border-[#ff6600]/30 rounded-lg p-4">
                         <div className="flex gap-3">
                           <span className="text-lg">ℹ️</span>
-                          <div className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm">
+                          <div className="text-[#b8a494] text-sm">
                             Estimations are based on current asset values and generic tax rules for the selected jurisdiction. This is not financial advice. Please consult a certified tax professional.
                           </div>
                         </div>
@@ -329,7 +329,7 @@ export const MainEstateFund = (): JSX.Element => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <span className="text-2xl">⏱️</span>
-                          <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                          <h3 className="font-bold text-white text-lg">
                             Trigger Configuration
                           </h3>
                         </div>
@@ -342,52 +342,52 @@ export const MainEstateFund = (): JSX.Element => {
                         <div className="bg-[#0d0b08] rounded-lg p-4 space-y-2">
                           <div className="flex items-center gap-2">
                             <span className="text-lg">🎯</span>
-                            <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                            <div className="font-bold text-white text-sm">
                               Trigger Type
                             </div>
                           </div>
-                          <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm ml-6">
+                          <div className="text-[#8b7664] text-sm ml-6">
                             Inactivity Period
                           </div>
                         </div>
 
                         <div className="bg-[#0d0b08] rounded-lg p-4 space-y-2">
-                          <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                          <div className="text-[#8b7664] text-sm">
                             Wait Period
                           </div>
-                          <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                          <div className="font-bold text-white text-sm">
                             12 Months
                           </div>
                         </div>
 
                         <div className="bg-[#0d0b08] rounded-lg p-4 space-y-2">
-                          <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                          <div className="text-[#8b7664] text-sm">
                             Timeline
                           </div>
                           <div className="flex flex-col gap-1">
-                            <div className="[font-family:'Noto_Sans',Helvetica] text-white text-sm">
+                            <div className="text-white text-sm">
                               <span className="text-[#ff6600]">Last Check-in</span>
                             </div>
-                            <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                            <div className="font-bold text-white text-sm">
                               2 days ago
                             </div>
                           </div>
                         </div>
 
                         <div className="bg-[#0d0b08] rounded-lg p-4 space-y-2">
-                          <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                          <div className="text-[#8b7664] text-sm">
                             Grace Period Starts
                           </div>
-                          <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                          <div className="font-bold text-white text-sm">
                             Oct 24, 2024
                           </div>
                         </div>
 
                         <div className="bg-[#0d0b08] rounded-lg p-4 space-y-2">
-                          <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                          <div className="text-[#8b7664] text-sm">
                             Execution Date
                           </div>
-                          <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                          <div className="font-bold text-white text-sm">
                             Nov 24, 2024
                           </div>
                         </div>
@@ -400,12 +400,12 @@ export const MainEstateFund = (): JSX.Element => {
                     <CardContent className="p-6 space-y-4">
                       <div className="flex items-center gap-2">
                         <span className="text-2xl">✅</span>
-                        <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                        <h3 className="font-bold text-white text-lg">
                           Proof of Life
                         </h3>
                       </div>
                       <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
-                        <div className="[font-family:'Noto_Sans',Helvetica] text-green-400 text-sm font-bold">
+                        <div className="text-green-400 text-sm font-bold">
                           ✓ Wallet Signature Required
                         </div>
                       </div>
@@ -418,11 +418,11 @@ export const MainEstateFund = (): JSX.Element => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span className="text-2xl">👥</span>
-                          <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                          <h3 className="font-bold text-white text-lg">
                             Beneficiaries
                           </h3>
                         </div>
-                        <Badge className="bg-[#332619] text-[#ff6600] [font-family:'Noto_Sans',Helvetica] font-bold text-xs">
+                        <Badge className="bg-[#332619] text-[#ff6600] font-bold text-xs">
                           {beneficiaries.length}
                         </Badge>
                       </div>
@@ -432,14 +432,14 @@ export const MainEstateFund = (): JSX.Element => {
                           <div key={idx} className="space-y-2">
                             <div className="flex items-center justify-between">
                               <div>
-                                <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
+                                <div className="font-bold text-white text-sm">
                                   {beneficiary.name}
                                 </div>
-                                <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                                <div className="text-[#8b7664] text-xs">
                                   {beneficiary.address}
                                 </div>
                               </div>
-                              <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                              <div className="font-bold text-white text-sm">
                                 {beneficiary.percentage}%
                               </div>
                             </div>

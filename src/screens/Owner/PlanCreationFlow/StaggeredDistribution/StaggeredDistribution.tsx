@@ -128,19 +128,19 @@ export const StaggeredDistribution = (): JSX.Element => {
                 <main className="w-full px-[38px] py-10 flex flex-col gap-10">
                     <section className="flex flex-col gap-4">
                         <div className="flex items-center gap-2">
-                            <Badge className="bg-[#ff660033] text-[#ff6600] hover:bg-[#ff660033] [font-family:'Manrope',Helvetica] font-bold text-xs px-2 py-1">
+                            <Badge className="bg-[#ff660033] text-[#ff6600] hover:bg-[#ff660033] font-bold text-xs px-2 py-1">
                                 Step 3 of 5
                             </Badge>
-                            <span className="[font-family:'Manrope',Helvetica] font-medium text-[#b8a994] text-[13.5px] leading-5">
+                            <span className="font-medium text-[#b8a994] text-[13.5px] leading-5">
                                 Distribution Logic
                             </span>
                         </div>
 
-                        <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-[35.1px] leading-10">
+                        <h1 className="font-bold text-white text-[35.1px] leading-10">
                             Staggered Distribution Setup
                         </h1>
 
-                        <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b9ae9d] text-lg leading-7 max-w-[627px]">
+                        <p className="font-normal text-[#b9ae9d] text-lg leading-7 max-w-[627px]">
                             Define exactly how and when assets will be released. Choose a strategy
                             to stagger payments over time or based on life events.
                         </p>
@@ -148,7 +148,7 @@ export const StaggeredDistribution = (): JSX.Element => {
 
                     <section className="flex flex-col gap-8">
                         <div className="flex flex-col">
-                            <h2 className="ml-1 [font-family:'Manrope',Helvetica] font-bold text-white text-lg tracking-[0] leading-7 whitespace-nowrap mb-5">
+                            <h2 className="ml-1 font-bold text-white text-lg tracking-[0] leading-7 whitespace-nowrap mb-5">
                                 1. Choose Strategy
                             </h2>
 
@@ -170,10 +170,10 @@ export const StaggeredDistribution = (): JSX.Element => {
                                             </div>
 
                                             <div className="flex-1 flex flex-col gap-[3px]">
-                                                <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base tracking-[0] leading-6">
+                                                <h3 className="font-bold text-white text-base tracking-[0] leading-6">
                                                     {strategy.title}
                                                 </h3>
-                                                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b8a994] text-[11.9px] tracking-[0] leading-4">
+                                                <p className="font-normal text-[#b8a994] text-[11.9px] tracking-[0] leading-4">
                                                     {strategy.description}
                                                 </p>
                                             </div>
@@ -191,7 +191,7 @@ export const StaggeredDistribution = (): JSX.Element => {
                             <Card className="bg-[#27221c] border-[#392f28] rounded-xl">
                                 <CardContent className="p-0">
                                     <div className="px-[33px] py-[33px] flex items-center justify-between border-b border-[#392f28]">
-                                        <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-xl tracking-[0] leading-7">
+                                        <h2 className="font-bold text-white text-xl tracking-[0] leading-7">
                                             Configure Fixed Intervals
                                         </h2>
 
@@ -201,7 +201,7 @@ export const StaggeredDistribution = (): JSX.Element => {
                                                 alt="Beneficiary"
                                                 src={userBeneficiaryIcon}
                                             />
-                                            <span className="[font-family:'Manrope',Helvetica] font-bold text-[13.5px] tracking-[0] leading-5">
+                                            <span className="font-bold text-[13.5px] tracking-[0] leading-5">
                                                 <span className="text-[#8b7b64]">Beneficiary:</span>
                                                 <span className="text-slate-200"> Alice Doe</span>
                                             </span>
@@ -211,11 +211,11 @@ export const StaggeredDistribution = (): JSX.Element => {
                                     <div className="px-[33px] py-6">
                                         <div className="grid grid-cols-2 gap-6 mb-6">
                                             <div className="flex flex-col gap-2">
-                                                <Label className="[font-family:'Manrope',Helvetica] font-medium text-slate-300 text-sm tracking-[0] leading-5">
+                                                <Label className="font-medium text-slate-300 text-sm tracking-[0] leading-5">
                                                     Frequency
                                                 </Label>
                                                 <Select defaultValue="monthly">
-                                                    <SelectTrigger className="bg-[#181511] text-white border-none h-11 [font-family:'Manrope',Helvetica]">
+                                                    <SelectTrigger className="bg-[#181511] text-white border-none h-11">
                                                         <SelectValue />
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -227,46 +227,46 @@ export const StaggeredDistribution = (): JSX.Element => {
                                             </div>
 
                                             <div className="flex flex-col gap-2">
-                                                <Label className="[font-family:'Manrope',Helvetica] font-medium text-slate-300 text-sm tracking-[0] leading-5">
+                                                <Label className="font-medium text-slate-300 text-sm tracking-[0] leading-5">
                                                     Duration
                                                 </Label>
                                                 <div className="flex items-center gap-3">
                                                     <Input
                                                         type="text"
                                                         defaultValue="5"
-                                                        className="bg-[#181511] border-[#553e33] h-11 [font-family:'Manrope',Helvetica] text-white"
+                                                        className="bg-[#181511] border-[#553e33] h-11 text-white"
                                                     />
-                                                    <span className="[font-family:'Manrope',Helvetica] font-medium text-[#8b7b64] text-sm tracking-[0] leading-5 whitespace-nowrap">
+                                                    <span className="font-medium text-[#8b7b64] text-sm tracking-[0] leading-5 whitespace-nowrap">
                                                         Years
                                                     </span>
                                                 </div>
                                             </div>
 
                                             <div className="flex flex-col gap-2">
-                                                <Label className="[font-family:'Manrope',Helvetica] font-medium text-slate-300 text-[13.8px] tracking-[0] leading-5">
+                                                <Label className="font-medium text-slate-300 text-[13.8px] tracking-[0] leading-5">
                                                     Initial Delay
                                                 </Label>
                                                 <div className="flex items-center gap-3">
                                                     <Input
                                                         type="text"
                                                         defaultValue="30"
-                                                        className="bg-[#181511] border-[#553e33] h-11 [font-family:'Manrope',Helvetica] text-white max-w-[173px]"
+                                                        className="bg-[#181511] border-[#553e33] h-11 text-white max-w-[173px]"
                                                     />
-                                                    <span className="[font-family:'Manrope',Helvetica] font-medium text-[#8b7b64] text-sm tracking-[0] leading-5 whitespace-nowrap">
+                                                    <span className="font-medium text-[#8b7b64] text-sm tracking-[0] leading-5 whitespace-nowrap">
                                                         Days after trigger
                                                     </span>
                                                 </div>
                                             </div>
 
                                             <div className="flex flex-col gap-2">
-                                                <Label className="[font-family:'Manrope',Helvetica] font-medium text-slate-300 text-sm tracking-[0] leading-5">
+                                                <Label className="font-medium text-slate-300 text-sm tracking-[0] leading-5">
                                                     Calculated Payout
                                                 </Label>
                                                 <div className="flex items-center justify-between h-11 px-[17px] bg-[#ff66001a] rounded-lg border border-[#ff660033]">
-                                                    <span className="[font-family:'Manrope',Helvetica] font-normal text-slate-300 text-sm tracking-[0] leading-5">
+                                                    <span className="font-normal text-slate-300 text-sm tracking-[0] leading-5">
                                                         Per interval:
                                                     </span>
-                                                    <span className="[font-family:'Manrope',Helvetica] font-bold text-[#ff6600] text-base tracking-[0] leading-6">
+                                                    <span className="font-bold text-[#ff6600] text-base tracking-[0] leading-6">
                                                         ~1.66%
                                                     </span>
                                                 </div>
@@ -274,7 +274,7 @@ export const StaggeredDistribution = (): JSX.Element => {
                                         </div>
 
                                         <div className="pt-8 border-t border-[#392f28]">
-                                            <h3 className="[font-family:'Manrope',Helvetica] font-bold text-[#8b7b64] text-sm tracking-[0] leading-5 mb-4">
+                                            <h3 className="font-bold text-[#8b7b64] text-sm tracking-[0] leading-5 mb-4">
                                                 Projection Timeline
                                             </h3>
 
@@ -297,20 +297,20 @@ export const StaggeredDistribution = (): JSX.Element => {
                                 <CardContent className="p-[25px]">
                                     <div className="flex items-start justify-between mb-2">
                                         <div className="flex flex-col">
-                                            <span className="[font-family:'Manrope',Helvetica] font-medium text-[#b8a994] text-[13.9px] tracking-[0] leading-5 mb-1">
+                                            <span className="font-medium text-[#b8a994] text-[13.9px] tracking-[0] leading-5 mb-1">
                                                 Total Allocated
                                             </span>
                                             <div className="flex items-end gap-[5px]">
-                                                <span className="[font-family:'Manrope',Helvetica] font-bold text-emerald-500 text-3xl tracking-[0] leading-9">
+                                                <span className="font-bold text-emerald-500 text-3xl tracking-[0] leading-9">
                                                     100%
                                                 </span>
-                                                <span className="[font-family:'Manrope',Helvetica] font-medium text-[#b8a994] text-[13.8px] tracking-[0] leading-5 mb-1">
+                                                <span className="font-medium text-[#b8a994] text-[13.8px] tracking-[0] leading-5 mb-1">
                                                     of assets
                                                 </span>
                                             </div>
                                         </div>
 
-                                        <Badge className="bg-[#10b9811a] text-emerald-500 [font-family:'Manrope',Helvetica] font-bold text-[11.9px] hover:bg-[#10b9811a]">
+                                        <Badge className="bg-[#10b9811a] text-emerald-500 font-bold text-[11.9px] hover:bg-[#10b9811a]">
                                             Valid Configuration
                                         </Badge>
                                     </div>
@@ -324,7 +324,7 @@ export const StaggeredDistribution = (): JSX.Element => {
                                     </div>
 
                                     <div className="flex justify-end mt-[7px]">
-                                        <span className="[font-family:'Manrope',Helvetica] font-normal text-[#b8a994] text-xs tracking-[0] leading-4">
+                                        <span className="font-normal text-[#b8a994] text-xs tracking-[0] leading-4">
                                             0% Remaining
                                         </span>
                                     </div>
@@ -334,14 +334,14 @@ export const StaggeredDistribution = (): JSX.Element => {
                             <div className="flex items-center justify-end gap-4">
                                 <Button
                                     variant="outline"
-                                    className="[font-family:'Manrope',Helvetica] font-bold text-white text-base border-[#695a47] bg-transparent hover:bg-[#695a47]/10 h-[50px] px-[25px]"
+                                    className="font-bold text-white text-base border-[#695a47] bg-transparent hover:bg-[#695a47]/10 h-[50px] px-[25px]"
                                 >
                                     Back
                                 </Button>
 
                                 <Button
                                     onClick={() => navigate("/review-plan")}
-                                    className="[font-family:'Manrope',Helvetica] font-bold text-white text-base bg-[#ff6600] hover:bg-[#ff6600]/90 h-[50px] px-8"
+                                    className="font-bold text-white text-base bg-[#ff6600] hover:bg-[#ff6600]/90 h-[50px] px-8"
                                 >
                                     Save &amp; Continue
                                     <ChevronRightIcon className="ml-2 w-4 h-4" />
@@ -352,14 +352,14 @@ export const StaggeredDistribution = (): JSX.Element => {
 
 
                     <section className="mt-20 flex flex-col gap-[25px] border-t border-dashed border-[#553e33]">
-                        <p className="ml-[159.4px] mt-12 [font-family:'Manrope',Helvetica] font-normal text-[#b8a994] text-xs tracking-[0] leading-4 whitespace-nowrap">
+                        <p className="ml-[159.4px] mt-12 font-normal text-[#b8a994] text-xs tracking-[0] leading-4 whitespace-nowrap">
                             Design Component: Custom Schedule View Variant
                         </p>
 
                         <Card className="w-[688px] bg-[#27221c] rounded-xl border-[#392f28]">
                             <CardHeader className="px-[25px] pt-[25px] pb-4">
                                 <div className="flex items-start justify-between">
-                                    <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg tracking-[0] leading-7 whitespace-nowrap">
+                                    <h2 className="font-bold text-white text-lg tracking-[0] leading-7 whitespace-nowrap">
                                         Custom Schedule Breakdown
                                     </h2>
 
@@ -368,7 +368,7 @@ export const StaggeredDistribution = (): JSX.Element => {
                                         className="h-auto p-0 hover:bg-transparent flex items-center gap-0.5"
                                     >
                                         <PlusIcon className="w-4 h-4 text-[#ff6600]" />
-                                        <span className="[font-family:'Manrope',Helvetica] font-bold text-[#ff6600] text-xs tracking-[0] leading-4 whitespace-nowrap">
+                                        <span className="font-bold text-[#ff6600] text-xs tracking-[0] leading-4 whitespace-nowrap">
                                             Add Payout Date
                                         </span>
                                     </Button>
@@ -379,16 +379,16 @@ export const StaggeredDistribution = (): JSX.Element => {
                                 <Table>
                                     <TableHeader>
                                         <TableRow className="border-b border-[#3b251e] hover:bg-transparent">
-                                            <TableHead className="h-[32.5px] pl-2 [font-family:'Manrope',Helvetica] font-medium text-[#8b7b64] text-[11.7px] tracking-[0] leading-4 whitespace-nowrap">
+                                            <TableHead className="h-[32.5px] pl-2 font-medium text-[#8b7b64] text-[11.7px] tracking-[0] leading-4 whitespace-nowrap">
                                                 Trigger Date
                                             </TableHead>
-                                            <TableHead className="h-[32.5px] [font-family:'Manrope',Helvetica] font-medium text-[#8b7b64] text-xs tracking-[0] leading-4 whitespace-nowrap">
+                                            <TableHead className="h-[32.5px] font-medium text-[#8b7b64] text-xs tracking-[0] leading-4 whitespace-nowrap">
                                                 Percentage
                                             </TableHead>
-                                            <TableHead className="h-[32.5px] [font-family:'Manrope',Helvetica] font-medium text-[#8b7b64] text-[11.9px] tracking-[0] leading-4 whitespace-nowrap">
+                                            <TableHead className="h-[32.5px] font-medium text-[#8b7b64] text-[11.9px] tracking-[0] leading-4 whitespace-nowrap">
                                                 Estimated Value
                                             </TableHead>
-                                            <TableHead className="h-[32.5px] [font-family:'Manrope',Helvetica] font-medium text-[#8b7b64] text-xs tracking-[0] leading-4 whitespace-nowrap">
+                                            <TableHead className="h-[32.5px] font-medium text-[#8b7b64] text-xs tracking-[0] leading-4 whitespace-nowrap">
                                                 Action
                                             </TableHead>
                                         </TableRow>
@@ -403,7 +403,7 @@ export const StaggeredDistribution = (): JSX.Element => {
                                                 <TableCell className="pl-2 py-[15.5px]">
                                                     <div className="flex items-center gap-[7px]">
                                                         <CalendarIcon className="w-[18px] h-[18px] text-white" />
-                                                        <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5 whitespace-nowrap">
+                                                        <span className="font-normal text-white text-sm tracking-[0] leading-5 whitespace-nowrap">
                                                             {schedule.date}
                                                         </span>
                                                     </div>
@@ -414,16 +414,16 @@ export const StaggeredDistribution = (): JSX.Element => {
                                                         <Input
                                                             type="text"
                                                             defaultValue={schedule.percentage}
-                                                            className="w-[75px] h-[34px] bg-[#181511] border-[#553e33] rounded [font-family:'Manrope',Helvetica] font-bold text-white text-base tracking-[0] leading-6 px-2"
+                                                            className="w-[75px] h-[34px] bg-[#181511] border-[#553e33] rounded font-bold text-white text-base tracking-[0] leading-6 px-2"
                                                         />
-                                                        <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5 whitespace-nowrap">
+                                                        <span className="font-normal text-white text-sm tracking-[0] leading-5 whitespace-nowrap">
                                                             %
                                                         </span>
                                                     </div>
                                                 </TableCell>
 
                                                 <TableCell className="py-[19.5px]">
-                                                    <span className="[font-family:'Manrope',Helvetica] font-normal text-[#b8a994] text-sm tracking-[0] leading-5 whitespace-nowrap">
+                                                    <span className="font-normal text-[#b8a994] text-sm tracking-[0] leading-5 whitespace-nowrap">
                                                         {schedule.estimatedValue}
                                                     </span>
                                                 </TableCell>
@@ -434,7 +434,7 @@ export const StaggeredDistribution = (): JSX.Element => {
                                                         size="sm"
                                                         className="h-auto p-0 hover:bg-transparent"
                                                     >
-                                                        <span className="[font-family:'Inter',Helvetica] font-normal text-[#b8a994] text-[8.3px] tracking-[0] leading-6 whitespace-nowrap">
+                                                        <span className="font-normal text-[#b8a994] text-[8.3px] tracking-[0] leading-6 whitespace-nowrap">
                                                             delete
                                                         </span>
                                                     </Button>

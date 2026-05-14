@@ -212,7 +212,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
     <div className="p-8">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Breadcrumb */}
-        <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+        <div className="text-[#8b7664] text-sm">
           Dashboard <span className="text-[#8b7664]">/</span> Trusts{" "}
           <span className="text-[#8b7664]">/</span>{" "}
           <span className="text-white">{viewingLabel}</span>
@@ -220,10 +220,10 @@ export const ChildrensTrustAccount = (): JSX.Element => {
 
         {/* Title Section */}
         <div className="space-y-4">
-          <h1 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl">
+          <h1 className="font-bold text-white text-4xl">
             {viewingLabel}
           </h1>
-          <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] max-w-2xl">
+          <p className="text-[#b8a494] max-w-2xl">
             Secure your child's future on Arbitrum. Set up automated savings, choose your asset, and define secure inheritance release rules.
           </p>
         </div>
@@ -237,7 +237,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
               <CardContent className="p-6 space-y-6">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">👤</span>
-                  <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                  <h3 className="font-bold text-white text-lg">
                     Beneficiary Details
                   </h3>
                 </div>
@@ -245,7 +245,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm block mb-2">
+                      <label className="text-[#8b7664] text-sm block mb-2">
                         Full Name
                       </label>
                       <input
@@ -253,24 +253,24 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                         value={beneficiaryName}
                         onChange={(e) => setBeneficiaryName(e.target.value)}
                         placeholder="e.g. Alice Doe"
-                        className="w-full bg-[#0d0b08] border border-[#3a2f1e] rounded-lg px-4 py-2 text-[#b8a494] placeholder-[#695d47] [font-family:'Noto_Sans',Helvetica] text-sm focus:outline-none focus:border-[#ff6600]"
+                        className="w-full bg-[#0d0b08] border border-[#3a2f1e] rounded-lg px-4 py-2 text-[#b8a494] placeholder-[#695d47] text-sm focus:outline-none focus:border-[#ff6600]"
                       />
                     </div>
                     <div>
-                      <label className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm block mb-2">
+                      <label className="text-[#8b7664] text-sm block mb-2">
                         Date of Birth
                       </label>
                       <input
                         type="date"
                         value={dateOfBirth}
                         onChange={(e) => setDateOfBirth(e.target.value)}
-                        className="w-full bg-[#0d0b08] border border-[#3a2f1e] rounded-lg px-4 py-2 text-[#b8a494] [font-family:'Noto_Sans',Helvetica] text-sm focus:outline-none focus:border-[#ff6600]"
+                        className="w-full bg-[#0d0b08] border border-[#3a2f1e] rounded-lg px-4 py-2 text-[#b8a494] text-sm focus:outline-none focus:border-[#ff6600]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm block mb-2">
+                    <label className="text-[#8b7664] text-sm block mb-2">
                       Wallet Address (Arbitrum)
                     </label>
                     <input
@@ -278,12 +278,12 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                       value={walletAddress}
                       onChange={(e) => setWalletAddress(e.target.value)}
                       placeholder="0x..."
-                      className="w-full bg-[#0d0b08] border border-[#3a2f1e] rounded-lg px-4 py-2 text-[#b8a494] placeholder-[#695d47] [font-family:'Noto_Sans',Helvetica] text-sm focus:outline-none focus:border-[#ff6600]"
+                      className="w-full bg-[#0d0b08] border border-[#3a2f1e] rounded-lg px-4 py-2 text-[#b8a494] placeholder-[#695d47] text-sm focus:outline-none focus:border-[#ff6600]"
                     />
                   </div>
 
                   <div>
-                    <label className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm block mb-2">
+                    <label className="text-[#8b7664] text-sm block mb-2">
                       Email
                     </label>
                     <input
@@ -291,7 +291,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="beneficiary@example.com"
-                      className="w-full bg-[#0d0b08] border border-[#3a2f1e] rounded-lg px-4 py-2 text-[#b8a494] placeholder-[#695d47] [font-family:'Noto_Sans',Helvetica] text-sm focus:outline-none focus:border-[#ff6600]"
+                      className="w-full bg-[#0d0b08] border border-[#3a2f1e] rounded-lg px-4 py-2 text-[#b8a494] placeholder-[#695d47] text-sm focus:outline-none focus:border-[#ff6600]"
                     />
                   </div>
                 </div>
@@ -303,13 +303,13 @@ export const ChildrensTrustAccount = (): JSX.Element => {
               <CardContent className="p-6 space-y-6">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">💰</span>
-                  <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                  <h3 className="font-bold text-white text-lg">
                     Funding Configuration
                   </h3>
                 </div>
 
                 <div>
-                  <label className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm block mb-4">
+                  <label className="text-[#8b7664] text-sm block mb-4">
                     Select Asset (Arbitrum Only)
                   </label>
                   <div className="grid grid-cols-3 gap-3">
@@ -317,7 +317,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                       <button
                         key={asset.symbol}
                         onClick={() => setSelectedAsset(asset.symbol)}
-                        className={`py-3 rounded-lg border transition-colors [font-family:'Noto_Sans',Helvetica] font-bold text-sm ${
+                        className={`py-3 rounded-lg border transition-colors font-bold text-sm ${
                           selectedAsset === asset.symbol
                             ? "bg-[#332619] border-[#ff6600] text-white"
                             : "bg-[#0d0b08] border-[#3a2f1e] text-[#8b7664] hover:border-[#554433]"
@@ -335,19 +335,19 @@ export const ChildrensTrustAccount = (): JSX.Element => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm block mb-2">
+                    <label className="text-[#8b7664] text-sm block mb-2">
                       Contribution Amount
                     </label>
                     <input
                       type="number"
                       value={contributionAmount}
                       onChange={(e) => setContributionAmount(e.target.value)}
-                      className="w-full bg-[#0d0b08] border border-[#3a2f1e] rounded-lg px-4 py-2 text-[#b8a494] [font-family:'Noto_Sans',Helvetica] text-sm focus:outline-none focus:border-[#ff6600]"
+                      className="w-full bg-[#0d0b08] border border-[#3a2f1e] rounded-lg px-4 py-2 text-[#b8a494] text-sm focus:outline-none focus:border-[#ff6600]"
                     />
                   </div>
 
                   <div>
-                    <label className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm block mb-2">
+                    <label className="text-[#8b7664] text-sm block mb-2">
                       Frequency
                     </label>
                     <div className="flex gap-2">
@@ -355,7 +355,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                         <button
                           key={freq}
                           onClick={() => setFrequency(freq)}
-                          className={`flex-1 py-2 rounded-lg border transition-colors [font-family:'Noto_Sans',Helvetica] font-medium text-sm ${
+                          className={`flex-1 py-2 rounded-lg border transition-colors font-medium text-sm ${
                             frequency === freq
                               ? "bg-[#332619] border-[#ff6600] text-white"
                               : "bg-[#0d0b08] border-[#3a2f1e] text-[#8b7664]"
@@ -375,13 +375,13 @@ export const ChildrensTrustAccount = (): JSX.Element => {
               <CardContent className="p-6 space-y-4">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">🔓</span>
-                  <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                  <h3 className="font-bold text-white text-lg">
                     Release Age
                   </h3>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl">
+                  <div className="font-bold text-white text-4xl">
                     {releaseAge}
                     <span className="text-lg text-[#8b7664] ml-2">Years Old</span>
                   </div>
@@ -391,7 +391,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                       <button
                         key={age}
                         onClick={() => setReleaseAge(age)}
-                        className={`flex-1 py-2 rounded-lg border transition-colors [font-family:'Noto_Sans',Helvetica] font-bold text-sm ${
+                        className={`flex-1 py-2 rounded-lg border transition-colors font-bold text-sm ${
                           releaseAge === age
                             ? "bg-[#332619] border-[#ff6600] text-white"
                             : "bg-[#0d0b08] border-[#3a2f1e] text-[#8b7664]"
@@ -411,22 +411,22 @@ export const ChildrensTrustAccount = (): JSX.Element => {
             <Card className="bg-[#1a1410] border-[#3a2f1e]">
               <CardContent className="p-6 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-base">
+                  <h3 className="font-bold text-white text-base">
                     Projection
                   </h3>
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 [font-family:'Noto_Sans',Helvetica] font-bold text-xs">
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 font-bold text-xs">
                     5% APY
                   </Badge>
                 </div>
 
                 <div className="space-y-2">
-                  <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                  <div className="text-[#8b7664] text-sm">
                     Projected Value at Age {releaseAge}
                   </div>
-                  <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-3xl">
+                  <div className="font-bold text-white text-3xl">
                     ${projection.futureValue.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                   </div>
-                  <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                  <p className="text-[#8b7664] text-xs">
                     Based on ${contributionAmount} {frequency.toLowerCase()} contribution for {releaseAge} years
                   </p>
                 </div>
@@ -448,16 +448,16 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                     })}
                   </div>
                   <div className="flex justify-between items-center px-1 pt-2 border-t border-[#3a2f1e]">
-                    <span className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                    <span className="text-[#8b7664] text-xs">
                       0
                     </span>
                     <div className="flex items-center gap-1 bg-[#332619] px-2 py-1 rounded">
                       <span className="w-2 h-2 bg-[#ff6600] rounded-full"></span>
-                      <span className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-xs">
+                      <span className="font-bold text-white text-xs">
                         ${projection.futureValue.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                       </span>
                     </div>
-                    <span className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                    <span className="text-[#8b7664] text-xs">
                       {releaseAge}yr
                     </span>
                   </div>
@@ -466,18 +466,18 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                 {/* Stats */}
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   <div className="bg-[#0d0b08] rounded p-3 space-y-1">
-                    <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                    <p className="text-[#8b7664] text-xs">
                       Total Principal
                     </p>
-                    <p className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white">
+                    <p className="font-bold text-white">
                       ${projection.totalPrincipal.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                     </p>
                   </div>
                   <div className="bg-[#0d0b08] rounded p-3 space-y-1">
-                    <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                    <p className="text-[#8b7664] text-xs">
                       Total Interest
                     </p>
-                    <p className="[font-family:'Space_Grotesk',Helvetica] font-bold text-green-400">
+                    <p className="font-bold text-green-400">
                       +${projection.totalInterest.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                     </p>
                   </div>
@@ -485,7 +485,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
 
                 {/* Release Info */}
                 <div className="bg-[#332619] border border-[#554433] rounded-lg p-3 space-y-2">
-                  <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-xs">
+                  <p className="text-[#b8a494] text-xs">
                     Funds will unlock for{" "}
                     <span className="text-white font-bold">{beneficiaryName || 'beneficiary'}</span> on{" "}
                     <span className="text-[#ff6600] font-bold">{projectedReleaseDateStr}</span>{" "}
@@ -501,7 +501,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                 )}
 
                 <Button
-                  className="w-full bg-[#ff6600] hover:bg-[#ff6600]/90 text-white [font-family:'Noto_Sans',Helvetica] font-bold gap-2"
+                  className="w-full bg-[#ff6600] hover:bg-[#ff6600]/90 text-white font-bold gap-2"
                   onClick={handleCreateTrust}
                   disabled={submitting}
                 >
@@ -509,7 +509,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                   {submitting ? 'Creating...' : 'Create Trust Account'}
                 </Button>
 
-                <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs text-center">
+                <p className="text-[#8b7664] text-xs text-center">
                   Gas fees will be paid in the selected asset
                 </p>
               </CardContent>

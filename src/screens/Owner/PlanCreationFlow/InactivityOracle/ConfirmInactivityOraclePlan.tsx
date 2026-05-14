@@ -65,7 +65,7 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
   };
 
   return (
-    <main className="max-w-5xl mx-auto px-4 py-4 text-white [font-family:'Manrope',Helvetica]">
+    <main className="max-w-5xl mx-auto px-4 py-4 text-white">
       <div className="mb-6">
         <h1 className="text-2xl sm:text-4xl font-bold mb-3">
           Confirm Inactivity Oracle Plan
@@ -77,10 +77,10 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
 
       <div className="mb-12">
         <div className="flex items-center justify-between mb-4">
-          <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5">
+          <span className="font-normal text-white text-sm tracking-[0] leading-5">
             Step 5 of 5: Review & Sign
           </span>
-          <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
+          <span className="font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
             100% Completed
           </span>
         </div>
@@ -259,7 +259,7 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
           <Button
             onClick={handleConfirm}
             disabled={isSubmitting}
-            className="inline-flex w-full mt-5 items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            className="inline-flex w-full mt-5 items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg font-bold text-white text-base text-center leading-6"
           >
             <img src={paperEditIcon} alt="Icon" />
             {isSubmitting ? 'Signing…' : 'Sign & Create Plan'}
@@ -275,7 +275,7 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
       <footer className="flex mt-8 items-center justify-start pt-4 pb-8 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
         <div className="inline-flex items-start gap-4 w-full relative flex-[0_0_auto]">
           <Button
-            className="w-full sm:w-auto px-6 py-3 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            className="w-full sm:w-auto px-6 py-3 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent font-bold text-white text-base text-center leading-6"
             onClick={handleBack}
           >
             &larr; &nbsp; Back

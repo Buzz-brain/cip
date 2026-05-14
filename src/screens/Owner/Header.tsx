@@ -10,7 +10,7 @@ export const Header = ({ onToggleSidebar }: HeaderProps): JSX.Element => {
   const navigate = useNavigate();
 
   return (
-    <header className="bg-[#0D0501] border-b border-[#393028] px-4 md:px-8 py-4 [font-family:'Manrope',Helvetica]">
+    <header className="bg-[#0D0501] border-b border-[#393028] px-4 md:px-8 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 text-[#B9B09D]">
           <button

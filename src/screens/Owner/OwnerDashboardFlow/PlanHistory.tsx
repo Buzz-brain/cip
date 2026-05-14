@@ -88,25 +88,25 @@ export const PlanHistory = (): JSX.Element => {
       <div className="max-w-6xl mx-auto space-y-8">
           {/* Back and Title */}
           <div className="space-y-4">
-            <Link to="/dashboard" className="flex items-center gap-2 [font-family:'Noto_Sans',Helvetica] text-[#ff6600] hover:text-[#ff6600]/80 text-sm">
+            <Link to="/dashboard" className="flex items-center gap-2 text-[#ff6600] hover:text-[#ff6600]/80 text-sm">
               <ChevronLeft className="w-4 h-4" />
               Back to Plans
             </Link>
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl mb-2">
+                <h1 className="font-bold text-white text-4xl mb-2">
                   Plan History: Family Trust Alpha
                 </h1>
-                <p className="[font-family:'Noto_Sans',Helvetica] text-[#B8AA9D] text-sm">
+                <p className="text-[#B8AA9D] text-sm">
                   📝 Immutable audit log stored on Autonomys Network
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button className="bg-transparent hover:bg-[#3a2f1e] border border-[#554433] text-white gap-2 [font-family:'Noto_Sans',Helvetica] font-bold text-sm">
+                <Button className="bg-transparent hover:bg-[#3a2f1e] border border-[#554433] text-white gap-2 font-bold text-sm">
                   <DownloadIcon className="w-4 h-4" />
                   Export History
                 </Button>
-                <Button className="bg-[#332619] hover:bg-[#3a2f1e] border border-[#554433] text-white gap-2 [font-family:'Noto_Sans',Helvetica] font-bold text-sm">
+                <Button className="bg-[#332619] hover:bg-[#3a2f1e] border border-[#554433] text-white gap-2 font-bold text-sm">
                   <Share2 className="w-4 h-4" />
                   Share Proof
                 </Button>
@@ -118,11 +118,11 @@ export const PlanHistory = (): JSX.Element => {
           <div className="grid grid-cols-3 gap-4">
             <Card className="bg-[#1a1410] border-[#3a2f1e]">
               <CardContent className="p-6 space-y-2">
-                <div className="flex items-center gap-2 [font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                <div className="flex items-center gap-2 text-[#8b7664] text-sm">
                   <span>📋</span>
                   Plan ID
                 </div>
-                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                <div className="font-bold text-white text-2xl">
                   #88392-CIP
                 </div>
               </CardContent>
@@ -130,11 +130,11 @@ export const PlanHistory = (): JSX.Element => {
 
             <Card className="bg-[#1a1410] border-[#3a2f1e]">
               <CardContent className="p-6 space-y-2">
-                <div className="flex items-center gap-2 [font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                <div className="flex items-center gap-2 text-[#8b7664] text-sm">
                   <span>📊</span>
                   Total Revisions
                 </div>
-                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                <div className="font-bold text-white text-2xl">
                   14
                 </div>
               </CardContent>
@@ -142,11 +142,11 @@ export const PlanHistory = (): JSX.Element => {
 
             <Card className="bg-[#1a1410] border-[#3a2f1e]">
               <CardContent className="p-6 space-y-2">
-                <div className="flex items-center gap-2 [font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                <div className="flex items-center gap-2 text-[#8b7664] text-sm">
                   <span>✓</span>
                   Last Verification
                 </div>
-                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                <div className="font-bold text-white text-2xl">
                   Synced Just Now
                 </div>
               </CardContent>
@@ -162,7 +162,7 @@ export const PlanHistory = (): JSX.Element => {
                 placeholder="Search by hash, event type, or keyword..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#1a1410] border border-[#3a2f1e] rounded-lg pl-10 pr-4 py-3 text-[#b8a494] placeholder-[#695d47] [font-family:'Noto_Sans',Helvetica] text-sm focus:outline-none focus:border-[#ff6600]"
+                className="w-full bg-[#1a1410] border border-[#3a2f1e] rounded-lg pl-10 pr-4 py-3 text-[#b8a494] placeholder-[#695d47] text-sm focus:outline-none focus:border-[#ff6600]"
               />
             </div>
 
@@ -171,7 +171,7 @@ export const PlanHistory = (): JSX.Element => {
                 <button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
-                  className={`px-3 py-1 rounded-lg [font-family:'Noto_Sans',Helvetica] font-bold text-xs transition-colors ${
+                  className={`px-3 py-1 rounded-lg font-bold text-xs transition-colors ${
                     activeFilter === filter
                       ? filter === "All Events"
                         ? "bg-[#ff6600] text-white"
@@ -210,15 +210,15 @@ export const PlanHistory = (): JSX.Element => {
                       <CardContent className="p-4 space-y-3">
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <h3 className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
+                            <h3 className="font-bold text-white text-sm">
                               {event.title}
                             </h3>
-                            <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs mt-1">
+                            <p className="text-[#8b7664] text-xs mt-1">
                               {event.description}
                             </p>
                           </div>
                           {event.type === "dispute" && (
-                            <Button className="bg-red-500 hover:bg-red-500/90 text-white [font-family:'Noto_Sans',Helvetica] font-bold text-xs px-3 py-1">
+                            <Button className="bg-red-500 hover:bg-red-500/90 text-white font-bold text-xs px-3 py-1">
                               View Evidence
                             </Button>
                           )}
@@ -226,7 +226,7 @@ export const PlanHistory = (): JSX.Element => {
                         {event.details && (
                           <div className="pt-2 border-t border-[#3a2f1e] space-y-1">
                             {event.details.map((detail, idx) => (
-                              <div key={idx} className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                              <div key={idx} className="text-[#8b7664] text-xs">
                                 <span className="text-[#ff6600]">{detail.split(":")[0]}:</span>{" "}
                                 <span>{detail.split(":")[1]}</span>
                               </div>
@@ -234,7 +234,7 @@ export const PlanHistory = (): JSX.Element => {
                           </div>
                         )}
                         <div className="flex justify-between items-center pt-2 border-t border-[#3a2f1e]">
-                          <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                          <div className="text-[#8b7664] text-xs">
                             {event.date}
                             <br />
                             {event.time}
@@ -261,14 +261,14 @@ export const PlanHistory = (): JSX.Element => {
                         <div className="flex items-start justify-between gap-2">
                           <div>
                             <div className="flex items-center gap-2 mb-2">
-                              <h3 className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
+                              <h3 className="font-bold text-white text-sm">
                                 {event.title}
                               </h3>
-                              <Badge className={`${event.statusColor} [font-family:'Noto_Sans',Helvetica] font-bold text-xs`}>
+                              <Badge className={`${event.statusColor} font-bold text-xs`}>
                                 {event.status}
                               </Badge>
                             </div>
-                            <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                            <p className="text-[#8b7664] text-xs">
                               {event.description}
                             </p>
                           </div>
@@ -276,7 +276,7 @@ export const PlanHistory = (): JSX.Element => {
                         {event.details && (
                           <div className="pt-2 border-t border-[#3a2f1e] space-y-1">
                             {event.details.map((detail, idx) => (
-                              <div key={idx} className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                              <div key={idx} className="text-[#8b7664] text-xs">
                                 <span className="text-[#ff6600]">{detail.split(":")[0]}:</span>{" "}
                                 <span>{detail.split(":")[1]}</span>
                               </div>
@@ -286,12 +286,12 @@ export const PlanHistory = (): JSX.Element => {
                         <div className="flex gap-2 items-end">
                           <a
                             href="#"
-                            className="[font-family:'Noto_Sans',Helvetica] text-[#ff6600] hover:text-[#ff6600]/80 text-xs font-bold underline"
+                            className="text-[#ff6600] hover:text-[#ff6600]/80 text-xs font-bold underline"
                           >
                             View on Explorer →
                           </a>
                         </div>
-                        <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs pt-2 border-t border-[#3a2f1e]">
+                        <div className="text-[#8b7664] text-xs pt-2 border-t border-[#3a2f1e]">
                           {event.date}
                           <br />
                           {event.time}
@@ -306,7 +306,7 @@ export const PlanHistory = (): JSX.Element => {
 
           {/* End of History */}
           <div className="text-center py-8">
-            <p className="[font-family:'Noto_Sans',Helvetica] text-[#695d47] text-sm">
+            <p className="text-[#695d47] text-sm">
               🔒 End of immutable history
             </p>
           </div>

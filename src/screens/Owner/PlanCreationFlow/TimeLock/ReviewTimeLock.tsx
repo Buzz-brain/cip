@@ -70,20 +70,20 @@ export const ReviewTimeLock = (): JSX.Element => {
       <main className="flex-1 flex flex-col items-center px-4 py-4">
         <div className="w-full max-w-[1040px]">
           <div className="mb-8">
-            <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl sm:text-[31.7px] tracking-[0] leading-7 sm:leading-[38px] mb-2">
+            <h1 className="font-bold text-white text-2xl sm:text-[31.7px] tracking-[0] leading-7 sm:leading-[38px] mb-2">
               Review Time-Lock Plan
             </h1>
-            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b9ac9d] text-sm sm:text-base tracking-[0] leading-[22px] sm:leading-[26px]">
+            <p className="font-normal text-[#b9ac9d] text-sm sm:text-base tracking-[0] leading-[22px] sm:leading-[26px]">
               Verify the parameters of your automated inheritance plan. This setup ensures your assets are distributed exactly when intended.
             </p>
           </div>
 
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
-              <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5">
+              <span className="font-normal text-white text-sm tracking-[0] leading-5">
                 Step 5 of 5: Review Details
               </span>
-              <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
+              <span className="font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
                 100% Completed
               </span>
             </div>
@@ -101,11 +101,11 @@ export const ReviewTimeLock = (): JSX.Element => {
                   </div>
 
                   <div>
-                    <p className="[font-family:'Manrope',Helvetica] font-normal text-[#FF6600] text-md tracking-[0] leading-6">
+                    <p className="font-normal text-[#FF6600] text-md tracking-[0] leading-6">
                       Automatic Trigger
                     </p>
 
-                    <p className="[font-family:'Manrope',Helvetica] text-white text-md tracking-[0] leading-5 mt-1">
+                    <p className="text-white text-md tracking-[0] leading-5 mt-1">
                       This plan will execute automatically on {" "}
                       <span className="text-[#FF6600]">
                         {formatDisplayDate()}
@@ -174,7 +174,7 @@ export const ReviewTimeLock = (): JSX.Element => {
             </div>
           </div>
 
-            <div className="flex-1 max-w-6xl mx-auto w-full [font-family:'Manrope',Helvetica]">
+            <div className="flex-1 max-w-6xl mx-auto w-full">
             <div className="space-y-8 mt-12">
               <div className="bg-[#7C2D121A] rounded-lg p-6 border border-[#7C2D1233] flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />

@@ -8,7 +8,7 @@ export const OwnerDashboardLayout = (): JSX.Element => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#0d0b08] [font-family:'Manrope',Helvetica]">
+    <div className="min-h-screen bg-[#0d0b08]">
       <ChainAlert />
       <div className="flex h-screen bg-[#0d0b08]">
         {/* Desktop sidebar (hidden on small screens inside Sidebar component) */}

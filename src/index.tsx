@@ -1,4 +1,5 @@
 import { StrictMode } from "react";
+import "../tailwind.css";
 // AppKit initialization - import pre-configured provider wrapper
 import { AppKitProviderComponent } from "./lib/wallet/web3modalConfig.tsx";
 // Mobile debugging tools (Eruda for WalletConnect debugging)
@@ -136,8 +137,9 @@ import { viewUsers, viewExecutors, viewMediators, viewAdmins } from "./lib/api/a
 // import { viewEnterprises } from "./lib/api/admin";
 import AdministrativeDashboard from "./screens/Administrative/AdministrativeDashboard.tsx";
 
+document.documentElement.style.fontFamily = "'Sora', Helvetica, sans-serif";
+document.body.style.fontFamily = "'Sora', Helvetica, sans-serif";
 import { Login } from "./screens/Login";
-
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>

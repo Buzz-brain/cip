@@ -53,7 +53,7 @@ export const Navbar = ({
                 )
               ) : null}
             </div>
-            {/* <span className="[font-family:'Space_Grotesk',Helvetica] text-[19.4px] font-bold text-white">
+            {/* <span className="text-[19.4px] font-bold text-white">
               {brand}
             </span> */}
           </div>
@@ -66,7 +66,7 @@ export const Navbar = ({
                     <Link
                       key={item.label}
                       to={item.href}
-                      className="[font-family:'Noto_Sans',Helvetica] font-medium text-slate-300 text-sm hover:text-white transition-colors"
+                      className="font-medium text-slate-300 text-sm hover:text-white transition-colors"
                     >
                       {item.label}
                     </Link>
@@ -76,7 +76,7 @@ export const Navbar = ({
                     <a
                       key={item.label}
                       href={item.href}
-                      className="[font-family:'Noto_Sans',Helvetica] font-medium text-slate-300 text-sm hover:text-white transition-colors"
+                      className="font-medium text-slate-300 text-sm hover:text-white transition-colors"
                       onClick={(e: MouseEvent<HTMLAnchorElement>) => {
                         e.preventDefault();
                         const id = item.href.replace("#", "");
@@ -97,7 +97,7 @@ export const Navbar = ({
                     <a
                       key={item.label}
                       href={item.href}
-                      className="[font-family:'Noto_Sans',Helvetica] font-medium text-slate-300 text-sm hover:text-white transition-colors"
+                      className="font-medium text-slate-300 text-sm hover:text-white transition-colors"
                     >
                       {item.label}
                     </a>

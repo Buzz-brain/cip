@@ -56,7 +56,7 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
     });
   };
   return (
-    <main className="max-w-5xl mx-auto px-4 py-4 text-white [font-family:'Manrope',Helvetica]">
+    <main className="max-w-5xl mx-auto px-4 py-4 text-white">
       <div className="mb-6">
         <h1 className="text-2xl sm:text-4xl font-bold mb-3">Set Inactivity Grace Period</h1>
         <p className="text-gray-400 text-sm sm:text-base leading-relaxed max-w-2xl">
@@ -66,10 +66,10 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
 
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5">
+          <span className="font-normal text-white text-sm tracking-[0] leading-5">
             Step 5 of 5: Grace Period
           </span>
-          <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
+          <span className="font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
             100% Completed
           </span>
         </div>
@@ -227,7 +227,7 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
       <footer className="flex mt-8 items-stretch sm:items-center justify-end pt-4 pb-8 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full justify-end">
           <Button
-            className="w-full sm:w-auto px-6 py-3 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            className="w-full sm:w-auto px-6 py-3 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent font-bold text-white text-base text-center leading-6"
             onClick={handleBack}
           >
             Back
@@ -235,7 +235,7 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
 
           <Button
             onClick={handleContinue}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg font-bold text-white text-base text-center leading-6"
           >
             Continue
             <span>→</span>

@@ -119,10 +119,10 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
       <main className="flex-1 flex flex-col items-center px-4 py-4">
         <div className="w-full max-w-[1040px]">
           <div className="mb-8">
-            <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-[31.7px] tracking-[0] leading-[38px] mb-2">
+            <h1 className="font-bold text-white text-[31.7px] tracking-[0] leading-[38px] mb-2">
               Choose Proof-of-Life Method
             </h1>
-            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b9ac9d] text-base tracking-[0] leading-[26px]">
+            <p className="font-normal text-[#b9ac9d] text-base tracking-[0] leading-[26px]">
               Select one method to verify your activity and reset the
               Inactivity Oracle. Choose the option that works best for your needs.
             </p>
@@ -130,10 +130,10 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
 
           <div>
             <div className="flex items-center justify-between mb-4">
-              <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5">
+              <span className="font-normal text-white text-sm tracking-[0] leading-5">
                 Step 5 of 5: Trigger Configuration
               </span>
-              <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
+              <span className="font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
                 100% Completed
               </span>
             </div>
@@ -174,7 +174,7 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
           <footer className="flex mt-12 items-center justify-end pt-8 pb-12 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
             <div className="inline-flex items-start gap-4 relative flex-[0_0_auto]">
               <Button
-                className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+                className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent font-bold text-white text-base text-center leading-6"
                 onClick={handleBack}
               >
                 Back
@@ -182,7 +182,7 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
 
               <Button
                 onClick={handleContinue}
-                className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+                className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg font-bold text-white text-base text-center leading-6"
                 disabled={selectedMethod === null}
               >
                 Continue

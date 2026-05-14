@@ -32,11 +32,11 @@ export const TrustsList = (): JSX.Element => {
   return (
     <div className="p-8">
       <div className="max-w-6xl mx-auto space-y-6">
-        <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+        <div className="text-[#8b7664] text-sm">
           Dashboard <span className="text-[#8b7664]">/</span> Trusts
         </div>
 
-        <h1 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-3xl">
+        <h1 className="font-bold text-white text-3xl">
           Trust Accounts
         </h1>
 

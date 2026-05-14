@@ -17,17 +17,17 @@ export const EscrowStateVisualization = (): JSX.Element => {
   // const navigate = useNavigate();
 
   return (
-    <main className="flex flex-col w-full min-h-screen bg-[#191919] [font-family:'Manrope',Helvetica]">
+    <main className="flex flex-col w-full min-h-screen bg-[#191919]">
     <Header />
 
 
       <div className="flex-1 px-10 py-12">
         <div className="max-w-7xl">
           <div className="mb-8">
-            <p className="text-gray-400 text-sm mb-5 [font-family:'Manrope',Helvetica]">
+            <p className="text-gray-400 text-sm mb-5">
               <span className="text-[#9DB8A6] pr-1">Disputes</span> / <span className="text-[#9DB8A6] pl-1 pr-1">Case #4829</span> / <span className="text-white pl-1">Escrow State Visualization</span>
             </p>
-            <h1 className="text-3xl font-bold text-white [font-family:'Manrope',Helvetica]">
+            <h1 className="text-3xl font-bold text-white">
               Escrow State Visualization
             </h1>
 
@@ -55,15 +55,15 @@ export const EscrowStateVisualization = (): JSX.Element => {
                     <div className="mb-5">
                       <div className="flex gap-2 px-3 py-1 w-[250px] bg-[#EAB3081A] border border-[#EAB30833] rounded-xl mb-3">
                         <img src={hourGlassYellowIcon} alt="" />
-                        <p className="text-[#EAB308] text-xs font-semibold [font-family:'Manrope',Helvetica]">
+                        <p className="text-[#EAB308] text-xs font-semibold">
                           Status: Funds Held for Review
                         </p>
                       </div>
 
-                      <h2 className="text-2xl font-bold text-white [font-family:'Manrope',Helvetica]">
+                      <h2 className="text-2xl font-bold text-white">
                         Safe Escrow Vault #8832
                       </h2>
-                      <p className="text-[#9DB8A6] text-sm [font-family:'Manrope',Helvetica]">
+                      <p className="text-[#9DB8A6] text-sm">
                         Assets from the inheritance plan have been<br />
                         automatically moved to this neutral CIP Vault contract.<br />
                         They are cryptographically locked until the assigned<br />
@@ -74,12 +74,12 @@ export const EscrowStateVisualization = (): JSX.Element => {
 
                     <div className="grid grid-cols-2 gap-8 mb-8">
                       <div className="flex flex-col bg-[#111813] rounded-xl border border-[#29382E] p-4 gap-2">
-                        <p className="text-[#9DB8A6] text-xs font-semibold [font-family:'Manrope',Helvetica]">Total Locked Value</p>
-                        <p className="text-2xl font-bold text-white [font-family:'Manrope',Helvetica]">$1,250,420.00</p>
+                        <p className="text-[#9DB8A6] text-xs font-semibold">Total Locked Value</p>
+                        <p className="text-2xl font-bold text-white">$1,250,420.00</p>
                       </div>
                       <div className="flex flex-col bg-[#111813] rounded-xl border border-[#29382E] p-4 gap-2">
-                        <p className="text-[#9DB8A6] text-xs font-semibold [font-family:'Manrope',Helvetica]">Contract Risk</p>
-                        <p className="text-white text-2xl font-bold [font-family:'Manrope',Helvetica]">Audited</p>
+                        <p className="text-[#9DB8A6] text-xs font-semibold">Contract Risk</p>
+                        <p className="text-white text-2xl font-bold">Audited</p>
                       </div>
                     </div>
                   </div>
@@ -90,7 +90,7 @@ export const EscrowStateVisualization = (): JSX.Element => {
                 <div className="flex items-center gap-2 pt-5 border-t border-[#29382E]">
                   <img src={cubeIcon} alt="Cube" />
 
-                  <p className="text-[#9DB8A6] text-sm [font-family:'Manrope',Helvetica]">
+                  <p className="text-[#9DB8A6] text-sm">
                     Contract Address: <span className="text-[#CBD5E1] bg-[#0000004D] px-2 pr-7 py-1 ml-1 rounded">0x71C...92f4</span>
                   </p>
                 </div>
@@ -98,7 +98,7 @@ export const EscrowStateVisualization = (): JSX.Element => {
 
               <div className="grid grid-cols-1 gap-6">
                 <div className="bg-[#1C261F] border border-[#2a2420] rounded-2xl p-8">
-                  <h3 className="text-lg font-bold text-white mb-6 [font-family:'Manrope',Helvetica]">
+                  <h3 className="text-lg font-bold text-white mb-6">
                     Dispute Progression
                   </h3>
 
@@ -107,8 +107,8 @@ export const EscrowStateVisualization = (): JSX.Element => {
                 <div className="flex items-start gap-3">
                   <Info className="text-[#60A5FA]" />
                   <div>
-                    <h3 className="font-bold text-[#DBEAFE] mb-1 [font-family:'Manrope',Helvetica]">Mediator Note</h3>
-                    <p className="text-[#BFDBFECC] text-sm [font-family:'Manrope',Helvetica]">
+                    <h3 className="font-bold text-[#DBEAFE] mb-1">Mediator Note</h3>
+                    <p className="text-[#BFDBFECC] text-sm">
                       "I have received the initial statements. I am currently reviewing the on-chain activity logs for the wallet in question. Please submit any additional proof of ownership by Oct 28."
                     </p>
                   </div>
@@ -122,29 +122,29 @@ export const EscrowStateVisualization = (): JSX.Element => {
             <div className="col-span-1 flex flex-col gap-6">
               <div className="bg-[#1C261F] border border-[#29382E] rounded-2xl p-6">
                 <div>
-                  <h4 className="text-sm font-bold text-[#9DB8A6] mb-4 [font-family:'Manrope',Helvetica]">Assigned Mediator</h4>
+                  <h4 className="text-sm font-bold text-[#9DB8A6] mb-4">Assigned Mediator</h4>
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center">
                       <img src={marcusVIcon} alt="Marcus V." />
                     </div>
                     <div>
-                      <p className="text-white font-semibold [font-family:'Manrope',Helvetica]">Marcus V.</p>
-                      <p className="text-gray-400 text-xs [font-family:'Manrope',Helvetica]">Kleros Court Level 3</p>
+                      <p className="text-white font-semibold">Marcus V.</p>
+                      <p className="text-gray-400 text-xs">Kleros Court Level 3</p>
                     </div>
                   </div>
 
                   <div className="mb-4">
                     <div className="flex justify-between mb-2">
-                      <p className="text-[#9DB8A6] text-sm [font-family:'Manrope',Helvetica]">Cases Resolved</p>
-                      <p className="text-white text-sm [font-family:'Manrope',Helvetica]">142</p>
+                      <p className="text-[#9DB8A6] text-sm">Cases Resolved</p>
+                      <p className="text-white text-sm">142</p>
                     </div>
                     <div className="flex justify-between mb-2">
-                      <p className="text-[#9DB8A6] text-sm [font-family:'Manrope',Helvetica]">Reputation Score</p>
-                      <p className="text-white text-sm [font-family:'Manrope',Helvetica]">98/100</p>
+                      <p className="text-[#9DB8A6] text-sm">Reputation Score</p>
+                      <p className="text-white text-sm">98/100</p>
                     </div>
                     <div className="flex justify-between">
-                      <p className="text-[#9DB8A6] textsm [font-family:'Manrope',Helvetica]">Time Remaining</p>
-                      <p className="text-white bg-[#EF444433] text-sm border border-[#EF44444D] rounded px-2 font-semibold [font-family:'Manrope',Helvetica]">48h 12m</p>
+                      <p className="text-[#9DB8A6] textsm">Time Remaining</p>
+                      <p className="text-white bg-[#EF444433] text-sm border border-[#EF44444D] rounded px-2 font-semibold">48h 12m</p>
                     </div>
                   </div>
 
@@ -156,7 +156,7 @@ export const EscrowStateVisualization = (): JSX.Element => {
               </div>
 
               <div className="bg-[#1C261F] border border-[#29382E] rounded-2xl">
-                <h4 className="text-sm font-bold text-[#9DB8A6] [font-family:'Manrope',Helvetica] p-4">Locked Assets</h4>
+                <h4 className="text-sm font-bold text-[#9DB8A6] p-4">Locked Assets</h4>
 
                 <div>
                   <div className="flex items-center justify-between p-3 border-t border-b border-[#29382E]">
@@ -165,13 +165,13 @@ export const EscrowStateVisualization = (): JSX.Element => {
                         <img src={ethereumIcon} alt="Ethereum" />
                       </div>
                       <div>
-                        <p className="text-white font-semibold text-sm [font-family:'Manrope',Helvetica]">Wrapped ETH</p>
-                        <p className="text-[#9DB8A6] text-xs [font-family:'Manrope',Helvetica]">Ethereum Mainnet</p>
+                        <p className="text-white font-semibold text-sm">Wrapped ETH</p>
+                        <p className="text-[#9DB8A6] text-xs">Ethereum Mainnet</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-white text-sm font-semibold [font-family:'Manrope',Helvetica]">450.00 wETH</p>
-                      <p className="text-[#9DB8A6] text-xs [font-family:'Manrope',Helvetica]">$850,230</p>
+                      <p className="text-white text-sm font-semibold">450.00 wETH</p>
+                      <p className="text-[#9DB8A6] text-xs">$850,230</p>
                     </div>
                   </div>
 
@@ -181,13 +181,13 @@ export const EscrowStateVisualization = (): JSX.Element => {
                         <img src={solanaIcon} alt="Solana" />
                       </div>
                       <div>
-                        <p className="text-white font-semibold text-sm [font-family:'Manrope',Helvetica]">Solana</p>
-                        <p className="text-[#9DB8A6] text-xs [font-family:'Manrope',Helvetica]">Solana Chain</p>
+                        <p className="text-white font-semibold text-sm">Solana</p>
+                        <p className="text-[#9DB8A6] text-xs">Solana Chain</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-white text-sm font-semibold [font-family:'Manrope',Helvetica]">2,500 SOL</p>
-                      <p className="text-[#9DB8A6] text-xs [font-family:'Manrope',Helvetica]">$330,120</p>
+                      <p className="text-white text-sm font-semibold">2,500 SOL</p>
+                      <p className="text-[#9DB8A6] text-xs">$330,120</p>
                     </div>
                   </div>
 
@@ -197,18 +197,18 @@ export const EscrowStateVisualization = (): JSX.Element => {
                         <img src={nftIcon} alt="NFT" />
                       </div>
                       <div>
-                        <p className="text-white font-semibold text-sm [font-family:'Manrope',Helvetica]">Bored Ape #8821</p>
-                        <p className="text-[#9DB8A6] text-xs [font-family:'Manrope',Helvetica]">NFT (ERC-721)</p>
+                        <p className="text-white font-semibold text-sm">Bored Ape #8821</p>
+                        <p className="text-[#9DB8A6] text-xs">NFT (ERC-721)</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-white text-sm font-semibold [font-family:'Manrope',Helvetica]">1 Unit</p>
-                      <p className="text-[#9DB8A6] text-xs [font-family:'Manrope',Helvetica]">$50,070</p>
+                      <p className="text-white text-sm font-semibold">1 Unit</p>
+                      <p className="text-[#9DB8A6] text-xs">$50,070</p>
                     </div>
                   </div>
                 </div>
 
-                <button className="w-full p-3 text-[#9DB8A6] hover:text-[#ff7700] text-sm [font-family:'Manrope',Helvetica] transition-colors flex items-center justify-center gap-2">
+                <button className="w-full p-3 text-[#9DB8A6] hover:text-[#ff7700] text-sm transition-colors flex items-center justify-center gap-2">
                   View Full Asset List →
                 </button>
               </div>

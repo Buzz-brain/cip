@@ -109,10 +109,10 @@ export const SecureStorage = (): JSX.Element => {
                 <span className="text-white font-bold">🛡️</span>
               </div>
               <div>
-                <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                <div className="font-bold text-white text-sm">
                   CIP V
                 </div>
-                <div className="[font-family:'Noto_Sans',Helvetica] text-green-400 text-xs flex items-center gap-1">
+                <div className="text-green-400 text-xs flex items-center gap-1">
                   <span className="w-2 h-2 bg-green-400 rounded-full"></span>
                   Autonomys Network Connected
                 </div>
@@ -138,7 +138,7 @@ export const SecureStorage = (): JSX.Element => {
                 }`}
               >
                 <span className="text-lg">{item.icon}</span>
-                <span className="[font-family:'Noto_Sans',Helvetica] font-medium text-sm">
+                <span className="font-medium text-sm">
                   {item.label}
                 </span>
               </Link>
@@ -151,10 +151,10 @@ export const SecureStorage = (): JSX.Element => {
                 👤
               </div>
               <div className="flex-1 min-w-0">
-                <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-xs truncate">
+                <div className="font-bold text-white text-xs truncate">
                   0x71...8BA2
                 </div>
-                <div className="[font-family:'Noto_Sans',Helvetica] text-[#7a9a8f] text-xs">
+                <div className="text-[#7a9a8f] text-xs">
                   Connected
                 </div>
               </div>
@@ -172,17 +172,17 @@ export const SecureStorage = (): JSX.Element => {
                   <span className="text-lg">🔐</span>
                 </div>
                 <div>
-                  <div className="[font-family:'Noto_Sans',Helvetica] text-[#7a9a8f] text-sm">
+                  <div className="text-[#7a9a8f] text-sm">
                     Protocol
                   </div>
-                  <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                  <div className="font-bold text-white text-lg">
                     Secure Storage
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-4">
-                <div className="px-3 py-2 rounded-lg bg-[#1a3a35] text-[#7a9a8f] [font-family:'Noto_Sans',Helvetica] font-medium text-sm">
+                <div className="px-3 py-2 rounded-lg bg-[#1a3a35] text-[#7a9a8f] font-medium text-sm">
                   0x71...8BA2
                 </div>
                 <button className="w-10 h-10 rounded-full bg-[#1a4a3f] hover:bg-[#224a3f] flex items-center justify-center">
@@ -200,10 +200,10 @@ export const SecureStorage = (): JSX.Element => {
             <div className="p-8 space-y-8">
               {/* Title Section */}
               <div className="space-y-4">
-                <h1 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl">
+                <h1 className="font-bold text-white text-4xl">
                   Secure Storage
                 </h1>
-                <p className="[font-family:'Noto_Sans',Helvetica] text-[#7a9a8f] max-w-2xl">
+                <p className="text-[#7a9a8f] max-w-2xl">
                   Your inheritance plans and legal documents are encrypted locally and permanently archived on the Autonomys distributed storage network.
                 </p>
               </div>
@@ -214,11 +214,11 @@ export const SecureStorage = (): JSX.Element => {
                   <CardContent className="p-6 space-y-3">
                     <div className="flex items-center gap-2">
                       <span className="text-lg">🏛️</span>
-                      <span className="[font-family:'Noto_Sans',Helvetica] text-[#7a9a8f] text-sm">
+                      <span className="text-[#7a9a8f] text-sm">
                         Vault Status
                       </span>
                     </div>
-                    <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-3xl">
+                    <div className="font-bold text-white text-3xl">
                       Synced
                     </div>
                   </CardContent>
@@ -228,11 +228,11 @@ export const SecureStorage = (): JSX.Element => {
                   <CardContent className="p-6 space-y-3">
                     <div className="flex items-center gap-2">
                       <span className="text-lg">📄</span>
-                      <span className="[font-family:'Noto_Sans',Helvetica] text-[#7a9a8f] text-sm">
+                      <span className="text-[#7a9a8f] text-sm">
                         Documents
                       </span>
                     </div>
-                    <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-3xl">
+                    <div className="font-bold text-white text-3xl">
                       12 Files
                     </div>
                   </CardContent>
@@ -242,11 +242,11 @@ export const SecureStorage = (): JSX.Element => {
                   <CardContent className="p-6 space-y-3">
                     <div className="flex items-center gap-2">
                       <span className="text-lg">💾</span>
-                      <span className="[font-family:'Noto_Sans',Helvetica] text-[#7a9a8f] text-sm">
+                      <span className="text-[#7a9a8f] text-sm">
                         Storage Used
                       </span>
                     </div>
-                    <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-3xl">
+                    <div className="font-bold text-white text-3xl">
                       48 MB
                     </div>
                   </CardContent>
@@ -266,7 +266,7 @@ export const SecureStorage = (): JSX.Element => {
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`pb-3 flex items-center gap-2 [font-family:'Noto_Sans',Helvetica] font-medium text-sm transition-colors ${
+                        className={`pb-3 flex items-center gap-2 font-medium text-sm transition-colors ${
                           activeTab === tab.id
                             ? "text-green-400 border-b-2 border-green-400"
                             : "text-[#7a9a8f] hover:text-white border-b-2 border-transparent"
@@ -290,14 +290,14 @@ export const SecureStorage = (): JSX.Element => {
                               </div>
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <h3 className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm">
+                                  <h3 className="font-bold text-white text-sm">
                                     {doc.name}
                                   </h3>
-                                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 [font-family:'Noto_Sans',Helvetica] font-bold text-xs">
+                                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 font-bold text-xs">
                                     🔒 Encrypted
                                   </Badge>
                                 </div>
-                                <div className="[font-family:'Noto_Sans',Helvetica] text-[#7a9a8f] text-xs space-y-1">
+                                <div className="text-[#7a9a8f] text-xs space-y-1">
                                   <div>Last updated: {doc.lastUpdated} • Size: {doc.size}</div>
                                   <div className="flex items-center gap-2">
                                     <span>📍</span>
@@ -311,7 +311,7 @@ export const SecureStorage = (): JSX.Element => {
                           <div className="flex items-center justify-between pt-2 border-t border-[#1a3a35]">
                             <div className="flex items-center gap-3">
                               {doc.canShare && (
-                                <button className={`flex items-center gap-1 px-3 py-1 rounded-lg [font-family:'Noto_Sans',Helvetica] text-xs font-medium transition-colors ${
+                                <button className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
                                   doc.shared
                                     ? "bg-green-500/20 text-green-400"
                                     : "bg-[#1a3a35] text-[#7a9a8f] hover:bg-[#2a5a4f] hover:text-white"
@@ -321,14 +321,14 @@ export const SecureStorage = (): JSX.Element => {
                                 </button>
                               )}
                               {doc.verifyIntegrity && (
-                                <button className="flex items-center gap-1 px-3 py-1 rounded-lg bg-green-500/20 text-green-400 [font-family:'Noto_Sans',Helvetica] text-xs font-medium hover:bg-green-500/30 transition-colors">
+                                <button className="flex items-center gap-1 px-3 py-1 rounded-lg bg-green-500/20 text-green-400 text-xs font-medium hover:bg-green-500/30 transition-colors">
                                   <span>✓</span>
                                   Verify Integrity
                                 </button>
                               )}
                             </div>
                             {doc.downloadReady && (
-                              <button className="flex items-center gap-1 px-3 py-1 rounded-lg bg-[#1a3a35] text-white hover:bg-[#2a5a4f] [font-family:'Noto_Sans',Helvetica] text-xs font-bold transition-colors">
+                              <button className="flex items-center gap-1 px-3 py-1 rounded-lg bg-[#1a3a35] text-white hover:bg-[#2a5a4f] text-xs font-bold transition-colors">
                                 <Download className="w-4 h-4" />
                                 Download
                               </button>
@@ -346,7 +346,7 @@ export const SecureStorage = (): JSX.Element => {
                   <Card className="bg-[#0d1f1a] border-[#1a3a35]">
                     <CardContent className="p-6 space-y-4">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white">
+                        <h3 className="font-bold text-white">
                           Secure Upload
                         </h3>
                         <Shield className="w-5 h-5 text-green-400" />
@@ -366,10 +366,10 @@ export const SecureStorage = (): JSX.Element => {
                         <div className="flex items-center justify-center mb-3">
                           <Upload className="w-8 h-8 text-green-400" />
                         </div>
-                        <div className="[font-family:'Noto_Sans',Helvetica] text-white text-sm font-bold">
+                        <div className="text-white text-sm font-bold">
                           Click to upload or drag and drop
                         </div>
-                        <div className="[font-family:'Noto_Sans',Helvetica] text-[#7a9a8f] text-xs mt-1">
+                        <div className="text-[#7a9a8f] text-xs mt-1">
                           PDF, DOCX, PNG (Max 50MB)
                         </div>
                       </div>
@@ -379,7 +379,7 @@ export const SecureStorage = (): JSX.Element => {
                   {/* Recent Activity */}
                   <Card className="bg-[#0d1f1a] border-[#1a3a35]">
                     <CardContent className="p-6 space-y-4">
-                      <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+                      <h3 className="font-bold text-white text-sm">
                         Recent Activity
                       </h3>
 
@@ -394,11 +394,11 @@ export const SecureStorage = (): JSX.Element => {
                                   }`}
                                 />
                                 <div className="flex-1">
-                                  <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-xs">
+                                  <div className="font-bold text-white text-xs">
                                     {activity.name}
                                   </div>
                                   <div
-                                    className={`[font-family:'Noto_Sans',Helvetica] text-xs font-medium ${
+                                    className={`text-xs font-medium ${
                                       activity.status === "archived" ? "text-green-400" : "text-yellow-400"
                                     }`}
                                   >
@@ -408,7 +408,7 @@ export const SecureStorage = (): JSX.Element => {
                               </div>
                               <div className="text-right ml-2">
                                 {activity.status === "processing" && (
-                                  <div className="text-[#7a9a8f] [font-family:'Noto_Sans',Helvetica] text-xs">
+                                  <div className="text-[#7a9a8f] text-xs">
                                     {activity.uploadProgress}%
                                   </div>
                                 )}
@@ -424,17 +424,17 @@ export const SecureStorage = (): JSX.Element => {
                                       style={{ width: `${activity.uploadProgress}%` }}
                                     />
                                   </div>
-                                  <span className="[font-family:'Noto_Sans',Helvetica] text-[#7a9a8f] text-xs">
+                                  <span className="text-[#7a9a8f] text-xs">
                                     {activity.uploadProgress}%
                                   </span>
                                 </div>
                                 {activity.id === "2" && (
                                   <div className="space-y-1">
                                     <div className="flex items-center justify-between">
-                                      <span className="[font-family:'Noto_Sans',Helvetica] text-[#7a9a8f] text-xs">
+                                      <span className="text-[#7a9a8f] text-xs">
                                         On-device encryption
                                       </span>
-                                      <span className="[font-family:'Noto_Sans',Helvetica] text-green-400 text-xs font-bold">
+                                      <span className="text-green-400 text-xs font-bold">
                                         Done
                                       </span>
                                     </div>
@@ -444,10 +444,10 @@ export const SecureStorage = (): JSX.Element => {
                                       </div>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                      <span className="[font-family:'Noto_Sans',Helvetica] text-[#7a9a8f] text-xs">
+                                      <span className="text-[#7a9a8f] text-xs">
                                         Broadcasting to DSN
                                       </span>
-                                      <span className="[font-family:'Noto_Sans',Helvetica] text-green-400 text-xs font-bold">
+                                      <span className="text-green-400 text-xs font-bold">
                                         65%
                                       </span>
                                     </div>
@@ -455,7 +455,7 @@ export const SecureStorage = (): JSX.Element => {
                                 )}
                               </div>
                             ) : (
-                              <div className="[font-family:'Noto_Sans',Helvetica] text-[#7a9a8f] text-xs">
+                              <div className="text-[#7a9a8f] text-xs">
                                 Hash: {activity.hash}
                               </div>
                             )}
@@ -464,11 +464,11 @@ export const SecureStorage = (): JSX.Element => {
                       </div>
 
                       <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 space-y-1">
-                        <div className="[font-family:'Noto_Sans',Helvetica] text-green-400 text-xs font-bold flex items-center gap-1">
+                        <div className="text-green-400 text-xs font-bold flex items-center gap-1">
                           <span>ℹ️</span>
                           Zero-Knowledge Proof
                         </div>
-                        <div className="[font-family:'Noto_Sans',Helvetica] text-[#7a9a8f] text-xs">
+                        <div className="text-[#7a9a8f] text-xs">
                           Your data integrity is mathematically verifiable at any time.
                         </div>
                       </div>
@@ -481,7 +481,7 @@ export const SecureStorage = (): JSX.Element => {
               <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
                 <div className="flex gap-3">
                   <div className="text-lg mt-0.5">🔐</div>
-                  <div className="[font-family:'Noto_Sans',Helvetica] text-[#7a9a8f] text-sm">
+                  <div className="text-[#7a9a8f] text-sm">
                     <span className="text-white font-bold">Files are encrypted with your private key</span> before leaving this device. Only you can decrypt them.
                   </div>
                 </div>

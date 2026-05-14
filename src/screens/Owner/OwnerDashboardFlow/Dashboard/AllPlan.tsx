@@ -105,7 +105,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
   const [highlightedPlanId, setHighlightedPlanId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 4;
-  const [selectedFilter, setSelectedFilter] = useState<"All Plans" | "Active" | "Pending" | "Triggered">("All Plans");
+  const [selectedFilter, setSelectedFilter] = useState<"All Plans" | "Active" | "Pending" | "Triggered" | "Cancelled">("All Plans");
   const highlightTimerRef = React.useRef<number | null>(null);
   const [viewLoadingId, setViewLoadingId] = useState<string | null>(null);
   const [fundLoadingId, setFundLoadingId] = useState<string | null>(null);
@@ -417,7 +417,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
               <button
                 key={tab}
                 onClick={() => { setSelectedFilter(tab); setCurrentPage(1); }}
-                className={`min-w-[96px] flex-shrink-0 px-4 py-2 rounded-lg [font-family:'Noto_Sans',Helvetica] font-medium text-sm transition-colors ${
+                className={`min-w-[96px] flex-shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
                   selectedFilter === tab
                     ? "bg-[#393028] border border-[#FF660080] text-white"
                     : "text-[#B9B09D] hover:bg-[#2a1f10] border border-transparent"
@@ -436,7 +436,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                 placeholder="Search plans..."
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                className="bg-[#2D241C] border border-[#393028] rounded-lg pl-10 pr-4 py-2 text-[#b8a494] placeholder-[#706758] [font-family:'Noto_Sans',Helvetica] text-sm focus:outline-none focus:border-[#ff6600] w-full sm:w-56"
+                className="bg-[#2D241C] border border-[#393028] rounded-lg pl-10 pr-4 py-2 text-[#b8a494] placeholder-[#706758] text-sm focus:outline-none focus:border-[#ff6600] w-full sm:w-56"
               />
             </div>
             <Link to="/owner-dashboard/plans" className="text-sm text-[#ff6600] hover:underline">View all</Link>
@@ -802,7 +802,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                   <div className="text-right">
                     <div className="text-white text-sm">{showValues ? plan.assets : '••••'}</div>
                     <div className="mt-1">
-                          <Badge className={`${plan.status === "Active" ? "bg-green-500/20 text-green-400 border-green-500/30" : plan.status === "Pending" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" : plan.status === "Cancelled" ? "bg-red-500/20 text-red-400 border-red-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"} [font-family:'Noto_Sans',Helvetica] font-bold text-xs`}>{plan.status === "Active" ? "● Active" : plan.status === "Pending" ? "● Pending" : plan.status === "Cancelled" ? "● Cancelled" : "● Triggered"}</Badge>
+                          <Badge className={`${plan.status === "Active" ? "bg-green-500/20 text-green-400 border-green-500/30" : plan.status === "Pending" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" : plan.status === "Cancelled" ? "bg-red-500/20 text-red-400 border-red-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"} font-bold text-xs`}>{plan.status === "Active" ? "● Active" : plan.status === "Pending" ? "● Pending" : plan.status === "Cancelled" ? "● Cancelled" : "● Triggered"}</Badge>
                     </div>
                   </div>
                 </div>
@@ -865,11 +865,11 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-[#3a2f1e]">
-                <th className="text-left py-3 px-4 [font-family:'Noto_Sans',Helvetica] font-medium text-[#B9B09D] text-xs uppercase tracking-wider">Plan ID & Chain</th>
-                <th className="text-left py-3 px-4 [font-family:'Noto_Sans',Helvetica] font-medium text-[#B9B09D] text-xs uppercase tracking-wider">Beneficiary</th>
-                <th className="text-left py-3 px-4 [font-family:'Noto_Sans',Helvetica] font-medium text-[#B9B09D] text-xs uppercase tracking-wider">Assets</th>
-                <th className="text-left py-3 px-4 [font-family:'Noto_Sans',Helvetica] font-medium text-[#B9B09D] text-xs uppercase tracking-wider">Status</th>
-                <th className="text-left py-3 px-4 [font-family:'Noto_Sans',Helvetica] font-medium text-[#B9B09D] text-xs uppercase tracking-wider">Trig</th>
+                <th className="text-left py-3 px-4 font-medium text-[#B9B09D] text-xs uppercase tracking-wider">Plan ID & Chain</th>
+                <th className="text-left py-3 px-4 font-medium text-[#B9B09D] text-xs uppercase tracking-wider">Beneficiary</th>
+                <th className="text-left py-3 px-4 font-medium text-[#B9B09D] text-xs uppercase tracking-wider">Assets</th>
+                <th className="text-left py-3 px-4 font-medium text-[#B9B09D] text-xs uppercase tracking-wider">Status</th>
+                <th className="text-left py-3 px-4 font-medium text-[#B9B09D] text-xs uppercase tracking-wider">Trig</th>
               </tr>
             </thead>
             <tbody>
@@ -890,9 +890,9 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-[#332619] rounded-lg flex items-center justify-center text-lg">{plan.chainIcon}</div>
                       <div>
-                        <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-sm truncate">{plan.name ? `${plan.name.charAt(0).toUpperCase()}${plan.name.slice(1)}` : plan.name}</div>
+                        <div className="font-bold text-white text-sm truncate">{plan.name ? `${plan.name.charAt(0).toUpperCase()}${plan.name.slice(1)}` : plan.name}</div>
                         <div className="flex items-center gap-2">
-                          <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">#{plan.id} • {plan.chainName}</div>
+                          <div className="text-[#8b7664] text-xs">#{plan.id} • {plan.chainName}</div>
                           {plan.id === highlightedPlanId && (
                             <Badge className="ml-2 bg-green-600 text-white text-xs">Updated</Badge>
                           )}
@@ -906,7 +906,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                       return (
                           <div className="flex items-center gap-2 truncate">
                             <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">{getInitials(beneficiaryName)}</div>
-                            <span className="[font-family:'Noto_Sans',Helvetica] text-white text-sm truncate">{beneficiaryName}</span>
+                            <span className="text-white text-sm truncate">{beneficiaryName}</span>
                           {plan.beneficiariesPreview && plan.beneficiariesPreview.length > 1 && (
                             <span className="ml-2 text-xs text-[#8b7664]">+{plan.beneficiariesPreview.length - 1} more</span>
                           )}
@@ -916,20 +916,20 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                   </td>
                   <td className="py-4 px-4">
                     <div>
-                      <div className="[font-family:'Space_Grotesk',Helvetica] text-white text-sm truncate">{showValues ? plan.assets : "••••••"}</div>
-                      <div className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs truncate">{plan.assetsDetail}</div>
+                      <div className="text-white text-sm truncate">{showValues ? plan.assets : "••••••"}</div>
+                      <div className="text-[#B9B09D] text-xs truncate">{plan.assetsDetail}</div>
                     </div>
                   </td>
                   <td className="py-4 px-4">
-                      <Badge className={`${plan.status === "Active" ? "bg-green-500/20 text-green-400 border-green-500/30" : plan.status === "Pending" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" : plan.status === "Cancelled" ? "bg-red-500/20 text-red-400 border-red-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"} [font-family:'Noto_Sans',Helvetica] font-bold text-xs`}>{plan.status === "Active" ? "● Active" : plan.status === "Pending" ? "● Pending" : plan.status === "Cancelled" ? "● Cancelled" : "● Triggered"}</Badge>
+                      <Badge className={`${plan.status === "Active" ? "bg-green-500/20 text-green-400 border-green-500/30" : plan.status === "Pending" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" : plan.status === "Cancelled" ? "bg-red-500/20 text-red-400 border-red-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"} font-bold text-xs`}>{plan.status === "Active" ? "● Active" : plan.status === "Pending" ? "● Pending" : plan.status === "Cancelled" ? "● Cancelled" : "● Triggered"}</Badge>
                   </td>
-                  <td className="py-4 px-4"><span className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">{plan.triggerDays}h</span></td>
+                  <td className="py-4 px-4"><span className="text-[#8b7664] text-sm">{plan.triggerDays}h</span></td>
                 </tr>
               ))
               ) : (
                 <tr>
                   <td colSpan={5} className="py-8 px-4 text-center">
-                    <p className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D]">{getNoPlansMessage()}</p>
+                    <p className="text-[#B9B09D]">{getNoPlansMessage()}</p>
                   </td>
                 </tr>
               )}
@@ -939,9 +939,9 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
 
         {/* Pagination */}
         <div className="flex flex-col sm:flex-row items-center sm:justify-between pt-4 gap-3">
-          <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-sm">Showing {(filtered.length === 0) ? 0 : ((currentPage - 1) * pageSize + 1)} - {Math.min(currentPage * pageSize, filtered.length)} of {filtered.length} plans</span>
+          <span className="text-[#B9B09D] text-sm">Showing {(filtered.length === 0) ? 0 : ((currentPage - 1) * pageSize + 1)} - {Math.min(currentPage * pageSize, filtered.length)} of {filtered.length} plans</span>
           <div className="flex items-center gap-4">
-            <span className="[font-family:'Noto_Sans',Helvetica] text-[#B9B09D] text-xs">{currentPage} / {pageCount}</span>
+            <span className="text-[#B9B09D] text-xs">{currentPage} / {pageCount}</span>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}

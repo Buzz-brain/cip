@@ -1,28 +1,26 @@
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
 import { Separator } from "../../components/ui/separator";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { usePlans } from "../../lib/hooks/usePlans";
 import { Navbar } from "@components/ui/Navbar";
 import { useAuth } from "../../context/useAuth";
 import { toast } from "react-toastify";
-import { extractErrorMessage, getDashboardRoute } from "../../lib/utils";
+import { extractErrorMessage } from "../../lib/utils";
 import { ToggleBilling } from "@components/ui/ToggleBilling";
 import ConfirmPaymentModal from '@components/ui/ConfirmPaymentModal';
 import logoImg from "@assets/cip-logo.png";
 import sharpCheckSolid from "@assets/sharp-check-solid.svg";
 import sharpUncheckSolid from "@assets/sharp-uncheck-solid.svg";
-import verifiedUser from "@assets/verified-user-white.svg";
 import shield from "@assets/shield.svg";
 import lock from "@assets/lock.svg";
 import securityLock from "@assets/security-lock.svg";
 import chatbubble from "@assets/chatbubble.svg";
 
-type Feature = { text: string; included: boolean; subtext?: string };
-
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 const XCIP_HEADER_VALUE = import.meta.env.VITE_XCIP_HEADER;
+const SUBSCRIPTION_WALLET = import.meta.env.VITE_SUBSCRIPTION_WALLET;
 
 const auditors = [
   { name: "Hacken", icon: shield },
@@ -54,7 +52,7 @@ export const Pricing = (): JSX.Element => {
   const navigate = useNavigate();
   const [isYearly, setIsYearly] = useState(false);
   const { user } = useAuth();
-  const { plans: backendPlans, loading: plansLoading, error: plansError } = usePlans();
+  const { plans: backendPlans, loading: plansLoading } = usePlans();
   const [subscribing, setSubscribing] = useState<Record<string, boolean>>({});
   const [convertingEth, setConvertingEth] = useState<Record<string, boolean>>({});
   const [modalOpen, setModalOpen] = useState(false);
@@ -74,7 +72,7 @@ export const Pricing = (): JSX.Element => {
       const provider = new BrowserProvider(window.ethereum as any);
       const signer = await provider.getSigner();
 
-      const toAddress = '0xd9B9C4e5B0d9D3BEAAbcD21a803A2E8a3D47e1bF';
+      const toAddress = SUBSCRIPTION_WALLET;
       const value = parseEther(amountEth);
 
       // GAS ESTIMATION
@@ -157,7 +155,7 @@ const navigationItems = [
   const auditorElements = auditors.map((auditor) => (
     <div key={auditor.name} className="flex items-center gap-2">
       <img src={auditor.icon} alt="" className="w-6 h-6" />
-      <span className="[font-family:'Manrope',Helvetica] font-bold text-neutral-300 text-xl">
+      <span className="font-bold text-neutral-300 text-xl">
         {auditor.name}
       </span>
     </div>
@@ -196,27 +194,27 @@ const navigationItems = [
       >
         {displayBadge && (
           <div className="absolute top-0 right-0 w-[90%] bg-[#ff6600] rounded-l-full rounded-tr-full px-4 py-1 flex justify-start">
-            <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-xs">
+            <span className="font-bold text-white text-xs">
               {displayBadge}
             </span>
           </div>
         )}
-        <CardContent className="p-6 space-y-6">
+        <CardContent className="p-10 space-y-6">
           <div className="space-y-2">
-            <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">
+            <h3 className="font-bold text-white text-lg">
               {toTitleCase(plan.name)}
             </h3>
             <div className="flex items-baseline gap-1">
-              <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-[35px] leading-[45px]">
+              <span className="font-bold text-white text-[35px] leading-[45px]">
                 {displayPrice}
               </span>
               {displayPeriod && (
-                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#b8a494] text-sm">
+                <span className="font-bold text-[#b8a494] text-sm">
                   {displayPeriod}
                 </span>
               )}
             </div>
-            <p className="[font-family:'Manrope',Helvetica] text-[#b8a494] text-sm">
+            <p className="text-[#b8a494] text-sm">
               {plan.description || (plan.name ? `${toTitleCase(plan.name)} Plan` : "")}
             </p>
           </div>
@@ -227,7 +225,7 @@ const navigationItems = [
               plan.highlighted
                 ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
                 : "bg-[#554233] hover:bg-[#554233]/90"
-            } [font-family:'Manrope',Helvetica] font-bold`}
+            } font-bold`}
               onClick={async () => {
               // Only subscribe for backend plans that include an id
               if (!plan.id) {
@@ -297,7 +295,7 @@ const navigationItems = [
                   const provider = new BrowserProvider(window.ethereum as any);
                   const signer = await provider.getSigner();
 
-                  const toAddress = '0xd9B9C4e5B0d9D3BEAAbcD21a803A2E8a3D47e1bF';
+                  const toAddress = SUBSCRIPTION_WALLET;
                   const value = parseEther(amountEth);
 
                   // --- GAS ESTIMATION ---
@@ -404,11 +402,11 @@ const navigationItems = [
                       <img src={plan.uncheckIcon || sharpUncheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                     )}
                     <div className="flex-1">
-                      <span className={`[font-family:'Manrope',Helvetica] text-sm ${feature.included ? "font-medium text-slate-200" : "font-normal text-[#8b7964]"}`}>
+                      <span className={`text-sm ${feature.included ? "font-medium text-slate-200" : "font-normal text-[#8b7964]"}`}>
                         {feature.text}
                       </span>
                       {feature.subtext && (
-                        <p className="[font-family:'Manrope',Helvetica] font-medium text-[#b8a494] text-xs mt-1">{feature.subtext}</p>
+                        <p className="font-medium text-[#b8a494] text-xs mt-1">{feature.subtext}</p>
                       )}
                     </div>
                   </div>
@@ -419,49 +417,49 @@ const navigationItems = [
                   <div className="flex items-start gap-4">
                     <img src={sharpCheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
-                      <span className="[font-family:'Manrope',Helvetica] text-sm font-medium text-slate-200">{`Included Plans: ${plan.plans ?? '—'}`}</span>
+                      <span className="text-sm font-medium text-slate-200">{`Included Plans: ${plan.plans ?? '—'}`}</span>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-4">
                     <img src={sharpCheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
-                      <span className="[font-family:'Manrope',Helvetica] text-sm font-medium text-slate-200">{`Triggers: ${plan.triggers ?? '—'}`}</span>
+                      <span className="text-sm font-medium text-slate-200">{`Triggers: ${plan.triggers ?? '—'}`}</span>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-4">
                     <img src={sharpCheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
-                      <span className="[font-family:'Manrope',Helvetica] text-sm font-medium text-slate-200">{`Supported Chains: ${plan.supported_chain ?? '—'}`}</span>
+                      <span className="text-sm font-medium text-slate-200">{`Supported Chains: ${plan.supported_chain ?? '—'}`}</span>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-4">
                     <img src={plan.storage ? sharpCheckSolid : sharpUncheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
-                      <span className={`[font-family:'Manrope',Helvetica] text-sm ${plan.storage ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>{plan.storage ? 'Storage Included' : 'No Storage'}</span>
+                      <span className={`text-sm ${plan.storage ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>{plan.storage ? 'Storage Included' : 'No Storage'}</span>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-4">
                     <img src={plan.taxcore ? sharpCheckSolid : sharpUncheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
-                      <span className={`[font-family:'Manrope',Helvetica] text-sm ${plan.taxcore ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>{plan.taxcore ? 'TaxCore Enabled' : 'No TaxCore'}</span>
+                      <span className={`text-sm ${plan.taxcore ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>{plan.taxcore ? 'TaxCore Enabled' : 'No TaxCore'}</span>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-4">
                     <img src={plan.secret_ai ? sharpCheckSolid : sharpUncheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
-                      <span className={`[font-family:'Manrope',Helvetica] text-sm ${plan.secret_ai ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>{plan.secret_ai ? 'Secret AI features' : 'No Secret AI'}</span>
+                      <span className={`text-sm ${plan.secret_ai ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>{plan.secret_ai ? 'Secret AI features' : 'No Secret AI'}</span>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-4">
                     <img src={sharpCheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                     <div className="flex-1">
-                      <span className="[font-family:'Manrope',Helvetica] text-sm font-medium text-slate-200">{`Plan edits allowed: ${plan.plan_edit ?? '—'}`}</span>
+                      <span className="text-sm font-medium text-slate-200">{`Plan edits allowed: ${plan.plan_edit ?? '—'}`}</span>
                     </div>
                   </div>
                 </>
@@ -480,7 +478,7 @@ const navigationItems = [
           logoHref="/"
           rightActions={
             <Button
-              className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 [font-family:'Sora',Helvetica] font-bold text-sm"
+              className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 font-bold text-sm"
               onClick={() => navigate("/onboarding/step-one")}
             >
               Launch App
@@ -492,10 +490,10 @@ const navigationItems = [
         <div className="container mx-auto px-4 sm:px-6">
           <div className="max-w-6xl mx-auto space-y-8 sm:space-y-10">
             <div className="text-center space-y-4 sm:space-y-6">
-              <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl sm:text-3xl md:text-[46px] leading-snug md:leading-[48px]">
+              <h1 className="font-bold text-white text-2xl sm:text-3xl md:text-[46px] leading-snug md:leading-[48px]">
                 Secure your legacy across chains
               </h1>
-              <p className="[font-family:'Manrope',Helvetica] text-[#b8a494] text-sm sm:text-base max-w-xl sm:max-w-2xl mx-auto leading-relaxed">
+              <p className="text-[#b8a494] text-sm sm:text-base max-w-xl sm:max-w-2xl mx-auto leading-relaxed">
                 Choose the inheritance plan that fits your assets and your family's needs. Upgrade or downgrade at any time with zero lock-in periods.
               </p>
                   {/* Billing period toggle */}
@@ -533,7 +531,7 @@ const navigationItems = [
               </div>
 
             <div className="text-center space-y-4 sm:space-y-6 pt-8 sm:pt-10">
-                <p className="[font-family:'Manrope',Helvetica] font-bold text-[#b8a494] text-sm">
+                <p className="font-bold text-[#b8a494] text-sm">
                   Trusted by leading auditors
                 </p>
                 <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
@@ -542,17 +540,17 @@ const navigationItems = [
               </div>
 
             <div className="max-w-3xl mx-auto space-y-6 pt-10 sm:pt-14 px-2">
-              <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-xl sm:text-2xl text-center">
+              <h2 className="font-bold text-white text-xl sm:text-2xl text-center">
                 Frequently Asked Questions
               </h2>
               <div className="space-y-3">
                 {faqs.map((faq) => (
                   <Card key={faq.question} className="bg-[#32241a] border-[#554233]">
                     <CardContent className="p-3 sm:p-4 space-y-2">
-                      <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base">
+                      <h3 className="font-bold text-white text-base">
                         {faq.question}
                       </h3>
-                      <p className="[font-family:'Manrope',Helvetica] text-[#b8a494] text-sm">
+                      <p className="text-[#b8a494] text-sm">
                         {faq.answer}
                       </p>
                     </CardContent>
@@ -572,7 +570,7 @@ const navigationItems = [
                 <a
                   key={link}
                   href="#"
-                  className="[font-family:'Manrope',Helvetica] text-[#b8a494] text-sm sm:text-base hover:text-white transition-colors"
+                  className="text-[#b8a494] text-sm sm:text-base hover:text-white transition-colors"
                 >
                   {link}
                 </a>
@@ -581,11 +579,11 @@ const navigationItems = [
 
             <div className="flex flex-col items-center gap-3">
               <div className="flex items-center justify-center gap-3">
-                <span className="[font-family:'Inter',Helvetica] text-[#896d61] text-xs">public</span>
+                <span className="text-[#896d61] text-xs">public</span>
                 <img src={chatbubble} alt="" className="w-5 h-5 sm:w-6 sm:h-6" />
-                <span className="[font-family:'Inter',Helvetica] text-[#896d61] text-sm">mail</span>
+                <span className="text-[#896d61] text-sm">mail</span>
               </div>
-              <p className="[font-family:'Manrope',Helvetica] text-[#8b7964] text-xs sm:text-sm text-center">
+              <p className="text-[#8b7964] text-xs sm:text-sm text-center">
                 © 2024 Multi-Chain Inheritance Protocol. All rights reserved.
               </p>
             </div>

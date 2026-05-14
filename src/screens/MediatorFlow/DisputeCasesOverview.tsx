@@ -50,7 +50,7 @@ export const DisputeCasesOverview = (): JSX.Element => {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#191919] [font-family:'Manrope',Helvetica]">
+    <div className="flex flex-col w-full min-h-screen bg-[#191919]">
       <main className="flex-1 flex flex-col items-center px-4 py-12">
         <div className="w-full max-w-6xl">
           {/* Header */}

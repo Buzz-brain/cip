@@ -36,7 +36,7 @@ const DatePickerCustomInput = forwardRef<HTMLButtonElement, DatePickerCustomInpu
           (ref as any)?.current?.click();
         }
       }}
-      className="relative w-full text-left h-12 pl-12 pr-4 [font-family:'Manrope',Helvetica] font-normal text-white text-base bg-[#0f0c09] border border-[#392f28] rounded-xl placeholder:text-white focus-visible:ring-[#ff6600] focus-visible:ring-2 transition-colors hover:border-[#4a3830]"
+      className="relative w-full text-left h-12 pl-12 pr-4 font-normal text-white text-base bg-[#0f0c09] border border-[#392f28] rounded-xl placeholder:text-white focus-visible:ring-[#ff6600] focus-visible:ring-2 transition-colors hover:border-[#4a3830]"
       onClick={onClick}
     >
       <CalendarIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#ff6600] pointer-events-none" />
@@ -64,7 +64,7 @@ const TimePickerCustomInput = forwardRef<HTMLButtonElement, DatePickerCustomInpu
           (ref as any)?.current?.click();
         }
       }}
-      className="relative w-full text-left h-12 pl-12 pr-4 [font-family:'Manrope',Helvetica] font-normal text-white text-base bg-[#0f0c09] border border-[#392f28] rounded-xl placeholder:text-white focus-visible:ring-[#ff6600] focus-visible:ring-2 transition-colors hover:border-[#4a3830]"
+      className="relative w-full text-left h-12 pl-12 pr-4 font-normal text-white text-base bg-[#0f0c09] border border-[#392f28] rounded-xl placeholder:text-white focus-visible:ring-[#ff6600] focus-visible:ring-2 transition-colors hover:border-[#4a3830]"
       onClick={onClick}
     >
       <ClockIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#ff6600] pointer-events-none" />
@@ -96,20 +96,20 @@ export const SetTimeLock = (): JSX.Element => {
     <main className="flex-1 flex flex-col items-center px-4 py-4">
       <div className="w-full max-w-[1040px]">
         <div className="mb-8">
-          <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl sm:text-[31.7px] tracking-[0] leading-7 sm:leading-[38px] mb-2">
+          <h1 className="font-bold text-white text-2xl sm:text-[31.7px] tracking-[0] leading-7 sm:leading-[38px] mb-2">
             Set Time-Lock Date
           </h1>
-          <p className="[font-family:'Manrope',Helvetica] font-normal text-[#b9ac9d] text-sm sm:text-base tracking-[0] leading-[22px] sm:leading-[26px]">
+          <p className="font-normal text-[#b9ac9d] text-sm sm:text-base tracking-[0] leading-[22px] sm:leading-[26px]">
             Configure the specific date and time when your assets will automatically unlock for your beneficiaries.
           </p>
         </div>
 
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#c4bab2] text-sm tracking-[0] leading-5">
+            <span className="font-semibold text-[#c4bab2] text-sm tracking-[0] leading-5">
               Step 4 of 5: Trigger Setup
             </span>
-            <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
+            <span className="font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
               80% Completed
             </span>
           </div>
@@ -129,10 +129,10 @@ export const SetTimeLock = (): JSX.Element => {
                         <img src={calendarClockOrangeIcon} alt="" />
                       </div>
                       <div>
-                        <p className="[font-family:'Manrope',Helvetica] font-semibold text-[#FF6600] text-xs tracking-[0] leading-4">
+                        <p className="font-semibold text-[#FF6600] text-xs tracking-[0] leading-4">
                           Plan Type
                         </p>
-                        <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm tracking-[0] leading-5 mt-1">
+                        <p className="font-bold text-white text-sm tracking-[0] leading-5 mt-1">
                           Time-Lock Trigger
                         </p>
                       </div>
@@ -145,7 +145,7 @@ export const SetTimeLock = (): JSX.Element => {
                     <div className="flex flex-col w-full gap-2">
                       <Label 
                         htmlFor="unlock-date"
-                        className="[font-family:'Manrope',Helvetica] font-semibold text-white text-sm tracking-[0] leading-5"
+                        className="font-semibold text-white text-sm tracking-[0] leading-5"
                       >
                         Unlock Date
                       </Label>
@@ -170,7 +170,7 @@ export const SetTimeLock = (): JSX.Element => {
                         />
                         <p 
                           id="unlock-date-help"
-                          className="[font-family:'Manrope',Helvetica] font-normal text-[#c4bab2] text-xs tracking-[0] leading-4 mt-2"
+                          className="font-normal text-[#c4bab2] text-xs tracking-[0] leading-4 mt-2"
                         >
                           Press Enter or click to open calendar.
                         </p>
@@ -180,7 +180,7 @@ export const SetTimeLock = (): JSX.Element => {
                     <div className="flex flex-col w-full gap-2">
                       <Label 
                         htmlFor="unlock-time"
-                        className="[font-family:'Manrope',Helvetica] font-semibold text-white text-sm tracking-[0] leading-5"
+                        className="font-semibold text-white text-sm tracking-[0] leading-5"
                       >
                         Unlock Time (UTC)
                       </Label>
@@ -210,7 +210,7 @@ export const SetTimeLock = (): JSX.Element => {
                         />
                         <p 
                           id="unlock-time-help"
-                          className="[font-family:'Manrope',Helvetica] font-normal text-[#c4bab2] text-xs tracking-[0] leading-4 mt-2"
+                          className="font-normal text-[#c4bab2] text-xs tracking-[0] leading-4 mt-2"
                         >
                           Press Enter or click to open time picker (15 min intervals).
                         </p>
@@ -222,10 +222,10 @@ export const SetTimeLock = (): JSX.Element => {
                     <div className="flex items-start gap-3">
                       <InfoIcon className="w-5 h-5 text-[#ff6600] mt-0.5" />
                       <div>
-                        <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm tracking-[0] leading-5 mb-1">
+                        <p className="font-bold text-white text-sm tracking-[0] leading-5 mb-1">
                           Important Configuration Note
                         </p>
-                        <p className="[font-family:'Manrope',Helvetica] font-normal text-[#d4ccc6] text-sm tracking-[0] leading-[22px]">
+                        <p className="font-normal text-[#d4ccc6] text-sm tracking-[0] leading-[22px]">
                           This date is encoded into the smart contract. While
                           you can extend the lock period later, you cannot
                           shorten it once the contract is deployed for
@@ -241,7 +241,7 @@ export const SetTimeLock = (): JSX.Element => {
           <div className="w-full md:w-[320px] md:shrink-0">
             <Card className="bg-[#1a1410] border-[#392f28] rounded-2xl h-fit md:sticky md:top-8">
               <CardContent className="p-6">
-                <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base tracking-[0] leading-[26px] mb-4">
+                <h3 className="font-bold text-white text-base tracking-[0] leading-[26px] mb-4">
                   Summary
                 </h3>
 
@@ -253,10 +253,10 @@ export const SetTimeLock = (): JSX.Element => {
                       alt="Lock Time"
                     />
                     <div>
-                      <p className="[font-family:'Manrope',Helvetica] font-semibold text-[#c4bab2] text-xs tracking-[0] leading-4">
+                      <p className="font-semibold text-[#c4bab2] text-xs tracking-[0] leading-4">
                         Trigger
                       </p>
-                      <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm tracking-[0] leading-5 mt-1">
+                      <p className="font-bold text-white text-sm tracking-[0] leading-5 mt-1">
                         Time-based unlock
                       </p>
                     </div>
@@ -269,10 +269,10 @@ export const SetTimeLock = (): JSX.Element => {
                       alt="World Universe"
                     />
                     <div>
-                      <p className="[font-family:'Manrope',Helvetica] font-semibold text-[#c4bab2] text-xs tracking-[0] leading-4">
+                      <p className="font-semibold text-[#c4bab2] text-xs tracking-[0] leading-4">
                         Timezone
                       </p>
-                      <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm tracking-[0] leading-5 mt-1">
+                      <p className="font-bold text-white text-sm tracking-[0] leading-5 mt-1">
                         Universal Coordinated Time (UTC)
                       </p>
                     </div>
@@ -285,10 +285,10 @@ export const SetTimeLock = (): JSX.Element => {
                       alt="Lock Time"
                     />
                     <div>
-                      <p className="[font-family:'Manrope',Helvetica] font-semibold text-[#c4bab2] text-xs tracking-[0] leading-4">
+                      <p className="font-semibold text-[#c4bab2] text-xs tracking-[0] leading-4">
                         Security
                       </p>
-                      <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm tracking-[0] leading-5 mt-1">
+                      <p className="font-bold text-white text-sm tracking-[0] leading-5 mt-1">
                         Immutable on-chain execution
                       </p>
                     </div>
@@ -303,12 +303,12 @@ export const SetTimeLock = (): JSX.Element => {
           <Button
             variant="outline"
                     onClick={handleBack}
-            className="h-11 px-6 w-full sm:w-auto [font-family:'Manrope',Helvetica] font-bold text-[#d4ccc6] text-sm bg-[#27211c] border border-[#392f28] hover:bg-[#392f28] hover:text-white rounded-xl"
+            className="h-11 px-6 w-full sm:w-auto font-bold text-[#d4ccc6] text-sm bg-[#27211c] border border-[#392f28] hover:bg-[#392f28] hover:text-white rounded-xl"
           >
             Back
           </Button>
               <Button
-            className="h-11 px-6 [font-family:'Manrope',Helvetica] font-bold text-white text-sm bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-xl flex items-center gap-2"
+            className="h-11 px-6 font-bold text-white text-sm bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-xl flex items-center gap-2"
             onClick={() => {
               // Parse YYYY-MM-DD format (from HTML5 date input) and optional time HH:MM into UTC timestamp (seconds)
                   // prefer Date object if available

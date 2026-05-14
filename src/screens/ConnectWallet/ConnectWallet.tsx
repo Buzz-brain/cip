@@ -119,8 +119,9 @@ export const ConnectWallet = (): JSX.Element => {
   );
 
   // If user is already authenticated on mount, redirect to dashboard
+  // BUT: Don't redirect if a wallet connection is in progress
   useEffect(() => {
-    if (!loading && isAuthenticated && user) {
+    if (!loading && isAuthenticated && user && !isConnectingWallet && !wcIsConnecting) {
       const role = user?.userInfo?.role ?? '';
       const isFullyRegistered = user?.userInfo?.full_reg;
       const roleLower = role.toLowerCase();
@@ -135,7 +136,7 @@ export const ConnectWallet = (): JSX.Element => {
         navigate(getDashboardRoute(role), { replace: true });
       }
     }
-  }, [loading, isAuthenticated, user, navigate]);
+  }, [loading, isAuthenticated, user, navigate, isConnectingWallet, wcIsConnecting]);
 
   useEffect(() => {
     injectedLoginTriggered.current = false;
@@ -411,7 +412,7 @@ export const ConnectWallet = (): JSX.Element => {
             <button
               key={item.label}
               onClick={() => handleNavigation(item.href)}
-              className="[font-family:'Manrope',Helvetica] font-medium text-white text-sm leading-[21px] whitespace-nowrap hover:text-[#ff6600] transition-colors cursor-pointer"
+              className="font-medium text-white text-sm leading-[21px] whitespace-nowrap hover:text-[#ff6600] transition-colors cursor-pointer"
             >
               {item.label}
             </button>
@@ -422,20 +423,25 @@ export const ConnectWallet = (): JSX.Element => {
       <section className="w-full flex-1 flex flex-col items-center justify-start px-4 sm:px-8 py-8 sm:py-12">
         <div className="flex flex-col items-center gap-4 mb-8 sm:mb-12">
           <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#ff660033] flex items-center justify-center flex-shrink-0 mt-1">
-            <img src={connectWalletOrange} alt="Icon" className="w-8 h-8 sm:w-10 sm:h-10" />
+            <img
+              src={connectWalletOrange}
+              alt="Icon"
+              className="w-6 h-6 sm:w-8 sm:h-8"
+            />
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white text-center [font-family:'Manrope',Helvetica] leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white text-center leading-tight">
             Connect your Wallet
           </h1>
-          <p className="text-center text-gray-400 max-w-xl sm:max-w-2xl [font-family:'Manrope',Helvetica] text-sm sm:text-base leading-relaxed">
-            Select a provider to securely access your inheritance dashboard and manage your digital legacy across chains.
+          <p className="text-center text-gray-400 max-w-xl sm:max-w-2xl text-sm sm:text-base leading-relaxed">
+            Select a provider to securely access your inheritance dashboard and
+            manage your digital legacy across chains.
           </p>
         </div>
 
         {isAnyConnecting && (
           <div className="bg-[#332b22] border border-[#ff6600]/30 rounded-lg p-3 mb-6 flex items-center gap-3 max-w-md mx-auto w-full sm:w-auto">
             <div className="w-5 h-5 border-2 border-[#ff6600] border-t-transparent rounded-full animate-spin" />
-            <div className="text-[#ff6600] font-semibold text-sm sm:text-base [font-family:'Manrope',Helvetica]">
+            <div className="text-[#ff6600] font-semibold text-sm sm:text-base">
               Connecting wallet and signing message...
             </div>
           </div>
@@ -451,7 +457,7 @@ export const ConnectWallet = (): JSX.Element => {
                 className="group relative p-4 sm:p-6 rounded-2xl bg-[#2d2420] border border-[#3d3530] hover:border-[#ff6600] hover:bg-[#332b22] transition-all duration-200 cursor-pointer flex flex-col items-start gap-3 min-h-[140px] sm:min-h-[200px] w-full disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {wallet.category && (
-                  <span className="absolute top-4 right-4 text-[13px] px-3 py-1 rounded-full bg-[#554233] text-gray-300 font-medium [font-family:'Manrope',Helvetica]">
+                  <span className="absolute top-4 right-4 text-[13px] px-3 py-1 rounded-full bg-[#554233] text-gray-300 font-medium">
                     {wallet.category}
                   </span>
                 )}
@@ -460,10 +466,10 @@ export const ConnectWallet = (): JSX.Element => {
                   src={wallet.icon}
                   alt={wallet.name}
                 />
-                <h3 className="text-base sm:text-lg font-bold text-white text-left [font-family:'Manrope',Helvetica]">
+                <h3 className="text-base sm:text-lg font-bold text-white text-left">
                   {wallet.name}
                 </h3>
-                <p className="text-xs sm:text-sm text-gray-400 text-left [font-family:'Manrope',Helvetica]">
+                <p className="text-xs sm:text-sm text-gray-400 text-left">
                   {wallet.description}
                 </p>
               </button>
@@ -473,25 +479,35 @@ export const ConnectWallet = (): JSX.Element => {
 
         <div className="flex flex-col items-center gap-4 w-full max-w-md">
           <Button
-            onClick={() => navigate('/connect-wallet')}
-            className="w-full h-12 px-6 bg-[#ff6600] hover:bg-[#ff7700] [font-family:'Manrope',Helvetica] font-bold text-white text-base leading-[21px] rounded-lg gap-2 flex items-center justify-center"
+            onClick={() => navigate("/connect-wallet")}
+            className="w-full h-12 px-6 bg-[#ff6600] hover:bg-[#ff7700] font-bold text-white text-base leading-[21px] rounded-lg gap-2 flex items-center justify-center"
           >
             <img src={helpIcon} alt="Icon" className="w-4 h-4 mr-2" />
             Forgot Access
           </Button>
           <div className="flex flex-col sm:flex-row gap-2 items-center text-center">
-            <p className="text-gray-400 [font-family:'Manrope',Helvetica] text-sm">New here?</p>
-            <a className="text-[#ff6600] [font-family:'Manrope',Helvetica] text-sm hover:text-[#ff7700]">
+            <p className="text-gray-400 text-sm">New here?</p>
+            <a className="text-[#ff6600] text-sm hover:text-[#ff7700]">
               Learn how to create a wallet
             </a>
           </div>
         </div>
 
-        <p className="text-center text-gray-500 text-xs mt-8 [font-family:'Manrope',Helvetica] leading-relaxed max-w-md">
+        <p className="text-center text-gray-500 text-xs mt-8 leading-relaxed max-w-md">
           By connecting your wallet, you agree to our{" "}
-          <a href="#tos" className="text-gray-400 hover:text-gray-300 underline">Terms of Service</a>{" "}
+          <a
+            href="#tos"
+            className="text-gray-400 hover:text-gray-300 underline"
+          >
+            Terms of Service
+          </a>{" "}
           and{" "}
-          <a href="#privacy" className="text-gray-400 hover:text-gray-300 underline">Privacy Policy.</a>
+          <a
+            href="#privacy"
+            className="text-gray-400 hover:text-gray-300 underline"
+          >
+            Privacy Policy.
+          </a>
         </p>
       </section>
     </div>

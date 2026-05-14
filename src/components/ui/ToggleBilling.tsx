@@ -19,7 +19,7 @@ export const ToggleBilling = ({ value, onChange, className }: ToggleBillingProps
             <button
               type="button"
               onClick={() => onChange(false)}
-              className={`relative z-10 w-1/2 text-sm py-2 text-center [font-family:'Manrope',Helvetica] transition-colors ${
+              className={`relative z-10 w-1/2 text-sm py-2 text-center transition-colors ${
                 value ? "text-[#b8a494]" : "text-white font-bold"
               }`}
             >
@@ -28,7 +28,7 @@ export const ToggleBilling = ({ value, onChange, className }: ToggleBillingProps
             <button
               type="button"
               onClick={() => onChange(true)}
-              className={`relative z-10 w-1/2 text-sm py-2 text-center [font-family:'Manrope',Helvetica] transition-colors ${
+              className={`relative z-10 w-1/2 text-sm py-2 text-center transition-colors ${
                 value ? "text-white font-bold" : "text-[#b8a494]"
               }`}
             >

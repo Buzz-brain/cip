@@ -69,7 +69,7 @@ export const DisputeQueue = ({ }: DisputeQueueProps): JSX.Element => {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#191919] [font-family:'Manrope',Helvetica]">
+    <div className="flex flex-col w-full min-h-screen bg-[#191919]">
       <main className="flex-1 flex flex-col items-center px-4 py-12">
         <div className="w-full max-w-6xl">
           {/* Header */}
@@ -307,7 +307,7 @@ export default DisputeQueue;
 //                 </div>
 //               </div>
 
-//               <div className="bg-[#32261A] border border-[#393128] rounded-xl p-4 [font-family:'Manrope',Helvetica]">
+//               <div className="bg-[#32261A] border border-[#393128] rounded-xl p-4">
 //                 <h3 className="text-sm font-semibold text-gray-400 text-white tracking-wider mb-4">
 //                   Current Vote Tally
 //                 </h3>

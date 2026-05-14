@@ -41,7 +41,7 @@ export const ExecutorDisputePlan = (): JSX.Element => {
   const raiseParam = search.get('raise');
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#191919] [font-family:'Manrope',Helvetica]">
+    <div className="flex flex-col w-full min-h-screen bg-[#191919]">
       <main className="flex-1 flex flex-col items-center px-4 py-4">
         <div className="w-full max-w-5xl">
           {raiseParam ? (

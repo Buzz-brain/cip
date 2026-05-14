@@ -89,7 +89,7 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
   };
 
   return (
-    <main className="flex-1 bg-[#0d0501] overflow-auto [font-family:'Manrope',Helvetica] p-4">
+    <main className="flex-1 bg-[#0d0501] overflow-auto p-4">
       {loading && (
         <div className="p-4">
           <div className="mb-4">
@@ -137,17 +137,17 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
               <div className="flex items-end justify-between">
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-3">
-                      <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl sm:text-3xl">
+                      <h1 className="font-bold text-white text-2xl sm:text-3xl">
                       {plan?.name ? String(plan.name) : (plan?.contract_plan_id ?? plan?.id ? `Plan #${plan.contract_plan_id ?? plan.id}` : '')}
                     </h1>
                     {(plan?.is_released === true || plan?.is_funded === true || plan?.status) && (
-                      <span className="bg-[#F97316] text-[#0d0501] [font-family:'Manrope',Helvetica] font-bold text-xs px-3 py-1 rounded-full">
+                      <span className="bg-[#F97316] text-[#0d0501] font-bold text-xs px-3 py-1 rounded-full">
                         {plan?.is_released === true ? 'RELEASED' : plan?.is_funded === true ? 'FUNDED' : String(plan.status)}
                       </span>
                     )}
                   </div>
                   {(plan?.owner_wallet || plan?.last_active_at) && (
-                    <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">
+                    <p className="font-normal text-[#8b7b64] text-sm">
                       {plan?.owner_wallet ? `${plan.owner_wallet}` : ''}{plan?.owner_wallet && plan?.last_active_at ? ' • ' : ''}{plan?.last_active_at ? new Date(Number(plan.last_active_at) * 1000).toLocaleString() : ''}
                     </p>
                   )}
@@ -218,8 +218,8 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
                 <div className="bg-[#181511] border border-[#392f28] rounded-xl">
                   <div className="p-6 flex flex-col gap-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">Asset Allocation</h3>
-                      <span className="flex items-center gap-1 text-[#F97316] text-xs [font-family:'Manrope',Helvetica]"><LockIcon className="w-3 h-3" />Restricted View</span>
+                      <h3 className="font-bold text-white text-lg">Asset Allocation</h3>
+                      <span className="flex items-center gap-1 text-[#F97316] text-xs"><LockIcon className="w-3 h-3" />Restricted View</span>
                     </div>
 
                     <div className="flex flex-col gap-4">
@@ -230,11 +230,11 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
                               {assetSymbol === 'BTC' ? '₿' : assetSymbol === 'ETH' ? 'Ξ' : assetSymbol?.[0] ?? assetSymbol}
                             </div>
                             <div>
-                              <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">{assetDisplayName}</p>
-                              <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs">{assetSymbol}</p>
+                              <p className="font-bold text-white text-sm">{assetDisplayName}</p>
+                              <p className="font-normal text-[#8b7b64] text-xs">{assetSymbol}</p>
                             </div>
                           </div>
-                          <span className="[font-family:'Manrope',Helvetica] font-bold text-[#627eea] text-sm">{assetSymbol === 'BTC' ? 'Bitcoin Network' : assetSymbol === 'ETH' ? 'Ethereum Mainnet' : 'Network'}</span>
+                          <span className="font-bold text-[#627eea] text-sm">{assetSymbol === 'BTC' ? 'Bitcoin Network' : assetSymbol === 'ETH' ? 'Ethereum Mainnet' : 'Network'}</span>
                         </div>
                       ) : (
                         <div className="py-6 text-[#8b7b64]">No asset information available.</div>
@@ -245,7 +245,7 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
 
                 <div className="bg-[#181511] border border-[#392f28] rounded-xl">
                   <div className="p-6 flex flex-col gap-4">
-                    <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">Plan Timeline</h3>
+                    <h3 className="font-bold text-white text-lg">Plan Timeline</h3>
 
                     <div className="flex flex-col gap-4">
                       <div className="flex gap-4">
@@ -254,8 +254,8 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
                           <div className="w-0.5 h-12 bg-[#392f28] mt-2" />
                         </div>
                         <div className="pb-4">
-                          <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">Plan Created</p>
-                          <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-1">{plan ? `Created: ${formatTs(plan.created_at)}` : '—'}</p>
+                          <p className="font-bold text-white text-sm">Plan Created</p>
+                          <p className="font-normal text-[#8b7b64] text-xs mt-1">{plan ? `Created: ${formatTs(plan.created_at)}` : '—'}</p>
                         </div>
                       </div>
 
@@ -267,11 +267,11 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
                           </div>
                           <div className="pb-4">
                             <div className="flex items-center gap-2">
-                              <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">Inactivity Monitoring</p>
-                              <span className="bg-[#F97316] text-[#0d0501] [font-family:'Manrope',Helvetica] font-bold text-xs px-2 py-1 rounded">ACTIVE</span>
+                              <p className="font-bold text-white text-sm">Inactivity Monitoring</p>
+                              <span className="bg-[#F97316] text-[#0d0501] font-bold text-xs px-2 py-1 rounded">ACTIVE</span>
                             </div>
-                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-1">Oracle checks wallet activity periodically.</p>
-                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-2">Inactivity period: {plan.inactivity_period_days ?? '—'} days</p>
+                            <p className="font-normal text-[#8b7b64] text-xs mt-1">Oracle checks wallet activity periodically.</p>
+                            <p className="font-normal text-[#8b7b64] text-xs mt-2">Inactivity period: {plan.inactivity_period_days ?? '—'} days</p>
                           </div>
                         </div>
                       )}
@@ -283,9 +283,9 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
                             <div className="w-0.5 h-12 bg-[#392f28] mt-2" />
                           </div>
                           <div className="pb-4">
-                            <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">Grace Period</p>
-                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-1">{plan.grace_period} days allowed for owner to cancel trigger.</p>
-                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#F97316] text-xs mt-2">Pending</p>
+                            <p className="font-bold text-white text-sm">Grace Period</p>
+                            <p className="font-normal text-[#8b7b64] text-xs mt-1">{plan.grace_period} days allowed for owner to cancel trigger.</p>
+                            <p className="font-normal text-[#F97316] text-xs mt-2">Pending</p>
                           </div>
                         </div>
                       )}
@@ -297,9 +297,9 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
                             <div className="w-0.5 h-12 bg-[#392f28] mt-2" />
                           </div>
                           <div className="pb-4">
-                            <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">MPC Authorization</p>
-                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-1">Designated signers must approve asset release.</p>
-                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#F97316] text-xs mt-2">{plan.is_released ? 'Completed' : 'Pending'}</p>
+                            <p className="font-bold text-white text-sm">MPC Authorization</p>
+                            <p className="font-normal text-[#8b7b64] text-xs mt-1">Designated signers must approve asset release.</p>
+                            <p className="font-normal text-[#F97316] text-xs mt-2">{plan.is_released ? 'Completed' : 'Pending'}</p>
                           </div>
                         </div>
                       )}
@@ -310,9 +310,9 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
                             <div className="w-3 h-3 rounded-full bg-[#8b7b64]" />
                           </div>
                           <div className="pb-4">
-                            <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">Distribution Executed</p>
-                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-1">Assets transferred to beneficiary wallets.</p>
-                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-2">Released at {formatTs(plan.release_timestamp)}</p>
+                            <p className="font-bold text-white text-sm">Distribution Executed</p>
+                            <p className="font-normal text-[#8b7b64] text-xs mt-1">Assets transferred to beneficiary wallets.</p>
+                            <p className="font-normal text-[#8b7b64] text-xs mt-2">Released at {formatTs(plan.release_timestamp)}</p>
                           </div>
                         </div>
                       )}
@@ -325,7 +325,7 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
                 <div className="flex flex-col gap-4">
                   <div className="bg-[#181511] border border-[#392f28] rounded-xl">
                     <div className="p-6 flex flex-col gap-4">
-                      <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base">Legal Documents</h3>
+                      <h3 className="font-bold text-white text-base">Legal Documents</h3>
 
                       <div className="flex flex-col gap-3">
                         {plan!.legal_docs.map((doc: any, idx: number) => (
@@ -333,8 +333,8 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
                             <div className="flex items-center gap-3 flex-1">
                               <FileTextIcon className="w-5 h-5 text-[#8b7b64]" />
                               <div>
-                                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-xs">{doc.name ?? doc.title ?? `Document ${idx + 1}`}</p>
-                                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs">{doc.updated_at ? `Updated ${formatTs(doc.updated_at)}` : (doc.updated_at_display ?? '')}</p>
+                                <p className="font-bold text-white text-xs">{doc.name ?? doc.title ?? `Document ${idx + 1}`}</p>
+                                <p className="font-normal text-[#8b7b64] text-xs">{doc.updated_at ? `Updated ${formatTs(doc.updated_at)}` : (doc.updated_at_display ?? '')}</p>
                               </div>
                             </div>
                             <DownloadIcon className="w-4 h-4 text-[#8b7b64] hover:text-white" />

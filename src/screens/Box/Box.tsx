@@ -130,7 +130,7 @@ export const Box = (): JSX.Element => {
                     className="w-[25px] h-[31px] object-cover"
                   />
                 </div>
-                <span className="[font-family:'Space_Grotesk',Helvetica] text-[19.4px] font-bold text-white">
+                <span className="text-[19.4px] font-bold text-white">
                   CIP
                 </span>
               </div>
@@ -141,13 +141,13 @@ export const Box = (): JSX.Element => {
                     <a
                       key={item.label}
                       href={item.href}
-                      className="[font-family:'Noto_Sans',Helvetica] font-medium text-slate-300 text-sm hover:text-white transition-colors"
+                      className="font-medium text-slate-300 text-sm hover:text-white transition-colors"
                     >
                       {item.label}
                     </a>
                   ))}
                 </div>
-                <Button className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 [font-family:'Noto_Sans',Helvetica] font-bold text-sm">
+                <Button className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 font-bold text-sm">
                   Launch App
                 </Button>
               </div>
@@ -165,14 +165,14 @@ export const Box = (): JSX.Element => {
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center space-y-12">
               <div className="space-y-6">
-                <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-7xl leading-[72px]">
+                <h2 className="font-bold text-7xl leading-[72px]">
                   <span className="text-white">Secure Your Digital Legacy</span>
                   <br />
                   <span className="bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
                     Legacy Across Chains
                   </span>
                 </h2>
-                <p className="[font-family:'Noto_Sans',Helvetica] font-light text-slate-300 text-xl max-w-2xl mx-auto">
+                <p className="font-light text-slate-300 text-xl max-w-2xl mx-auto">
                   Automated, non-custodial inheritance for the multi-chain
                   future. Ensure your assets reach your beneficiaries safely,
                   securely, and tax-efficiently.
@@ -180,12 +180,12 @@ export const Box = (): JSX.Element => {
               </div>
 
               <div className="flex items-center justify-center gap-4">
-                <Button className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 shadow-[0px_0px_20px_#ff6633cc] [font-family:'Noto_Sans',Helvetica] font-bold">
+                <Button className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 shadow-[0px_0px_20px_#ff6633cc] font-bold">
                   Start Plan
                 </Button>
                 <Button
                   variant="outline"
-                  className="bg-[#111111] border-[#bd4b00] [font-family:'Noto_Sans',Helvetica] font-bold"
+                  className="bg-[#111111] border-[#bd4b00] font-bold"
                 >
                   <img
                     src="/solar-play-bold.svg"
@@ -202,7 +202,7 @@ export const Box = (): JSX.Element => {
         <section className="bg-[#1c130d] py-8">
           <div className="container mx-auto px-4">
             <div className="text-center space-y-4">
-              <p className="[font-family:'Space_Grotesk',Helvetica] font-bold text-[#8b7664] text-xs">
+              <p className="font-bold text-[#8b7664] text-xs">
                 Securing Assets On Top Chains
               </p>
               <div className="flex items-center justify-center gap-16">
@@ -213,7 +213,7 @@ export const Box = (): JSX.Element => {
                       alt={chain.name}
                       className="w-8 h-8"
                     />
-                    <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-[#b8a494] text-base">
+                    <span className="font-bold text-[#b8a494] text-base">
                       {chain.name}
                     </span>
                   </div>
@@ -227,10 +227,10 @@ export const Box = (): JSX.Element => {
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto space-y-12">
               <div className="space-y-5">
-                <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl">
+                <h2 className="font-bold text-white text-4xl">
                   Core Capabilities
                 </h2>
-                <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-lg max-w-2xl">
+                <p className="text-[#b8a494] text-lg max-w-2xl">
                   Built for security and autonomy across multiple blockchains,
                   ensuring your plan executes exactly as intended.
                 </p>
@@ -246,10 +246,10 @@ export const Box = (): JSX.Element => {
                       <div className="w-12 h-12 bg-[#135bec1a] rounded-lg flex items-center justify-center">
                         <img src={capability.icon} alt="" className="w-6 h-6" />
                       </div>
-                      <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-xl">
+                      <h3 className="font-bold text-white text-xl">
                         {capability.title}
                       </h3>
-                      <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-base leading-[26px]">
+                      <p className="text-[#b8a494] text-base leading-[26px]">
                         {capability.description}
                       </p>
                     </CardContent>
@@ -267,7 +267,7 @@ export const Box = (): JSX.Element => {
             <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
               <div className="space-y-10">
                 <div className="space-y-6">
-                  <Badge className="bg-[#f6a83b1a] border-[#f6b13b33] text-[#faaf60] [font-family:'Noto_Sans',Helvetica] font-bold">
+                  <Badge className="bg-[#f6a83b1a] border-[#f6b13b33] text-[#faaf60] font-bold">
                     <img
                       src="/majesticons-analytics-line.svg"
                       alt=""
@@ -275,10 +275,10 @@ export const Box = (): JSX.Element => {
                     />
                     Infrastructure for Accountants
                   </Badge>
-                  <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-5xl">
+                  <h2 className="font-bold text-white text-5xl">
                     TaxCore Intelligence
                   </h2>
-                  <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-lg leading-[29px]">
+                  <p className="text-[#b8a494] text-lg leading-[29px]">
                     TaxCore isn't just a calculator; it's a full compliance
                     suite. It integrates real-time transaction analysis,
                     automatic capital gains calculation, and multi-jurisdiction
@@ -289,10 +289,10 @@ export const Box = (): JSX.Element => {
                 <div className="border-l border-[#674932] pl-8 space-y-12">
                   {taxCoreSteps.map((step) => (
                     <div key={step.title} className="space-y-2">
-                      <h3 className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-lg">
+                      <h3 className="font-bold text-white text-lg">
                         {step.title}
                       </h3>
-                      <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm">
+                      <p className="text-[#b8a494] text-sm">
                         {step.description}
                       </p>
                     </div>
@@ -311,7 +311,7 @@ export const Box = (): JSX.Element => {
                           className="w-6 h-6"
                         />
                       </div>
-                      <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white">
+                      <span className="font-bold text-white">
                         TaxCore CalculatorIcon
                       </span>
                     </div>
@@ -328,21 +328,21 @@ export const Box = (): JSX.Element => {
                 <CardContent className="p-6 space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                      <label className="text-[#8b7664] text-xs">
                         Origin Jurisdiction
                       </label>
                       <div className="bg-[#221911] border border-[#674932] rounded px-3 py-2">
-                        <span className="[font-family:'Noto_Sans',Helvetica] text-white text-sm">
+                        <span className="text-white text-sm">
                           United Kingdom
                         </span>
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <label className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                      <label className="text-[#8b7664] text-xs">
                         Beneficiary Residency
                       </label>
                       <div className="bg-[#221911] border border-[#674932] rounded px-3 py-2">
-                        <span className="[font-family:'Noto_Sans',Helvetica] text-white text-sm">
+                        <span className="text-white text-sm">
                           Germany
                         </span>
                       </div>
@@ -352,10 +352,10 @@ export const Box = (): JSX.Element => {
                   <div className="grid grid-cols-2 gap-4">
                     <Card className="bg-[#221911] border-[#674932]">
                       <CardContent className="p-4 space-y-2">
-                        <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                        <p className="text-[#8b7664] text-xs">
                           Est. Capital Gains
                         </p>
-                        <p className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                        <p className="font-bold text-white text-2xl">
                           $142,050.00
                         </p>
                         <div className="flex items-center gap-1">
@@ -364,7 +364,7 @@ export const Box = (): JSX.Element => {
                             alt=""
                             className="w-3.5 h-3.5"
                           />
-                          <span className="[font-family:'Noto_Sans',Helvetica] text-red-400 text-[10px]">
+                          <span className="text-red-400 text-[10px]">
                             +12% since inception
                           </span>
                         </div>
@@ -372,13 +372,13 @@ export const Box = (): JSX.Element => {
                     </Card>
                     <Card className="bg-[#221911] border-[#674932]">
                       <CardContent className="p-4 space-y-2">
-                        <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+                        <p className="text-[#8b7664] text-xs">
                           Inheritance Tax
                         </p>
-                        <p className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                        <p className="font-bold text-white text-2xl">
                           $56,820.00
                         </p>
-                        <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-[10px]">
+                        <p className="text-[#b8a494] text-[10px]">
                           Rate: 40% (Above Threshold)
                         </p>
                       </CardContent>
@@ -392,10 +392,10 @@ export const Box = (): JSX.Element => {
                       className="w-6 h-6 flex-shrink-0"
                     />
                     <div className="space-y-1">
-                      <p className="[font-family:'Noto_Sans',Helvetica] font-bold text-[#ff6600] text-xs">
+                      <p className="font-bold text-[#ff6600] text-xs">
                         TaxCore AI Insight
                       </p>
-                      <p className="[font-family:'Noto_Sans',Helvetica] text-slate-300 text-xs leading-[19px]">
+                      <p className="text-slate-300 text-xs leading-[19px]">
                         Based on the double taxation treaty between UK and
                         Germany, the beneficiary may claim credit for tax paid
                         in the UK.
@@ -403,7 +403,7 @@ export const Box = (): JSX.Element => {
                     </div>
                   </div>
 
-                  <Button className="w-full bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Noto_Sans',Helvetica] font-bold">
+                  <Button className="w-full bg-[#ff6600] hover:bg-[#ff6600]/90 font-bold">
                     Generate Preliminary Report
                   </Button>
                 </CardContent>
@@ -424,10 +424,10 @@ export const Box = (): JSX.Element => {
                     <div className="w-12 h-12 bg-[#ec489933] rounded-lg flex items-center justify-center">
                       <img src={card.icon} alt="" className="w-6 h-6" />
                     </div>
-                    <h3 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-2xl">
+                    <h3 className="font-bold text-white text-2xl">
                       {card.title}
                     </h3>
-                    <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-base leading-6">
+                    <p className="text-[#b8a494] text-base leading-6">
                       {card.description}
                     </p>
                     <div className="space-y-2">
@@ -438,7 +438,7 @@ export const Box = (): JSX.Element => {
                             alt=""
                             className="w-3.5 h-3.5"
                           />
-                          <span className="[font-family:'Noto_Sans',Helvetica] text-slate-300 text-sm">
+                          <span className="text-slate-300 text-sm">
                             {feature}
                           </span>
                         </div>
@@ -458,10 +458,10 @@ export const Box = (): JSX.Element => {
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto space-y-12">
               <div className="text-center space-y-5">
-                <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-4xl">
+                <h2 className="font-bold text-white text-4xl">
                   Simple Pricing for Peace of Mind
                 </h2>
-                <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-base">
+                <p className="text-[#b8a494] text-base">
                   Choose the plan that fits your estate complexity.
                 </p>
               </div>
@@ -494,25 +494,25 @@ export const Box = (): JSX.Element => {
                   >
                     {plan.badge && (
                       <div className="absolute top-0 right-0 bg-[#ff6600] px-3 py-1">
-                        <span className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-xs">
+                        <span className="font-bold text-white text-xs">
                           {plan.badge}
                         </span>
                       </div>
                     )}
                     <CardContent className="p-8 space-y-6">
                       <div className="space-y-2">
-                        <h3 className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-xl">
+                        <h3 className="font-bold text-white text-xl">
                           {plan.name}
                         </h3>
-                        <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm">
+                        <p className="text-[#8b7664] text-sm">
                           {plan.description}
                         </p>
                       </div>
                       <div className="flex items-baseline gap-1">
-                        <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-3xl">
+                        <span className="font-bold text-white text-3xl">
                           {plan.price}
                         </span>
-                        <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-[#8b7664] text-sm">
+                        <span className="font-bold text-[#8b7664] text-sm">
                           {plan.period}
                         </span>
                       </div>
@@ -525,7 +525,7 @@ export const Box = (): JSX.Element => {
                               className="w-3.5 h-3.5"
                             />
                             <span
-                              className={`[font-family:'Noto_Sans',Helvetica] text-sm ${plan.highlighted ? "text-white" : "text-slate-300"}`}
+                              className={`text-sm ${plan.highlighted ? "text-white" : "text-slate-300"}`}
                             >
                               {feature.text}
                             </span>
@@ -538,7 +538,7 @@ export const Box = (): JSX.Element => {
                           plan.highlighted
                             ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
                             : "border-[#674932]"
-                        } [font-family:'Noto_Sans',Helvetica] font-bold`}
+                        } font-bold`}
                       >
                         {plan.buttonText}
                       </Button>
@@ -555,16 +555,16 @@ export const Box = (): JSX.Element => {
             <Card className="max-w-5xl mx-auto bg-gradient-to-r from-[#332319] to-[#99684b] border-[#674932]">
               <CardContent className="p-12 flex items-center justify-between gap-12">
                 <div className="flex-1 space-y-6">
-                  <h2 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-3xl">
+                  <h2 className="font-bold text-white text-3xl">
                     For Family Offices & Custodians
                   </h2>
-                  <p className="[font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-lg leading-7">
+                  <p className="text-[#b8a494] text-lg leading-7">
                     Manage high-net-worth digital estates with enterprise-grade
                     multi-sig coordination, dedicated account managers, and
                     custom legal framework integration.
                   </p>
                   <div className="flex items-center gap-6">
-                    <span className="[font-family:'Noto_Sans',Helvetica] font-bold text-[#ff6600] text-base cursor-pointer hover:underline">
+                    <span className="font-bold text-[#ff6600] text-base cursor-pointer hover:underline">
                       Contact Sales
                     </span>
                     <img
@@ -597,18 +597,18 @@ export const Box = (): JSX.Element => {
                         className="w-5 h-6 object-cover"
                       />
                     </div>
-                    <span className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-lg">
+                    <span className="font-bold text-white text-lg">
                       CIP
                     </span>
                   </div>
-                  <p className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-sm leading-[22px]">
+                  <p className="text-[#8b7664] text-sm leading-[22px]">
                     The standard for sovereign digital inheritance. Securing the
                     future of decentralized wealth.
                   </p>
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-base">
+                  <h4 className="font-bold text-white text-base">
                     Product
                   </h4>
                   <div className="space-y-2">
@@ -616,7 +616,7 @@ export const Box = (): JSX.Element => {
                       <a
                         key={link}
                         href="#"
-                        className="block [font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm hover:text-white transition-colors"
+                        className="block text-[#b8a494] text-sm hover:text-white transition-colors"
                       >
                         {link}
                       </a>
@@ -625,7 +625,7 @@ export const Box = (): JSX.Element => {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-base">
+                  <h4 className="font-bold text-white text-base">
                     Resources
                   </h4>
                   <div className="space-y-2">
@@ -633,7 +633,7 @@ export const Box = (): JSX.Element => {
                       <a
                         key={link}
                         href="#"
-                        className="block [font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm hover:text-white transition-colors"
+                        className="block text-[#b8a494] text-sm hover:text-white transition-colors"
                       >
                         {link}
                       </a>
@@ -642,7 +642,7 @@ export const Box = (): JSX.Element => {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-base">
+                  <h4 className="font-bold text-white text-base">
                     Legal
                   </h4>
                   <div className="space-y-2">
@@ -650,7 +650,7 @@ export const Box = (): JSX.Element => {
                       <a
                         key={link}
                         href="#"
-                        className="block [font-family:'Noto_Sans',Helvetica] text-[#b8a494] text-sm hover:text-white transition-colors"
+                        className="block text-[#b8a494] text-sm hover:text-white transition-colors"
                       >
                         {link}
                       </a>
@@ -662,14 +662,14 @@ export const Box = (): JSX.Element => {
               <Separator className="bg-[#483423]" />
 
               <div className="flex items-center justify-between">
-                <p className="[font-family:'Noto_Sans',Helvetica] text-[#695d47] text-sm">
+                <p className="text-[#695d47] text-sm">
                   © 2024 CIP Protocol. All rights reserved.
                 </p>
                 <div className="flex items-center gap-4">
-                  <span className="[font-family:'Inter',Helvetica] text-[#8b7664] text-xs">
+                  <span className="text-[#8b7664] text-xs">
                     public
                   </span>
-                  <span className="[font-family:'Inter',Helvetica] text-[#8b7664] text-sm">
+                  <span className="text-[#8b7664] text-sm">
                     mail
                   </span>
                 </div>
@@ -692,7 +692,7 @@ export const Box = (): JSX.Element => {
                       className="w-[25px] h-[31px] object-cover"
                     />
                   </div>
-                  <span className="[font-family:'Manrope',Helvetica] text-xl font-bold text-white">
+                  <span className="text-xl font-bold text-white">
                     CIP
                   </span>
                 </div>
@@ -701,25 +701,25 @@ export const Box = (): JSX.Element => {
                   <div className="flex items-center gap-9">
                     <a
                       href="#"
-                      className="[font-family:'Manrope',Helvetica] font-medium text-gray-200 text-sm hover:text-white transition-colors"
+                      className="font-medium text-gray-200 text-sm hover:text-white transition-colors"
                     >
                       Features
                     </a>
                     <a
                       href="#"
-                      className="[font-family:'Manrope',Helvetica] font-medium text-gray-200 text-sm hover:text-white transition-colors"
+                      className="font-medium text-gray-200 text-sm hover:text-white transition-colors"
                     >
                       Security
                     </a>
                     <a
                       href="#"
-                      className="[font-family:'Manrope',Helvetica] font-bold text-gray-200 text-sm hover:text-white transition-colors"
+                      className="font-bold text-gray-200 text-sm hover:text-white transition-colors"
                     >
                       Pricing
                     </a>
                     <a
                       href="#"
-                      className="[font-family:'Manrope',Helvetica] font-medium text-gray-200 text-sm hover:text-white transition-colors"
+                      className="font-medium text-gray-200 text-sm hover:text-white transition-colors"
                     >
                       Resources
                     </a>
@@ -727,11 +727,11 @@ export const Box = (): JSX.Element => {
                   <div className="flex items-center gap-2">
                     <Button
                       variant="secondary"
-                      className="bg-[#554233] hover:bg-[#554233]/90 [font-family:'Manrope',Helvetica] font-bold text-sm"
+                      className="bg-[#554233] hover:bg-[#554233]/90 font-bold text-sm"
                     >
                       Log In
                     </Button>
-                    <Button className="bg-[#ff6600] hover:bg-[#ff6600]/90 [font-family:'Manrope',Helvetica] font-bold text-sm">
+                    <Button className="bg-[#ff6600] hover:bg-[#ff6600]/90 font-bold text-sm">
                       Get Started
                     </Button>
                   </div>
@@ -744,19 +744,19 @@ export const Box = (): JSX.Element => {
             <div className="container mx-auto px-4">
               <div className="max-w-6xl mx-auto space-y-10">
                 <div className="text-center space-y-6">
-                  <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-[46px] leading-[48px]">
+                  <h1 className="font-bold text-white text-[46px] leading-[48px]">
                     Secure your legacy across chains
                   </h1>
-                  <p className="[font-family:'Manrope',Helvetica] text-[#b8a494] text-lg max-w-2xl mx-auto leading-[27px]">
+                  <p className="text-[#b8a494] text-lg max-w-2xl mx-auto leading-[27px]">
                     Choose the inheritance plan that fits your assets and your
                     family's needs. Upgrade or downgrade at any time with zero
                     lock-in periods.
                   </p>
                   <div className="flex items-center justify-center gap-9 bg-[#32241a] border border-[#554233] rounded-full p-1 max-w-xs mx-auto">
-                    <Button className="bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-full [font-family:'Manrope',Helvetica] font-bold text-sm">
+                    <Button className="bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-full font-bold text-sm">
                       Monthly
                     </Button>
-                    <span className="[font-family:'Manrope',Helvetica] font-bold text-[#b8a494] text-sm pr-4">
+                    <span className="font-bold text-[#b8a494] text-sm pr-4">
                       Yearly (Save 20%)
                     </span>
                   </div>
@@ -785,27 +785,27 @@ export const Box = (): JSX.Element => {
                       >
                         {plan.badge && (
                           <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-[#ff6600] rounded-full px-3 py-1">
-                            <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-xs">
+                            <span className="font-bold text-white text-xs">
                               {plan.badge}
                             </span>
                           </div>
                         )}
                         <CardContent className="p-6 space-y-6">
                           <div className="space-y-2">
-                            <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">
+                            <h3 className="font-bold text-white text-lg">
                               {plan.name}
                             </h3>
                             <div className="flex items-baseline gap-1">
-                              <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-[35px] leading-[45px]">
+                              <span className="font-bold text-white text-[35px] leading-[45px]">
                                 {plan.price}
                               </span>
                               {plan.period && (
-                                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#b8a494] text-sm">
+                                <span className="font-bold text-[#b8a494] text-sm">
                                   {plan.period}
                                 </span>
                               )}
                             </div>
-                            <p className="[font-family:'Manrope',Helvetica] text-[#b8a494] text-sm">
+                            <p className="text-[#b8a494] text-sm">
                               {plan.description}
                             </p>
                           </div>
@@ -816,7 +816,7 @@ export const Box = (): JSX.Element => {
                               plan.highlighted
                                 ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
                                 : "bg-[#554233] hover:bg-[#554233]/90"
-                            } [font-family:'Manrope',Helvetica] font-bold`}
+                            } font-bold`}
                           >
                             {plan.buttonText}
                           </Button>
@@ -841,7 +841,7 @@ export const Box = (): JSX.Element => {
                                 )}
                                 <div className="flex-1">
                                   <span
-                                    className={`[font-family:'Manrope',Helvetica] text-sm ${
+                                    className={`text-sm ${
                                       feature.included
                                         ? "font-medium text-slate-200"
                                         : "font-normal text-[#8b7964]"
@@ -850,7 +850,7 @@ export const Box = (): JSX.Element => {
                                     {feature.text}
                                   </span>
                                   {feature.subtext && (
-                                    <p className="[font-family:'Manrope',Helvetica] font-medium text-[#b8a494] text-xs mt-1">
+                                    <p className="font-medium text-[#b8a494] text-xs mt-1">
                                       {feature.subtext}
                                     </p>
                                   )}
@@ -865,7 +865,7 @@ export const Box = (): JSX.Element => {
                 </div>
 
                 <div className="text-center space-y-6 pt-10">
-                  <p className="[font-family:'Manrope',Helvetica] font-bold text-[#b8a494] text-sm">
+                  <p className="font-bold text-[#b8a494] text-sm">
                     Trusted by leading auditors
                   </p>
                   <div className="flex items-center justify-center gap-10">
@@ -875,7 +875,7 @@ export const Box = (): JSX.Element => {
                         className="flex items-center gap-2"
                       >
                         <img src={auditor.icon} alt="" className="w-6 h-6" />
-                        <span className="[font-family:'Manrope',Helvetica] font-bold text-neutral-300 text-xl">
+                        <span className="font-bold text-neutral-300 text-xl">
                           {auditor.name}
                         </span>
                       </div>
@@ -884,7 +884,7 @@ export const Box = (): JSX.Element => {
                 </div>
 
                 <div className="max-w-3xl mx-auto space-y-6 pt-14">
-                  <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl text-center">
+                  <h2 className="font-bold text-white text-2xl text-center">
                     Frequently Asked Questions
                   </h2>
                   <div className="space-y-4">
@@ -894,10 +894,10 @@ export const Box = (): JSX.Element => {
                         className="bg-[#32241a] border-[#554233]"
                       >
                         <CardContent className="p-4 space-y-2">
-                          <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base">
+                          <h3 className="font-bold text-white text-base">
                             {faq.question}
                           </h3>
-                          <p className="[font-family:'Manrope',Helvetica] text-[#b8a494] text-sm">
+                          <p className="text-[#b8a494] text-sm">
                             {faq.answer}
                           </p>
                         </CardContent>
@@ -917,14 +917,14 @@ export const Box = (): JSX.Element => {
                     <a
                       key={link}
                       href="#"
-                      className="[font-family:'Manrope',Helvetica] text-[#b8a494] text-base hover:text-white transition-colors"
+                      className="text-[#b8a494] text-base hover:text-white transition-colors"
                     >
                       {link}
                     </a>
                   ))}
                 </div>
                 <div className="flex items-center justify-center gap-4">
-                  <span className="[font-family:'Inter',Helvetica] text-[#896d61] text-xs">
+                  <span className="text-[#896d61] text-xs">
                     public
                   </span>
                   <img
@@ -932,11 +932,11 @@ export const Box = (): JSX.Element => {
                     alt=""
                     className="w-6 h-6"
                   />
-                  <span className="[font-family:'Inter',Helvetica] text-[#896d61] text-sm">
+                  <span className="text-[#896d61] text-sm">
                     mail
                   </span>
                 </div>
-                <p className="[font-family:'Manrope',Helvetica] text-[#8b7964] text-sm text-center">
+                <p className="text-[#8b7964] text-sm text-center">
                   © 2024 Multi-Chain Inheritance Protocol. All rights reserved.
                 </p>
               </div>

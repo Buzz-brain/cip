@@ -13,7 +13,7 @@ export default function AdminLayout({ title, subtitle, children }: AdminLayoutPr
   const [mobileOpen, setMobileOpen] = useState(false);
   return (
     <AppProvider>
-      <div className="flex min-h-screen w-full bg-[#0f0c0a] [font-family:'Manrope',Helvetica] overflow-x-hidden">
+      <div className="flex min-h-screen w-full bg-[#0f0c0a] overflow-x-hidden">
         <div className="hidden sm:block">
           <Sidebar />
         </div>

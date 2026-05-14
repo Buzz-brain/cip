@@ -11,7 +11,7 @@ export const AdminPwdResetComplete = (): JSX.Element => {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#221810] text-white [font-family:'Manrope',Helvetica]">
+    <div className="flex flex-col w-full min-h-screen bg-[#221810] text-white">
       <header className="w-full h-[61px] flex items-center justify-between px-10 bg-[#0d0501] border-b border-[#393028]">
         <div className="flex items-center gap-3">
           <Link to="/dashboard">

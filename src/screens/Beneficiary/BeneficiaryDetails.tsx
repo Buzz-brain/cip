@@ -1,4 +1,4 @@
-import { FileText as FileTextIcon, CircleCheck as CheckCircleIcon, Download as DownloadIcon, Lock as LockIcon, Home as HomeIcon } from "lucide-react";
+import { FileText as FileTextIcon, Download as DownloadIcon, Lock as LockIcon, Home as HomeIcon } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
@@ -28,18 +28,6 @@ export const BeneficiaryDetails = (): JSX.Element => {
       return new Date(Number(ts) * 1000).toLocaleString();
     } catch (e) {
       return String(ts);
-    }
-
-    async function fetchTaxForPlan(token: string, planId?: number) {
-      if (!token || !planId) return;
-      try {
-        const mod = await import('../../lib/api/beneficiary');
-        const data = await mod.getPlanTax(token, planId);
-        if (!mounted) return;
-        setTaxInfo(data ?? null);
-      } catch (err) {
-        console.error('[BeneficiaryDetails] Failed to fetch tax info:', err);
-      }
     }
   };
   const getInitials = (name?: string) => {
@@ -91,6 +79,18 @@ export const BeneficiaryDetails = (): JSX.Element => {
 
   useEffect(() => {
     let mounted = true;
+
+    async function fetchTaxForPlan(token: string, planId?: number) {
+      if (!token || !planId) return;
+      try {
+        const mod = await import('../../lib/api/beneficiary');
+        const data = await mod.getPlanTax(token, planId);
+        if (!mounted) return;
+        setTaxInfo(data ?? null);
+      } catch (err) {
+        console.error('[BeneficiaryDetails] Failed to fetch tax info:', err);
+      }
+    }
 
     const stateAny: any = (location && (location.state as any)) || {};
     const navPlan = stateAny.plan ?? stateAny;
@@ -160,7 +160,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
 
   return (
     <BeneficiaryLayout>
-      <main className="flex-1 bg-[#0d0501] overflow-auto [font-family:'Manrope',Helvetica]">
+      <main className="flex-1 bg-[#0d0501] overflow-auto">
         {loading && (
           <div className="p-4">
             <div className="mb-4">
@@ -208,13 +208,16 @@ export const BeneficiaryDetails = (): JSX.Element => {
                 <div className="flex items-end justify-between">
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-3">
-                      <h1 className="[font-family:'Manrope',Helvetica] font-bold text-white text-3xl">
+                      <h1 className="font-bold text-white text-3xl">
                         {planDetail?.plan ? (planDetail.plan.name ?? `Plan #${planDetail.plan.id ?? planDetail.plan.contract_plan_id}`) : 'Plan Details'}
                       </h1>
                       {planDetail?.plan?.is_child_trust && (
                         <div className="text-xs px-2 py-1 bg-[#0b3b2e] rounded text-[#9fe8c9] font-bold">Child Trust</div>
                       )}
-                      <span className="bg-[#2ccd2c] text-[#0d0501] [font-family:'Manrope',Helvetica] font-bold text-xs px-3 py-1 rounded-full">
+                      {isMPC && (
+                        <div className="text-xs px-2 py-1 bg-[#1e3a8a] rounded text-[#60a5fa] font-bold">MPC Plan</div>
+                      )}
+                      <span className="bg-[#2ccd2c] text-[#0d0501] font-bold text-xs px-3 py-1 rounded-full">
                         {planDetail?.plan ? (planDetail.plan.is_released ? 'RELEASED' : planDetail.plan.is_funded ? 'ACTIVE MONITORING' : 'PENDING') : 'LOADING'}
                       </span>
                       <div className="ml-4">
@@ -229,7 +232,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
                         </div>
                       </div>
                     </div>
-                    <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">
+                    <p className="font-normal text-[#8b7b64] text-sm">
                       {planDetail?.plan?.owner_wallet ? `${planDetail.plan.owner_wallet}` : '—'} • Last Updated: {planDetail?.plan?.last_active_at ? new Date(Number(planDetail.plan.last_active_at) * 1000).toLocaleString() : '—'}
                     </p>
                   </div>
@@ -294,7 +297,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
                 }}
               />
 
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-5 gap-4">
                 <div className="p-4 bg-[#181511] border border-[#392f28] rounded-lg">
                   <p className="text-xs text-[#8b7664]">📦 Assets Included</p>
                   <p className="font-bold text-white mt-1">{assetsIncludedCount ? `${assetsIncludedCount} Item${assetsIncludedCount > 1 ? 's' : ''}` : '—'}</p>
@@ -323,6 +326,12 @@ export const BeneficiaryDetails = (): JSX.Element => {
                 </div>
 
                 <div className="p-4 bg-[#181511] border border-[#392f28] rounded-lg">
+                  <p className="text-xs text-[#8b7664]">⚖️ Dispute Status</p>
+                  <p className="font-bold text-white mt-1">{hasDispute ? '🚨 Active Dispute' : 'No Dispute'}</p>
+                  <p className="text-xs text-[#8b7b64] mt-1">{disputes && disputes.length > 0 ? `${disputes.length} dispute(s)` : 'No active disputes'}</p>
+                </div>
+
+                <div className="p-4 bg-[#181511] border border-[#392f28] rounded-lg">
                   <p className="text-xs text-[#8b7664]">❤️ Current Status</p>
                   <p className="font-bold text-white mt-1">{heartbeatStatus(planDetail?.plan).label}</p>
                   <p className="text-xs text-[#8b7664] mt-1">{heartbeatStatus(planDetail?.plan).sub}</p>
@@ -334,8 +343,8 @@ export const BeneficiaryDetails = (): JSX.Element => {
                   <Card className="bg-[#181511] border border-[#392f28] rounded-xl">
                     <CardContent className="p-6 flex flex-col gap-4">
                       <div className="flex items-center justify-between">
-                        <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">Asset Allocation</h3>
-                        <span className="flex items-center gap-1 text-[#2ccd2c] text-xs [font-family:'Manrope',Helvetica]"><LockIcon className="w-3 h-3" />Restricted View</span>
+                        <h3 className="font-bold text-white text-lg">Asset Allocation</h3>
+                        <span className="flex items-center gap-1 text-[#2ccd2c] text-xs"><LockIcon className="w-3 h-3" />Restricted View</span>
                       </div>
 
                       <div className="flex flex-col gap-4">
@@ -346,11 +355,11 @@ export const BeneficiaryDetails = (): JSX.Element => {
                                 {assetSymbol === 'BTC' ? '₿' : assetSymbol === 'ETH' ? 'Ξ' : assetSymbol?.[0] ?? assetSymbol}
                               </div>
                               <div>
-                                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">{assetDisplayName}</p>
-                                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs">{assetSymbol}</p>
+                                <p className="font-bold text-white text-sm">{assetDisplayName}</p>
+                                <p className="font-normal text-[#8b7b64] text-xs">{assetSymbol}</p>
                               </div>
                             </div>
-                            <span className="[font-family:'Manrope',Helvetica] font-bold text-[#627eea] text-sm">{assetSymbol === 'BTC' ? 'Bitcoin Network' : assetSymbol === 'ETH' ? 'Ethereum Mainnet' : 'Network'}</span>
+                            <span className="font-bold text-[#627eea] text-sm">{assetSymbol === 'BTC' ? 'Bitcoin Network' : assetSymbol === 'ETH' ? 'Ethereum Mainnet' : 'Network'}</span>
                           </div>
                         ) : (
                           <div className="py-6 text-[#8b7b64]">No asset information available.</div>
@@ -361,7 +370,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
 
                   <Card className="bg-[#181511] border border-[#392f28] rounded-xl">
                     <CardContent className="p-6 flex flex-col gap-4">
-                      <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">
+                      <h3 className="font-bold text-white text-lg">
                         Plan Timeline
                       </h3>
 
@@ -372,8 +381,8 @@ export const BeneficiaryDetails = (): JSX.Element => {
                             <div className="w-0.5 h-12 bg-[#392f28] mt-2" />
                           </div>
                           <div className="pb-4">
-                            <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">Plan Created</p>
-                            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-1">{planDetail?.plan ? `Created: ${formatTs(planDetail.plan.created_at)}` : '—'}</p>
+                            <p className="font-bold text-white text-sm">Plan Created</p>
+                            <p className="font-normal text-[#8b7b64] text-xs mt-1">{planDetail?.plan ? `Created: ${formatTs(planDetail.plan.created_at)}` : '—'}</p>
                           </div>
                         </div>
 
@@ -385,11 +394,11 @@ export const BeneficiaryDetails = (): JSX.Element => {
                             </div>
                             <div className="pb-4">
                               <div className="flex items-center gap-2">
-                                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">Inactivity Monitoring</p>
-                                <span className="bg-[#2ccd2c] text-[#0d0501] [font-family:'Manrope',Helvetica] font-bold text-xs px-2 py-1 rounded">ACTIVE</span>
+                                <p className="font-bold text-white text-sm">Inactivity Monitoring</p>
+                                <span className="bg-[#2ccd2c] text-[#0d0501] font-bold text-xs px-2 py-1 rounded">ACTIVE</span>
                               </div>
-                              <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-1">Oracle checks wallet activity periodically.</p>
-                              <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-2">Inactivity period: {planDetail.plan.inactivity_period_days ?? '—'} days</p>
+                              <p className="font-normal text-[#8b7b64] text-xs mt-1">Oracle checks wallet activity periodically.</p>
+                              <p className="font-normal text-[#8b7b64] text-xs mt-2">Inactivity period: {planDetail.plan.inactivity_period_days ?? '—'} days</p>
                             </div>
                           </div>
                         )}
@@ -401,9 +410,9 @@ export const BeneficiaryDetails = (): JSX.Element => {
                               <div className="w-0.5 h-12 bg-[#392f28] mt-2" />
                             </div>
                             <div className="pb-4">
-                              <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">Grace Period</p>
-                              <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-1">{planDetail.plan.grace_period} days allowed for owner to cancel trigger.</p>
-                              <p className="[font-family:'Manrope',Helvetica] font-normal text-[#2ccd2c] text-xs mt-2">Pending</p>
+                              <p className="font-bold text-white text-sm">Grace Period</p>
+                              <p className="font-normal text-[#8b7b64] text-xs mt-1">{planDetail.plan.grace_period} days allowed for owner to cancel trigger.</p>
+                              <p className="font-normal text-[#2ccd2c] text-xs mt-2">Pending</p>
                             </div>
                           </div>
                         )}
@@ -415,9 +424,9 @@ export const BeneficiaryDetails = (): JSX.Element => {
                               <div className="w-0.5 h-12 bg-[#392f28] mt-2" />
                             </div>
                             <div className="pb-4">
-                              <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">MPC Authorization</p>
-                              <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-1">Designated signers must approve asset release.</p>
-                              <p className="[font-family:'Manrope',Helvetica] font-normal text-[#2ccd2c] text-xs mt-2">{planDetail.plan.is_released ? 'Completed' : 'Pending'}</p>
+                              <p className="font-bold text-white text-sm">MPC Authorization</p>
+                              <p className="font-normal text-[#8b7b64] text-xs mt-1">Designated signers must approve asset release.</p>
+                              <p className="font-normal text-[#2ccd2c] text-xs mt-2">{planDetail.plan.is_released ? 'Completed' : 'Pending'}</p>
                             </div>
                           </div>
                         )}
@@ -428,9 +437,9 @@ export const BeneficiaryDetails = (): JSX.Element => {
                               <div className="w-3 h-3 rounded-full bg-[#8b7b64]" />
                             </div>
                             <div className="pb-4">
-                              <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">Distribution Executed</p>
-                              <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-1">Assets transferred to beneficiary wallets.</p>
-                              <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs mt-2">Released at {formatTs(planDetail.plan.release_timestamp)}</p>
+                              <p className="font-bold text-white text-sm">Distribution Executed</p>
+                              <p className="font-normal text-[#8b7b64] text-xs mt-1">Assets transferred to beneficiary wallets.</p>
+                              <p className="font-normal text-[#8b7b64] text-xs mt-2">Released at {formatTs(planDetail.plan.release_timestamp)}</p>
                             </div>
                           </div>
                         )}
@@ -442,7 +451,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
                 <div className="flex flex-col gap-4">
                   <Card className="bg-[#181511] border border-[#392f28] rounded-xl">
                     <CardContent className="p-6 flex flex-col gap-4">
-                      <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base">
+                      <h3 className="font-bold text-white text-base">
                         Legal Documents
                       </h3>
 
@@ -453,8 +462,8 @@ export const BeneficiaryDetails = (): JSX.Element => {
                               <div className="flex items-center gap-3 flex-1">
                                 <FileTextIcon className="w-5 h-5 text-[#8b7b64]" />
                                 <div>
-                                  <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-xs">{doc.name ?? doc.title ?? `Document ${idx + 1}`}</p>
-                                  <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-xs">{doc.updated_at ? `Updated ${formatTs(doc.updated_at)}` : (doc.updated_at_display ?? '')}</p>
+                                  <p className="font-bold text-white text-xs">{doc.name ?? doc.title ?? `Document ${idx + 1}`}</p>
+                                  <p className="font-normal text-[#8b7b64] text-xs">{doc.updated_at ? `Updated ${formatTs(doc.updated_at)}` : (doc.updated_at_display ?? '')}</p>
                                 </div>
                               </div>
                               <DownloadIcon className="w-4 h-4 text-[#8b7b64] hover:text-white" />

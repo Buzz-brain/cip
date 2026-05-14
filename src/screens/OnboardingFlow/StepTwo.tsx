@@ -26,7 +26,7 @@ export const StepTwo = (): JSX.Element => {
 
         <button
           onClick={() => navigate("/connect-wallet")}
-          className="[font-family:'Manrope',Helvetica] font-medium text-white text-sm hover:text-[#ff6600] transition-colors flex items-center gap-3"
+          className="font-medium text-white text-sm hover:text-[#ff6600] transition-colors flex items-center gap-3"
         >
           Skip Intro
           <img className="h-[12px]" alt="SkipIntro" src={forwardPlayBtn} />
@@ -36,10 +36,10 @@ export const StepTwo = (): JSX.Element => {
       <section className="flex-1 flex items-center justify-center px-8 py-12">
         <div className="w-full max-w-6xl">
           <div className="mb-12">
-            <div className="text-[#ff6600] [font-family:'Manrope',Helvetica] font-semibold text-sm mb-2">
+            <div className="text-[#ff6600] font-semibold text-sm mb-2">
               Step 2 of 4
             </div>
-            <h2 className="text-white [font-family:'Manrope',Helvetica] font-bold text-2xl mb-4">
+            <h2 className="text-white font-bold text-2xl mb-4">
               MPC Sharing Technology
             </h2>
             <div className="flex items-center gap-4">
@@ -49,7 +49,7 @@ export const StepTwo = (): JSX.Element => {
                   style={{ width: "50%" }}
                 ></div>
               </div>
-              <span className="text-gray-400 [font-family:'Manrope',Helvetica] font-medium ml-2">
+              <span className="text-gray-400 font-medium ml-2">
                 50%
               </span>
             </div>
@@ -72,17 +72,17 @@ export const StepTwo = (): JSX.Element => {
                         <img src={circlePentagon} alt="Icon" />
                       </div>
                       <div>
-                        <p className="[font-family:'Manrope',Helvetica] text-[#b8a494]">
+                        <p className="text-[#b8a494]">
                           Status
                         </p>
-                        <p className="[font-family:'Manrope',Helvetica] font-bold text-white">
+                        <p className="font-bold text-white">
                           Shards Distributed
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <img src={checkGreenCircle} className="h-4" alt="Icon" />
-                      <p className="[font-family:'Manrope',Helvetica] font-semibold text-green-500">
+                      <p className="font-semibold text-green-500">
                         Secure
                       </p>
                     </div>
@@ -98,13 +98,13 @@ export const StepTwo = (): JSX.Element => {
               </div>
 
               <div>
-                <h3 className="text-white [font-family:'Manrope',Helvetica] font-bold text-3xl mb-1">
+                <h3 className="text-white font-bold text-3xl mb-1">
                   The Power of MPC
                 </h3>
                 {/* </div> */}
               </div>
 
-              <p className="text-gray-300 [font-family:'Manrope',Helvetica] text-base leading-relaxed">
+              <p className="text-gray-300 text-base leading-relaxed">
                 Your private key is never stored in one place. Instead, it is
                 split into multiple shards using{" "}
                 <span className="text-[#ff6600] font-semibold">
@@ -113,7 +113,7 @@ export const StepTwo = (): JSX.Element => {
                 .
               </p>
 
-              <p className="text-[#b8a494] [font-family:'Manrope',Helvetica] text-base leading-relaxed">
+              <p className="text-[#b8a494] text-base leading-relaxed">
                 These shards are distributed across independent nodes, ensuring
                 that no single point of failure exists. Even if one node is
                 compromised, your assets remain secure.
@@ -122,13 +122,13 @@ export const StepTwo = (): JSX.Element => {
               <div className="flex flex-col gap-3 mt-3">
                 <div className="flex items-center gap-5">
                   <img src={militaryGradeShield} alt="Icon" />
-                  <p className="text-gray-300 [font-family:'Manrope',Helvetica] text-sm">
+                  <p className="text-gray-300 text-sm">
                     Military-grade encryption
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <img src={cloudCancel} alt="" />
-                  <p className="text-gray-300 [font-family:'Manrope',Helvetica] text-sm">
+                  <p className="text-gray-300 text-sm">
                     No complete key ever exists online
                   </p>
                 </div>
@@ -140,13 +140,13 @@ export const StepTwo = (): JSX.Element => {
                   className="h-12 gap-2 rounded-lg border-[#554733] bg-transparent px-8 hover:bg-[#554733]/10"
                   onClick={() => navigate(-1)}
                 >
-                  <span className="text-base font-bold leading-6 text-white [font-family:'Manrope',Helvetica]">
+                  <span className="text-base font-bold leading-6 text-white">
                     Back
                   </span>
                 </Button>
                 <Button
                   onClick={() => navigate("/connect-wallet")}
-                  className="h-12 px-8 bg-[#ff6600] hover:bg-[#ff7700] [font-family:'Manrope',Helvetica] font-bold text-white text-base rounded-lg flex items-center gap-2"
+                  className="h-12 px-8 bg-[#ff6600] hover:bg-[#ff7700] font-bold text-white text-base rounded-lg flex items-center gap-2"
                 >
                   Next Step
                   <img src={arrowForwardWhite} alt="" />

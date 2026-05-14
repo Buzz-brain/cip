@@ -14,6 +14,7 @@ import ConfirmPaymentModal from '@components/ui/ConfirmPaymentModal';
 
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 const XCIP_HEADER_VALUE = import.meta.env.VITE_XCIP_HEADER;
+const SUBSCRIPTION_WALLET = import.meta.env.VITE_SUBSCRIPTION_WALLET;
 
 export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) => {
   const { plans: backendPlans, loading: plansLoading } = usePlans();
@@ -39,7 +40,7 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
       const provider = new BrowserProvider(window.ethereum as any);
       const signer = await provider.getSigner();
 
-      const toAddress = '0xd9B9C4e5B0d9D3BEAAbcD21a803A2E8a3D47e1bF';
+      const toAddress = SUBSCRIPTION_WALLET;
       const value = parseEther(amountEth);
 
       // GAS ESTIMATION
@@ -235,49 +236,49 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
                 <div className="flex items-start gap-4">
                   <img src={sharpCheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <span className="[font-family:'Manrope',Helvetica] text-sm font-medium text-slate-200">{`Included Plans: ${plan.plans ?? '—'}`}</span>
+                    <span className="text-sm font-medium text-slate-200">{`Included Plans: ${plan.plans ?? '—'}`}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
                   <img src={sharpCheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <span className="[font-family:'Manrope',Helvetica] text-sm font-medium text-slate-200">{`Triggers: ${plan.triggers ?? '—'}`}</span>
+                    <span className="text-sm font-medium text-slate-200">{`Triggers: ${plan.triggers ?? '—'}`}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
                   <img src={sharpCheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <span className="[font-family:'Manrope',Helvetica] text-sm font-medium text-slate-200">{`Supported Chains: ${plan.supported_chain ?? '—'}`}</span>
+                    <span className="text-sm font-medium text-slate-200">{`Supported Chains: ${plan.supported_chain ?? '—'}`}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
                   <img src={plan.storage ? sharpCheckSolid : sharpUncheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <span className={`[font-family:'Manrope',Helvetica] text-sm ${plan.storage ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>{plan.storage ? 'Storage Included' : 'No Storage'}</span>
+                    <span className={`text-sm ${plan.storage ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>{plan.storage ? 'Storage Included' : 'No Storage'}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
                   <img src={plan.taxcore ? sharpCheckSolid : sharpUncheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <span className={`[font-family:'Manrope',Helvetica] text-sm ${plan.taxcore ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>{plan.taxcore ? 'TaxCore Enabled' : 'No TaxCore'}</span>
+                    <span className={`text-sm ${plan.taxcore ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>{plan.taxcore ? 'TaxCore Enabled' : 'No TaxCore'}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
                   <img src={plan.secret_ai ? sharpCheckSolid : sharpUncheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <span className={`[font-family:'Manrope',Helvetica] text-sm ${plan.secret_ai ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>{plan.secret_ai ? 'Secret AI features' : 'No Secret AI'}</span>
+                    <span className={`text-sm ${plan.secret_ai ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>{plan.secret_ai ? 'Secret AI features' : 'No Secret AI'}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
                   <img src={sharpCheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <span className="[font-family:'Manrope',Helvetica] text-sm font-medium text-slate-200">{`Plan edits allowed: ${plan.plan_edit ?? '—'}`}</span>
+                    <span className="text-sm font-medium text-slate-200">{`Plan edits allowed: ${plan.plan_edit ?? '—'}`}</span>
                   </div>
                 </div>
               </div>

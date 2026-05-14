@@ -139,10 +139,10 @@ const systemMenuItems = [
               <span className="text-white font-bold">🛡️</span>
             </div>
             <div>
-              <div className="[font-family:'Space_Grotesk',Helvetica] font-bold text-white text-sm">
+              <div className="font-bold text-white text-sm">
                 CIP Protocol
               </div>
-              <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+              <div className="text-[#8b7664] text-xs">
                 Secure Multi-Chain Legacy
               </div>
             </div>
@@ -167,7 +167,7 @@ const systemMenuItems = [
                 }`}
               >
                 <span className="text-lg">{item.icon}</span>
-                <span className="[font-family:'Noto_Sans',Helvetica] font-medium text-sm">
+                <span className="font-medium text-sm">
                   {item.label}
                 </span>
               </Link>
@@ -183,7 +183,7 @@ const systemMenuItems = [
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[#8b7664] hover:bg-[#2a1f10] hover:text-white transition-colors"
             >
               <span className="text-lg">{item.icon}</span>
-              <span className="[font-family:'Noto_Sans',Helvetica] font-medium text-sm">
+              <span className="font-medium text-sm">
                 {item.label}
               </span>
             </button>
@@ -197,10 +197,10 @@ const systemMenuItems = [
               A
             </div>
             <div className="flex-1 min-w-0">
-              <div className="[font-family:'Noto_Sans',Helvetica] font-bold text-white text-xs truncate">
+              <div className="font-bold text-white text-xs truncate">
                 alex.eth
               </div>
-              <div className="[font-family:'Noto_Sans',Helvetica] text-[#8b7664] text-xs">
+              <div className="text-[#8b7664] text-xs">
                 Online
               </div>
             </div>

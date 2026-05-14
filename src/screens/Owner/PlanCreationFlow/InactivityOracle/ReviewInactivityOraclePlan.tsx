@@ -53,7 +53,7 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
   };
 
   return (
-    <main className="max-w-5xl text-white  [font-family:'Manrope',Helvetica]  mx-auto px-4 py-4">
+    <main className="max-w-5xl text-white   mx-auto px-4 py-4">
       <div className="mb-12">
         <h1 className="text-4xl font-bold mb-4">
           Review Inactivity Oracle Plan
@@ -67,10 +67,10 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
 
       <div className="mb-12">
         <div className="flex items-center justify-between mb-4">
-          <span className="[font-family:'Manrope',Helvetica] font-normal text-white text-sm tracking-[0] leading-5">
+          <span className="font-normal text-white text-sm tracking-[0] leading-5">
             Step 4 of 5: Grace Period
           </span>
-          <span className="[font-family:'Manrope',Helvetica] font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
+          <span className="font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
             80% Completed
           </span>
         </div>
@@ -188,7 +188,7 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
       <footer className="flex mt-12 items-center justify-end pt-8 pb-12 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
         <div className="inline-flex items-start gap-4 relative flex-[0_0_auto]">
           <Button
-            className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent font-bold text-white text-base text-center leading-6"
             onClick={handleBack}
           >
             Back
@@ -196,7 +196,7 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
 
           <Button
             onClick={handleContinue}
-            className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+            className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg font-bold text-white text-base text-center leading-6"
           >
             Continue
             <span>→</span>

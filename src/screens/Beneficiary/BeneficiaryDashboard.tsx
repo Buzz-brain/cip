@@ -39,7 +39,7 @@ export const BeneficiaryDashboard = (): JSX.Element => {
       <section className="flex flex-col gap-4">
         <div className="flex items-end justify-between">
             <div className="flex flex-col gap-2">
-              <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl sm:text-[32px] leading-8 sm:leading-10">
+              <h2 className="font-bold text-white text-2xl sm:text-[32px] leading-8 sm:leading-10">
                 Welcome back, {user?.name ?? user?.email ?? (user?.userInfo?.wallet ? `${user.userInfo.wallet.slice(0,6)}...${user.userInfo.wallet.slice(-4)}` : (user?.publicKey ? `${user.publicKey.slice(0,6)}...${user.publicKey.slice(-4)}` : 'User'))}
               </h2>
             </div>
@@ -52,11 +52,11 @@ export const BeneficiaryDashboard = (): JSX.Element => {
                 <div className="flex items-center justify-center w-12 h-12 bg-[#27221c] rounded-lg">
                   <TrendingUpIcon className="w-6 h-6 text-[#2ccd2c]" />
                 </div>
-                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#2ccd2c] text-sm">Total Inheritance Plans</span>
+                <span className="font-bold text-[#2ccd2c] text-sm">Total Inheritance Plans</span>
               </div>
               <div className="flex flex-col gap-1">
-                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">Total Plans</p>
-                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">{loading ? '—' : (totalPlans ?? 0)}</p>
+                <p className="font-normal text-[#8b7b64] text-sm">Total Plans</p>
+                <p className="font-bold text-white text-2xl">{loading ? '—' : (totalPlans ?? 0)}</p>
               </div>
             </CardContent>
           </Card>
@@ -67,11 +67,11 @@ export const BeneficiaryDashboard = (): JSX.Element => {
                 <div className="flex items-center justify-center w-12 h-12 bg-[#27221c] rounded-lg">
                   <CheckCircleIcon className="w-6 h-6 text-[#2ccd2c]" />
                 </div>
-                <span className="[font-family:'Manrope',Helvetica] font-bold text-[#2ccd2c] text-sm">Total Amount</span>
+                <span className="font-bold text-[#2ccd2c] text-sm">Total Amount</span>
               </div>
               <div className="flex flex-col gap-1">
-                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#8b7b64] text-sm">Total Inherited Value (ETH)</p>
-                <p className="[font-family:'Manrope',Helvetica] font-bold text-white text-2xl">{loading ? '—' : (totalAmount !== null ? String(totalAmount) : '0')}</p>
+                <p className="font-normal text-[#8b7b64] text-sm">Total Inherited Value (ETH)</p>
+                <p className="font-bold text-white text-2xl">{loading ? '—' : (totalAmount !== null ? String(totalAmount) : '0')}</p>
               </div>
             </CardContent>
           </Card>
@@ -79,7 +79,7 @@ export const BeneficiaryDashboard = (): JSX.Element => {
 
         <section className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-xl">Your Inheritance Plans</h3>
+            <h3 className="font-bold text-white text-xl">Your Inheritance Plans</h3>
             <div className="flex items-center gap-2">
               {/* <button className="p-2 hover:bg-[#27221c] rounded-lg transition-colors"><SearchIcon className="w-5 h-5 text-[#8b7b64]" /></button> */}
               <button className="p-2 hover:bg-[#27221c] rounded-lg transition-colors"><LayoutGridIcon className="w-5 h-5 text-[#8b7b64]" /></button>

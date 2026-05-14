@@ -327,17 +327,17 @@ export const SelectAssets = (): JSX.Element => {
         <div className="w-full max-w-6xl">
           <section className="flex flex-col items-start gap-3 w-full">
             <div className="flex flex-col items-start gap-2 relative self-stretch w-full mb-3 flex-[0_0_auto]">
-              <h1 className="[font-family:'Manrope',Helvetica] font-extrabold text-white text-2xl sm:text-[35.7px] tracking-[-1.19px] leading-8 sm:leading-10">
+              <h1 className="font-extrabold text-white text-2xl sm:text-[35.7px] tracking-[-1.19px] leading-8 sm:leading-10">
                 Create Inheritance Plan
               </h1>
             </div>
 
             <header className="flex items-end justify-between w-full">
-              <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-base tracking-[0] leading-6 whitespace-nowrap">
+              <h2 className="font-bold text-white text-base tracking-[0] leading-6 whitespace-nowrap">
                 Step 1 of 5: Plan Setup
               </h2>
 
-              <span className="[font-family:'Manrope',Helvetica] font-normal text-[#afa59c] text-sm leading-5 tracking-[0] whitespace-nowrap">
+              <span className="font-normal text-[#afa59c] text-sm leading-5 tracking-[0] whitespace-nowrap">
                 20% Completed
               </span>
             </header>
@@ -348,7 +348,7 @@ export const SelectAssets = (): JSX.Element => {
               indicatorClassName="bg-[#ff6600]"
             />
 
-            <p className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] text-sm tracking-[0] leading-[21px] w-full">
+            <p className="font-normal text-[#9dabb9] text-sm tracking-[0] leading-[21px] w-full">
               Configure the digital assets to be included in your Inheritance
               Vault.
             </p>
@@ -358,10 +358,10 @@ export const SelectAssets = (): JSX.Element => {
             {/* Two-section layout: Plan Details (name) then Assets */}
             <div className="w-full mt-4 grid grid-cols-1 gap-6">
               <div className="flex flex-col items-start gap-2 relative self-stretch w-full flex-[0_0_auto]">
-                <h1 className="[font-family:'Manrope',Helvetica] font-extrabold text-white text-lg md:text-[25px] tracking-[-1.19px] leading-8 md:leading-10">
+                <h1 className="font-extrabold text-white text-lg md:text-[25px] tracking-[-1.19px] leading-8 md:leading-10">
                   Plan Details
                 </h1>
-                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] text-base tracking-[0] leading-6">
+                <p className="font-normal text-[#9dabb9] text-base tracking-[0] leading-6">
                   Give this plan a name so you can identify it later.
                 </p>
               </div>
@@ -373,7 +373,7 @@ export const SelectAssets = (): JSX.Element => {
                     setPlanName(e.target.value);
                     if (planNameError) setPlanNameError("");
                   }}
-                  className="w-full pl-4 h-[50px] pr-4 py-3 bg-[#2c231a] border border-[#54483b] text-white [font-family:'Manrope',Helvetica] font-normal text-sm rounded-lg"
+                  className="w-full pl-4 h-[50px] pr-4 py-3 bg-[#2c231a] border border-[#54483b] text-white font-normal text-sm rounded-lg"
                 />
                 <div className="flex items-center justify-between mt-2">
                   <p className="text-xs text-[#9dabb9]">
@@ -391,10 +391,10 @@ export const SelectAssets = (): JSX.Element => {
           <div className="flex flex-col md:flex-row items-start justify-center gap-6 md:gap-8 relative self-stretch w-full mt-10 flex-[0_0_auto]">
             <div className="flex flex-col flex-1 items-start gap-6 relative self-stretch w-full">
               <div className="flex flex-col items-start gap-2 relative self-stretch w-full flex-[0_0_auto]">
-                <h1 className="[font-family:'Manrope',Helvetica] font-extrabold text-white text-[25px] tracking-[-1.19px] leading-10">
+                <h1 className="font-extrabold text-white text-[25px] tracking-[-1.19px] leading-10">
                   Select Assets
                 </h1>
-                <p className="[font-family:'Manrope',Helvetica] font-normal text-[#9dabb9] text-base tracking-[0] leading-6">
+                <p className="font-normal text-[#9dabb9] text-base tracking-[0] leading-6">
                   Select tokens from any supported chain. Use the integrated
                   bridge to consolidate
                   <br />
@@ -410,7 +410,7 @@ export const SelectAssets = (): JSX.Element => {
                       placeholder="Search assets (e.g. ETH, USDC)..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 pr-4 py-5 bg-[#2c231a] border-[#54483b] text-[#80796b] [font-family:'Manrope',Helvetica] font-normal text-sm rounded-lg w-full"
+                      className="pl-10 pr-4 py-5 bg-[#2c231a] border-[#54483b] text-[#80796b] font-normal text-sm rounded-lg w-full"
                     />
                   </div>
                 </div>
@@ -425,7 +425,7 @@ export const SelectAssets = (): JSX.Element => {
                       alt="Filter"
                       src={filterIcon}
                     />
-                    <span className="[font-family:'Manrope',Helvetica] font-medium text-white text-sm">
+                    <span className="font-medium text-white text-sm">
                       Filter
                     </span>
                   </Button>
@@ -439,7 +439,7 @@ export const SelectAssets = (): JSX.Element => {
                       alt="Sort"
                       src={sortIcon}
                     />
-                    <span className="[font-family:'Manrope',Helvetica] font-medium text-white text-sm">
+                    <span className="font-medium text-white text-sm">
                       Sort
                     </span>
                   </Button>
@@ -456,27 +456,27 @@ export const SelectAssets = (): JSX.Element => {
                           <TableHead className="w-[50px] p-4">
                           </TableHead>
                           <TableHead className="w-[142.66px] p-4">
-                            <span className="[font-family:'Manrope',Helvetica] font-bold text-[#afa59c] text-xs">
+                            <span className="font-bold text-[#afa59c] text-xs">
                               ASSET
                             </span>
                           </TableHead>
                           <TableHead className="w-[129.19px] p-4 hidden sm:table-cell">
-                            <span className="[font-family:'Manrope',Helvetica] font-bold text-[#afa59c] text-xs">
+                            <span className="font-bold text-[#afa59c] text-xs">
                               CHAIN
                             </span>
                           </TableHead>
                           <TableHead className="w-[99.22px] p-4 text-right hidden sm:table-cell">
-                            <span className="[font-family:'Manrope',Helvetica] font-bold text-[#afa59c] text-xs">
+                            <span className="font-bold text-[#afa59c] text-xs">
                               BALANCE
                             </span>
                           </TableHead>
                           <TableHead className="w-[116.02px] p-4 text-right hidden sm:table-cell">
-                            <span className="[font-family:'Manrope',Helvetica] font-bold text-[#afa59c] text-xs">
+                            <span className="font-bold text-[#afa59c] text-xs">
                               VALUE (USD)
                             </span>
                           </TableHead>
                           <TableHead className="w-[88.25px] p-4 text-center">
-                            <span className="[font-family:'Manrope',Helvetica] font-bold text-[#afa59c] text-xs">
+                            <span className="font-bold text-[#afa59c] text-xs">
                               BRIDGE
                             </span>
                           </TableHead>
@@ -520,10 +520,10 @@ export const SelectAssets = (): JSX.Element => {
                                   />
                                 </div> */}
                                 <div className="flex flex-col">
-                                  <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-sm">
+                                  <span className="font-bold text-white text-sm">
                                     {asset.name}
                                   </span>
-                                  <span className="[font-family:'Manrope',Helvetica] font-normal text-[#80796b] text-xs">
+                                  <span className="font-normal text-[#80796b] text-xs">
                                     {asset.symbol}
                                   </span>
                                 </div>
@@ -538,7 +538,7 @@ export const SelectAssets = (): JSX.Element => {
                                     src={asset.chainIcon}
                                   />
                                 </div> */}
-                                <span className="[font-family:'Manrope',Helvetica] font-normal text-gray-300 text-sm whitespace-pre-line">
+                                <span className="font-normal text-gray-300 text-sm whitespace-pre-line">
                                   {asset.chain}
                                 </span>
                               </div>
@@ -548,13 +548,13 @@ export const SelectAssets = (): JSX.Element => {
                                 ethLoading ? (
                                   <div className="inline-block h-4 w-20 bg-[#2a241c] animate-pulse rounded" />
                                 ) : (
-                                  <span className="[font-family:'Inter',Helvetica] font-normal text-white text-sm">{ethBalance ?? '—'}</span>
+                                  <span className="font-normal text-white text-sm">{ethBalance ?? '—'}</span>
                                 )
                               ) : (
                                 asset.balance == null ? (
                                   <div className="inline-block h-4 w-20 bg-[#2a241c] animate-pulse rounded" />
                                 ) : (
-                                  <span className="[font-family:'Inter',Helvetica] font-normal text-white text-sm">{asset.balance}</span>
+                                  <span className="font-normal text-white text-sm">{asset.balance}</span>
                                 )
                               )}
                             </TableCell>
@@ -563,13 +563,13 @@ export const SelectAssets = (): JSX.Element => {
                                 ethLoading ? (
                                   <div className="inline-block h-4 w-20 bg-[#2a241c] animate-pulse rounded" />
                                 ) : (
-                                  <span className="[font-family:'Inter',Helvetica] font-medium text-white text-sm">{ethUsdFormatted ?? '—'}</span>
+                                  <span className="font-medium text-white text-sm">{ethUsdFormatted ?? '—'}</span>
                                 )
                               ) : (
                                 asset.value == null ? (
                                   <div className="inline-block h-4 w-20 bg-[#2a241c] animate-pulse rounded" />
                                 ) : (
-                                  <span className="[font-family:'Inter',Helvetica] font-medium text-white text-sm">{asset.value}</span>
+                                  <span className="font-medium text-white text-sm">{asset.value}</span>
                                 )
                               )}
                             </TableCell>
@@ -613,11 +613,11 @@ export const SelectAssets = (): JSX.Element => {
                           alt="Alert"
                           src={circlePentagonOrangeIcon}
                         />
-                        <h3 className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">
+                        <h3 className="font-bold text-white text-lg">
                           Cross-Chain Bridging Required
                         </h3>
                       </div>
-                      <p className="[font-family:'Manrope',Helvetica] font-normal text-gray-300 text-sm leading-5">
+                      <p className="font-normal text-gray-300 text-sm leading-5">
                         You have selected assets on{" "}
                         <span className="font-bold">{selectedAssetNeedingBridge.symbol}</span>. Use the
                         <br />
@@ -631,7 +631,7 @@ export const SelectAssets = (): JSX.Element => {
                             src={whiteWomanPic}
                             className="relative w-5 h-5 bg-cover bg-[50%_50%]"
                           />
-                          <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-xs">
+                          <span className="font-bold text-white text-xs">
                             {selectedAssetNeedingBridge.symbol}
                           </span>
                         </div>
@@ -641,7 +641,7 @@ export const SelectAssets = (): JSX.Element => {
                             src={portalPic}
                             className={`relative w-5 h-5 bg-cover bg-[50%_50%]`}
                           />
-                          <span className="[font-family:'Manrope',Helvetica] font-medium text-[#80796b] text-xs">
+                          <span className="font-medium text-[#80796b] text-xs">
                             Portal
                           </span>
                         </div>
@@ -651,7 +651,7 @@ export const SelectAssets = (): JSX.Element => {
                             src={ethCoinPic}
                             className={`relative w-5 h-5 bg-cover bg-[50%_50%]`}
                           />
-                          <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-xs">
+                          <span className="font-bold text-white text-xs">
                             ETH Vault
                           </span>
                         </div>
@@ -664,7 +664,7 @@ export const SelectAssets = (): JSX.Element => {
                         }
                       }}
                       className="inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg shadow-[0px_4px_6px_-4px_#137fec33,0px_10px_15px_-3px_#137fec33]">
-                      <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-base">
+                      <span className="font-bold text-white text-base">
                         Start Bridge Process
                       </span>
                       <ZapIcon className="w-[15.56px] h-[19.44px]" />
@@ -678,20 +678,20 @@ export const SelectAssets = (): JSX.Element => {
               <Card className="bg-[#2c231a] border-[#54483b] rounded-xl shadow-[0px_1px_2px_#0000000d] w-full">
                 <CardContent className="flex flex-col items-start gap-6 p-6">
                   <div className="flex flex-col items-start gap-1 w-full">
-                    <p className="[font-family:'Manrope',Helvetica] font-medium text-[#9dabb9] text-sm">
+                    <p className="font-medium text-[#9dabb9] text-sm">
                       Total Estimated Value
                     </p>
                     <div className="flex items-baseline gap-2">
-                      <h2 className="[font-family:'Manrope',Helvetica] font-bold text-white text-3xl tracking-[-0.75px] leading-9">
+                      <h2 className="font-bold text-white text-3xl tracking-[-0.75px] leading-9">
                         {totalValueFormatted}
                       </h2>
-                      <span className="[font-family:'Manrope',Helvetica] font-medium text-[#afa59c] text-xs">
+                      <span className="font-medium text-[#afa59c] text-xs">
                         USD
                       </span>
                     </div>
                     {/* <div className="flex items-center gap-1 pt-1">
                       <TrendingUpIcon className="w-4 h-4 text-green-500" />
-                      <span className="[font-family:'Manrope',Helvetica] font-medium text-green-500 text-sm">
+                      <span className="font-medium text-green-500 text-sm">
                         +2.4% (24h)
                       </span>
                     </div> */}
@@ -712,18 +712,18 @@ export const SelectAssets = (): JSX.Element => {
 
                   <div className="flex items-start justify-center gap-4 pt-4 w-full border-t border-[#49382f]">
                     <div className="flex flex-col flex-1">
-                      <span className="[font-family:'Manrope',Helvetica] font-normal text-[#80796b] text-xs">
+                      <span className="font-normal text-[#80796b] text-xs">
                         Selected Assets
                       </span>
-                      <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">
+                      <span className="font-bold text-white text-lg">
                         {selectedAssets ? 1 : 0}
                       </span>
                     </div>
                     <div className="flex flex-col flex-1">
-                      <span className="[font-family:'Manrope',Helvetica] font-normal text-[#80796b] text-xs">
+                      <span className="font-normal text-[#80796b] text-xs">
                         Chains
                       </span>
-                      <span className="[font-family:'Manrope',Helvetica] font-bold text-white text-lg">
+                      <span className="font-bold text-white text-lg">
                         {selectedChainsCount}
                       </span>
                     </div>
@@ -737,7 +737,7 @@ export const SelectAssets = (): JSX.Element => {
             <div className="flex items-center justify-between pt-8 pb-12 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
               <Button
                 onClick={() => navigate(-1)}
-                className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6"
+                className="px-6 py-6 rounded-lg border border-solid border-[#54483b] bg-transparent hover:bg-transparent font-bold text-white text-base text-center leading-6"
               >
                 Back
               </Button>
@@ -746,7 +746,7 @@ export const SelectAssets = (): JSX.Element => {
                 <Button
                   onClick={handleNext}
                   disabled={!selectedAssets}
-                  className={`inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40] [font-family:'Manrope',Helvetica] font-bold text-white text-base text-center leading-6 ${!selectedAssets ? 'opacity-60 cursor-not-allowed' : ''}`}
+                  className={`inline-flex items-center gap-2 px-7 py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40] font-bold text-white text-base text-center leading-6 ${!selectedAssets ? 'opacity-60 cursor-not-allowed' : ''}`}
                 >
                   Next: Configure Beneficiaries
                   <ChevronRightIcon className="w-6 h-6" />
