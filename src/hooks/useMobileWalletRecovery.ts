@@ -65,13 +65,13 @@ export function getPendingWalletState(): PendingWalletState | null {
 }
 
 /**
- * Clear pending wallet state
+ * Clear pending wallet state (only PENDING_STATE_KEY and RETURN_FROM_WALLET_KEY)
+ * Do NOT clear RELOAD_RESUME_KEY — that is managed independently by clearReloadResumeState()
  */
 export function clearPendingWalletState(): void {
   try {
     sessionStorage.removeItem(PENDING_STATE_KEY);
     sessionStorage.removeItem(RETURN_FROM_WALLET_KEY);
-    sessionStorage.removeItem(RELOAD_RESUME_KEY);
     console.log('[MobileWalletRecovery] 🗑️ Cleared pending wallet state');
   } catch (err) {
     console.error('[MobileWalletRecovery] Failed to clear pending state:', err);

@@ -1,7 +1,7 @@
 // src/context/AuthContext.tsx
 // Authentication context for managing user state and auth actions globally
 
-import React, { createContext, useState, useCallback, ReactNode, useEffect } from "react";
+import React, { createContext, useState, useCallback, ReactNode, useEffect, useRef } from "react";
 import * as authAPI from "../lib/api/auth";
 import { logDebug } from "../lib/debugLogger";
 
@@ -43,6 +43,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const wasEverSetRef = useRef(false);
 
   // Initialize from localStorage on mount — synchronous read only
   // Token validation happens naturally when API calls fail with 401.
@@ -74,13 +75,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   // Persist user to localStorage whenever it changes
+  // Only clear from localStorage if user was previously set (explicit logout, not cold init)
   useEffect(() => {
     if (isInitialized) {
       if (user) {
+        wasEverSetRef.current = true;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
         console.log('[AuthContext] 💾 User persisted to localStorage:', { publicKey: user.publicKey, hasToken: !!user.token });
         logDebug('info', 'User persisted to localStorage', { publicKey: user.publicKey, hasToken: !!user.token });
-      } else {
+      } else if (wasEverSetRef.current) {
+        // Only clear if we explicitly logged out, not on cold mount during reload recovery
         localStorage.removeItem(STORAGE_KEY);
         console.log('[AuthContext] 🗑️ User removed from localStorage');
         logDebug('info', 'User removed from localStorage');

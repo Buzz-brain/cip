@@ -340,6 +340,13 @@ export const ConnectWallet = (): JSX.Element => {
   // Detect reload resume and auto-resume login
   useEffect(() => {
     if (reloadResumeState && !reloadResumeAttempted.current) {
+      // Guard: If a manual wallet connection is already in progress, don't double-trigger
+      if (isWalletConnectionInProgress()) {
+        console.log('[ConnectWallet] ⏭️ Manual wallet connection already in progress, skipping auto-resume');
+        logDebug('info', 'Manual wallet connection in progress, skipping auto-resume');
+        clearReloadResumeState();
+        return;
+      }
       console.log('[ConnectWallet] 🔄 Reload resume state detected on mount, auto-resuming login...');
       logDebug('info', 'Auto-triggering reload resume on mount', { account: reloadResumeState.account });
       resumeLoginAfterReload(reloadResumeState);
