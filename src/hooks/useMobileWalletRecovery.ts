@@ -5,7 +5,7 @@
  * Preserves connection state across app suspend/resume cycles.
  */
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface PendingWalletState {
   account: string;
@@ -208,26 +208,26 @@ export function useAutoResumeWalletConnection(
  */
 export function useReloadResumeDetection(): ReloadResumeState | null {
   const detectedRef = useRef(false);
-  const stateRef = useRef<ReloadResumeState | null>(null);
+  const [resumeState, setResumeState] = useState<ReloadResumeState | null>(null);
 
   useEffect(() => {
     if (detectedRef.current) return; // Only run once
     detectedRef.current = true;
     
-    const resumeState = getReloadResumeState();
-    if (resumeState) {
-      console.log('[MobileWalletRecovery] 🔄 Page reloaded! Detected resume state:', resumeState.account);
-      stateRef.current = resumeState;
+    const state = getReloadResumeState();
+    if (state) {
+      console.log('[MobileWalletRecovery] 🔄 Page reloaded! Detected resume state:', state.account);
       // Increment reload count so we can track how many times we've reloaded
-      resumeState.reloadCount += 1;
-      if (resumeState.reloadCount > 3) {
+      state.reloadCount += 1;
+      if (state.reloadCount > 3) {
         console.log('[MobileWalletRecovery] ⚠️ Too many reloads, clearing resume state');
         clearReloadResumeState();
       } else {
-        saveReloadResumeState(resumeState);
+        saveReloadResumeState(state);
+        setResumeState(state); // ✅ triggers re-render so ConnectWallet's useEffect sees the value
       }
     }
   }, []);
 
-  return stateRef.current;
+  return resumeState;
 }
