@@ -224,59 +224,7 @@ export const ConnectWallet = (): JSX.Element => {
     }
   }, [resumePendingLogin]);
 
-  useAutoResumeWalletConnection(
-    wcIsConnected,
-    wcAddress,
-    handleWalletReturnResume
-  );
-
-  // If user is already authenticated on mount, redirect to dashboard
-  // BUT: Don't redirect if a wallet connection is in progress (checked via state OR session storage)
-  useEffect(() => {
-    const isConnectionInProgress = isConnectingWallet || wcIsConnecting || isWalletConnectionInProgress();
-    
-    if (!loading && isAuthenticated && user && !isConnectionInProgress) {
-      const role = user?.userInfo?.role ?? '';
-      const isFullyRegistered = user?.userInfo?.full_reg;
-      const roleLower = role.toLowerCase();
-      const likelyUser = roleLower === 'user' || roleLower === '';
-      const shouldRequireSetup = likelyUser && isFullyRegistered !== true;
-
-      console.log('[ConnectWallet] 🔄 User already authenticated from localStorage, redirecting...', { role, shouldRequireSetup });
-
-      if (shouldRequireSetup) {
-        navigate('/profile-setup', { replace: true });
-      } else {
-        navigate(getDashboardRoute(role), { replace: true });
-      }
-    }
-  }, [loading, isAuthenticated, user, navigate, isConnectingWallet, wcIsConnecting]);
-
-  useEffect(() => {
-    injectedLoginTriggered.current = false;
-    walletConnectLoginAttempted.current = false;
-    console.log('[ConnectWallet] ✅ Page mounted - reset flags for fresh login');
-    logDebug('info', 'ConnectWallet page mounted');
-    
-    // Detect page teardown during login
-    const handleBeforeUnload = () => {
-      logDebug('warn', 'Page unload detected - login flow interrupted!');
-      console.warn('[ConnectWallet] Page unload detected during login');
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, []);
-
-  // Detect reload resume and auto-resume login
-  useEffect(() => {
-    if (reloadResumeState && !reloadResumeAttempted.current) {
-      console.log('[ConnectWallet] 🔄 Reload resume state detected on mount, auto-resuming login...');
-      logDebug('info', 'Auto-triggering reload resume on mount', { account: reloadResumeState.account });
-      resumeLoginAfterReload(reloadResumeState);
-    }
-  }, [reloadResumeState, resumeLoginAfterReload]);
-
-  // Resume login after page reload (MetaMask in-app browser reload)
+  // Resume login after page reload (MetaMask in-app browser reload) - MOVE ABOVE useEffect that uses it
   const resumeLoginAfterReload = useCallback(async (resumeState: ReloadResumeState) => {
     if (reloadResumeAttempted.current) return;
     reloadResumeAttempted.current = true;
@@ -345,6 +293,58 @@ export const ConnectWallet = (): JSX.Element => {
       setIsConnectingWallet(false);
     }
   }, [walletProvider, loginWithWallet, fetchUserInfo, navigate, showToastOnce]);
+
+  useAutoResumeWalletConnection(
+    wcIsConnected,
+    wcAddress,
+    handleWalletReturnResume
+  );
+
+  // If user is already authenticated on mount, redirect to dashboard
+  // BUT: Don't redirect if a wallet connection is in progress (checked via state OR session storage)
+  useEffect(() => {
+    const isConnectionInProgress = isConnectingWallet || wcIsConnecting || isWalletConnectionInProgress();
+    
+    if (!loading && isAuthenticated && user && !isConnectionInProgress) {
+      const role = user?.userInfo?.role ?? '';
+      const isFullyRegistered = user?.userInfo?.full_reg;
+      const roleLower = role.toLowerCase();
+      const likelyUser = roleLower === 'user' || roleLower === '';
+      const shouldRequireSetup = likelyUser && isFullyRegistered !== true;
+
+      console.log('[ConnectWallet] 🔄 User already authenticated from localStorage, redirecting...', { role, shouldRequireSetup });
+
+      if (shouldRequireSetup) {
+        navigate('/profile-setup', { replace: true });
+      } else {
+        navigate(getDashboardRoute(role), { replace: true });
+      }
+    }
+  }, [loading, isAuthenticated, user, navigate, isConnectingWallet, wcIsConnecting]);
+
+  useEffect(() => {
+    injectedLoginTriggered.current = false;
+    walletConnectLoginAttempted.current = false;
+    console.log('[ConnectWallet] ✅ Page mounted - reset flags for fresh login');
+    logDebug('info', 'ConnectWallet page mounted');
+    
+    // Detect page teardown during login
+    const handleBeforeUnload = () => {
+      logDebug('warn', 'Page unload detected - login flow interrupted!');
+      console.warn('[ConnectWallet] Page unload detected during login');
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
+  // Detect reload resume and auto-resume login
+  useEffect(() => {
+    if (reloadResumeState && !reloadResumeAttempted.current) {
+      console.log('[ConnectWallet] 🔄 Reload resume state detected on mount, auto-resuming login...');
+      logDebug('info', 'Auto-triggering reload resume on mount', { account: reloadResumeState.account });
+      resumeLoginAfterReload(reloadResumeState);
+    }
+  }, [reloadResumeState, resumeLoginAfterReload]);
 
   const handleNavigation = (href: string) => {
     if (href === '/') {
