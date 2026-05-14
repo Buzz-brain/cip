@@ -200,3 +200,34 @@ export function useAutoResumeWalletConnection(
     }
   }, [isConnected, wcAddress]);
 }
+
+/**
+ * Hook to detect page reload and check for resume state
+ * Returns the reload resume state if found, null otherwise
+ * Call this on mount of your connection page to auto-resume after reload
+ */
+export function useReloadResumeDetection(): ReloadResumeState | null {
+  const detectedRef = useRef(false);
+  const stateRef = useRef<ReloadResumeState | null>(null);
+
+  useEffect(() => {
+    if (detectedRef.current) return; // Only run once
+    detectedRef.current = true;
+    
+    const resumeState = getReloadResumeState();
+    if (resumeState) {
+      console.log('[MobileWalletRecovery] 🔄 Page reloaded! Detected resume state:', resumeState.account);
+      stateRef.current = resumeState;
+      // Increment reload count so we can track how many times we've reloaded
+      resumeState.reloadCount += 1;
+      if (resumeState.reloadCount > 3) {
+        console.log('[MobileWalletRecovery] ⚠️ Too many reloads, clearing resume state');
+        clearReloadResumeState();
+      } else {
+        saveReloadResumeState(resumeState);
+      }
+    }
+  }, []);
+
+  return stateRef.current;
+}
