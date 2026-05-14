@@ -18,6 +18,8 @@ import connectWalletOrange from "@assets/connect-wallet-orange.svg";
 import walletConnect from "@assets/walletconnect-logo.svg";
 import metamask from "@assets/metamask-icon.svg";
 import trustWallet from "@assets/trust-wallet-icon.svg";
+import DebugConsole from "../../components/DebugConsole";
+import { logDebug } from "../../lib/debugLogger";
 
 // Session storage key for tracking wallet connection across MetaMask browser navigation
 const WALLET_CONNECTION_SESSION_KEY = 'cip_wallet_connecting_session';
@@ -95,8 +97,10 @@ function markWalletConnectionInProgress() {
   try {
     sessionStorage.setItem(WALLET_CONNECTION_SESSION_KEY, JSON.stringify({ timestamp: Date.now() }));
     console.log('[ConnectWallet] 🔒 Marked wallet connection in progress (session)');
+    logDebug('info', 'Marked wallet connection in progress (session)');
   } catch (e) {
     console.warn('[ConnectWallet] Failed to mark connection in session:', e);
+    logDebug('error', 'Failed to mark connection in session', { error: String(e) });
   }
 }
 
@@ -104,8 +108,10 @@ function clearWalletConnectionSession() {
   try {
     sessionStorage.removeItem(WALLET_CONNECTION_SESSION_KEY);
     console.log('[ConnectWallet] 🗑️ Cleared wallet connection session');
+    logDebug('info', 'Cleared wallet connection session');
   } catch (e) {
     console.warn('[ConnectWallet] Failed to clear connection session:', e);
+    logDebug('error', 'Failed to clear wallet connection session', { error: String(e) });
   }
 }
 
@@ -141,10 +147,12 @@ export const ConnectWallet = (): JSX.Element => {
   // Handle mobile wallet return and auto-resume
   const handleWalletReturnResume = useCallback(() => {
     console.log('[ConnectWallet] 🔄 Wallet return detected, checking for pending connection...');
+    logDebug('info', 'Wallet return detected, checking for pending connection');
     
     const pendingState = getPendingWalletState();
     if (pendingState) {
       console.log('[ConnectWallet] Found pending wallet state, resuming login...');
+      logDebug('info', 'Found pending wallet state', pendingState);
       // Resume the login with the saved account and nonce
       resumePendingLogin(pendingState.account, pendingState.nonce, pendingState.method);
     }
@@ -198,6 +206,7 @@ export const ConnectWallet = (): JSX.Element => {
   const resumePendingLogin = useCallback(async (account: string, nonce: string, _method: 'injected' | 'walletconnect') => {
     try {
       console.log('[ConnectWallet] 📖 Resuming pending login after wallet return:', account);
+      logDebug('info', 'Resuming pending login after wallet return', { account, nonce, method: _method });
       setIsConnectingWallet(true);
       markWalletConnectionInProgress(); // ⚠️ Mark session
 
@@ -208,6 +217,7 @@ export const ConnectWallet = (): JSX.Element => {
 
       const signature = await signMessage(nonce, account, walletProvider);
       console.log('[ConnectWallet] ✅ Got signature after wallet return, sending to backend...');
+      logDebug('info', 'Got signature after wallet return', { signatureLength: signature?.length ?? 0 });
 
       const returnedUser = await loginWithWallet(account, signature, nonce);
       // ⚠️ loginWithWallet now synchronously persists to localStorage
@@ -225,6 +235,7 @@ export const ConnectWallet = (): JSX.Element => {
       const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
       const route = resolvePostLoginRoute(finalUserInfo, role);
       console.log('[ConnectWallet] ✅ Resumed login successful, redirecting to:', route);
+      logDebug('info', 'Resumed login successful', { route });
       
       clearPendingWalletState();
       clearWalletConnectionSession(); // ⚠️ Clear before navigate
@@ -232,6 +243,7 @@ export const ConnectWallet = (): JSX.Element => {
     } catch (err) {
       const errorMessage = normalizeErrorMessage(err);
       console.error('[ConnectWallet] Resume pending login failed:', err);
+      logDebug('error', 'Resume pending login failed', { error: String(err) });
       showToastOnce(errorMessage, 'error');
       clearPendingWalletState();
       clearWalletConnectionSession();
@@ -259,6 +271,7 @@ export const ConnectWallet = (): JSX.Element => {
     injectedLoginTriggered.current = true;
     setIsConnectingWallet(true);
     markWalletConnectionInProgress(); // ⚠️ Mark session
+    logDebug('info', 'Starting WalletConnect login', { address: wcAddress });
 
     try {
       console.log('[ConnectWallet] Logging in with WalletConnect account:', wcAddress);
@@ -274,8 +287,10 @@ export const ConnectWallet = (): JSX.Element => {
         method: 'walletconnect',
         timestamp: Date.now(),
       });
+      logDebug('info', 'Saved pending wallet state (WC)', { account, nonceLength: nonce?.length ?? 0 });
 
       const signature = await signMessage(nonce, account, walletProvider);
+      logDebug('info', 'Got signature (WC)', { signatureLength: signature?.length ?? 0 });
 
       const returnedUser = await loginWithWallet(account, signature, nonce);
       // ⚠️ loginWithWallet now synchronously persists to localStorage
@@ -293,6 +308,7 @@ export const ConnectWallet = (): JSX.Element => {
       const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
       const route = resolvePostLoginRoute(finalUserInfo, role);
       console.log('[ConnectWallet] Login successful, redirecting to:', route);
+      logDebug('info', 'WalletConnect login successful', { route });
       
       clearPendingWalletState();
       clearWalletConnectionSession(); // ⚠️ Clear before navigate
@@ -300,6 +316,7 @@ export const ConnectWallet = (): JSX.Element => {
     } catch (err) {
       const errorMessage = normalizeErrorMessage(err);
       console.error('[ConnectWallet] WalletConnect login failed:', err);
+      logDebug('error', 'WalletConnect login failed', { error: String(err) });
       showToastOnce(errorMessage, 'error');
       clearPendingWalletState();
       clearWalletConnectionSession();
@@ -333,12 +350,14 @@ export const ConnectWallet = (): JSX.Element => {
       // WalletConnect path
       if (walletId === 'walletconnect') {
         console.log('[ConnectWallet] Opening WalletConnect...');
+        logDebug('info', 'Opening WalletConnect modal');
         walletConnectLoginAttempted.current = true;
         try {
           await openWalletConnectModal();
           setIsConnectingWallet(false);
         } catch (err) {
           console.error('[ConnectWallet] WalletConnect open error:', err);
+          logDebug('error', 'WalletConnect open error', { error: String(err) });
           showToastOnce(normalizeErrorMessage(err), 'error');
           setIsConnectingWallet(false);
           clearWalletConnectionSession();
@@ -370,8 +389,10 @@ export const ConnectWallet = (): JSX.Element => {
       }
 
       console.log('[ConnectWallet] Using discovered provider for:', walletId);
+      logDebug('info', 'Using discovered provider', { walletId });
 
       let account = await walletUtils.requestWalletConnection(provider);
+      logDebug('info', 'Requested wallet connection', { walletId });
       account = normalizeWalletAddress(account);
 
       await ensureArbitrumSepoliaWithFallback(provider);
@@ -384,6 +405,7 @@ export const ConnectWallet = (): JSX.Element => {
         method: 'injected',
         timestamp: Date.now(),
       });
+      logDebug('info', 'Saved pending wallet state (injected)', { account, nonceLength: nonce?.length ?? 0 });
 
       const signature = await walletUtils.signMessage(nonce, account, provider);
 
@@ -392,6 +414,7 @@ export const ConnectWallet = (): JSX.Element => {
         nonce,
         signatureLength: signature ? signature.length : 0,
       });
+      logDebug('info', 'Got signature (injected)', { signatureLength: signature ? signature.length : 0 });
 
       // Client-side recovery check (non-blocking)
       try {
@@ -419,6 +442,7 @@ export const ConnectWallet = (): JSX.Element => {
       const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
       const route = resolvePostLoginRoute(finalUserInfo, role);
       console.log('[ConnectWallet] Login successful, redirecting to:', route);
+      logDebug('info', 'Injected login successful', { route });
       
       clearPendingWalletState();
       clearWalletConnectionSession(); // ⚠️ Clear session before navigating
@@ -427,6 +451,7 @@ export const ConnectWallet = (): JSX.Element => {
     } catch (err) {
       const errorMessage = normalizeErrorMessage(err);
       console.error('[ConnectWallet] Wallet select failed:', err);
+      logDebug('error', 'Wallet select failed', { error: String(err) });
       showToastOnce(errorMessage, 'error');
       clearPendingWalletState();
       clearWalletConnectionSession();
@@ -561,6 +586,7 @@ export const ConnectWallet = (): JSX.Element => {
           </a>
         </p>
       </section>
+      <DebugConsole />
     </div>
   );
 };

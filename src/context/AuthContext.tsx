@@ -16,6 +16,7 @@ export interface User {
 }
 
 export interface AuthContextType {
+  
   user: User | null;
   loading: boolean;
   error: string | null;

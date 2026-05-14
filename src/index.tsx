@@ -140,6 +140,7 @@ import AdministrativeDashboard from "./screens/Administrative/AdministrativeDash
 document.documentElement.style.fontFamily = "'Sora', Helvetica, sans-serif";
 document.body.style.fontFamily = "'Sora', Helvetica, sans-serif";
 import { Login } from "./screens/Login";
+import DebugConsole from "./components/DebugConsole";
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
@@ -358,6 +359,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         draggable
         pauseOnHover
       />
+      <DebugConsole />
             </BrowserRouter>
           </PlanProvider>
         </ToastProvider>
