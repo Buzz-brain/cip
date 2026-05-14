@@ -11,7 +11,7 @@ import { normalizeWalletAddress, getDashboardRoute } from "../../lib/utils";
 import { verifyMessage } from "ethers";
 import * as authAPI from "../../lib/api/auth";
 import { useWalletConnectLifecycle } from "../../hooks/useWalletConnectLifecycle";
-import { useAutoResumeWalletConnection, savePendingWalletState, getPendingWalletState, clearPendingWalletState } from "../../hooks/useMobileWalletRecovery";
+import { useAutoResumeWalletConnection, savePendingWalletState, getPendingWalletState, clearPendingWalletState, useReloadResumeDetection, saveReloadResumeState, getReloadResumeState, clearReloadResumeState, ReloadResumeState } from "../../hooks/useMobileWalletRecovery";
 import logoImg from "@assets/cip-logo-full.png";
 import helpIcon from "@assets/help.svg";
 import connectWalletOrange from "@assets/connect-wallet-orange.svg";
@@ -121,10 +121,12 @@ export const ConnectWallet = (): JSX.Element => {
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
   const { walletProvider } = useAppKitProvider('eip155');
   const { address: wcAddress, isConnected: wcIsConnected } = useAppKitAccount();
+  const reloadResumeState = useReloadResumeDetection();
 
   const toastGuard = useRef(new Set<string>());
   const injectedLoginTriggered = useRef(false);
   const walletConnectLoginAttempted = useRef(false);
+  const reloadResumeAttempted = useRef(false);
 
   const {
     isConnecting: wcIsConnecting,
@@ -201,6 +203,15 @@ export const ConnectWallet = (): JSX.Element => {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
 
+  // Detect reload resume and auto-resume login
+  useEffect(() => {
+    if (reloadResumeState && !reloadResumeAttempted.current) {
+      console.log('[ConnectWallet] 🔄 Reload resume state detected on mount, auto-resuming login...');
+      logDebug('info', 'Auto-triggering reload resume on mount', { account: reloadResumeState.account });
+      resumeLoginAfterReload(reloadResumeState);
+    }
+  }, [reloadResumeState, resumeLoginAfterReload]);
+
   const showToastOnce = useCallback((message: string, type: 'error' | 'success' | 'info' = 'error') => {
     const key = `${type}:${message}`;
     if (toastGuard.current.has(key)) return;
@@ -210,6 +221,76 @@ export const ConnectWallet = (): JSX.Element => {
     else toast.info(message);
     setTimeout(() => toastGuard.current.delete(key), 3000);
   }, []);
+
+  // Resume login after page reload (MetaMask in-app browser reload)
+  const resumeLoginAfterReload = useCallback(async (resumeState: ReloadResumeState) => {
+    if (reloadResumeAttempted.current) return;
+    reloadResumeAttempted.current = true;
+
+    try {
+      console.log('[ConnectWallet] 🔄 Resuming login after page reload:', resumeState.account);
+      logDebug('info', 'Resuming login after page reload', { account: resumeState.account });
+      setIsConnectingWallet(true);
+      markWalletConnectionInProgress();
+
+      const { account, nonce, method } = resumeState;
+      let provider: any = walletProvider;
+
+      // If injected method, rediscover provider
+      if (method === 'injected') {
+        initEip6963Discovery();
+        const rdnsMap: Record<string, string> = { metamask: 'io.metamask', trust: 'com.trustwallet.app', coinbase: 'com.coinbase.wallet' };
+        const rdns = rdnsMap['metamask']; // Default to MetaMask for in-app
+        if (rdns) {
+          provider = walletUtils.getWalletProviderByRdns(rdns);
+          if (!provider) provider = await waitForWalletProvider(rdns, 2000);
+        }
+      }
+
+      if (!provider) throw new Error('Wallet provider not available for resume');
+
+      // Request signature again
+      console.log('[ConnectWallet] Requesting signature for reload resume...');
+      logDebug('info', 'Requesting signature for reload resume', { account, nonceLength: nonce?.length ?? 0 });
+      const signature = await walletUtils.signMessage(nonce, account, provider);
+      logDebug('info', 'Got signature for reload resume', { signatureLength: signature?.length ?? 0 });
+
+      // Complete login
+      console.log('[ConnectWallet] Completing login after reload...');
+      const returnedUser = await loginWithWallet(account, signature, nonce);
+      logDebug('info', 'loginWithWallet returned (reload)', { returnedUser, hasToken: !!returnedUser?.token });
+
+      let finalUserInfo = returnedUser?.userInfo ?? null;
+      if (!finalUserInfo && returnedUser?.token) {
+        try {
+          finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
+        } catch (e) {
+          logDebug('warn', 'authAPI.getUserInfo failed (reload)', { error: String(e) });
+          try { await fetchUserInfo(); } catch (fe) { logDebug('warn', 'fetchUserInfo fallback failed (reload)', { error: String(fe) }); }
+          finalUserInfo = returnedUser?.userInfo ?? null;
+        }
+      }
+
+      const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
+      const route = resolvePostLoginRoute(finalUserInfo, role);
+      console.log('[ConnectWallet] ✅ Reload resume complete, redirecting to:', route);
+      logDebug('info', 'Reload resume complete', { route });
+
+      clearReloadResumeState();
+      clearWalletConnectionSession();
+      clearPendingWalletState();
+      navigate(route);
+    } catch (err) {
+      const errorMessage = normalizeErrorMessage(err);
+      console.error('[ConnectWallet] Reload resume failed:', err);
+      logDebug('error', 'Reload resume failed', { error: String(err) });
+      showToastOnce(errorMessage, 'error');
+      clearReloadResumeState();
+      clearWalletConnectionSession();
+    } finally {
+      setIsConnectingWallet(false);
+    }
+  }, [walletProvider, loginWithWallet, fetchUserInfo, navigate, showToastOnce]);
 
   // Resume login from pending state (used after mobile wallet return)
   const resumePendingLogin = useCallback(async (account: string, nonce: string, _method: 'injected' | 'walletconnect') => {
@@ -248,6 +329,7 @@ export const ConnectWallet = (): JSX.Element => {
       console.log('[ConnectWallet] ✅ Resumed login successful, redirecting to:', route);
       logDebug('info', 'Resumed login successful', { route });
       
+      clearReloadResumeState();
       clearPendingWalletState();
       clearWalletConnectionSession(); // ⚠️ Clear before navigate
       navigate(route);
@@ -256,6 +338,7 @@ export const ConnectWallet = (): JSX.Element => {
       console.error('[ConnectWallet] Resume pending login failed:', err);
       logDebug('error', 'Resume pending login failed', { error: String(err) });
       showToastOnce(errorMessage, 'error');
+      clearReloadResumeState();
       clearPendingWalletState();
       clearWalletConnectionSession();
     } finally {
@@ -299,6 +382,15 @@ export const ConnectWallet = (): JSX.Element => {
         timestamp: Date.now(),
       });
       logDebug('info', 'Saved pending wallet state (WC)', { account, nonceLength: nonce?.length ?? 0 });
+      // ⚠️ CRITICAL: Also save reload resume state in case page reloads during signing
+      saveReloadResumeState({
+        account,
+        nonce,
+        method: 'walletconnect',
+        timestamp: Date.now(),
+        reloadCount: 0,
+      });
+      logDebug('info', 'Saved reload resume state (WC)', { account, nonceLength: nonce?.length ?? 0 });
 
       const signature = await signMessage(nonce, account, walletProvider);
       logDebug('info', 'Got signature (WC)', { signatureLength: signature?.length ?? 0 });
@@ -323,6 +415,7 @@ export const ConnectWallet = (): JSX.Element => {
       console.log('[ConnectWallet] Login successful, redirecting to:', route);
       logDebug('info', 'WalletConnect login successful', { route });
       
+      clearReloadResumeState();
       clearPendingWalletState();
       clearWalletConnectionSession(); // ⚠️ Clear before navigate
       navigate(route);
@@ -331,6 +424,7 @@ export const ConnectWallet = (): JSX.Element => {
       console.error('[ConnectWallet] WalletConnect login failed:', err);
       logDebug('error', 'WalletConnect login failed', { error: String(err) });
       showToastOnce(errorMessage, 'error');
+      clearReloadResumeState();
       clearPendingWalletState();
       clearWalletConnectionSession();
     } finally {
@@ -428,7 +522,16 @@ export const ConnectWallet = (): JSX.Element => {
         timestamp: Date.now(),
       });
       logDebug('info', 'Saved pending wallet state (injected)', { account, nonceLength: nonce?.length ?? 0 });
-      console.log('[ConnectWallet] Pending state saved');
+      // ⚠️ CRITICAL: Also save reload resume state in case page reloads during signing
+      saveReloadResumeState({
+        account,
+        nonce,
+        method: 'injected',
+        timestamp: Date.now(),
+        reloadCount: 0,
+      });
+      logDebug('info', 'Saved reload resume state (injected)', { account, nonceLength: nonce?.length ?? 0 });
+      console.log('[ConnectWallet] Pending and reload states saved');
 
       console.log('[ConnectWallet] Signing message...');
       const signature = await walletUtils.signMessage(nonce, account, provider);
@@ -474,6 +577,7 @@ export const ConnectWallet = (): JSX.Element => {
       console.log('[ConnectWallet] Login successful, redirecting to:', route);
       logDebug('info', 'Injected login successful', { route });
       
+      clearReloadResumeState();
       clearPendingWalletState();
       clearWalletConnectionSession(); // ⚠️ Clear session before navigating
       navigate(route);
@@ -483,6 +587,7 @@ export const ConnectWallet = (): JSX.Element => {
       console.error('[ConnectWallet] Wallet select failed:', err);
       logDebug('error', 'Wallet select failed', { error: String(err) });
       showToastOnce(errorMessage, 'error');
+      clearReloadResumeState();
       clearPendingWalletState();
       clearWalletConnectionSession();
     } finally {

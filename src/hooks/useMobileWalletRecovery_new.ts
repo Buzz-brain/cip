@@ -80,6 +80,7 @@ export function clearPendingWalletState(): void {
 
 /**
  * Save reload resume state (used when page reloads during wallet signing)
+ * This allows us to auto-resume the login flow after reload
  */
 export function saveReloadResumeState(state: ReloadResumeState): void {
   try {
@@ -97,12 +98,16 @@ export function getReloadResumeState(): ReloadResumeState | null {
   try {
     const stored = sessionStorage.getItem(RELOAD_RESUME_KEY);
     if (!stored) return null;
+    
     const state = JSON.parse(stored) as ReloadResumeState;
+    
+    // Check if state is stale (older than 10 minutes)
     if (Date.now() - state.timestamp > 10 * 60 * 1000) {
       console.log('[MobileWalletRecovery] ⏰ Reload resume state is stale, discarding');
       clearPendingWalletState();
       return null;
     }
+    
     console.log('[MobileWalletRecovery] 📖 Retrieved reload resume state:', state.account, '(reload #' + state.reloadCount + ')');
     return state;
   } catch (err) {
@@ -199,4 +204,34 @@ export function useAutoResumeWalletConnection(
       resumeAttemptedRef.current = false;
     }
   }, [isConnected, wcAddress]);
+}
+
+/**
+ * Hook to detect page reload and check for resume state
+ * Returns the reload resume state if found, null otherwise
+ */
+export function useReloadResumeDetection(): ReloadResumeState | null {
+  const detectedRef = useRef(false);
+  const stateRef = useRef<ReloadResumeState | null>(null);
+
+  useEffect(() => {
+    if (detectedRef.current) return; // Only run once
+    detectedRef.current = true;
+    
+    const resumeState = getReloadResumeState();
+    if (resumeState) {
+      console.log('[MobileWalletRecovery] 🔄 Page reloaded! Detected resume state:', resumeState.account);
+      stateRef.current = resumeState;
+      // Increment reload count so we can track how many times we've reloaded
+      resumeState.reloadCount += 1;
+      if (resumeState.reloadCount > 3) {
+        console.log('[MobileWalletRecovery] ⚠️ Too many reloads, clearing resume state');
+        clearReloadResumeState();
+      } else {
+        saveReloadResumeState(resumeState);
+      }
+    }
+  }, []);
+
+  return stateRef.current;
 }
