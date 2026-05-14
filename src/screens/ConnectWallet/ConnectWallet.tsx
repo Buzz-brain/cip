@@ -190,6 +190,15 @@ export const ConnectWallet = (): JSX.Element => {
     injectedLoginTriggered.current = false;
     walletConnectLoginAttempted.current = false;
     console.log('[ConnectWallet] ✅ Page mounted - reset flags for fresh login');
+    logDebug('info', 'ConnectWallet page mounted');
+    
+    // Detect page teardown during login
+    const handleBeforeUnload = () => {
+      logDebug('warn', 'Page unload detected - login flow interrupted!');
+      console.warn('[ConnectWallet] Page unload detected during login');
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
 
   const showToastOnce = useCallback((message: string, type: 'error' | 'success' | 'info' = 'error') => {
@@ -395,14 +404,23 @@ export const ConnectWallet = (): JSX.Element => {
       console.log('[ConnectWallet] Using discovered provider for:', walletId);
       logDebug('info', 'Using discovered provider', { walletId });
 
+      console.log('[ConnectWallet] Requesting wallet connection...');
       let account = await walletUtils.requestWalletConnection(provider);
-      logDebug('info', 'Requested wallet connection', { walletId });
+      logDebug('info', 'Requested wallet connection', { walletId, accountPresent: !!account });
       account = normalizeWalletAddress(account);
+      console.log('[ConnectWallet] Account normalized:', account);
 
+      console.log('[ConnectWallet] Ensuring chain...');
       await ensureArbitrumSepoliaWithFallback(provider);
+      logDebug('info', 'Chain ensured');
+      
+      console.log('[ConnectWallet] Getting nonce...');
       const nonce = await getNonce(account);
+      logDebug('info', 'Nonce retrieved', { nonceLength: nonce?.length ?? 0 });
+      console.log('[ConnectWallet] Nonce:', nonce.substring(0, 8) + '...');
       
       // ⚠️ CRITICAL: Save pending state BEFORE attempting to sign (may switch apps on mobile)
+      console.log('[ConnectWallet] Saving pending wallet state...');
       savePendingWalletState({
         account,
         nonce,
@@ -410,8 +428,11 @@ export const ConnectWallet = (): JSX.Element => {
         timestamp: Date.now(),
       });
       logDebug('info', 'Saved pending wallet state (injected)', { account, nonceLength: nonce?.length ?? 0 });
+      console.log('[ConnectWallet] Pending state saved');
 
+      console.log('[ConnectWallet] Signing message...');
       const signature = await walletUtils.signMessage(nonce, account, provider);
+      console.log('[ConnectWallet] Signature received, length:', signature?.length);
 
       console.log('[ConnectWallet] Signing details:', {
         account,
@@ -430,8 +451,11 @@ export const ConnectWallet = (): JSX.Element => {
         console.error('[ConnectWallet] Recovery check failed:', recErr);
       }
 
+      console.log('[ConnectWallet] Calling loginWithWallet...');
+      logDebug('info', 'About to call loginWithWallet', { account, signatureLength: signature?.length });
       const returnedUser = await loginWithWallet(account, signature, nonce);
-      logDebug('info', 'loginWithWallet returned (injected)', { returnedUser });
+      console.log('[ConnectWallet] loginWithWallet returned:', { returnedUser });
+      logDebug('info', 'loginWithWallet returned (injected)', { returnedUser, hasToken: !!returnedUser?.token });
       // ⚠️ loginWithWallet now synchronously persists to localStorage
 
       let finalUserInfo = returnedUser?.userInfo ?? null;

@@ -146,40 +146,56 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setLoading(true);
         setError(null);
         logDebug('info', 'loginWithWallet started', { publicKey });
+        console.log('[AuthContext] loginWithWallet: calling authAPI.login...');
+        
         const loginResponse = await authAPI.login({ publicKey, signature, message });
+        logDebug('info', 'authAPI.login returned', { loginResponse, responseType: typeof loginResponse });
+        console.log('[AuthContext] loginWithWallet: authAPI.login returned', loginResponse);
 
         // API returns a token string
         const token = loginResponse as string;
         if (!token || typeof token !== "string") {
-          logDebug('error', 'loginWithWallet invalid token', { loginResponse });
+          logDebug('error', 'loginWithWallet invalid token', { loginResponse, tokenType: typeof token });
+          console.error('[AuthContext] loginWithWallet: invalid token', { loginResponse, tokenType: typeof token });
           throw new Error("Login failed: invalid auth token");
         }
 
+        logDebug('info', 'loginWithWallet: token is valid', { tokenLength: token.length });
         const newUser: User = { publicKey, token };
+        
         // Optionally fetch user info after login
+        logDebug('info', 'loginWithWallet: fetching user info...');
         try {
+          console.log('[AuthContext] loginWithWallet: calling authAPI.getUserInfo...');
           const userInfo = await authAPI.getUserInfo(token);
           logDebug('info', 'authAPI.getUserInfo returned', { userInfo });
+          console.log('[AuthContext] loginWithWallet: authAPI.getUserInfo returned', userInfo);
           newUser.userInfo = userInfo;
           // map common fields if present
           newUser.name = userInfo?.full_name || userInfo?.name || newUser.name;
           newUser.email = userInfo?.email || newUser.email;
+          logDebug('info', 'loginWithWallet: user info mapped', { name: newUser.name, email: newUser.email });
         } catch (err) {
-          console.warn("Failed to fetch user info after login:", err);
+          console.warn("[AuthContext] loginWithWallet: Failed to fetch user info after login:", err);
           logDebug('warn', 'Failed to fetch user info after login', { error: String(err) });
         }
 
         // Debug: log user object right before setting
         try { console.log('[AuthContext] loginWithWallet - setting user', { publicKey, token, userInfo: newUser.userInfo }); } catch {}
-        logDebug('info', 'loginWithWallet - setting user', { publicKey, hasToken: !!token, userInfo: newUser.userInfo });
+        logDebug('info', 'loginWithWallet - calling setUser', { publicKey, hasToken: !!token, userInfo: newUser.userInfo });
         setUser(newUser);
+        logDebug('info', 'loginWithWallet - setUser called, returning newUser', { publicKey, hasToken: !!token });
+        console.log('[AuthContext] loginWithWallet: setUser called, returning');
         return newUser;
       } catch (err) {
         const message = err instanceof Error ? err.message : "Login failed";
         setError(message);
-        logDebug('error', 'loginWithWallet failed', { error: String(err) });
+        console.error('[AuthContext] loginWithWallet caught error:', { error: String(err), message });
+        logDebug('error', 'loginWithWallet failed', { error: String(err), message, stack: err instanceof Error ? err.stack : 'N/A' });
         throw err;
       } finally {
+        console.log('[AuthContext] loginWithWallet: finally block, setting loading to false');
+        logDebug('info', 'loginWithWallet: finally block');
         setLoading(false);
       }
     },
