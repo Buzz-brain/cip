@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import debugLogger, { getDebugLogs, clearDebugLogs, isDebugEnabled, setDebugEnabled, enableConsoleCapture, disableConsoleCapture } from '../lib/debugLogger';
 
 export const DebugConsole: React.FC = () => {
@@ -27,6 +28,17 @@ export const DebugConsole: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
+  const copyToClipboard = async () => {
+    try {
+      const data = JSON.stringify(getDebugLogs(), null, 2);
+      await navigator.clipboard.writeText(data);
+      toast.success('Debug logs copied to clipboard');
+    } catch (err) {
+      console.error('Copy logs failed', err);
+      toast.error('Failed to copy logs');
+    }
+  };
+
   return (
     <div>
       <button
@@ -40,12 +52,13 @@ export const DebugConsole: React.FC = () => {
       <div className="fixed z-50 left-4 bottom-16 w-[min(95vw,600px)] max-h-[60vh] overflow-auto bg-[#0b0b0b] border border-[#444] rounded-lg p-3 text-sm text-white shadow-2xl">
           <div className="flex items-center justify-between mb-2">
             <div className="font-semibold">Debug Console</div>
-            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
               <label className="flex items-center gap-2 text-xs">
                 <input type="checkbox" checked={capturing} onChange={(e) => setCapturing(e.target.checked)} />
                 Capture console
               </label>
               <button onClick={() => { clearDebugLogs(); setLogs([]); }} className="px-2 py-1 bg-[#333] rounded">Clear</button>
+              <button onClick={copyToClipboard} className="px-2 py-1 bg-[#10b981] rounded">Copy</button>
               <button onClick={download} className="px-2 py-1 bg-[#1f6feb] rounded">Download</button>
             </div>
           </div>
