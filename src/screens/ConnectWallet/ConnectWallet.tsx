@@ -220,14 +220,16 @@ export const ConnectWallet = (): JSX.Element => {
       logDebug('info', 'Got signature after wallet return', { signatureLength: signature?.length ?? 0 });
 
       const returnedUser = await loginWithWallet(account, signature, nonce);
+      logDebug('info', 'loginWithWallet returned (resume)', { returnedUser });
       // ⚠️ loginWithWallet now synchronously persists to localStorage
 
       let finalUserInfo = returnedUser?.userInfo ?? null;
       if (!finalUserInfo && returnedUser?.token) {
         try {
           finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
-        } catch {
-          try { await fetchUserInfo(); } catch {}
+        } catch (e) {
+          logDebug('warn', 'authAPI.getUserInfo failed (resume)', { error: String(e) });
+          try { await fetchUserInfo(); } catch (fe) { logDebug('warn', 'fetchUserInfo fallback failed (resume)', { error: String(fe) }); }
           finalUserInfo = returnedUser?.userInfo ?? null;
         }
       }
@@ -293,14 +295,16 @@ export const ConnectWallet = (): JSX.Element => {
       logDebug('info', 'Got signature (WC)', { signatureLength: signature?.length ?? 0 });
 
       const returnedUser = await loginWithWallet(account, signature, nonce);
+      logDebug('info', 'loginWithWallet returned (wc)', { returnedUser });
       // ⚠️ loginWithWallet now synchronously persists to localStorage
 
       let finalUserInfo = returnedUser?.userInfo ?? null;
       if (!finalUserInfo && returnedUser?.token) {
         try {
           finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
-        } catch {
-          try { await fetchUserInfo(); } catch {}
+        } catch (e) {
+          logDebug('warn', 'authAPI.getUserInfo failed (wc)', { error: String(e) });
+          try { await fetchUserInfo(); } catch (fe) { logDebug('warn', 'fetchUserInfo fallback failed (wc)', { error: String(fe) }); }
           finalUserInfo = returnedUser?.userInfo ?? null;
         }
       }
@@ -427,6 +431,7 @@ export const ConnectWallet = (): JSX.Element => {
       }
 
       const returnedUser = await loginWithWallet(account, signature, nonce);
+      logDebug('info', 'loginWithWallet returned (injected)', { returnedUser });
       // ⚠️ loginWithWallet now synchronously persists to localStorage
 
       let finalUserInfo = returnedUser?.userInfo ?? null;
@@ -434,7 +439,8 @@ export const ConnectWallet = (): JSX.Element => {
         try {
           finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
         } catch (e) {
-          try { await fetchUserInfo(); } catch {}
+          logDebug('warn', 'authAPI.getUserInfo failed (injected)', { error: String(e) });
+          try { await fetchUserInfo(); } catch (fe) { logDebug('warn', 'fetchUserInfo fallback failed (injected)', { error: String(fe) }); }
           finalUserInfo = returnedUser?.userInfo ?? null;
         }
       }
