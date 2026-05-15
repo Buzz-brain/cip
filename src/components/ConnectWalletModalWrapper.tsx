@@ -1,15 +1,24 @@
 import { useConnectWallet } from '../context/ConnectWalletContext';
 import ConnectWalletModal from './ConnectWalletModal';
 import { useEffect } from 'react';
+import { useDisconnect } from '@reown/appkit/react';
 
 export const ConnectWalletModalWrapper = (): JSX.Element | null => {
   const { isOpen, closeModal, openModal } = useConnectWallet();
+  const { disconnect } = useDisconnect();
 
   useEffect(() => {
     const handler = () => openModal();
     window.addEventListener('openConnectWallet', handler as EventListener);
     return () => window.removeEventListener('openConnectWallet', handler as EventListener);
   }, [openModal]);
+
+  // Disconnect any existing wallet connections when modal opens to prevent auto-login
+  useEffect(() => {
+    if (isOpen) {
+      disconnect?.();
+    }
+  }, [isOpen, disconnect]);
 
   if (!isOpen) return null;
 

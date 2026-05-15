@@ -27,7 +27,7 @@ export const Navbar = ({
   headerClassName = "bg-[#0d0501] border-b border-[#483423]",
   navHeight = "h-16",
   logoClassName = "h-[45px] object-cover",
-  logoHref = "/onboarding/step-one",
+  logoHref = "/",
 }: NavbarProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
 

@@ -1,12 +1,15 @@
 import React, { createContext, useContext, useCallback, useState } from 'react';
 
-type OnboardingStep = 'one' | 'two' | 'three' | null;
+type OnboardingStep = 'one' | 'two' | null;
 
 interface OnboardingContextType {
   isOpen: boolean;
   currentStep: OnboardingStep;
   open: (step?: OnboardingStep) => void;
   openStep: (step: OnboardingStep) => void;
+  nextStep: () => void;
+  prevStep: () => void;
+  finish: () => void;
   close: () => void;
 }
 
@@ -26,13 +29,35 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setIsOpen(true);
   }, []);
 
+  const nextStep = useCallback(() => {
+    setCurrentStep((prev) => {
+      if (prev === 'one') return 'two';
+      return prev;
+    });
+  }, []);
+
+  const prevStep = useCallback(() => {
+    setCurrentStep((prev) => {
+      if (prev === 'two') return 'one';
+      return prev;
+    });
+  }, []);
+
+  const finish = useCallback(() => {
+    // Trigger the connect wallet modal
+    window.dispatchEvent(new CustomEvent('openConnectWallet'));
+    // Close the onboarding modal
+    setIsOpen(false);
+    setCurrentStep(null);
+  }, []);
+
   const close = useCallback(() => {
     setIsOpen(false);
     setCurrentStep(null);
   }, []);
 
   return (
-    <OnboardingContext.Provider value={{ isOpen, currentStep, open, openStep, close }}>
+    <OnboardingContext.Provider value={{ isOpen, currentStep, open, openStep, nextStep, prevStep, finish, close }}>
       {children}
     </OnboardingContext.Provider>
   );

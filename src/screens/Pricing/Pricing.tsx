@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { usePlans } from "../../lib/hooks/usePlans";
 import { Navbar } from "@components/ui/Navbar";
+import { useOnboarding } from '../../context/OnboardingContext';
 import { useAuth } from "../../context/useAuth";
 import { toast } from "react-toastify";
 import { extractErrorMessage } from "../../lib/utils";
@@ -53,6 +54,7 @@ export const Pricing = (): JSX.Element => {
   const [isYearly, setIsYearly] = useState(false);
   const { user } = useAuth();
   const { plans: backendPlans, loading: plansLoading } = usePlans();
+  const { open } = useOnboarding();
   const [subscribing, setSubscribing] = useState<Record<string, boolean>>({});
   const [convertingEth, setConvertingEth] = useState<Record<string, boolean>>({});
   const [modalOpen, setModalOpen] = useState(false);
@@ -229,8 +231,9 @@ const navigationItems = [
               onClick={async () => {
               // Only subscribe for backend plans that include an id
               if (!plan.id) {
-                // fallback: go to onboarding/connect flow
-                navigate("/onboarding/step-one");
+                // fallback: open onboarding modal
+                navigate('/');
+                open('one');
                 return;
               }
 
@@ -479,7 +482,7 @@ const navigationItems = [
           rightActions={
             <Button
               className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 font-bold text-sm"
-              onClick={() => navigate("/onboarding/step-one")}
+              onClick={() => open('one')}
             >
               Launch App
             </Button>

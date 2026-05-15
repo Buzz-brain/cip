@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "@components/ui/card";
 import { Separator } from "../../components/ui/separator";
 import { Navbar } from "@components/ui/Navbar";
 import { useNavigate } from "react-router-dom";
+import { useOnboarding } from '../../context/OnboardingContext';
 import { useConnectWallet } from "../../context/ConnectWalletContext";
 // import { Link } from "react-router-dom";
 
@@ -35,6 +36,7 @@ import arrowForward from "@assets/arrow-forward.svg";
 
 import { motion } from "framer-motion";
 import { usePlans } from "../../lib/hooks/usePlans";
+ 
 
 
 const navigationItems = [
@@ -166,6 +168,7 @@ export const Home = (): JSX.Element => {
   }, []);
 
   const { plans: backendPlans, loading: plansLoading } = usePlans();
+  const { open } = useOnboarding();
 
   const toTitleCase = (input?: string) => {
     if (!input) return "";
@@ -201,12 +204,12 @@ export const Home = (): JSX.Element => {
           navItems={navigationItems}
           logoHref="/"
           rightActions={
-            <Button
-              className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 font-bold text-sm"
-              onClick={() => navigate("/onboarding/step-one")}
-            >
-              Launch App
-            </Button>
+              <Button
+                className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 font-bold text-sm"
+                onClick={() => { navigate('/'); open('one'); }}
+              >
+                Launch App
+              </Button>
           }
           mobileRightActions={mobileConnectWalletButton}
         />
@@ -264,28 +267,22 @@ export const Home = (): JSX.Element => {
                 transition={{ duration: 0.8, delay: 0.8 }}
               >
                 <motion.div
-                  whileHover={{
-                    scale: 1.05,
-                    boxShadow: "0px 0px 20px #ff6633cc",
-                  }}
+                  whileHover={{ scale: 1.05, boxShadow: '0px 0px 20px #ff6633cc' }}
                   whileTap={{ scale: 0.95 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                 >
                   <Button
                     className="w-full sm:w-auto bg-gradient-to-r px-6 py-3 sm:px-7 sm:py-5 from-[#ff6600] to-[#993d00] hover:opacity-90 shadow-[0px_0px_20px_#ff6633cc] font-bold text-sm sm:text-base"
-                    onClick={() => navigate("/onboarding/step-one")}
+                    onClick={() => open('one')}
                   >
                     Start Plan
                   </Button>
                 </motion.div>
 
                 <motion.div
-                  whileHover={{
-                    scale: 1.05,
-                    boxShadow: "0 0 15px rgba(189, 75, 0, 0.5)",
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                 >
                   <Button
                     variant="outline"

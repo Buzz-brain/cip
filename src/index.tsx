@@ -24,8 +24,7 @@ import { Home } from "./screens/Home";
 import { Pricing } from "./screens/Pricing";
 import { ViewPlanHistory } from "./screens/Owner/ViewPlanHistory";
 import { AssetRegistry } from "./screens/Owner/AssetRegistry";
-import { StepOne } from "./screens/OnboardingFlow/StepOne";
-import { StepTwo } from "./screens/OnboardingFlow/StepTwo";
+// onboarding pages removed; onboarding is now modal-driven
 import { ConnectWallet } from "./screens/ConnectWallet";
 import { ProfileSetupForm } from "./screens/ProfileSetupForm";
 import { WalletRecovery } from "./screens/WalletRecovery";
@@ -163,9 +162,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
 
         <Route path="/login" element={<Login />} /> ✅
 
-        {/* User Onboarding Flow */} ✅
-        <Route path="/onboarding/step-one" element={<StepOne />} /> ✅
-        <Route path="/onboarding/step-two" element={<StepTwo />} /> ✅
+        {/* User Onboarding Flow is now modal-driven and hosted on / */}
         <Route path="/profile-setup" element={<ProfileSetupForm />} /> ✅
 
         {/* Recovery Flow */}
