@@ -1,12 +1,19 @@
 import { Badge } from "@components/ui/badge";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Button } from "@components/ui/button";
 import { Card, CardContent, CardHeader } from "@components/ui/card";
 import { Separator } from "../../components/ui/separator";
 import { Navbar } from "@components/ui/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useWalletConnectLifecycle } from "../../hooks/useWalletConnectLifecycle";
+import { useAuth } from "../../context/useAuth";
+import { useAppKitProvider, useAppKitAccount } from "@reown/appkit/react";
+import { normalizeWalletAddress, getDashboardRoute } from "../../lib/utils";
+import * as walletUtils from "../../lib/wallet/walletUtils";
+import { ensureArbitrumSepoliaWithFallback } from "../../lib/wallet/walletUtils";
+import * as authAPI from "../../lib/api/auth";
+import { toast } from "react-toastify";
 // import { Link } from "react-router-dom";
 
 import logoImg from "@assets/cip-logo.png";
@@ -111,6 +118,14 @@ const featureCards = [
   },
 ];
 
+function resolvePostLoginRoute(userInfo: any, role: string): string {
+  const roleLower = (role || '').toLowerCase();
+  const likelyUser = roleLower === 'user' || roleLower === '';
+  const isFullyRegistered = userInfo?.full_reg;
+  const shouldRequireSetup = likelyUser && isFullyRegistered !== true;
+  return shouldRequireSetup ? '/profile-setup' : getDashboardRoute(role);
+}
+
 // Pricing cards are sourced from backend via `usePlans` hook; removed local mock data.
 
 const footerLinks = {
@@ -122,18 +137,88 @@ const footerLinks = {
 
 export const Home = (): JSX.Element => {
   const navigate = useNavigate();
+  const { getNonce, loginWithWallet, fetchUserInfo } = useAuth();
+  const { walletProvider } = useAppKitProvider('eip155');
+  const { address: wcAddress, isConnected: wcIsConnected } = useAppKitAccount();
+  
+  const wcLoginGuard = useRef(false);
+  const toastGuard = useRef(new Set<string>());
+
+  const showToastOnce = useCallback((message: string, type: 'error' | 'success' | 'info' = 'error') => {
+    const key = `${type}:${message}`;
+    if (toastGuard.current.has(key)) return;
+    toastGuard.current.add(key);
+
+    if (type === 'error') toast.error(message);
+    else if (type === 'success') toast.success(message);
+    else toast.info(message);
+
+    setTimeout(() => toastGuard.current.delete(key), 3000);
+  }, []);
+
   const { openWalletConnectModal } = useWalletConnectLifecycle({
     onConnected: () => {
-      // WalletConnect login handled by the hook's internal flow
-      console.log('[Home] WalletConnect login flow initiated');
+      console.log('[Home] WalletConnect connected');
     },
     onFailed: (error: string) => {
       console.error('[Home] WalletConnect failed:', error);
+      showToastOnce(error, 'error');
     },
     onCancelled: () => {
       console.log('[Home] WalletConnect cancelled by user');
     },
   });
+
+  const loginWithWalletConnectAccount = useCallback(async () => {
+    if (!wcAddress || !walletProvider) {
+      console.log('[Home] Missing wcAddress or walletProvider');
+      return;
+    }
+
+    if (wcLoginGuard.current) {
+      console.log('[Home] Login already triggered, skipping');
+      return;
+    }
+
+    wcLoginGuard.current = true;
+    console.log('[Home] WalletConnect login starting with:', wcAddress);
+
+    try {
+      await ensureArbitrumSepoliaWithFallback(walletProvider);
+      const nonce = await getNonce(wcAddress);
+      const signature = await walletUtils.signMessage(nonce, wcAddress, walletProvider);
+
+      const returnedUser = await loginWithWallet(wcAddress, signature, nonce);
+
+      let finalUserInfo = returnedUser?.userInfo ?? null;
+      if (!finalUserInfo && returnedUser?.token) {
+        try {
+          finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
+        } catch {
+          try { await fetchUserInfo(); } catch {}
+          finalUserInfo = returnedUser?.userInfo ?? null;
+        }
+      }
+
+      const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
+      const route = resolvePostLoginRoute(finalUserInfo, role);
+      console.log('[Home] WalletConnect login successful, redirecting to:', route);
+      navigate(route);
+    } catch (err) {
+      console.error('[Home] WalletConnect login error:', err);
+      const message = err instanceof Error ? err.message : 'Connection failed';
+      showToastOnce(message, 'error');
+      wcLoginGuard.current = false;
+    }
+  }, [wcAddress, walletProvider, getNonce, loginWithWallet, fetchUserInfo, navigate, showToastOnce]);
+
+  // Trigger WalletConnect login when connected
+  useEffect(() => {
+    if (wcIsConnected && wcAddress && walletProvider) {
+      loginWithWalletConnectAccount();
+    }
+  }, [wcIsConnected, wcAddress, walletProvider, loginWithWalletConnectAccount]);
+
   const [displayText, setDisplayText] = useState("");
   const [isTypingComplete, setIsTypingComplete] = useState(false);
   const fullText = "Automated, non-custodial inheritance for the multi-chain future. Ensure your assets reach your beneficiaries safely, securely, and tax-efficiently.";
