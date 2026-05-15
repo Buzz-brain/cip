@@ -1,5 +1,6 @@
 import React from 'react';
 import { useOnboarding } from '../context/OnboardingContext';
+import OnboardingContent from './OnboardingContent';
 import { Button } from '@components/ui/button';
 
 const StepOneContent: React.FC<{ openConnect: () => void; navigateHome: () => void }> = ({ openConnect }) => {
@@ -59,19 +60,24 @@ const OnboardingModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-60 flex items-end sm:items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       <div className="absolute inset-0 bg-black/60" onClick={close} />
-      <div className="relative z-10 w-full sm:max-w-3xl px-4 pb-6 sm:pb-0">
+
+      <div className="relative z-10 w-full sm:max-w-4xl px-4 pb-6 sm:pb-0">
         <div className="bg-[#0d0501] w-full rounded-t-xl sm:rounded-xl shadow-xl overflow-hidden max-h-[90vh]">
-          <div className="p-4 border-b border-[#2b241d]">
-            <ProgressBar step={stepIndex} total={4} />
-          </div>
-          <div className="overflow-y-auto max-h-[74vh]">
-            {currentStep === 'one' && <StepOneContent openConnect={openConnect} navigateHome={() => {}} />}
-            {currentStep === 'two' && (
-              <StepTwoContent onBack={() => openStep('one')} onNext={() => openStep('three')} openConnect={openConnect} />
-            )}
-            {!currentStep && <div className="p-4 text-white">Welcome</div>}
+          {/* Close button matches ConnectWallet modal */}
+          <button
+            aria-label="Close onboarding"
+            onClick={close}
+            className="absolute right-3 top-3 sm:right-4 sm:top-4 z-20 bg-black/30 hover:bg-black/40 text-white rounded-full w-8 h-8 flex items-center justify-center"
+          >
+            <span className="text-lg leading-none">×</span>
+          </button>
+
+          <div className="w-full overflow-y-auto scrollbar-thin-custom pr-2 max-h-[82vh]">
+            <div className="p-4 border-b border-[#2b241d]"><!-- progress placeholder to preserve spacing --></div>
+            {/* Render the same content/design used in StepOne/StepTwo */}
+            <OnboardingContent step={currentStep ?? 'one'} />
           </div>
         </div>
       </div>
