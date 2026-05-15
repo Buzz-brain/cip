@@ -71,11 +71,9 @@ export const ConnectWalletModal = ({ onClose }: ConnectWalletModalProps): JSX.El
   const navigate = useNavigate();
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
   const { walletProvider } = useAppKitProvider('eip155');
-  const { address: wcAddress, isConnected: wcIsConnected } = useAppKitAccount();
+  const { address: wcAddress } = useAppKitAccount();
 
   const toastGuard = useRef(new Set<string>());
-  const injectedLoginTriggered = useRef(false);
-  const walletConnectLoginAttempted = useRef(false);
 
   const showToastOnce = useCallback((message: string, type: 'error' | 'success' | 'info' = 'error') => {
     const key = `${type}:${message}`;
@@ -105,10 +103,11 @@ export const ConnectWalletModal = ({ onClose }: ConnectWalletModalProps): JSX.El
     },
   });
 
+  // Handle wallet selection through button click
   const handleWalletSelect = async (walletId: string) => {
+    // WalletConnect flow: open the WalletConnect UI (QR / deep link) — do not auto-login
     if (walletId === 'walletconnect') {
       setIsConnectingWallet(true);
-      walletConnectLoginAttempted.current = true;
       try {
         await openWalletConnectModal();
       } catch (err) {
@@ -188,50 +187,6 @@ export const ConnectWalletModal = ({ onClose }: ConnectWalletModalProps): JSX.El
       setIsConnectingWallet(false);
     }
   };
-
-  // Handle WalletConnect account connection
-  const loginWithWalletConnectAccount = useCallback(async () => {
-    if (!wcAddress || !walletProvider) return;
-    if (walletConnectLoginAttempted.current) return;
-
-    walletConnectLoginAttempted.current = true;
-    console.log('[ConnectWalletModal] WalletConnect login starting');
-
-    try {
-      await ensureArbitrumSepoliaWithFallback(walletProvider);
-      const nonce = await getNonce(wcAddress);
-      const signature = await walletUtils.signMessage(nonce, wcAddress, walletProvider);
-
-      const returnedUser = await loginWithWallet(wcAddress, signature, nonce);
-
-      let finalUserInfo = returnedUser?.userInfo ?? null;
-      if (!finalUserInfo && returnedUser?.token) {
-        try {
-          finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
-        } catch {
-          try { await fetchUserInfo(); } catch {}
-          finalUserInfo = returnedUser?.userInfo ?? null;
-        }
-      }
-
-      const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
-      const route = resolvePostLoginRoute(finalUserInfo, role);
-      console.log('[ConnectWalletModal] WalletConnect login successful, redirecting to:', route);
-      onClose?.();
-      navigate(route);
-    } catch (err) {
-      console.error('[ConnectWalletModal] WalletConnect login error:', err);
-      showToastOnce(normalizeErrorMessage(err), 'error');
-      walletConnectLoginAttempted.current = false;
-      setIsConnectingWallet(false);
-    }
-  }, [wcAddress, walletProvider, getNonce, loginWithWallet, fetchUserInfo, navigate, onClose, showToastOnce]);
-
-  useEffect(() => {
-    if (wcIsConnected && wcAddress && walletProvider) {
-      loginWithWalletConnectAccount();
-    }
-  }, [wcIsConnected, wcAddress, walletProvider, loginWithWalletConnectAccount]);
 
   const isAnyConnecting = isConnectingWallet || wcIsConnecting;
 
