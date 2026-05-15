@@ -11,6 +11,7 @@ interface NavbarProps {
   brand?: string;
   navItems?: NavItem[];
   rightActions?: ReactNode;
+  mobileRightActions?: ReactNode;
   headerClassName?: string;
   navHeight?: string;
   logoClassName?: string;
@@ -22,6 +23,7 @@ export const Navbar = ({
   // brand = "CIP",
   navItems = [],
   rightActions,
+  mobileRightActions,
   headerClassName = "bg-[#0d0501] border-b border-[#483423]",
   navHeight = "h-16",
   logoClassName = "h-[45px] object-cover",
@@ -222,7 +224,7 @@ export const Navbar = ({
               })}
             </nav>
 
-            <div className="mt-6">{rightActions ?? null}</div>
+            <div className="mt-6">{mobileRightActions ?? rightActions ?? null}</div>
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "@components/ui/card";
 import { Separator } from "../../components/ui/separator";
 import { Navbar } from "@components/ui/Navbar";
 import { useNavigate } from "react-router-dom";
+import { useWalletConnectLifecycle } from "../../hooks/useWalletConnectLifecycle";
 // import { Link } from "react-router-dom";
 
 import logoImg from "@assets/cip-logo.png";
@@ -121,6 +122,18 @@ const footerLinks = {
 
 export const Home = (): JSX.Element => {
   const navigate = useNavigate();
+  const { openWalletConnectModal } = useWalletConnectLifecycle({
+    onConnected: () => {
+      // WalletConnect login handled by the hook's internal flow
+      console.log('[Home] WalletConnect login flow initiated');
+    },
+    onFailed: (error: string) => {
+      console.error('[Home] WalletConnect failed:', error);
+    },
+    onCancelled: () => {
+      console.log('[Home] WalletConnect cancelled by user');
+    },
+  });
   const [displayText, setDisplayText] = useState("");
   const [isTypingComplete, setIsTypingComplete] = useState(false);
   const fullText = "Automated, non-custodial inheritance for the multi-chain future. Ensure your assets reach your beneficiaries safely, securely, and tax-efficiently.";
@@ -182,6 +195,15 @@ export const Home = (): JSX.Element => {
     return `$${fixed.toString()}`;
   };
 
+  const mobileConnectWalletButton = (
+    <Button
+      className="w-full bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 font-bold text-sm"
+      onClick={() => openWalletConnectModal()}
+    >
+      Connect Wallet
+    </Button>
+  );
+
   return (
     <div className="min-h-screen bg-[#1e1e1e]">
       <div className="bg-black">
@@ -197,6 +219,7 @@ export const Home = (): JSX.Element => {
               Launch App
             </Button>
           }
+          mobileRightActions={mobileConnectWalletButton}
         />
 
         <section className="relative bg-[#060605] py-12 sm:py-20">
