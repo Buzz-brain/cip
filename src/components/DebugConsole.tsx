@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import debugLogger, { getDebugLogs, clearDebugLogs, isDebugEnabled, setDebugEnabled, enableConsoleCapture, disableConsoleCapture } from '../lib/debugLogger';
+import { getDebugLogs, clearDebugLogs, isDebugEnabled, setDebugEnabled, enableConsoleCapture, disableConsoleCapture } from '../lib/debugLogger';
 
 export const DebugConsole: React.FC = () => {
   const [open, setOpen] = useState(false);
