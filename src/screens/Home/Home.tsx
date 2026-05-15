@@ -1,15 +1,12 @@
-import { Badge } from "@components/ui/badge";
-
+﻿import { Badge } from "@components/ui/badge";
 import { useEffect, useState } from "react";
 import { Button } from "@components/ui/button";
 import { Card, CardContent, CardHeader } from "@components/ui/card";
 import { Separator } from "../../components/ui/separator";
 import { Navbar } from "@components/ui/Navbar";
 import { useNavigate } from "react-router-dom";
-import { useOnboarding } from '../../context/OnboardingContext';
+import { useOnboarding } from "../../context/OnboardingContext";
 import { useConnectWallet } from "../../context/ConnectWalletContext";
-// import { Link } from "react-router-dom";
-
 import logoImg from "@assets/cip-logo.png";
 import logoImgFull from "@assets/cip-logo-full.png";
 import homeBgImg from "@assets/home-bg.svg";
@@ -26,7 +23,7 @@ import calculatorIcon from "@assets/calculator.svg";
 import downloadIcon from "@assets/download.svg";
 import starIcon from "@assets/star.svg";
 import chartIcon from "@assets/chart.svg";
-import happyFaceIcon from "@assets/happy-face.svg"
+import happyFaceIcon from "@assets/happy-face.svg";
 import keyIcon from "@assets/key.svg";
 import checkPinkCircle from "@assets/check-purple-circle.svg";
 import checkGreenCircle from "@assets/check-green-circle.svg";
@@ -36,8 +33,6 @@ import arrowForward from "@assets/arrow-forward.svg";
 
 import { motion } from "framer-motion";
 import { usePlans } from "../../lib/hooks/usePlans";
- 
-
 
 const navigationItems = [
   { label: "How it Works", href: "#core-capabilities" },
@@ -100,20 +95,18 @@ const featureCards = [
       "Create time-locked vaults for minor beneficiaries. Set automated drip-feeds for tuition or monthly allowances unlocked only after specific dates or milestones.",
     features: ["18th Birthday Release", "Tuition Direct-Pay"],
     bgColor: "bg-[#ec48991a]",
-    featureIcon: checkPinkCircle
+    featureIcon: checkPinkCircle,
   },
   {
     icon: keyIcon,
     title: "MPC Security Architecture",
     description:
-      "We use Multi-Party Computation to shard private keys. No single entity—including us—can access your funds. Recovery requires a threshold of shards.",
+      "We use Multi-Party Computation to shard private keys. No single entityΓÇöincluding usΓÇöcan access your funds. Recovery requires a threshold of shards.",
     features: ["Non-custodial by design", "SOC 2 Type II Audited"],
     bgColor: "bg-[#22c55e1a]",
-    featureIcon: checkGreenCircle
+    featureIcon: checkGreenCircle,
   },
 ];
-
-// Pricing cards are sourced from backend via `usePlans` hook; removed local mock data.
 
 const footerLinks = {
   product: ["Features", "TaxCore", "Security", "Pricing"],
@@ -121,13 +114,13 @@ const footerLinks = {
   legal: ["Terms of Service", "Privacy Policy", "Cookie Policy"],
 };
 
-
 export const Home = (): JSX.Element => {
   const navigate = useNavigate();
   const { openModal } = useConnectWallet();
   const [displayText, setDisplayText] = useState("");
   const [isTypingComplete, setIsTypingComplete] = useState(false);
-  const fullText = "Automated, non-custodial inheritance for the multi-chain future. Ensure your assets reach your beneficiaries safely, securely, and tax-efficiently.";
+  const fullText =
+    "Automated, non-custodial inheritance for the multi-chain future. Ensure your assets reach your beneficiaries safely, securely, and tax-efficiently.";
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
@@ -157,14 +150,10 @@ export const Home = (): JSX.Element => {
       const link = document.createElement("link");
       link.id = id;
       link.rel = "stylesheet";
-      link.href = "https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap";
+      link.href =
+        "https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap";
       document.head.appendChild(link);
     }
-    return () => {
-      // Optionally remove the font when unmounting
-      // const el = document.getElementById(id);
-      // if (el) el.remove();
-    };
   }, []);
 
   const { plans: backendPlans, loading: plansLoading } = usePlans();
@@ -179,8 +168,11 @@ export const Home = (): JSX.Element => {
   };
 
   const formatPrice = (p: any) => {
-    if (p === undefined || p === null) return 'Custom';
-    const num = typeof p === 'number' ? p : parseFloat(String(p).replace(/[^0-9.\-]/g, ''));
+    if (p === undefined || p === null) return "Custom";
+    const num =
+      typeof p === "number"
+        ? p
+        : parseFloat(String(p).replace(/[^0-9.\-]/g, ""));
     if (isNaN(num)) return String(p);
     if (Number.isInteger(num)) return `$${num}`;
     const fixed = parseFloat(num.toFixed(2));
@@ -204,12 +196,15 @@ export const Home = (): JSX.Element => {
           navItems={navigationItems}
           logoHref="/"
           rightActions={
-              <Button
-                className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 font-bold text-sm"
-                onClick={() => { navigate('/'); open('one'); }}
-              >
-                Launch App
-              </Button>
+            <Button
+              className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 font-bold text-sm"
+              onClick={() => {
+                navigate("/");
+                open("one");
+              }}
+            >
+              Launch App
+            </Button>
           }
           mobileRightActions={mobileConnectWalletButton}
         />
@@ -267,13 +262,16 @@ export const Home = (): JSX.Element => {
                 transition={{ duration: 0.8, delay: 0.8 }}
               >
                 <motion.div
-                  whileHover={{ scale: 1.05, boxShadow: '0px 0px 20px #ff6633cc' }}
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow: "0px 0px 20px #ff6633cc",
+                  }}
                   whileTap={{ scale: 0.95 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   <Button
                     className="w-full sm:w-auto bg-gradient-to-r px-6 py-3 sm:px-7 sm:py-5 from-[#ff6600] to-[#993d00] hover:opacity-90 shadow-[0px_0px_20px_#ff6633cc] font-bold text-sm sm:text-base"
-                    onClick={() => open('one')}
+                    onClick={() => open("one")}
                   >
                     Start Plan
                   </Button>
@@ -282,7 +280,7 @@ export const Home = (): JSX.Element => {
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   <Button
                     variant="outline"
@@ -456,88 +454,22 @@ export const Home = (): JSX.Element => {
               </motion.div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {coreCapabilities.map((capability, index) => {
-                  const [flipped, setFlipped] = useState(false);
-                  return (
-                    <motion.div
-                      key={capability.title}
-                      initial={{ opacity: 0, y: 50, scale: 0.95 }}
-                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{
-                        duration: 0.6,
-                        delay: 0.4 + index * 0.1,
-                        type: "spring",
-                        stiffness: 200,
-                        damping: 20,
-                      }}
-                      viewport={{}}
-                      className="group perspective-1000"
-                      style={{ perspective: 1000 }}
-                    >
-                      <motion.div
-                        className="relative w-full h-full min-h-[260px]"
-                        style={{ transformStyle: "preserve-3d" }}
-                        animate={{ rotateY: flipped ? 180 : 0 }}
-                        transition={{
-                          duration: 0.6,
-                          type: "spring",
-                          stiffness: 120,
-                        }}
-                        onMouseEnter={() => setFlipped(true)}
-                        onMouseLeave={() => setFlipped(false)}
-                        tabIndex={0}
-                        onFocus={() => setFlipped(true)}
-                        onBlur={() => setFlipped(false)}
-                      >
-                        {/* Front Side */}
-                        <div
-                          className="absolute inset-0 bg-[#332619] border-[#674932] border rounded-lg overflow-hidden flex flex-col items-center justify-center p-6 z-20"
-                          style={{ backfaceVisibility: "hidden" }}
-                        >
-                          <motion.div className="w-12 h-12 bg-[#135bec1a] rounded-lg flex items-center justify-center mb-4">
-                            <motion.img
-                              src={capability.icon}
-                              alt=""
-                              className="w-6 h-6"
-                              whileHover={{ rotate: 360, scale: 1.1 }}
-                              transition={{ duration: 0.4, ease: "easeInOut" }}
-                            />
-                          </motion.div>
-                          <h3 className="font-bold text-white text-xl mb-2 text-center">
-                            {capability.title}
-                          </h3>
-                          <p className="text-[#b8a494] text-sm leading-[22px] text-center">
-                            {capability.description}
-                          </p>
-                        </div>
-                        {/* Back Side */}
-                        <div
-                          className="absolute inset-0 bg-[#ff6600] border-[#674932] border rounded-lg overflow-hidden flex flex-col items-center justify-center p-6 z-10"
-                          style={{
-                            backfaceVisibility: "hidden",
-                            transform: "rotateY(180deg)",
-                          }}
-                        >
-                          <motion.div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
-                            <motion.img
-                              src={capability.icon}
-                              alt=""
-                              className="w-6 h-6"
-                              whileHover={{ rotate: 360, scale: 1.1 }}
-                              transition={{ duration: 0.4, ease: "easeInOut" }}
-                            />
-                          </motion.div>
-                          <h3 className="font-bold text-white text-xl mb-2 text-center">
-                            {capability.title}
-                          </h3>
-                          <p className="text-white text-sm leading-[22px] text-center">
-                            {capability.description}
-                          </p>
-                        </div>
-                      </motion.div>
-                    </motion.div>
-                  );
-                })}
+                {coreCapabilities.map((capability) => (
+                  <div
+                    key={capability.title}
+                    className="bg-[#332619] border-[#674932] border rounded-lg overflow-hidden flex flex-col items-center justify-center p-6"
+                  >
+                    <div className="w-12 h-12 bg-[#135bec1a] rounded-lg flex items-center justify-center mb-4">
+                      <img src={capability.icon} alt="" className="w-6 h-6" />
+                    </div>
+                    <h3 className="font-bold text-white text-xl mb-2 text-center">
+                      {capability.title}
+                    </h3>
+                    <p className="text-[#b8a494] text-sm leading-[22px] text-center">
+                      {capability.description}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -552,59 +484,17 @@ export const Home = (): JSX.Element => {
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16">
               <div className="space-y-10">
-                <motion.div
-                  initial={{ opacity: 0, y: 40, scale: 0.95 }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{
-                    duration: 0.7,
-                    type: "spring",
-                    stiffness: 180,
-                    damping: 18,
-                  }}
-                  viewport={{}}
-                  className="space-y-6"
-                >
-                  <motion.div
-                    initial={{ scale: 0.8, rotate: -8, opacity: 0 }}
-                    whileInView={{ scale: 1, rotate: 0, opacity: 1 }}
-                    transition={{
-                      duration: 0.7,
-                      delay: 0.1,
-                      type: "spring",
-                      stiffness: 300,
-                      damping: 20,
-                    }}
-                    viewport={{}}
-                  >
+                <motion.div className="space-y-6">
+                  <motion.div>
                     <Badge className="bg-[#f6a83b1a] border-[#f6b13b33] !pl-4 !pr-20 !pt-2 !pb-2 text-[#faaf60] font-bold rounded-3xl">
                       <img src={barChartIcon} alt="" className="w-4 h-4 mr-2" />
                       Infrastructure for Accountants
                     </Badge>
                   </motion.div>
-                  <motion.h2
-                    className="font-bold text-white text-5xl"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.7,
-                      delay: 0.2,
-                      type: "spring",
-                      stiffness: 200,
-                    }}
-                    viewport={{}}
-                    whileHover={{
-                      textShadow: "0 0 24px #f6a83b, 0 0 8px #ff6600",
-                    }}
-                  >
+                  <motion.h2 className="font-bold text-white text-5xl">
                     TaxCore Intelligence
                   </motion.h2>
-                  <motion.p
-                    className="text-[#b8a494] text-lg leading-[29px]"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.3 }}
-                    viewport={{}}
-                  >
+                  <motion.p className="text-[#b8a494] text-lg leading-[29px]">
                     TaxCore isn't just a calculator; it's a full compliance
                     suite. It integrates real-time transaction analysis,
                     automatic capital gains calculation, and multi-jurisdiction
@@ -614,36 +504,11 @@ export const Home = (): JSX.Element => {
 
                 <div className="border-l border-[#674932] pl-4 sm:pl-8 space-y-8 sm:space-y-12">
                   {taxCoreSteps.map((step, index) => (
-                    <motion.div
-                      key={step.title}
-                      initial={{ x: -200, rotate: -15, scale: 0.8, opacity: 0 }}
-                      whileInView={{ x: 0, rotate: 0, scale: 1, opacity: 1 }}
-                      transition={{
-                        duration: 0.8,
-                        delay: index * 0.3,
-                        type: "spring",
-                        stiffness: 100,
-                        damping: 15,
-                      }}
-                      viewport={{}}
-                      className="space-y-2"
-                    >
-                      <motion.h3
-                        className="font-bold text-white text-lg"
-                        whileHover={{
-                          scale: 1.1,
-                          textShadow: "0 0 20px #ff6600",
-                        }}
-                      >
+                    <motion.div key={step.title} className="space-y-2">
+                      <motion.h3 className="font-bold text-white text-lg">
                         {step.title}
                       </motion.h3>
-                      <motion.p
-                        className="text-[#b8a494] text-sm"
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: index * 0.3 + 0.2 }}
-                        viewport={{}}
-                      >
+                      <motion.p className="text-[#b8a494] text-sm">
                         {step.description}
                       </motion.p>
                     </motion.div>
@@ -685,9 +550,7 @@ export const Home = (): JSX.Element => {
                         Beneficiary Residency
                       </label>
                       <div className="bg-[#221911] border border-[#674932] rounded px-3 py-2">
-                        <span className="text-white text-sm">
-                          Germany
-                        </span>
+                        <span className="text-white text-sm">Germany</span>
                       </div>
                     </div>
                   </div>
@@ -764,40 +627,7 @@ export const Home = (): JSX.Element => {
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               {featureCards.map((card, index) => (
-                <motion.div
-                  key={card.title}
-                  initial={{
-                    opacity: 0,
-                    y: 100,
-                    scale: 0.5,
-                    rotateY: 90,
-                    rotateX: 45,
-                  }}
-                  whileInView={{
-                    opacity: 1,
-                    y: 0,
-                    scale: 1,
-                    rotateY: 0,
-                    rotateX: 0,
-                  }}
-                  transition={{
-                    duration: 1,
-                    delay: index * 0.3,
-                    type: "spring",
-                    stiffness: 80,
-                    damping: 15,
-                  }}
-                  viewport={{}}
-                  whileHover={{
-                    y: -20,
-                    scale: 1.05,
-                    rotateY: 5,
-                    rotateX: -5,
-                    boxShadow:
-                      "0 30px 60px rgba(0,0,0,0.4), 0 0 30px rgba(255, 102, 0, 0.3)",
-                  }}
-                  style={{ perspective: 1000 }}
-                >
+                <motion.div>
                   <Card className="bg-[#332619] border-[#674932] relative overflow-hidden">
                     <CardContent className="p-8 space-y-6 relative z-10">
                       <motion.div
@@ -942,7 +772,6 @@ export const Home = (): JSX.Element => {
                     stiffness: 200,
                   }}
                   viewport={{}}
-                  whileHover={{ textShadow: "0 0 20px #ff6600" }}
                 >
                   Simple Pricing for Peace of Mind
                 </motion.h2>
@@ -1064,11 +893,6 @@ export const Home = (): JSX.Element => {
                               damping: 18,
                             }}
                             viewport={{}}
-                            whileHover={{
-                              y: 0,
-                              scale: 1.03,
-                              boxShadow: "0 25px 50px rgba(255, 102, 0, 0.2)",
-                            }}
                           >
                             <Card
                               className={`${
@@ -1321,9 +1145,7 @@ export const Home = (): JSX.Element => {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="font-bold text-white text-base">
-                    Product
-                  </h4>
+                  <h4 className="font-bold text-white text-base">Product</h4>
                   <div className="space-y-2">
                     {footerLinks.product.map((link) => (
                       <a
@@ -1338,9 +1160,7 @@ export const Home = (): JSX.Element => {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="font-bold text-white text-base">
-                    Resources
-                  </h4>
+                  <h4 className="font-bold text-white text-base">Resources</h4>
                   <div className="space-y-2">
                     {footerLinks.resources.map((link) => (
                       <a
@@ -1355,9 +1175,7 @@ export const Home = (): JSX.Element => {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="font-bold text-white text-base">
-                    Legal
-                  </h4>
+                  <h4 className="font-bold text-white text-base">Legal</h4>
                   <div className="space-y-2">
                     {footerLinks.legal.map((link) => (
                       <a
@@ -1376,15 +1194,11 @@ export const Home = (): JSX.Element => {
 
               <div className="flex items-center justify-between">
                 <p className="text-[#695d47] text-sm">
-                  © 2024 CIP Protocol. All rights reserved.
+                  ┬⌐ 2024 CIP Protocol. All rights reserved.
                 </p>
                 <div className="flex items-center gap-4">
-                  <span className="text-[#8b7664] text-xs">
-                    public
-                  </span>
-                  <span className="text-[#8b7664] text-sm">
-                    mail
-                  </span>
+                  <span className="text-[#8b7664] text-xs">public</span>
+                  <span className="text-[#8b7664] text-sm">mail</span>
                 </div>
               </div>
             </div>
