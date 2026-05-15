@@ -89,7 +89,10 @@ export const StepOne = (): JSX.Element => {
               </div>
 
               <Button
-                onClick={() => openModal()}
+                onClick={() => {
+                  navigate("/");
+                  openModal();
+                }}
                 className="h-10 px-4 bg-[#ff6600] hover:bg-[#ff7700] font-bold text-white text-sm leading-[21px] rounded-lg"
               >
                 Connect Wallet

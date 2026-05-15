@@ -147,7 +147,10 @@ export const StepTwo = (): JSX.Element => {
                   </span>
                 </Button>
                 <Button
-                  onClick={() => openModal()}
+                  onClick={() => {
+                    navigate("/");
+                    openModal();
+                  }}
                   className="h-12 px-8 bg-[#ff6600] hover:bg-[#ff7700] font-bold text-white text-base rounded-lg flex items-center gap-2"
                 >
                   Next Step
