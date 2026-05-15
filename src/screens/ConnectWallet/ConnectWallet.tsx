@@ -11,7 +11,6 @@ import { normalizeWalletAddress, getDashboardRoute } from "../../lib/utils";
 import { verifyMessage } from "ethers";
 import * as authAPI from "../../lib/api/auth";
 import { useWalletConnectLifecycle } from "../../hooks/useWalletConnectLifecycle";
-import { useAutoResumeWalletConnection, savePendingWalletState, getPendingWalletState, clearPendingWalletState, useReloadResumeDetection, saveReloadResumeState, getReloadResumeState, clearReloadResumeState, ReloadResumeState } from "../../hooks/useMobileWalletRecovery";
 import logoImg from "@assets/cip-logo-full.png";
 import helpIcon from "@assets/help.svg";
 import connectWalletOrange from "@assets/connect-wallet-orange.svg";
@@ -20,9 +19,6 @@ import metamask from "@assets/metamask-icon.svg";
 import trustWallet from "@assets/trust-wallet-icon.svg";
 import DebugConsole from "../../components/DebugConsole";
 import { logDebug } from "../../lib/debugLogger";
-
-// Session storage key for tracking wallet connection across MetaMask browser navigation
-const WALLET_CONNECTION_SESSION_KEY = 'cip_wallet_connecting_session';
 
 const navigationItems = [
   { label: "Home", href: "/" },
@@ -76,57 +72,16 @@ function resolvePostLoginRoute(userInfo: any, role: string): string {
   return shouldRequireSetup ? '/profile-setup' : getDashboardRoute(role);
 }
 
-// Session storage helpers for tracking wallet connection across page navigation
-function isWalletConnectionInProgress(): boolean {
-  try {
-    const session = sessionStorage.getItem(WALLET_CONNECTION_SESSION_KEY);
-    if (!session) return false;
-    const { timestamp } = JSON.parse(session);
-    // Clear if older than 10 minutes
-    if (Date.now() - timestamp > 10 * 60 * 1000) {
-      sessionStorage.removeItem(WALLET_CONNECTION_SESSION_KEY);
-      return false;
-    }
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function markWalletConnectionInProgress() {
-  try {
-    sessionStorage.setItem(WALLET_CONNECTION_SESSION_KEY, JSON.stringify({ timestamp: Date.now() }));
-    console.log('[ConnectWallet] 🔒 Marked wallet connection in progress (session)');
-    logDebug('info', 'Marked wallet connection in progress (session)');
-  } catch (e) {
-    console.warn('[ConnectWallet] Failed to mark connection in session:', e);
-    logDebug('error', 'Failed to mark connection in session', { error: String(e) });
-  }
-}
-
-function clearWalletConnectionSession() {
-  try {
-    sessionStorage.removeItem(WALLET_CONNECTION_SESSION_KEY);
-    console.log('[ConnectWallet] 🗑️ Cleared wallet connection session');
-    logDebug('info', 'Cleared wallet connection session');
-  } catch (e) {
-    console.warn('[ConnectWallet] Failed to clear connection session:', e);
-    logDebug('error', 'Failed to clear wallet connection session', { error: String(e) });
-  }
-}
-
 export const ConnectWallet = (): JSX.Element => {
   const { getNonce, loginWithWallet, fetchUserInfo, user, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
   const { walletProvider } = useAppKitProvider('eip155');
   const { address: wcAddress, isConnected: wcIsConnected } = useAppKitAccount();
-  const reloadResumeState = useReloadResumeDetection();
 
   const toastGuard = useRef(new Set<string>());
   const injectedLoginTriggered = useRef(false);
   const walletConnectLoginAttempted = useRef(false);
-  const reloadResumeAttempted = useRef(false);
 
   const showToastOnce = useCallback((message: string, type: 'error' | 'success' | 'info' = 'error') => {
     const key = `${type}:${message}`;
@@ -156,202 +111,69 @@ export const ConnectWallet = (): JSX.Element => {
     },
   });
 
-  // Handle mobile wallet return and auto-resume
-  const resumePendingLogin = useCallback(async (account: string, nonce: string, _method: 'injected' | 'walletconnect') => {
-    try {
-      console.log('[ConnectWallet] 📖 Resuming pending login after wallet return:', account);
-      logDebug('info', 'Resuming pending login after wallet return', { account, nonce, method: _method });
-      setIsConnectingWallet(true);
-      markWalletConnectionInProgress(); // ⚠️ Mark session
-
-      // Get fresh signature after wallet return
-      if (!walletProvider) {
-        throw new Error('Wallet provider not available');
-      }
-
-      const signature = await signMessage(nonce, account, walletProvider);
-      console.log('[ConnectWallet] ✅ Got signature after wallet return, sending to backend...');
-      logDebug('info', 'Got signature after wallet return', { signatureLength: signature?.length ?? 0 });
-
-      const returnedUser = await loginWithWallet(account, signature, nonce);
-      logDebug('info', 'loginWithWallet returned (resume)', { returnedUser });
-      // ⚠️ loginWithWallet now synchronously persists to localStorage
-
-      let finalUserInfo = returnedUser?.userInfo ?? null;
-      if (!finalUserInfo && returnedUser?.token) {
-        try {
-          finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
-        } catch (e) {
-          logDebug('warn', 'authAPI.getUserInfo failed (resume)', { error: String(e) });
-          try { await fetchUserInfo(); } catch (fe) { logDebug('warn', 'fetchUserInfo fallback failed (resume)', { error: String(fe) }); }
-          finalUserInfo = returnedUser?.userInfo ?? null;
-        }
-      }
-
-      const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
-      const route = resolvePostLoginRoute(finalUserInfo, role);
-      console.log('[ConnectWallet] ✅ Resumed login successful, redirecting to:', route);
-      logDebug('info', 'Resumed login successful', { route });
-      
-      clearReloadResumeState();
-      clearPendingWalletState();
-      clearWalletConnectionSession(); // ⚠️ Clear before navigate
-      navigate(route);
-    } catch (err) {
-      const errorMessage = normalizeErrorMessage(err);
-      console.error('[ConnectWallet] Resume pending login failed:', err);
-      logDebug('error', 'Resume pending login failed', { error: String(err) });
-      showToastOnce(errorMessage, 'error');
-      clearReloadResumeState();
-      clearPendingWalletState();
-      clearWalletConnectionSession();
-    } finally {
-      setIsConnectingWallet(false);
-      injectedLoginTriggered.current = false;
-    }
-  }, [walletProvider, loginWithWallet, fetchUserInfo, navigate, showToastOnce]);
-
-  const handleWalletReturnResume = useCallback(() => {
-    console.log('[ConnectWallet] 🔄 Wallet return detected, checking for pending connection...');
-    logDebug('info', 'Wallet return detected, checking for pending connection');
-    
-    const pendingState = getPendingWalletState();
-    if (pendingState) {
-      console.log('[ConnectWallet] Found pending wallet state, resuming login...');
-      logDebug('info', 'Found pending wallet state', pendingState);
-      // Resume the login with the saved account and nonce
-      resumePendingLogin(pendingState.account, pendingState.nonce, pendingState.method);
-    }
-  }, [resumePendingLogin]);
-
-  // Resume login after page reload (MetaMask in-app browser reload) - MOVE ABOVE useEffect that uses it
-  const resumeLoginAfterReload = useCallback(async (resumeState: ReloadResumeState) => {
-    if (reloadResumeAttempted.current) return;
-    reloadResumeAttempted.current = true;
-
-    try {
-      console.log('[ConnectWallet] 🔄 Resuming login after page reload:', resumeState.account);
-      logDebug('info', 'Resuming login after page reload', { account: resumeState.account });
-      setIsConnectingWallet(true);
-      markWalletConnectionInProgress();
-
-      const { account, nonce, method } = resumeState;
-      let provider: any = walletProvider;
-
-      // If injected method, rediscover provider
-      if (method === 'injected') {
-        initEip6963Discovery();
-        const rdnsMap: Record<string, string> = { metamask: 'io.metamask', trust: 'com.trustwallet.app', coinbase: 'com.coinbase.wallet' };
-        const rdns = rdnsMap['metamask']; // Default to MetaMask for in-app
-        if (rdns) {
-          provider = walletUtils.getWalletProviderByRdns(rdns);
-          if (!provider) provider = await waitForWalletProvider(rdns, 2000);
-        }
-      }
-
-      if (!provider) throw new Error('Wallet provider not available for resume');
-
-      // Request signature again
-      console.log('[ConnectWallet] Requesting signature for reload resume...');
-      logDebug('info', 'Requesting signature for reload resume', { account, nonceLength: nonce?.length ?? 0 });
-      const signature = await walletUtils.signMessage(nonce, account, provider);
-      logDebug('info', 'Got signature for reload resume', { signatureLength: signature?.length ?? 0 });
-
-      // Complete login
-      console.log('[ConnectWallet] Completing login after reload...');
-      const returnedUser = await loginWithWallet(account, signature, nonce);
-      logDebug('info', 'loginWithWallet returned (reload)', { returnedUser, hasToken: !!returnedUser?.token });
-
-      let finalUserInfo = returnedUser?.userInfo ?? null;
-      if (!finalUserInfo && returnedUser?.token) {
-        try {
-          finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
-        } catch (e) {
-          logDebug('warn', 'authAPI.getUserInfo failed (reload)', { error: String(e) });
-          try { await fetchUserInfo(); } catch (fe) { logDebug('warn', 'fetchUserInfo fallback failed (reload)', { error: String(fe) }); }
-          finalUserInfo = returnedUser?.userInfo ?? null;
-        }
-      }
-
-      const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
-      const route = resolvePostLoginRoute(finalUserInfo, role);
-      console.log('[ConnectWallet] ✅ Reload resume complete, redirecting to:', route);
-      logDebug('info', 'Reload resume complete', { route });
-
-      clearReloadResumeState();
-      clearWalletConnectionSession();
-      clearPendingWalletState();
-      navigate(route);
-    } catch (err) {
-      const errorMessage = normalizeErrorMessage(err);
-      console.error('[ConnectWallet] Reload resume failed:', err);
-      logDebug('error', 'Reload resume failed', { error: String(err) });
-      showToastOnce(errorMessage, 'error');
-      clearReloadResumeState();
-      clearWalletConnectionSession();
-    } finally {
-      setIsConnectingWallet(false);
-    }
-  }, [walletProvider, loginWithWallet, fetchUserInfo, navigate, showToastOnce]);
-
-  useAutoResumeWalletConnection(
-    wcIsConnected,
-    wcAddress,
-    handleWalletReturnResume
-  );
-
-  // If user is already authenticated on mount, redirect to dashboard
-  // BUT: Don't redirect if a wallet connection is in progress (checked via state OR session storage)
-  useEffect(() => {
-    const isConnectionInProgress = isConnectingWallet || wcIsConnecting || isWalletConnectionInProgress();
-    
-    if (!loading && isAuthenticated && user && !isConnectionInProgress) {
-      const role = user?.userInfo?.role ?? '';
-      const isFullyRegistered = user?.userInfo?.full_reg;
-      const roleLower = role.toLowerCase();
-      const likelyUser = roleLower === 'user' || roleLower === '';
-      const shouldRequireSetup = likelyUser && isFullyRegistered !== true;
-
-      console.log('[ConnectWallet] 🔄 User already authenticated from localStorage, redirecting...', { role, shouldRequireSetup });
-
-      if (shouldRequireSetup) {
-        navigate('/profile-setup', { replace: true });
-      } else {
-        navigate(getDashboardRoute(role), { replace: true });
-      }
-    }
-  }, [loading, isAuthenticated, user, navigate, isConnectingWallet, wcIsConnecting]);
-
   useEffect(() => {
     injectedLoginTriggered.current = false;
     walletConnectLoginAttempted.current = false;
     console.log('[ConnectWallet] ✅ Page mounted - reset flags for fresh login');
     logDebug('info', 'ConnectWallet page mounted');
-    
-    // Detect page teardown during login
-    const handleBeforeUnload = () => {
-      logDebug('warn', 'Page unload detected - login flow interrupted!');
-      console.warn('[ConnectWallet] Page unload detected during login');
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
 
-  // Detect reload resume and auto-resume login
+  // Mount-time resume: handles MetaMask mobile browser reload during eth_requestAccounts
   useEffect(() => {
-    if (reloadResumeState && !reloadResumeAttempted.current) {
-      // Guard: If a manual wallet connection is already in progress, don't double-trigger
-      if (isWalletConnectionInProgress()) {
-        console.log('[ConnectWallet] ⏭️ Manual wallet connection already in progress, skipping auto-resume');
-        logDebug('info', 'Manual wallet connection in progress, skipping auto-resume');
-        clearReloadResumeState();
-        return;
+    if (loading || isAuthenticated) return;
+
+    const resumeIfAlreadyConnected = async () => {
+      try {
+        initEip6963Discovery();
+
+        // Wait briefly for EIP-6963 providers to announce themselves
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        const provider = walletUtils.getWalletProviderByRdns('io.metamask');
+        if (!provider) return;
+
+        // eth_accounts is completely silent — no prompt, no page reload
+        const accounts = await provider.request({ method: 'eth_accounts' });
+        if (!accounts || accounts.length === 0) return;
+
+        // MetaMask has a connected account — we are resuming after a mobile browser reload
+        const account = normalizeWalletAddress(accounts[0]);
+        console.log('[ConnectWallet] MetaMask already connected on mount, resuming login for:', account);
+
+        setIsConnectingWallet(true);
+
+        await ensureArbitrumSepoliaWithFallback(provider);
+        const nonce = await getNonce(account);
+
+        // signMessage shows an overlay in MetaMask — does NOT cause a page reload
+        const signature = await walletUtils.signMessage(nonce, account, provider);
+
+        const returnedUser = await loginWithWallet(account, signature, nonce);
+
+        let finalUserInfo = returnedUser?.userInfo ?? null;
+        if (!finalUserInfo && returnedUser?.token) {
+          try {
+            finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
+          } catch {
+            try { await fetchUserInfo(); } catch {}
+            finalUserInfo = returnedUser?.userInfo ?? null;
+          }
+        }
+
+        const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
+        const route = resolvePostLoginRoute(finalUserInfo, role);
+        console.log('[ConnectWallet] Resume login successful, redirecting to:', route);
+        navigate(route);
+
+      } catch (err) {
+        // Silent failure — do not show a toast here as this runs automatically on mount
+        console.warn('[ConnectWallet] Mount-time MetaMask resume failed (non-critical):', err);
+        setIsConnectingWallet(false);
       }
-      console.log('[ConnectWallet] 🔄 Reload resume state detected on mount, auto-resuming login...');
-      logDebug('info', 'Auto-triggering reload resume on mount', { account: reloadResumeState.account });
-      resumeLoginAfterReload(reloadResumeState);
-    }
-  }, [reloadResumeState, resumeLoginAfterReload]);
+    };
+
+    resumeIfAlreadyConnected();
+  }, [loading, isAuthenticated, getNonce, loginWithWallet, fetchUserInfo, navigate]);
 
   const handleNavigation = (href: string) => {
     if (href === '/') {
@@ -370,8 +192,6 @@ export const ConnectWallet = (): JSX.Element => {
 
     injectedLoginTriggered.current = true;
     setIsConnectingWallet(true);
-    markWalletConnectionInProgress(); // ⚠️ Mark session
-    logDebug('info', 'Starting WalletConnect login', { address: wcAddress });
 
     try {
       console.log('[ConnectWallet] Logging in with WalletConnect account:', wcAddress);
@@ -379,60 +199,28 @@ export const ConnectWallet = (): JSX.Element => {
       const account = normalizeWalletAddress(wcAddress);
       await ensureArbitrumSepoliaWithFallback(walletProvider);
       const nonce = await getNonce(account);
-      
-      // ⚠️ CRITICAL: Save pending state BEFORE attempting to sign (may switch apps on mobile)
-      savePendingWalletState({
-        account,
-        nonce,
-        method: 'walletconnect',
-        timestamp: Date.now(),
-      });
-      logDebug('info', 'Saved pending wallet state (WC)', { account, nonceLength: nonce?.length ?? 0 });
-      // ⚠️ CRITICAL: Also save reload resume state in case page reloads during signing
-      saveReloadResumeState({
-        account,
-        nonce,
-        method: 'walletconnect',
-        timestamp: Date.now(),
-        reloadCount: 0,
-      });
-      logDebug('info', 'Saved reload resume state (WC)', { account, nonceLength: nonce?.length ?? 0 });
-
       const signature = await signMessage(nonce, account, walletProvider);
-      logDebug('info', 'Got signature (WC)', { signatureLength: signature?.length ?? 0 });
 
       const returnedUser = await loginWithWallet(account, signature, nonce);
-      logDebug('info', 'loginWithWallet returned (wc)', { returnedUser });
-      // ⚠️ loginWithWallet now synchronously persists to localStorage
 
       let finalUserInfo = returnedUser?.userInfo ?? null;
       if (!finalUserInfo && returnedUser?.token) {
         try {
           finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
         } catch (e) {
-          logDebug('warn', 'authAPI.getUserInfo failed (wc)', { error: String(e) });
-          try { await fetchUserInfo(); } catch (fe) { logDebug('warn', 'fetchUserInfo fallback failed (wc)', { error: String(fe) }); }
+          try { await fetchUserInfo(); } catch {}
           finalUserInfo = returnedUser?.userInfo ?? null;
         }
       }
 
       const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
       const route = resolvePostLoginRoute(finalUserInfo, role);
-      console.log('[ConnectWallet] Login successful, redirecting to:', route);
-      logDebug('info', 'WalletConnect login successful', { route });
-      
-      clearReloadResumeState();
-      clearPendingWalletState();
-      clearWalletConnectionSession(); // ⚠️ Clear before navigate
+      console.log('[ConnectWallet] WalletConnect login successful, redirecting to:', route);
       navigate(route);
     } catch (err) {
       const errorMessage = normalizeErrorMessage(err);
       console.error('[ConnectWallet] WalletConnect login failed:', err);
-      logDebug('error', 'WalletConnect login failed', { error: String(err) });
       showToastOnce(errorMessage, 'error');
-      clearReloadResumeState();
-      clearPendingWalletState();
-      clearWalletConnectionSession();
     } finally {
       setIsConnectingWallet(false);
       injectedLoginTriggered.current = false;
@@ -454,31 +242,26 @@ export const ConnectWallet = (): JSX.Element => {
 
   // ─── Injected wallet login (MetaMask, Trust) ───────────────────────────────
   const handleWalletSelect = async (walletId: string) => {
+    // WalletConnect path — unchanged
+    if (walletId === 'walletconnect') {
+      setIsConnectingWallet(true);
+      walletConnectLoginAttempted.current = true;
+      try {
+        await openWalletConnectModal();
+      } catch (err) {
+        showToastOnce(normalizeErrorMessage(err), 'error');
+      } finally {
+        setIsConnectingWallet(false);
+      }
+      return;
+    }
+
+    // Injected wallet path (MetaMask, Trust)
     setIsConnectingWallet(true);
-    markWalletConnectionInProgress(); // ⚠️ Persist across MetaMask browser navigation
 
     try {
       initEip6963Discovery();
 
-      // WalletConnect path
-      if (walletId === 'walletconnect') {
-        console.log('[ConnectWallet] Opening WalletConnect...');
-        logDebug('info', 'Opening WalletConnect modal');
-        walletConnectLoginAttempted.current = true;
-        try {
-          await openWalletConnectModal();
-          setIsConnectingWallet(false);
-        } catch (err) {
-          console.error('[ConnectWallet] WalletConnect open error:', err);
-          logDebug('error', 'WalletConnect open error', { error: String(err) });
-          showToastOnce(normalizeErrorMessage(err), 'error');
-          setIsConnectingWallet(false);
-          clearWalletConnectionSession();
-        }
-        return;
-      }
-
-      // Injected wallet path
       const rdnsMap: Record<string, string> = {
         metamask: 'io.metamask',
         trust: 'com.trustwallet.app',
@@ -497,60 +280,26 @@ export const ConnectWallet = (): JSX.Element => {
         const displayName = wallets.find((w) => w.id === walletId)?.name ?? walletId;
         showToastOnce(`${displayName} not detected. Install the extension or use WalletConnect.`, 'error');
         setIsConnectingWallet(false);
-        clearWalletConnectionSession();
         return;
       }
 
-      console.log('[ConnectWallet] Using discovered provider for:', walletId);
-      logDebug('info', 'Using discovered provider', { walletId });
+      // Phase 1: Request account access ONLY.
+      // On MetaMask mobile browser this triggers a page reload — that is expected and handled
+      // by the mount-time resume effect below. Do NOT request signature here.
+      const accounts = await provider.request({ method: 'eth_requestAccounts' });
+      if (!accounts || accounts.length === 0) throw new Error('No accounts returned from wallet');
 
-      console.log('[ConnectWallet] Requesting wallet connection...');
-      let account = await walletUtils.requestWalletConnection(provider);
-      logDebug('info', 'Requested wallet connection', { walletId, accountPresent: !!account });
-      account = normalizeWalletAddress(account);
-      console.log('[ConnectWallet] Account normalized:', account);
+      const account = normalizeWalletAddress(accounts[0]);
+      console.log('[ConnectWallet] Account connected:', account);
 
-      console.log('[ConnectWallet] Ensuring chain...');
+      // Phase 2: Request signature.
+      // On desktop this runs immediately after Phase 1 with no page reload.
+      // On MetaMask mobile browser, Phase 1 causes a reload so this code never runs —
+      // the mount-time resume effect handles signing after the reload instead.
       await ensureArbitrumSepoliaWithFallback(provider);
-      logDebug('info', 'Chain ensured');
-      
-      console.log('[ConnectWallet] Getting nonce...');
       const nonce = await getNonce(account);
-      logDebug('info', 'Nonce retrieved', { nonceLength: nonce?.length ?? 0 });
-      console.log('[ConnectWallet] Nonce:', nonce.substring(0, 8) + '...');
-      
-      // ⚠️ CRITICAL: Save pending state BEFORE attempting to sign (may switch apps on mobile)
-      console.log('[ConnectWallet] Saving pending wallet state...');
-      savePendingWalletState({
-        account,
-        nonce,
-        method: 'injected',
-        timestamp: Date.now(),
-      });
-      logDebug('info', 'Saved pending wallet state (injected)', { account, nonceLength: nonce?.length ?? 0 });
-      // ⚠️ CRITICAL: Also save reload resume state in case page reloads during signing
-      saveReloadResumeState({
-        account,
-        nonce,
-        method: 'injected',
-        timestamp: Date.now(),
-        reloadCount: 0,
-      });
-      logDebug('info', 'Saved reload resume state (injected)', { account, nonceLength: nonce?.length ?? 0 });
-      console.log('[ConnectWallet] Pending and reload states saved');
-
-      console.log('[ConnectWallet] Signing message...');
       const signature = await walletUtils.signMessage(nonce, account, provider);
-      console.log('[ConnectWallet] Signature received, length:', signature?.length);
 
-      console.log('[ConnectWallet] Signing details:', {
-        account,
-        nonce,
-        signatureLength: signature ? signature.length : 0,
-      });
-      logDebug('info', 'Got signature (injected)', { signatureLength: signature ? signature.length : 0 });
-
-      // Client-side recovery check (non-blocking)
       try {
         const recovered = verifyMessage(nonce, signature);
         if (recovered.toLowerCase() !== account.toLowerCase()) {
@@ -560,20 +309,14 @@ export const ConnectWallet = (): JSX.Element => {
         console.error('[ConnectWallet] Recovery check failed:', recErr);
       }
 
-      console.log('[ConnectWallet] Calling loginWithWallet...');
-      logDebug('info', 'About to call loginWithWallet', { account, signatureLength: signature?.length });
       const returnedUser = await loginWithWallet(account, signature, nonce);
-      console.log('[ConnectWallet] loginWithWallet returned:', { returnedUser });
-      logDebug('info', 'loginWithWallet returned (injected)', { returnedUser, hasToken: !!returnedUser?.token });
-      // ⚠️ loginWithWallet now synchronously persists to localStorage
 
       let finalUserInfo = returnedUser?.userInfo ?? null;
       if (!finalUserInfo && returnedUser?.token) {
         try {
           finalUserInfo = await authAPI.getUserInfo(returnedUser.token);
-        } catch (e) {
-          logDebug('warn', 'authAPI.getUserInfo failed (injected)', { error: String(e) });
-          try { await fetchUserInfo(); } catch (fe) { logDebug('warn', 'fetchUserInfo fallback failed (injected)', { error: String(fe) }); }
+        } catch {
+          try { await fetchUserInfo(); } catch {}
           finalUserInfo = returnedUser?.userInfo ?? null;
         }
       }
@@ -581,21 +324,10 @@ export const ConnectWallet = (): JSX.Element => {
       const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
       const route = resolvePostLoginRoute(finalUserInfo, role);
       console.log('[ConnectWallet] Login successful, redirecting to:', route);
-      logDebug('info', 'Injected login successful', { route });
-      
-      clearReloadResumeState();
-      clearPendingWalletState();
-      clearWalletConnectionSession(); // ⚠️ Clear session before navigating
       navigate(route);
 
     } catch (err) {
-      const errorMessage = normalizeErrorMessage(err);
-      console.error('[ConnectWallet] Wallet select failed:', err);
-      logDebug('error', 'Wallet select failed', { error: String(err) });
-      showToastOnce(errorMessage, 'error');
-      clearReloadResumeState();
-      clearPendingWalletState();
-      clearWalletConnectionSession();
+      showToastOnce(normalizeErrorMessage(err), 'error');
     } finally {
       setIsConnectingWallet(false);
     }
