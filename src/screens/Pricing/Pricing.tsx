@@ -93,7 +93,6 @@ export const Pricing = (): JSX.Element => {
         if (feeData.maxFeePerGas) feeOverrides.maxFeePerGas = (feeData.maxFeePerGas * 125n) / 100n;
         if (feeData.maxPriorityFeePerGas) feeOverrides.maxPriorityFeePerGas = (feeData.maxPriorityFeePerGas * 125n) / 100n;
       } catch (e) {
-        console.warn('[performPayment] fee data error', e);
       }
 
       const tx = await signer.sendTransaction({ to: toAddress, value, gasLimit, ...feeOverrides });
@@ -306,13 +305,8 @@ const navigationItems = [
                   try {
                     const estimated = await provider.estimateGas({ to: toAddress, value });
                     gasLimit = (estimated * 130n) / 100n; // +30% buffer
-                    console.log('[handleSubscribe] Gas estimation succeeded', {
-                      estimated: estimated.toString(),
-                      withBuffer: gasLimit.toString(),
-                    });
                   } catch (e) {
                     gasLimit = 100_000n; // Fallback for simple ETH transfers
-                    console.warn('[handleSubscribe] Gas estimation failed, using fallback:', e);
                   }
 
                   // --- FETCH FRESH FEE DATA AND ADD BUFFER ---
@@ -325,12 +319,7 @@ const navigationItems = [
                     if (feeData.maxPriorityFeePerGas) {
                       feeOverrides.maxPriorityFeePerGas = (feeData.maxPriorityFeePerGas * 125n) / 100n; // +25% buffer
                     }
-                    console.log('[handleSubscribe] Fee data fetched', {
-                      maxFeePerGas: feeOverrides.maxFeePerGas?.toString(),
-                      maxPriorityFeePerGas: feeOverrides.maxPriorityFeePerGas?.toString(),
-                    });
                   } catch (feeErr) {
-                    console.warn('[handleSubscribe] Could not fetch fee data, letting ethers decide:', feeErr);
                   }
 
                   toast.info('Awaiting wallet signature to send payment...');

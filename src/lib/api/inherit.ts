@@ -4,7 +4,6 @@ import { extractErrorMessage } from '../utils';
 
 export async function activateProofOfLife(token: string): Promise<any> {
   const url = `${BACKEND_API_URL}/inherit/proof-of-life`;
-  console.log('[inherit.activateProofOfLife] POST', url);
   const res = await fetch(url, {
     method: "POST",
     headers: {
@@ -44,7 +43,6 @@ export async function getActiveProofPlan(token?: string): Promise<any | null> {
     },
   });
   if (!res.ok) {
-    console.warn('getActiveProofPlan: failed to fetch plans', res.status);
     return null;
   }
   const json = await res.json().catch(() => null);

@@ -60,7 +60,6 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
         displayedGrace,
       },
     };
-    console.log('[ConfirmInactivityOraclePlan] navigating to Review & Confirm with state:', navState);
     navigate('/owner-dashboard/review-plan', { state: navState });
   };
 

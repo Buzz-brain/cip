@@ -24,7 +24,7 @@ export default function IexecJobs(): JSX.Element {
         const data = (res && (res as any).data) || res;
         setJobs(Array.isArray(data) ? data : []);
       } catch (e) {
-        console.error("Failed to load iexec jobs", e);
+        // [sanitized] console.error removed
         setJobs([]);
       } finally {
         setLoading(false);

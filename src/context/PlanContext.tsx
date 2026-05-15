@@ -122,7 +122,7 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
       try {
         setPlan(JSON.parse(stored));
       } catch (err) {
-        console.error("Failed to parse plan draft from storage", err);
+        // [sanitized] console.error removed
       }
     }
   }, []);
@@ -252,7 +252,6 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
 
     // If caller provided an explicit payload, use it (useful to avoid stale state race conditions)
     if (overrideBody && typeof overrideBody === 'object') {
-      console.log('[PlanContext] submitPlan using override body:', overrideBody);
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (user?.token) headers["Authorization"] = `Bearer ${user.token}`;
       try {
@@ -268,7 +267,6 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
         }
         return res.json();
       } catch (err) {
-        console.error('[PlanContext] submitPlan override error:', err);
         throw err;
       }
     }
@@ -315,9 +313,6 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
         break;
     }
 
-    // log body for debugging / audit trail before sending to backend
-    console.log('[PlanContext] submitPlan body:', body);
-
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (user?.token) {
       headers["Authorization"] = `Bearer ${user.token}`;
@@ -338,7 +333,7 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
 
       return res.json();
     } catch (err) {
-      console.error('[PlanContext] submitPlan error:', err);
+      // [sanitized] console.error removed
       throw err;
     }
   }, [plan, user]);
@@ -348,7 +343,7 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
     const res = await inheritAPI.cancelInheritance(planId, user.token);
     // notify subscribers that plans changed
     listenersRef.current.forEach((cb) => {
-      try { cb({ type: 'cancel', planId, response: res }); } catch (e) { console.error('plansUpdated listener error', e); }
+      try { cb({ type: 'cancel', planId, response: res }); } catch (e) { /* [sanitized] console removed */ }
     });
     return res;
   }, [user?.token]);
@@ -357,7 +352,7 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
     if (!user?.token) throw new Error('Not authenticated');
     const res = await inheritAPI.editInheritance(payload, user.token);
     listenersRef.current.forEach((cb) => {
-      try { cb({ type: 'edit', detail: res }); } catch (e) { console.error('plansUpdated listener error', e); }
+      try { cb({ type: 'edit', detail: res }); } catch (e) { /* [sanitized] console removed */ }
     });
     return res;
   }, [user?.token]);
@@ -385,7 +380,7 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
       editInheritance,
       emitPlansUpdated: (detail?: any) => {
         listenersRef.current.forEach((cb) => {
-          try { cb(detail); } catch (e) { console.error('plansUpdated listener error', e); }
+          try { cb(detail); } catch (e) { /* [sanitized] console removed */ }
         });
       },
     }),

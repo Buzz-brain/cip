@@ -73,7 +73,7 @@ export const RoleAccessControl = (): JSX.Element => {
       setAdmins(normalizeResponse(adminResponse));
       setEnterprises(normalizeResponse(enterpriseResponse));
     } catch (error) {
-      console.error("Failed to load role access data", error);
+      // [sanitized] console.error removed
     } finally {
       setLoading(false);
     }
@@ -97,7 +97,7 @@ export const RoleAccessControl = (): JSX.Element => {
       await loadRoleData();
       setConfirmOpen(false);
     } catch (err:any) {
-      console.error('Action failed', err);
+      // [sanitized] console.error removed
       const raw = err?.message || String(err);
       let cleaned = raw.replace(/^.*?:\s*/, '').replace(/^\d{3}\s*/, '').trim();
       try { const parsed = JSON.parse(cleaned); if (parsed && (parsed.detail || parsed.message)) cleaned = parsed.detail || parsed.message; } catch (_e) {}
@@ -437,7 +437,7 @@ export const RoleAccessControl = (): JSX.Element => {
                                   : null;
                                 setDetailData(details || user);
                               } catch (e) {
-                                console.error('Failed to load details', e);
+                                // [sanitized] console.error removed
                                 setDetailData(user);
                               } finally {
                                 setDetailLoading(false);

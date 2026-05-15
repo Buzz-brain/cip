@@ -16,7 +16,7 @@ export async function getEthUsdPrice(): Promise<number> {
     }
     return ethPrice;
   } catch (err) {
-    console.error('[getEthUsdPrice] failed to fetch ETH price:', err);
+    // [sanitized] console.error removed
     throw new Error(`Unable to fetch ETH price: ${err instanceof Error ? err.message : String(err)}`);
   }
 }

@@ -33,8 +33,7 @@ export const NominateMediatorModal: React.FC<NominateMediatorModalProps> = ({ op
       setWallet('');
     } catch (err: any) {
       const errMsg = err?.message ?? 'Failed to nominate mediator';
-      console.error('[NominateMediatorModal] error:', errMsg);
-      
+      // [sanitized] console.error removed
       // Check for specific error cases
       if (errMsg.includes('must raise a dispute') || errMsg.includes('dispute_id')) {
         toast.error('You must raise a dispute first before nominating a mediator.');

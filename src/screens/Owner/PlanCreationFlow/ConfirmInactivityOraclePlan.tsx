@@ -55,11 +55,7 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
     setIsSubmitting(true);
     try {
       const payload = getProtectorPayload();
-      console.log('[ConfirmInactivityOraclePlan] Protector payload:', payload);
-
       const res = await submitPlan();
-      console.log('[ConfirmInactivityOraclePlan] submitPlan response:', res);
-
       navigate('/plan-activated', {
         state: {
           plan_id_to_fund: res?.plan_id_to_fund ?? res?.id ?? res?.plan_id,
@@ -69,8 +65,6 @@ export const ConfirmInactivityOraclePlan = (): JSX.Element => {
         },
       });
     } catch (err) {
-      console.error('[ConfirmInactivityOraclePlan] error:', err);
-      // keep UI simple — could show toast later
     } finally {
       setIsSubmitting(false);
     }

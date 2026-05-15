@@ -37,7 +37,7 @@ async function fetchInheritancePlans(token?: string): Promise<any[]> {
     },
   });
   if (!res.ok) {
-    console.warn('[ownerStats] Failed to fetch inheritance plans', res.status);
+    // [sanitized] console.warn removed
     return [];
   }
   const json = await res.json().catch(() => null);

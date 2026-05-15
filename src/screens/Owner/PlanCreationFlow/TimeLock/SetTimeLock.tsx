@@ -313,8 +313,6 @@ export const SetTimeLock = (): JSX.Element => {
               // Parse YYYY-MM-DD format (from HTML5 date input) and optional time HH:MM into UTC timestamp (seconds)
                   // prefer Date object if available
                   if (!unlockDate && !unlockDateObj) {
-                // still navigate but warn
-                    console.warn('[SetTimeLock] No unlock date set');
                     navigate('/review-time-lock', { state: { unlockDate: '', unlockTime } });
                 return;
               }
@@ -326,7 +324,6 @@ export const SetTimeLock = (): JSX.Element => {
                   } else {
                     const parts = unlockDate.split('-');
                     if (parts.length !== 3) {
-                      console.warn('[SetTimeLock] unlockDate in unexpected format', unlockDate);
                       navigate('/review-time-lock', { state: { unlockDate, unlockTime } });
                       return;
                     }
@@ -341,12 +338,6 @@ export const SetTimeLock = (): JSX.Element => {
               // save to plan context
               setPlanField('releaseTimestamp', epochSeconds);
               // log the chosen timestamp and display values (consistent with other step logs)
-              console.log('[SetTimeLock] releaseTimestamp saved', {
-                release_timestamp: epochSeconds,
-                unlockDate,
-                unlockTime,
-                iso: dateUtc.toISOString(),
-              });
               // also save display values in case other components rely on location.state
               navigate('/review-time-lock', { state: { unlockDate, unlockTime } });
             }}

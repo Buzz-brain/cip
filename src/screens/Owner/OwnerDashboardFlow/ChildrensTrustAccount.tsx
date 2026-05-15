@@ -82,7 +82,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
       const releaseDate = new Date(Date.UTC(year, month, day, 0, 0, 0));
       return Math.floor(releaseDate.getTime() / 1000);
     } catch (err) {
-      console.warn('computeReleaseTimestamp failed', err);
+      // [sanitized] console.warn removed
       return Math.floor(Date.now() / 1000);
     }
   };
@@ -190,17 +190,12 @@ export const ChildrensTrustAccount = (): JSX.Element => {
         setBeneficiaries([beneficiary as any]);
       });
 
-      console.log('[Trust] Submitting explicit override payload to backend...', overrideBody);
-
       const res = await submitPlan({ overrideBody });
-      console.log('[Trust] Plan created successfully:', res);
-      
       toast.success('Trust Plan Created Successfully');
       clearPlan();
       navigate('/owner-dashboard/plans');
       return res;
     } catch (err: any) {
-      console.error('Create trust failed', err);
       toast.error(err?.message || 'Failed to create trust plan');
       setSubmitting(false);
     } finally {

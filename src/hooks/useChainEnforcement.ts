@@ -57,7 +57,6 @@ export function useChainEnforcement(): ChainEnforcementState & {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: ARBITRUM_SEPOLIA_CHAIN_ID }],
       });
-      console.log('[ChainEnforcement] ✅ Switched to Arbitrum Sepolia');
       setState((prev) => ({
         ...prev,
         currentChain: ARBITRUM_SEPOLIA_CHAIN_ID,
@@ -84,7 +83,6 @@ export function useChainEnforcement(): ChainEnforcementState & {
               },
             ],
           });
-          console.log('[ChainEnforcement] ✅ Added and switched to Arbitrum Sepolia');
           setState((prev) => ({
             ...prev,
             currentChain: ARBITRUM_SEPOLIA_CHAIN_ID,
@@ -92,7 +90,6 @@ export function useChainEnforcement(): ChainEnforcementState & {
             error: null,
           }));
         } catch (addError) {
-          console.warn('[ChainEnforcement] User rejected adding Arbitrum Sepolia');
           setState((prev) => ({
             ...prev,
             error: 'Failed to add Arbitrum Sepolia network',
@@ -100,13 +97,11 @@ export function useChainEnforcement(): ChainEnforcementState & {
         }
       } else if (switchError.code === 4001) {
         // User rejected
-        console.warn('[ChainEnforcement] User rejected chain switch');
         setState((prev) => ({
           ...prev,
           error: 'Chain switch rejected',
         }));
       } else {
-        console.warn('[ChainEnforcement] Chain switch error:', switchError);
         setState((prev) => ({
           ...prev,
           error: 'Failed to switch chain',
@@ -142,11 +137,9 @@ export function useChainEnforcement(): ChainEnforcementState & {
       // If on wrong chain, attempt automatic switch
       if (isWrong && chainId !== '0x1' && chainId !== '0xa4b1') {
         // Only auto-switch if not on Mainnet or Arbitrum One
-        console.log('[ChainEnforcement] Wrong chain detected, attempting auto-switch...');
         await switchToArbitrumSepolia();
       }
     } catch (err) {
-      console.warn('[ChainEnforcement] Chain check failed:', err);
       setState((prev) => ({
         ...prev,
         isChecking: false,
@@ -164,7 +157,6 @@ export function useChainEnforcement(): ChainEnforcementState & {
 
     // Listen for chain change
     const handleChainChanged = () => {
-      console.log('[ChainEnforcement] Chain changed, rechecking...');
       checkChain();
     };
 

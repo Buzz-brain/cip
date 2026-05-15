@@ -30,10 +30,8 @@ export const ProofOfLifeConfig = (): JSX.Element => {
       const { activateProofOfLife } = await import("../../../../../lib/api/inherit");
       const data = await activateProofOfLife(user.token);
       toast.success("Proof-of-Life activated");
-      console.log('[ProofOfLifeConfig] proof-of-life response', data);
       navigate("/proof-of-life-check");
     } catch (err) {
-      console.error('ProofOfLifeConfig activate error', err);
       toast.error('Failed to activate Proof-of-Life');
     } finally {
       setSaving(false);

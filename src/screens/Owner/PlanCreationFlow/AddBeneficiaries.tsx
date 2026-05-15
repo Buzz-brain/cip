@@ -555,17 +555,6 @@ export const AddBeneficiaries = (): JSX.Element => {
                     }
 
                     // log beneficiaries selected before navigation (backend payload shape)
-                    console.log(
-                      '[AddBeneficiaries] Beneficiaries:',
-                      beneficiaries.map((b) => ({
-                        id: b.id,
-                        name: b.name,
-                        relationship: b.relationship,
-                        email: b.email || '',
-                        wallet: b.walletAddress,
-                        allocation_percentage: b.allocation,
-                      })),
-                    );
                     navigate('/choose-plan-type');
                   }}
                   disabled={unallocated !== 0}

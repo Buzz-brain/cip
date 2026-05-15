@@ -25,7 +25,7 @@ export const BeneficiaryDashboard = (): JSX.Element => {
           setTotalAmount(typeof data.total_amount === 'number' ? data.total_amount : null);
         }
       } catch (err) {
-        console.error('Failed to load beneficiary stats:', err);
+        // [sanitized] console.error removed
       } finally {
         if (mounted) setLoading(false);
       }

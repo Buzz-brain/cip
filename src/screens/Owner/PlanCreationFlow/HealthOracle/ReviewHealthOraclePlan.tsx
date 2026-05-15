@@ -11,7 +11,6 @@ export const ReviewHealthOraclePlan = (): JSX.Element => {
   const { plan } = usePlan();
 
   useEffect(() => {
-    console.log('[ReviewHealthOraclePlan] plan snapshot:', plan);
   }, [plan]);
   return (
     <main className="max-w-5xl mx-auto px-4 py-4  text-white">

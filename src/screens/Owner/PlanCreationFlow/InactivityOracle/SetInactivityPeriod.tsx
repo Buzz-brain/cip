@@ -34,8 +34,6 @@ export const SetInactivityPeriod = (): JSX.Element => {
 
       // Persist selection into PlanContext and log before navigation
       setPlanField('inactivityPeriodDays', Number(daysValue));
-      console.log('[SetInactivityPeriod] selectedPeriod:', selectedPeriod, 'daysValue:', daysValue);
-
       navigate("/choose-proof-of-life", {
         state: {
           inactivityPeriod: selectedPeriod,
@@ -127,7 +125,6 @@ export const SetInactivityPeriod = (): JSX.Element => {
               key={option.id}
               onClick={() => {
                 setSelectedPeriod(option.id as InactivityPeriod);
-                console.log('[SetInactivityPeriod] option chosen:', option.id);
               }}
               className={`relative p-6 rounded-lg bg-[#27231C] border-2 transition-all text-left ${selectedPeriod === option.id
                   ? "border-orange-600 bg-[#27221C]"

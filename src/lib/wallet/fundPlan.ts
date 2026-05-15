@@ -6,20 +6,11 @@ export async function fundPlanOnChain(
   amountEth: string,
   signer: Signer,
 ): Promise<string> {
-  console.log("[fundPlanOnChain] start", {
-    planId,
-    amountEth,
-    contractAddress: CONTRACT_ADDRESS,
-  });
-
   let signerAddress: string | null = null;
   try {
     signerAddress = await signer.getAddress();
   } catch (e) {
-    console.warn("[fundPlanOnChain] could not get signer address", e);
   }
-  console.log("[fundPlanOnChain] signer", signerAddress);
-
   const contract = new Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
   const value = parseEther(String(amountEth));
 
@@ -28,40 +19,11 @@ export async function fundPlanOnChain(
   try {
     const estimated = await contract.fundPlan.estimateGas(planId, { value });
     gasLimit = (estimated * 130n) / 100n; // +30% buffer
-    console.log(
-      "[fundPlanOnChain] ✅ estimateGas succeeded",
-      "\n  raw estimate :",
-      estimated.toString(),
-      "\n  with +30% buffer:",
-      gasLimit.toString(),
-      "\n  → MetaMask will NOT ask you to set gas manually",
-    );
   } catch (e) {
     gasLimit = 300_000n;
-    console.warn(
-      "[fundPlanOnChain] ⚠️ estimateGas failed — using fallback gas limit",
-      "\n  fallback gasLimit:",
-      gasLimit.toString(),
-      "\n  reason:",
-      e,
-    );
   }
 
   // ── PRE-FLIGHT LOG (proof the gasLimit is set BEFORE MetaMask opens) ──────
-  console.log(
-    "[fundPlanOnChain] 📤 sending tx with params:",
-    "\n  planId    :",
-    planId,
-    "\n  value     :",
-    value.toString(),
-    "wei  (",
-    amountEth,
-    "ETH )",
-    "\n  gasLimit  :",
-    gasLimit.toString(),
-    "\n  ⬆️ gasLimit is set in CODE — MetaMask will use this value automatically",
-  );
-
   // ── FETCH FRESH FEE DATA AND ADD BUFFER ────────────────────────────────────
   const provider = signer.provider;
   let feeOverrides: { maxFeePerGas?: bigint; maxPriorityFeePerGas?: bigint } = {};
@@ -81,38 +43,16 @@ export async function fundPlanOnChain(
       if (feeData.maxPriorityFeePerGas) {
         feeOverrides.maxPriorityFeePerGas = (feeData.maxPriorityFeePerGas * 150n) / 100n;
       }
-      console.log('[fundPlanOnChain] fee data fetched', {
-        maxFeePerGas: feeOverrides.maxFeePerGas?.toString(),
-        maxPriorityFeePerGas: feeOverrides.maxPriorityFeePerGas?.toString(),
-      });
     }
   } catch (feeErr) {
-    console.warn('[fundPlanOnChain] could not fetch fee data, letting ethers decide', feeErr);
   }
 
   try {
     const tx = await contract.fundPlan(planId, { value, gasLimit, ...feeOverrides });
 
-    console.log(
-      "[fundPlanOnChain] ✅ tx sent — MetaMask signed without manual gas override",
-      { hash: tx.hash },
-    );
-
     const receipt = await tx.wait();
-    console.log(
-      "[fundPlanOnChain] ✅ tx mined",
-      "\n  hash  :",
-      tx.hash,
-      "\n  status:",
-      receipt?.status === 1 ? "SUCCESS" : "FAILED",
-      "\n  gasUsed:",
-      receipt?.gasUsed?.toString(),
-    );
-
     return tx.hash;
   } catch (rawErr: any) {
-    console.error('[fundPlanOnChain] Transaction error', rawErr);
-
     // Helper to extract revert reason from returned data
     const extractRevertReason = (data?: string): string | null => {
       try {

@@ -88,15 +88,10 @@ export const ConnectWalletModal = ({ onClose }: ConnectWalletModalProps): JSX.El
     isConnecting: wcIsConnecting,
     openWalletConnectModal,
   } = useWalletConnectLifecycle({
-    onConnected: (address: string) => {
-      console.log('[ConnectWalletModal] WalletConnect connected to:', address);
-    },
     onFailed: (error: string) => {
-      console.error('[ConnectWalletModal] WalletConnect failed:', error);
       showToastOnce(error, 'error');
     },
     onCancelled: () => {
-      console.log('[ConnectWalletModal] WalletConnect cancelled by user');
       setIsConnectingWallet(false);
     },
   });
@@ -146,7 +141,6 @@ export const ConnectWalletModal = ({ onClose }: ConnectWalletModalProps): JSX.El
       if (!accounts || accounts.length === 0) throw new Error('No accounts returned from wallet');
 
       const account = normalizeWalletAddress(accounts[0]);
-      console.log('[ConnectWalletModal] Account connected:', account);
 
       await ensureArbitrumSepoliaWithFallback(provider);
       const nonce = await getNonce(account);
@@ -155,10 +149,8 @@ export const ConnectWalletModal = ({ onClose }: ConnectWalletModalProps): JSX.El
       try {
         const recovered = verifyMessage(nonce, signature);
         if (recovered.toLowerCase() !== account.toLowerCase()) {
-          console.warn('[ConnectWalletModal] ⚠️ Recovered address mismatch');
         }
       } catch (recErr) {
-        console.error('[ConnectWalletModal] Recovery check failed:', recErr);
       }
 
       const returnedUser = await loginWithWallet(account, signature, nonce);
@@ -175,11 +167,9 @@ export const ConnectWalletModal = ({ onClose }: ConnectWalletModalProps): JSX.El
 
       const role = ((returnedUser?.userInfo?.role ?? (returnedUser as any)?.role) || '').toString();
       const route = resolvePostLoginRoute(finalUserInfo, role);
-      console.log('[ConnectWalletModal] Login successful, redirecting to:', route);
       onClose?.();
       navigate(route);
     } catch (err) {
-      console.error('[ConnectWalletModal] Error:', err);
       showToastOnce(normalizeErrorMessage(err), 'error');
     } finally {
       setIsConnectingWallet(false);

@@ -2,13 +2,13 @@ import { useContext } from "react";
 import { PlanContext, PlanContextType } from "./PlanContext";
 
 const noop = (): any => {
-  console.warn("usePlan called outside PlanProvider — noop used");
+  // [sanitized] console.warn removed
 };
 
 export const usePlan = (): PlanContextType => {
   const context = useContext(PlanContext);
   if (!context) {
-    console.warn("usePlan must be used within a PlanProvider — returning noop context for resilience.");
+    // [sanitized] console.warn removed
     return {
       plan: { beneficiaries: [] } as any,
       setPlanField: (_: any, __: any) => noop(),

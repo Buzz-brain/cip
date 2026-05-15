@@ -45,7 +45,6 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
   const handleContinue = () => {
     // Persist and log chosen grace period then pass state forward
     setPlanField('gracePeriod', selectedGrace);
-    console.log('[SetInactivityGracePeriod] selectedGrace:', selectedGrace, 'inactivityPeriod:', inactivityPeriod, 'selectedMethods:', selectedMethods);
     navigate("/review-inactivity-oracle-plan", {
       state: {
         inactivityPeriod,
@@ -130,7 +129,7 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
             <button
               aria-pressed={selectedGrace === 3}
-              onClick={() => { setTouched(true); setSelectedGrace(3); setPlanField('gracePeriod', 3); console.log('[SetInactivityGracePeriod] selectedGrace: 3'); }}
+              onClick={() => { setTouched(true); setSelectedGrace(3); setPlanField('gracePeriod', 3); /* [sanitized] console removed */ }}
               className={`rounded-xl p-6 text-center transition ${selectedGrace===3 ? 'border-1 border-orange-600 ring-2 ring-orange-400 bg-[#2a1f17]' : 'border border-[#54493B] hover:border-gray-700 bg-[#27221C]'}`}>
               <div className="text-3xl font-bold text-white mb-2">3</div>
               <p className="text-gray-400 text-sm">Days</p>
@@ -138,7 +137,7 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
 
             <button
               aria-pressed={selectedGrace === 7}
-              onClick={() => { setTouched(true); setSelectedGrace(7); setPlanField('gracePeriod', 7); console.log('[SetInactivityGracePeriod] selectedGrace: 7'); }}
+              onClick={() => { setTouched(true); setSelectedGrace(7); setPlanField('gracePeriod', 7); /* [sanitized] console removed */ }}
               className={`rounded-xl p-6 text-center transition ${selectedGrace===7 ? 'border-1 border-orange-600 ring-2 ring-orange-400 bg-[#2a1f17]' : 'border border-[#54493B] hover:border-gray-700 bg-[#27221C]'}`}>
               <div className="text-3xl font-bold text-white mb-2">7</div>
               <p className="text-gray-400 text-sm">Days</p>
@@ -146,7 +145,7 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
 
             <button
               aria-pressed={selectedGrace === 14}
-              onClick={() => { setTouched(true); setSelectedGrace(14); setPlanField('gracePeriod', 14); console.log('[SetInactivityGracePeriod] selectedGrace: 14'); }}
+              onClick={() => { setTouched(true); setSelectedGrace(14); setPlanField('gracePeriod', 14); /* [sanitized] console removed */ }}
               className={`rounded-xl p-6 text-center transition relative ${selectedGrace===14 ? 'border-1 border-orange-600 ring-2 ring-orange-400 bg-[#2a1f17]' : (!touched ? 'border border-orange-600/40 bg-orange-600/5' : 'border border-[#54493B] hover:border-gray-700 bg-[#27221C]')}`}>
               <div className="absolute top-0 right-0 bg-orange-600 rounded-lg text-white text-xs font-normal px-2 py-1">
                 Recommended
@@ -159,7 +158,7 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <button
               aria-pressed={selectedGrace === 30}
-              onClick={() => { setTouched(true); setSelectedGrace(30); setPlanField('gracePeriod', 30); console.log('[SetInactivityGracePeriod] selectedGrace: 30'); }}
+              onClick={() => { setTouched(true); setSelectedGrace(30); setPlanField('gracePeriod', 30); }}
               className={`rounded-xl p-6 text-center transition ${selectedGrace===30 ? 'border-1 border-orange-600 ring-2 ring-orange-400 bg-[#2a1f17]' : 'border border-[#54493B] hover:border-gray-700 bg-[#27221C]'}`}>
               <div className="text-3xl font-bold text-white mb-2">30</div>
               <p className="text-gray-400 text-sm">Days</p>
@@ -167,7 +166,7 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
 
             <button
               aria-pressed={selectedGrace === 60}
-              onClick={() => { setTouched(true); setSelectedGrace(60); setPlanField('gracePeriod', 60); console.log('[SetInactivityGracePeriod] selectedGrace: 60'); }}
+              onClick={() => { setTouched(true); setSelectedGrace(60); setPlanField('gracePeriod', 60); }}
               className={`rounded-xl p-6 text-center transition ${selectedGrace===60 ? 'border-1 border-orange-600 ring-2 ring-orange-400 bg-[#2a1f17]' : 'border border-[#54493B] hover:border-gray-700 bg-[#27221C]'}`}>
               <div className="text-3xl font-bold text-white mb-2">60</div>
               <p className="text-gray-400 text-sm">Days</p>
@@ -175,7 +174,7 @@ export const SetInactivityGracePeriod = (): JSX.Element => {
 
             <button
               aria-pressed={selectedGrace === null}
-              onClick={() => { setTouched(true); setSelectedGrace(null); setCustomGrace(''); setPlanField('gracePeriod', null); console.log('[SetInactivityGracePeriod] selectedGrace: custom'); }}
+              onClick={() => { setTouched(true); setSelectedGrace(null); setCustomGrace(''); setPlanField('gracePeriod', null); }}
               className={`rounded-xl p-6 text-center transition ${selectedGrace===null ? 'border-1 border-orange-600 ring-2 ring-orange-400 bg-[#2a1f17]' : 'border border-[#54493B] hover:border-gray-700 bg-[#27221C]'}`}>
               <div className="text-gray-500 text-sm font-medium mb-2">
                 ---

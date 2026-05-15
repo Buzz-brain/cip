@@ -45,7 +45,7 @@ export async function getAllDisputes(token: string): Promise<any[]> {
 
   if (!res.ok) {
     const txt = await res.text().catch(() => '');
-    console.error(`[getAllDisputes] failed: ${res.status} ${txt}`);
+    // [sanitized] console.error removed
     return [];
   }
 

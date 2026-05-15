@@ -52,7 +52,7 @@ export const BillingHistory = ({ onManagePayment }: BillingPageProps): JSX.Eleme
         const sorted = Array.isArray(data) ? data.slice().sort((a,b) => (new Date(b.start_date).getTime() - new Date(a.start_date).getTime())) : [];
         setSubscriptions(sorted);
       } catch (err) {
-        console.error('Failed to load subscription history', err);
+        // [sanitized] console.error removed
       } finally {
         if (mounted) setLoading(false);
       }

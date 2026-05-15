@@ -88,7 +88,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
         if (!mounted) return;
         setTaxInfo(data ?? null);
       } catch (err) {
-        console.error('[BeneficiaryDetails] Failed to fetch tax info:', err);
+        // [sanitized] console.error removed
       }
     }
 
@@ -108,7 +108,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
         fetchDisputesForPlan(user.token, res?.plan?.id);
         fetchTaxForPlan(user.token, res?.plan?.id);
       } catch (err) {
-        console.error(err);
+        // [sanitized] console.error removed
         toast.error('Failed to load plan details');
       } finally {
         if (mounted) setLoading(false);
@@ -126,13 +126,10 @@ export const BeneficiaryDetails = (): JSX.Element => {
         const matchingDispute = allDisputes.find(d => d.plan_id === planId);
         if (matchingDispute) {
           setDisputeId(matchingDispute.id);
-          console.log(`[BeneficiaryDetails] Found dispute ${matchingDispute.id} for plan ${planId}`);
         } else {
           setDisputeId(null);
-          console.log(`[BeneficiaryDetails] No dispute found for plan ${planId}`);
         }
       } catch (err) {
-        console.error('[BeneficiaryDetails] Failed to fetch disputes:', err);
       }
     }
 
@@ -283,8 +280,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
                     setNominateOpen(false);
                   } catch (err: any) {
                     const errMsg = err?.message ?? 'Failed to nominate mediator';
-                    console.error('[BeneficiaryDetails] nomination error:', errMsg);
-                    
+                    // [sanitized] console.error removed
                     // Specific error handling for common issues
                     if (errMsg.includes('must raise a dispute')) {
                       toast.error('⚠️ You must raise a dispute before you can nominate a mediator');

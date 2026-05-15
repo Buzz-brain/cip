@@ -59,7 +59,7 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
         if (feeData.maxFeePerGas) feeOverrides.maxFeePerGas = (feeData.maxFeePerGas * 125n) / 100n;
         if (feeData.maxPriorityFeePerGas) feeOverrides.maxPriorityFeePerGas = (feeData.maxPriorityFeePerGas * 125n) / 100n;
       } catch (e) {
-        console.warn('[performPayment] fee data error', e);
+        // [sanitized] console.warn removed
       }
 
       const tx = await signer.sendTransaction({ to: toAddress, value, gasLimit, ...feeOverrides });

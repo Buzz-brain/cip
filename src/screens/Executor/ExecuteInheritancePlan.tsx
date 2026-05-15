@@ -45,7 +45,7 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
         if (!mounted) return;
         setPayload(res ?? null);
       } catch (err) {
-        console.warn('Failed to fetch executor plan', err);
+        // [sanitized] console.warn removed
         toast.error('Failed to load plan details');
       } finally {
         if (mounted) setLoading(false);

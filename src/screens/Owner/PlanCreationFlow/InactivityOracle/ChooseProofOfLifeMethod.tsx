@@ -19,7 +19,6 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
 
   const selectMethod = (method: ProofOfLifeMethod) => {
     setSelectedMethod(method);
-    console.log('[ChooseProofOfLifeMethod] selectedMethod:', method);
   };
 
 
@@ -43,8 +42,6 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
 
       // persist selection and log (use backend canonical id in plan)
       setPlanField('proofOfLifeMethod', backendSelected);
-      console.log('[ChooseProofOfLifeMethod] continuing with:', { inactivityPeriod: inactivityPeriod || plan?.inactivityPeriodDays, daysValue: daysValue || String(plan?.inactivityPeriodDays || ''), selectedMethod, backendSelected });
-
       navigate("/set-inactivity-grace-period", {
         state: {
           inactivityPeriod,
@@ -86,14 +83,14 @@ export const ChooseProofOfLifeMethod = (): JSX.Element => {
           headers: { accept: "application/json" },
         });
         if (!res.ok) {
-          console.warn("Failed to fetch proof-of-life types", res.status);
+          // [sanitized] console.warn removed
           setBackendTypes(null);
           return;
         }
         const json = await res.json();
         if (mounted && Array.isArray(json)) setBackendTypes(json.map(String));
       } catch (err) {
-        console.warn("Error fetching proof-of-life types", err);
+        // [sanitized] console.warn removed
         setBackendTypes(null);
       }
     })();

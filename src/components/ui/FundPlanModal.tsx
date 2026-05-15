@@ -31,8 +31,7 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
   const [fetchedCryptoAsset, setFetchedCryptoAsset] = useState<string | null>(null);
   const [planFetchLoading, setPlanFetchLoading] = useState<boolean>(false);
 
-  // Log crypto asset on every render
-  console.log('[FundPlanModal] planCtx?.plan?.cryptoAsset:', planCtx);
+  // Crypto asset info available via planCtx
 
   // Get the selected asset from plan context or fetched plan detail
   const assetKey = planCtx?.plan?.cryptoAsset ?? fetchedCryptoAsset ?? null;
@@ -49,10 +48,9 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
         const bal = await provider.getBalance(addr);
         const balStr = formatEther(bal);
         setAvailableBalance(balStr);
-        console.log('[FundPlanModal] fetched balance:', { addr, balStr });
       }
     } catch (err) {
-      console.error('[FundPlanModal] balance fetch failed:', err);
+      // [sanitized] console.error removed
       setAvailableBalance(null);
     }
   };
@@ -78,14 +76,13 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
             }
           });
           if (!resp.ok) {
-            console.warn('[FundPlanModal] fetch plan detail failed', resp.status);
             return;
           }
           const j = await resp.json();
           const fetched = j?.data?.plan?.crypto_asset ?? j?.data?.crypto_asset ?? null;
           if (fetched) setFetchedCryptoAsset(String(fetched));
         } catch (e) {
-          console.warn('[FundPlanModal] fetching plan by DB id failed', e);
+          // [sanitized] console.warn removed
         } finally {
           setPlanFetchLoading(false);
         }
@@ -113,12 +110,12 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
     }
   }, [status, onClose]);
 
-  console.log('[FundPlanModal] render', { open, contractPlanId, defaultAmount });
+  // render
 
   if (!open) return null;
 
   const handleConfirm = async () => {
-    console.log('[FundPlanModal] handleConfirm start', { contractPlanId, amount });
+    
     setError(null);
     // Validate amount before attempting any wallet operations
     const validate = (val: string) => {
@@ -131,44 +128,39 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
     };
 
     const amtErr = validate(amount);
-    if (amtErr) {
+      if (amtErr) {
       setError(amtErr);
-      console.warn('[FundPlanModal] validation failed', { amount, amtErr });
       return;
     }
     if (!window.ethereum) {
       setError("No web3 provider found. Connect a wallet.");
-      console.error('[FundPlanModal] no window.ethereum');
       return;
     }
 
     try {
-      console.log('[FundPlanModal] requesting accounts');
       await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
     } catch (err) {
       setError("Wallet connection required.");
-      console.error('[FundPlanModal] eth_requestAccounts failed', err);
       return;
     }
 
     try {
       const provider = new BrowserProvider(window.ethereum as any);
       const signer = await provider.getSigner();
-      const signerAddr = await signer.getAddress().catch((e) => { console.warn('[FundPlanModal] getAddress failed', e); return null; });
-      console.log('[FundPlanModal] provider and signer ready', { signerAddr });
+      const signerAddr = await signer.getAddress().catch(() => null);
       setStatus("signing");
 
       // If ownerWallet prop provided, ensure connected signer matches expected owner
       if (ownerWallet && signerAddr && String(ownerWallet).toLowerCase() !== String(signerAddr).toLowerCase()) {
         const msg = 'Connected wallet does not match plan owner. Switch to the owner wallet to fund this plan.';
         setError(msg);
-        console.warn('[FundPlanModal] owner mismatch', { ownerWallet, signerAddr });
+        
         setStatus('error');
         return;
       }
       const planIdNum = Number(contractPlanId);
       const sanitizedAmount = amount.trim().replace(/,/g, '');
-      console.log('[FundPlanModal] calling fundPlanOnChain', { planIdNum, sanitizedAmount });
+      
       let hash: string;
       try {
         hash = await fundPlanOnChain(planIdNum, sanitizedAmount, signer);
@@ -185,16 +177,14 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
           setError(msg);
         }
         setStatus('error');
-        console.error('[FundPlanModal] fundPlanOnChain threw', e);
         return;
       }
-      console.log('[FundPlanModal] fundPlanOnChain returned', { hash });
+      
       setTxHash(hash);
       setStatus("pending");
 
       // Notify backend
-      try {
-        console.log('[FundPlanModal] notifying backend', { contract_plan_id: planIdNum, tx_hash: hash });
+        try {
         const resp = await fetch(`${BACKEND_API_URL}/inherit/fund-inheritance`, {
           method: "POST",
           headers: {
@@ -203,7 +193,6 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
           },
           body: JSON.stringify({ contract_plan_id: planIdNum, tx_hash: hash }),
         });
-        console.log('[FundPlanModal] backend responded', { status: resp.status });
         if (!resp.ok) {
           const errorMsg = await extractErrorMessage(resp);
           throw new Error(errorMsg);
@@ -222,31 +211,28 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
             try {
               planCtx?.emitPlansUpdated?.(detailJson?.data ?? detailJson);
             } catch (e) {
-              console.warn('[FundPlanModal] emitPlansUpdated failed', e);
             }
           }
         } catch (e) {
-          console.warn('[FundPlanModal] fetching updated plan detail failed', e);
+          // [sanitized] console.warn removed
         }
 
         setStatus("success");
         toast.success("Plan funded and backend notified.");
-      } catch (e: any) {
+        } catch (e: any) {
         setStatus("error");
         setError(e?.message || String(e));
         setBackendNotifyFailed(true);
-        console.error('[FundPlanModal] backend notify failed', e);
         toast.error("Funding succeeded on-chain, but backend notify failed. Use Retry button to resend.");
       }
     } catch (err: any) {
       setStatus("error");
       setError(err?.message || String(err));
-      console.error('[FundPlanModal] fund flow error', err);
     }
   };
 
   const handleRetryBackend = async () => {
-    console.log('[FundPlanModal] handleRetryBackend start', { contractPlanId, txHash });
+    
     if (!txHash) {
       setError("No transaction hash stored. Please fund again.");
       return;
@@ -254,7 +240,7 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
     setError(null);
     setStatus("pending");
     try {
-      console.log('[FundPlanModal] retrying backend notify', { contract_plan_id: Number(contractPlanId), tx_hash: txHash });
+      
       const resp = await fetch(`${BACKEND_API_URL}/inherit/fund-inheritance`, {
         method: "POST",
         headers: {
@@ -263,7 +249,6 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
         },
         body: JSON.stringify({ contract_plan_id: Number(contractPlanId), tx_hash: txHash }),
       });
-      console.log('[FundPlanModal] backend responded', { status: resp.status });
       if (!resp.ok) {
         const errorMsg = await extractErrorMessage(resp);
         throw new Error(errorMsg);
@@ -283,11 +268,10 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
           try {
             planCtx?.emitPlansUpdated?.(detailJson?.data ?? detailJson);
           } catch (e) {
-            console.warn('[FundPlanModal] emitPlansUpdated failed', e);
           }
         }
       } catch (e) {
-        console.warn('[FundPlanModal] fetching updated plan detail failed', e);
+        // [sanitized] console.warn removed
       }
 
       setStatus("success");
@@ -296,7 +280,6 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
     } catch (e: any) {
       setStatus("error");
       setError(e?.message || String(e));
-      console.error('[FundPlanModal] retry backend notify failed', e);
       toast.error("Retry failed. Check backend response and try again.");
     }
   };

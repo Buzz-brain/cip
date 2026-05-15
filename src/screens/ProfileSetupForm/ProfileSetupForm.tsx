@@ -67,7 +67,7 @@ export const ProfileSetupForm = (): JSX.Element => {
           payload.country || payload.tax_residence || payload.taxResidence || "Nigeria",
       });
     } catch (error) {
-      console.warn("Failed to auto-fill profile from API:", error);
+      // [sanitized] console.warn removed
       setProfileError("Could not load profile data. Please complete manually.");
     } finally {
       setIsLoadingProfile(false);
@@ -96,7 +96,6 @@ export const ProfileSetupForm = (): JSX.Element => {
       let latestUserInfo = null;
       try {
         latestUserInfo = await authAPI.getUserInfo(user.token);
-        console.log('[ProfileSetupForm] latestUserInfo after save', latestUserInfo);
       } catch (e) {
         // fallback: use previous userInfo
         latestUserInfo = user.userInfo;
@@ -104,7 +103,7 @@ export const ProfileSetupForm = (): JSX.Element => {
       const role = latestUserInfo?.role || user?.userInfo?.role;
       navigate(getDashboardRoute(role));
     } catch (err) {
-      console.error("Profile save failed:", err);
+      // Preserve error handling but remove console output; toast will notify user
       setSaveError(err instanceof Error ? err.message : "Failed to save profile.");
     } finally {
       setSaveLoading(false);

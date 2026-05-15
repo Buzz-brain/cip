@@ -6,14 +6,12 @@ import { extractErrorMessage } from '../utils';
 
 export async function getNonce(publicKey: string): Promise<string> {
   const url = `${BACKEND_API_URL}/auth/nonce?public_key=${encodeURIComponent(publicKey)}`;
-  console.log("   📡 Fetching nonce from:", url);
   
   const res = await fetch(url, {
     method: "POST",
     headers: { "Accept": "application/json" },
   });
   
-  console.log("Nonce endpoint response status:", res.status);
   
   if (!res.ok) {
     const msg = await extractErrorMessage(res).catch(() => res.statusText || 'Failed to get nonce');
@@ -21,11 +19,9 @@ export async function getNonce(publicKey: string): Promise<string> {
   }
   
   const data = await res.json();
-  console.log("Nonce response data:", data);
   
   // The API returns {nonce: string}, so extract the nonce value
   const nonce = data.nonce || data;
-  // console.log("Extracted nonce:", nonce);
   
   return nonce;
 }
@@ -46,19 +42,12 @@ export async function login({
   });
   
   const url = `${BACKEND_API_URL}/auth/login?${params.toString()}`;
-  console.log("   📡 Login endpoint URL:", url);
-  console.log("   📊 Login request parameters:");
-  console.log("      - public_key:", publicKey);
-  console.log("      - signature (first 20 chars):", signature.substring(0, 20) + "...");
-  console.log("      - signature (total length):", signature.length);
-  console.log("      - message (nonce):", message);
   
   const res = await fetch(url, {
     method: "POST",
     headers: { "Accept": "application/json" },
   });
   
-  console.log("   📊 Login endpoint response status:", res.status);
   
   if (!res.ok) {
     const userMessage = await extractErrorMessage(res).catch(() => res.statusText || 'Login failed');
@@ -66,7 +55,6 @@ export async function login({
   }
   
   const result = await res.json();
-  console.log("   ✅ Login response:", result);
 
   // Ensure consumers get the token string directly (backend returns { token, ... })
   if (result && typeof result === "object" && "token" in result) {
@@ -121,7 +109,6 @@ export async function getActivityLogs(token?: string): Promise<any[]> {
     },
   });
   if (!res.ok) {
-    console.warn('auth.getActivityLogs: failed', res.status);
     return [];
   }
   const json = await res.json().catch(() => []);
@@ -130,7 +117,6 @@ export async function getActivityLogs(token?: string): Promise<any[]> {
 
 export async function getSubscriptionHistory(token?: string): Promise<any[]> {
   const url = `${BACKEND_API_URL}/auth/subscription-history`;
-  console.debug(`[auth.getSubscriptionHistory] url=${url} token=${token ? 'present' : 'missing'}`);
   const res = await fetch(url, {
     method: 'GET',
     headers: {
@@ -138,9 +124,7 @@ export async function getSubscriptionHistory(token?: string): Promise<any[]> {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
-  console.debug(`[auth.getSubscriptionHistory] responseStatus=${res.status}`);
   if (!res.ok) {
-    console.warn('auth.getSubscriptionHistory: failed', res.status);
     return [];
   }
   const json = await res.json().catch(() => []);

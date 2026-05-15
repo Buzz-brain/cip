@@ -14,7 +14,7 @@ export const useAuth = (): AuthContextType => {
     // This prevents the uncaught error seen in ProtectedRoute and allows the app to render a redirect.
     // NOTE: This masks the underlying issue; investigate provider placement if this appears in production.
     // eslint-disable-next-line no-console
-    console.warn('useAuth called without AuthProvider. Returning fallback context.');
+    // [sanitized] console.warn removed
     return {
       user: null,
       loading: false,

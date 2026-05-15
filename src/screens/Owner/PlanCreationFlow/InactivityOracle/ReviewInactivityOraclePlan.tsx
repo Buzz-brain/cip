@@ -48,7 +48,6 @@ export const ReviewInactivityOraclePlan = (): JSX.Element => {
   };
 
   const handleContinue = () => {
-    console.log('[ReviewInactivityOraclePlan] review values:', { inactivityPeriod, daysValue, selectedMethods, gracePeriod });
     navigate("/confirm-inactivity-oracle-plan");
   };
 

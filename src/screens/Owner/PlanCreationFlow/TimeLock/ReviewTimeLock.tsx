@@ -44,12 +44,10 @@ export const ReviewTimeLock = (): JSX.Element => {
         const dateUtc = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), hour, minute, 0));
         const epochSeconds = Math.floor(dateUtc.getTime() / 1000);
         setPlanField('releaseTimestamp', epochSeconds);
-        console.log('[ReviewTimeLock] Persisted releaseTimestamp from location state:', epochSeconds);
       } catch (err) {
-        console.warn('[ReviewTimeLock] Failed to persist date:', err);
       }
-    }
-  }, [stateUnlockDate, stateUnlockTime, releaseTimestamp, setPlanField]);
+      }
+    }, [stateUnlockDate, stateUnlockTime, releaseTimestamp, setPlanField]);
 
   // Get actual asset count from plan or default to 1
   const assetCount = plan?.assets?.length || 1;

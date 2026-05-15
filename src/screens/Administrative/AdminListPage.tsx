@@ -80,7 +80,7 @@ export default function AdminListPage({ title, fetcher }: { title: string; fetch
       setItems(Array.isArray(list) ? list : []);
       setConfirmOpen(false);
     } catch (err:any) {
-      console.error('Action failed', err);
+      // [sanitized] console.error removed
       const raw = err?.message || String(err);
       let cleaned = raw.replace(/^.*?:\s*/, '').replace(/^\d{3}\s*/, '').trim();
       try {

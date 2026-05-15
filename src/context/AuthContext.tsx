@@ -3,7 +3,6 @@
 
 import React, { createContext, useState, useCallback, ReactNode, useEffect, useRef } from "react";
 import * as authAPI from "../lib/api/auth";
-import { logDebug } from "../lib/debugLogger";
 
 const STORAGE_KEY = "cip_auth_user";
 
@@ -55,18 +54,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
         if (parsedUser?.token && parsedUser?.publicKey) {
-          console.log('[AuthContext] ✅ Restored user from localStorage:', parsedUser.publicKey);
-          logDebug('info', 'Restored user from localStorage', { publicKey: parsedUser.publicKey });
           setUser(parsedUser);
         } else {
-          console.warn('[AuthContext] Stored user missing token or publicKey, clearing');
-          logDebug('warn', 'Stored user missing token or publicKey, clearing', { storedUser });
           localStorage.removeItem(STORAGE_KEY);
         }
       }
     } catch (err) {
-      console.error('[AuthContext] Failed to parse stored user:', err);
-      logDebug('error', 'Failed to parse stored user', { error: String(err) });
       localStorage.removeItem(STORAGE_KEY);
     } finally {
       setIsInitialized(true);
@@ -81,13 +74,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (user) {
         wasEverSetRef.current = true;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-        console.log('[AuthContext] 💾 User persisted to localStorage:', { publicKey: user.publicKey, hasToken: !!user.token });
-        logDebug('info', 'User persisted to localStorage', { publicKey: user.publicKey, hasToken: !!user.token });
       } else if (wasEverSetRef.current) {
         // Only clear if we explicitly logged out, not on cold mount during reload recovery
         localStorage.removeItem(STORAGE_KEY);
-        console.log('[AuthContext] 🗑️ User removed from localStorage');
-        logDebug('info', 'User removed from localStorage');
       }
     }
   }, [user, isInitialized]);
@@ -101,7 +90,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to get nonce";
       setError(message);
-      logDebug('error', 'getNonce failed', { publicKey, error: String(err) });
       throw err;
     }
   }, []);
@@ -112,13 +100,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(true);
       setError(null);
       const newUser: User = { publicKey: "", token, userInfo: info || {}, role: "admin", name: info?.full_name, email: info?.email };
-      logDebug('info', 'loginAsAdmin - setting user', { role: 'admin', email: info?.email });
       setUser(newUser);
       return newUser;
     } catch (err) {
       const message = err instanceof Error ? err.message : "Admin login failed";
       setError(message);
-      logDebug('error', 'loginAsAdmin failed', { error: String(err) });
       throw err;
     } finally {
       setLoading(false);
@@ -130,13 +116,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(true);
       setError(null);
       const newUser: User = { publicKey: "", token, userInfo: info || {}, role: "enterprise", name: info?.company_name || info?.email, email: info?.email };
-      logDebug('info', 'loginAsEnterprise - setting user', { role: 'enterprise', email: info?.email });
       setUser(newUser);
       return newUser;
     } catch (err) {
       const message = err instanceof Error ? err.message : "Enterprise login failed";
       setError(message);
-      logDebug('error', 'loginAsEnterprise failed', { error: String(err) });
       throw err;
     } finally {
       setLoading(false);
@@ -149,57 +133,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         setLoading(true);
         setError(null);
-        logDebug('info', 'loginWithWallet started', { publicKey });
-        console.log('[AuthContext] loginWithWallet: calling authAPI.login...');
-        
+
         const loginResponse = await authAPI.login({ publicKey, signature, message });
-        logDebug('info', 'authAPI.login returned', { loginResponse, responseType: typeof loginResponse });
-        console.log('[AuthContext] loginWithWallet: authAPI.login returned', loginResponse);
 
         // API returns a token string
         const token = loginResponse as string;
         if (!token || typeof token !== "string") {
-          logDebug('error', 'loginWithWallet invalid token', { loginResponse, tokenType: typeof token });
-          console.error('[AuthContext] loginWithWallet: invalid token', { loginResponse, tokenType: typeof token });
           throw new Error("Login failed: invalid auth token");
         }
 
-        logDebug('info', 'loginWithWallet: token is valid', { tokenLength: token.length });
         const newUser: User = { publicKey, token };
         
         // Optionally fetch user info after login
-        logDebug('info', 'loginWithWallet: fetching user info...');
         try {
-          console.log('[AuthContext] loginWithWallet: calling authAPI.getUserInfo...');
           const userInfo = await authAPI.getUserInfo(token);
-          logDebug('info', 'authAPI.getUserInfo returned', { userInfo });
-          console.log('[AuthContext] loginWithWallet: authAPI.getUserInfo returned', userInfo);
           newUser.userInfo = userInfo;
           // map common fields if present
           newUser.name = userInfo?.full_name || userInfo?.name || newUser.name;
           newUser.email = userInfo?.email || newUser.email;
-          logDebug('info', 'loginWithWallet: user info mapped', { name: newUser.name, email: newUser.email });
         } catch (err) {
-          console.warn("[AuthContext] loginWithWallet: Failed to fetch user info after login:", err);
-          logDebug('warn', 'Failed to fetch user info after login', { error: String(err) });
         }
 
         // Debug: log user object right before setting
-        try { console.log('[AuthContext] loginWithWallet - setting user', { publicKey, token, userInfo: newUser.userInfo }); } catch {}
-        logDebug('info', 'loginWithWallet - calling setUser', { publicKey, hasToken: !!token, userInfo: newUser.userInfo });
         setUser(newUser);
-        logDebug('info', 'loginWithWallet - setUser called, returning newUser', { publicKey, hasToken: !!token });
-        console.log('[AuthContext] loginWithWallet: setUser called, returning');
         return newUser;
       } catch (err) {
         const message = err instanceof Error ? err.message : "Login failed";
         setError(message);
-        console.error('[AuthContext] loginWithWallet caught error:', { error: String(err), message });
-        logDebug('error', 'loginWithWallet failed', { error: String(err), message, stack: err instanceof Error ? err.stack : 'N/A' });
         throw err;
       } finally {
-        console.log('[AuthContext] loginWithWallet: finally block, setting loading to false');
-        logDebug('info', 'loginWithWallet: finally block');
         setLoading(false);
       }
     },
@@ -210,17 +172,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const fetchUserInfo = useCallback(async () => {
     if (!user?.token) {
       setError("No authentication token found");
-      logDebug('warn', 'fetchUserInfo called without token');
       return;
     }
     try {
       setLoading(true);
       setError(null);
-      logDebug('info', 'fetchUserInfo started', { tokenPresent: !!user?.token });
       const userInfo = await authAPI.getUserInfo(user.token);
-      // Debug: log fetched userInfo
-      try { console.log('[AuthContext] fetchUserInfo - fetched', userInfo); } catch {}
-      logDebug('info', 'fetchUserInfo - fetched', { userInfo });
       setUser((prev) =>
         prev
           ? { ...prev, userInfo, name: userInfo?.full_name || userInfo?.name || prev.name, email: userInfo?.email || prev.email }
@@ -229,7 +186,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to fetch user info";
       setError(message);
-      logDebug('error', 'fetchUserInfo failed', { error: String(err) });
     } finally {
       setLoading(false);
     }
@@ -251,7 +207,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } catch (err) {
         const message = err instanceof Error ? err.message : "Failed to update account info";
         setError(message);
-        logDebug('error', 'updateUserInfo failed', { error: String(err) });
         throw err;
       } finally {
         setLoading(false);
@@ -262,7 +217,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Logout
   const logout = useCallback(() => {
-    logDebug('info', 'logout - clearing user');
     setUser(null);
     setError(null);
   }, []);

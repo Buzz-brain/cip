@@ -264,13 +264,12 @@ export const Home = (): JSX.Element => {
                 <motion.div
                   whileHover={{
                     scale: 1.05,
-                    boxShadow: "0px 0px 20px #ff6633cc",
                   }}
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   <Button
-                    className="w-full sm:w-auto bg-gradient-to-r px-6 py-3 sm:px-7 sm:py-5 from-[#ff6600] to-[#993d00] hover:opacity-90 shadow-[0px_0px_20px_#ff6633cc] font-bold text-sm sm:text-base"
+                    className="w-full sm:w-auto bg-gradient-to-r px-6 py-3 sm:px-7 sm:py-5 from-[#ff6600] to-[#993d00] hover:opacity-90 font-bold text-sm sm:text-base"
                     onClick={() => open("one")}
                   >
                     Start Plan
@@ -281,28 +280,29 @@ export const Home = (): JSX.Element => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  className="group"
                 >
                   <Button
                     variant="outline"
                     className="w-full sm:w-auto bg-[#111111] px-4 py-3 sm:px-5 sm:py-5 border-[#bd4b00] font-bold text-sm sm:text-base"
                   >
-                    <motion.svg
+                    <svg
                       width="18"
                       height="18"
                       viewBox="0 0 18 18"
-                      fill="none"
                       xmlns="http://www.w3.org/2000/svg"
-                      whileHover={{ rotate: 360 }}
-                      transition={{ duration: 0.5 }}
+                      className="group-hover:animate-spin transition-transform"
                     >
                       <path
                         d="M16.0568 7.01474C16.417 7.2063 16.7183 7.49226 16.9284 7.84198C17.1385 8.1917 17.2495 8.592 17.2495 8.99999C17.2495 9.40798 17.1385 9.80828 16.9284 10.158C16.7183 10.5077 16.417 10.7937 16.0568 10.9852L6.44775 16.2105C4.9005 17.0527 3 15.9577 3 14.226V3.77474C3 2.04224 4.9005 0.947986 6.44775 1.78874L16.0568 7.01474Z"
                         fill="white"
+                        className="group-hover:fill-black transition-colors duration-300"
                       />
-                    </motion.svg>
+                    </svg>
                     View Demo
                   </Button>
                 </motion.div>
+
               </motion.div>
             </div>
           </div>
@@ -333,7 +333,7 @@ export const Home = (): JSX.Element => {
                     initial={{
                       y: 80,
                       rotateX: -15,
-                      scale: 0.7,
+                      scale: 1,
                     }}
                     whileInView={{
                       y: 0,
@@ -351,7 +351,7 @@ export const Home = (): JSX.Element => {
                     whileHover={{
                       y: -12,
                       rotateY: index % 2 === 0 ? 5 : -5,
-                      scale: 1.1,
+                      scale: 1,
                       transition: {
                         duration: 0.3,
                         type: "spring",
@@ -360,7 +360,7 @@ export const Home = (): JSX.Element => {
                       },
                     }}
                     whileTap={{
-                      scale: 0.9,
+                      scale: 1,
                       rotateX: 10,
                       transition: { duration: 0.1 },
                     }}
@@ -369,8 +369,6 @@ export const Home = (): JSX.Element => {
                     <motion.div
                       className="relative p-2 sm:p-3 rounded-xl bg-[#332619] border border-[#674932]"
                       whileHover={{
-                        borderColor: "#ff6600",
-                        boxShadow: "0 0 25px rgba(255, 102, 0, 0.3)",
                         transition: { duration: 0.3 },
                       }}
                     >
@@ -380,7 +378,7 @@ export const Home = (): JSX.Element => {
                         className="w-8 h-8 relative z-10"
                         whileHover={{
                           rotate: [0, -15, 15, -10, 10, 0],
-                          scale: 1.2,
+                          scale: 1,
                           transition: {
                             duration: 0.6,
                             ease: "easeInOut",
@@ -399,9 +397,7 @@ export const Home = (): JSX.Element => {
                     <motion.span
                       className="font-bold text-[#b8a494] text-sm sm:text-base"
                       whileHover={{
-                        color: "#ff6600",
-                        scale: 1.05,
-                        textShadow: "0 0 10px rgba(255, 102, 0, 0.5)",
+                        scale: 1,
                         transition: { duration: 0.2 },
                       }}
                     >
@@ -491,7 +487,7 @@ export const Home = (): JSX.Element => {
                       Infrastructure for Accountants
                     </Badge>
                   </motion.div>
-                  <motion.h2 className="font-bold text-white text-5xl">
+                  <motion.h2 className="font-bold text-white text-4xl">
                     TaxCore Intelligence
                   </motion.h2>
                   <motion.p className="text-[#b8a494] text-lg leading-[29px]">
@@ -627,7 +623,7 @@ export const Home = (): JSX.Element => {
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               {featureCards.map((card, index) => (
-                <motion.div>
+                <motion.div key={card.title}>
                   <Card className="bg-[#332619] border-[#674932] relative overflow-hidden">
                     <CardContent className="p-8 space-y-6 relative z-10">
                       <motion.div
@@ -644,7 +640,6 @@ export const Home = (): JSX.Element => {
                         whileHover={{
                           rotate: 360,
                           scale: 1.2,
-                          boxShadow: "0 0 20px rgba(255, 102, 0, 0.5)",
                         }}
                       >
                         <motion.img
@@ -668,7 +663,6 @@ export const Home = (): JSX.Element => {
                         viewport={{}}
                         whileHover={{
                           scale: 1.1,
-                          textShadow: "0 0 20px rgba(255, 102, 0, 0.8)",
                           color: "#ff6600",
                         }}
                       >
@@ -788,7 +782,7 @@ export const Home = (): JSX.Element => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                 {plansLoading
-                  ? Array.from({ length: 3 }).map((_, i) => (
+                  ? Array.from({ length: 4 }).map((_, i) => (
                       <div
                         key={i}
                         className="p-6 rounded-lg bg-[#27231C] border-2 border-[#54493B] animate-pulse"
@@ -860,7 +854,6 @@ export const Home = (): JSX.Element => {
                             rawPlan.price > 10 && rawPlan.price <= 49
                               ? true
                               : false,
-                          // match Pricing page: allow backend badge or mark the 3rd plan (index 2) as Recommended
                           badge:
                             rawPlan.badge ??
                             (index === 2 ? "Recommended" : undefined),
@@ -902,14 +895,14 @@ export const Home = (): JSX.Element => {
                               } relative`}
                             >
                               {plan.badge && (
-                                <div className="absolute top-0 right-0 bg-[#ff6600] px-3 py-1">
+                                <div className="absolute top-0 right-0 w-[90%] bg-[#ff6600] rounded-l-full rounded-tr-full px-4 py-1 flex justify-start">
                                   <span className="font-bold text-white text-xs">
                                     {plan.badge}
                                   </span>
                                 </div>
                               )}
                               <CardContent className="p-6 sm:p-8 space-y-6">
-                                <div className="space-y-2">
+                                <div className="space-y-2 mt-2">
                                   <h3 className="font-bold text-white text-xl">
                                     {plan.name}
                                   </h3>
@@ -971,8 +964,6 @@ export const Home = (): JSX.Element => {
                                 <motion.div
                                   whileHover={{
                                     scale: 1.02,
-                                    boxShadow:
-                                      "0 0 20px rgba(255, 102, 0, 0.3)",
                                     transition: {
                                       type: "spring",
                                       stiffness: 300,

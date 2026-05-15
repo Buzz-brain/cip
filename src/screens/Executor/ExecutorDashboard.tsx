@@ -31,7 +31,7 @@ export const ExecutorDashboard = (): JSX.Element => {
         setTotalPlans(typeof data.total_plans === 'number' ? data.total_plans : null);
         setTotalAmount(typeof data.total_amount === 'number' ? data.total_amount : (data.total_amount ?? null));
       } catch (err) {
-        console.error('Failed to load executor dashboard stats', err);
+        // [sanitized] console.error removed
       }
     }
 

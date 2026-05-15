@@ -56,15 +56,15 @@ export const YourInheritances = (): JSX.Element => {
               if (!mounted) return;
               setTaxByPlan(prev => ({ ...prev, [Number(p.id)]: tax ?? null }));
             } catch (e) {
-              console.warn('[YourInheritances] tax fetch failed for plan', p.id, e);
+              // [sanitized] console.warn removed
               setTaxByPlan(prev => ({ ...prev, [Number(p.id)]: null }));
             }
           });
         } catch (e) {
-          console.warn('[YourInheritances] Failed to import beneficiary API for tax fetch', e);
+          // [sanitized] console.warn removed
         }
       } catch (err: any) {
-        console.warn("Failed to fetch beneficiary inheritances", err);
+        // [sanitized] console.warn removed
         toast.error("Failed to load inheritances");
         setPlans(null);
         setBeneficiaries(null);
@@ -85,7 +85,7 @@ export const YourInheritances = (): JSX.Element => {
       // navigate to details page with plan in state
       navigate('/beneficiary-details', { state: { plan: detail } });
     } catch (err) {
-      console.error(err);
+      // [sanitized] console.error removed
       toast.error('Failed to load plan details');
     }
   };

@@ -148,20 +148,14 @@ export async function protectInheritancePlan(
 ) {
   const core = (await initDataProtector(_provider)).core;
   const sanitized = sanitizePlanData(plan);
-  // Debug: log payload
-  console.log('[DataProtector] Payload to protect:', sanitized);
-  console.log('[DataProtector] Name:', name);
   try {
     const result = await core.protectData({
       data: sanitized,
       name,
     });
     // Debug: log result
-    console.log('[DataProtector] protectData result:', result);
     return result;
   } catch (err) {
-    // Debug: log error
-    console.error('[DataProtector] protectData error:', err);
     throw err;
   }
 }
@@ -205,7 +199,6 @@ export async function grantIAppAccess(
     authorizedUser,
     numberOfAccess,
   };
-  console.log('[DataProtector] grantAccess params:', params);
   return core.grantAccess(params);
 }
 
@@ -218,7 +211,6 @@ export async function revokeIAppAccess(
   // 1. fetchGrantedAccess to get specific access grant ID
   // 2. Call dataProtector.revokeOneAccess with grant ID
   // This stub prevents accidental use of incomplete revoke logic
-  console.log('[DataProtector] Revoke access not yet implemented for:', protectedDataAddress);
   throw new Error("Revoke functionality is not yet implemented. Please contact backend team.");
 }
 

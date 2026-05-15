@@ -48,7 +48,7 @@ export const OwnerDashboard = (): JSX.Element => {
       const s = await getOwnerDashboardStats(auth?.user?.token);
       setStats(s);
     } catch (e) {
-      console.warn('Failed to fetch owner dashboard stats', e);
+      // [sanitized] console.warn removed
     } finally {
       setStatsLoading(false);
     }
@@ -114,7 +114,7 @@ export const OwnerDashboard = (): JSX.Element => {
       }
       setPolLoading(false);
     } catch (err) {
-      console.warn("Failed to fetch proof plan", err);
+      // [sanitized] console.warn removed
       setPolStatus(null);
       setPolLoading(false);
     }

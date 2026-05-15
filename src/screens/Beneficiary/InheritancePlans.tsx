@@ -44,7 +44,7 @@ export const InheritancePlans = (): JSX.Element => {
         setBeneficiaries(res?.beneficiaries ?? []);
         setLoaded(true);
       } catch (err: any) {
-        console.warn('Failed to fetch inheritance plans', err);
+        // [sanitized] console.warn removed
         toast.error('Failed to load inheritance plans');
         setPlans(null);
         setBeneficiaries(null);

@@ -108,8 +108,6 @@ export function useWalletConnectLifecycle(
    * Opens AppKit modal for wallet connection
    */
   const openWalletConnectModal = useCallback(async () => {
-    console.log('[useWalletConnectLifecycle] Opening AppKit modal');
-
     setIsConnecting(true);
 
     try {
@@ -117,9 +115,7 @@ export function useWalletConnectLifecycle(
       open?.({ view: 'Connect' });
       setIsModalOpen(true);
 
-      console.log('[useWalletConnectLifecycle] Modal opened - waiting for connection...');
     } catch (err) {
-      console.error('[useWalletConnectLifecycle] Error opening modal:', err);
       const message = normalizeWCError(err);
       showToastOnce(message, 'error');
       setIsConnecting(false);
@@ -131,8 +127,6 @@ export function useWalletConnectLifecycle(
    * Resets WalletConnect connection completely
    */
   const resetConnection = useCallback(async () => {
-    console.log('[useWalletConnectLifecycle] Resetting connection...');
-
     try {
       // Disconnect if connected
       if (wcIsConnected) {
@@ -143,18 +137,14 @@ export function useWalletConnectLifecycle(
       try {
         close?.();
       } catch (err) {
-        console.warn('[useWalletConnectLifecycle] closeModal failed:', err instanceof Error ? err.message : err);
       }
     } catch (err) {
-      console.warn('[useWalletConnectLifecycle] Reset error (non-fatal):', err instanceof Error ? err.message : err);
     }
 
     // Reset UI state
     setIsConnecting(false);
     setIsModalOpen(false);
     wcLoginGuard.current = false;
-
-    console.log('[useWalletConnectLifecycle] ✅ Reset complete');
 
     // Small delay for state consistency
     await new Promise(r => setTimeout(r, 100));
@@ -169,12 +159,10 @@ export function useWalletConnectLifecycle(
     }
 
     if (wcLoginGuard.current) {
-      console.log('[useWalletConnectLifecycle] Login already triggered, skipping duplicate');
       return;
     }
 
     wcLoginGuard.current = true;
-    console.log('[useWalletConnectLifecycle] ✅ Connected:', wcAddress);
 
     setIsConnecting(false);
     setIsModalOpen(false);
@@ -197,7 +185,6 @@ export function useWalletConnectLifecycle(
 
       // If modal is not visible anymore, user closed it
       if (!isModalVisible && wcLoginGuard.current === false) {
-        console.log('[useWalletConnectLifecycle] Modal closed by user (not connected)');
         clearInterval(checkInterval);
         setIsModalOpen(false);
 
@@ -225,7 +212,6 @@ export function useWalletConnectLifecycle(
     const timeout = setTimeout(() => {
       // If modal is still open but no connection after 60 seconds
       if (isModalOpen && !wcIsConnected) {
-        console.log('[useWalletConnectLifecycle] Modal timeout - no connection after 60s');
         setIsModalOpen(false);
         setIsConnecting(false);
         showToastOnce('Connection timeout - please try again.', 'error');
@@ -233,7 +219,6 @@ export function useWalletConnectLifecycle(
         try {
           close?.();
         } catch (e) {
-          console.warn('[useWalletConnectLifecycle] Error closing modal on timeout:', e);
         }
       }
     }, 60000); // 60 second timeout
@@ -257,7 +242,6 @@ export function useMobileWalletReturn(onReturn: () => void): void {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        console.log('[useMobileWalletReturn] Page regained focus');
         onReturn();
       }
     };

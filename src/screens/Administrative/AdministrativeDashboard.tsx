@@ -42,7 +42,7 @@ export default function AdministrativeDashboard() {
 
         setUsers(Array.isArray(usersData) ? usersData : []);
       } catch (err) {
-        console.error("Failed to fetch dashboard data", err);
+        // [sanitized] console.error removed
       } finally {
         setLoading(false);
       }

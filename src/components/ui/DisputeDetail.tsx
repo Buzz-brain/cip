@@ -53,7 +53,7 @@ export const DisputeDetail: React.FC<DisputeDetailProps> = ({
       setMessageContent('');
       setMessageFile(null);
     } catch (err) {
-      console.error('Error sending message:', err);
+      // [sanitized] console.error removed
     } finally {
       setSendingMessage(false);
     }
@@ -67,7 +67,7 @@ export const DisputeDetail: React.FC<DisputeDetailProps> = ({
       await onResolve?.(resolutionNote);
       setResolutionNote('');
     } catch (err) {
-      console.error('Error resolving dispute:', err);
+      // [sanitized] console.error removed
     } finally {
       setResolving(false);
     }

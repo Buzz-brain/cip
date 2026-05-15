@@ -83,7 +83,7 @@ export const DisputePlanExecution = ({ initialPlanId, redirectPath, onSuccess, u
         await Promise.resolve(onSuccess?.());
       } catch (e) {
         // swallow errors from onSuccess to avoid blocking navigation
-        console.warn('onSuccess handler failed', e);
+        // [sanitized] console.warn removed
       }
 
       // If redirectPath provided, prefer it. If it contains :id and result has an id, substitute.

@@ -5,7 +5,7 @@ import { arbitrumSepolia, arbitrum } from '@reown/appkit/networks';
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
 
 if (!projectId) {
-  console.warn('[AppKit] VITE_WALLETCONNECT_PROJECT_ID not set. Get one at https://cloud.reown.com');
+  // [sanitized] console.warn removed
 }
 
 const metadata = {
@@ -36,5 +36,4 @@ export const appKit = createAppKit({
 });
 
 export function initWeb3Modal() {
-  console.log('[AppKit] ✅ Reown AppKit initialized');
 }

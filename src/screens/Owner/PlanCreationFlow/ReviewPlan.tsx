@@ -21,7 +21,6 @@ export const ReviewPlan = (): JSX.Element => {
       const incoming: any = (location && (location as any).state) || {};
       const healthState = incoming?.healthState;
       if (healthState) {
-        console.log('[ReviewPlan] merging incoming healthState into plan:', healthState);
         if (healthState.executorName) setPlanField('executorName', healthState.executorName);
         if (healthState.executorEmail) setPlanField('executorEmail', healthState.executorEmail);
         if (healthState.executorWallet) setPlanField('executorWallet', healthState.executorWallet);
@@ -30,7 +29,6 @@ export const ReviewPlan = (): JSX.Element => {
 
       const inactivityState = incoming?.inactivityState;
       if (inactivityState) {
-        console.log('[ReviewPlan] merging incoming inactivityState into plan:', inactivityState);
         if (typeof inactivityState.inactivityDays === 'number') setPlanField('inactivityPeriodDays', inactivityState.inactivityDays);
         if (Array.isArray(inactivityState.chosenMethods)) {
           // ensure we persist backend canonical ids (map frontend-friendly ids if present)
@@ -51,7 +49,6 @@ export const ReviewPlan = (): JSX.Element => {
         if (typeof inactivityState.displayedGrace === 'number') setPlanField('gracePeriod', inactivityState.displayedGrace);
       }
     } catch (err) {
-      console.warn('[ReviewPlan] failed to merge incoming state', err);
     }
     return () => {
       // abort any in-flight submit if component unmounts
@@ -89,7 +86,6 @@ export const ReviewPlan = (): JSX.Element => {
           setAssetUsdFormatted(new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(usd));
         }
       } catch (err) {
-        console.error('[ReviewPlan] fetchPrice error', err);
       }
     };
     fetchPrice();
@@ -113,8 +109,6 @@ export const ReviewPlan = (): JSX.Element => {
       await ensureArbitrumSepolia();
 
       const payload = getProtectorPayload();
-      console.log("[ReviewPlan] Payload:", payload);
-
       if (!payload.crypto_asset) {
         throw new Error("Please select at least one crypto asset to protect.");
       }
@@ -142,20 +136,17 @@ export const ReviewPlan = (): JSX.Element => {
         ],
         release_timestamp: typeof plan.releaseTimestamp === 'number' ? plan.releaseTimestamp : undefined,
       };
-      console.log('[ReviewPlan] Backend payload preview:', backendPreview);
-
       // Submit to backend create-inheritance endpoint (abortable)
       abortControllerRef.current = new AbortController();
       let submitResponse: any = null;
       try {
         submitResponse = await submitPlan({ signal: abortControllerRef.current.signal });
-        console.log("[ReviewPlan] submitPlan response:", submitResponse);
         toast.success("Inheritance plan submitted successfully.");
       } catch (submitErr) {
         if ((submitErr as any).name === "AbortError") {
           toast.info("Plan submission aborted.");
         } else {
-          console.error("[ReviewPlan] submitPlan error:", submitErr);
+          // [sanitized] console.error removed
           throw submitErr;
         }
       } finally {
@@ -195,7 +186,7 @@ export const ReviewPlan = (): JSX.Element => {
         }
       }
       toast.error(message);
-      console.error("[ReviewPlan] submit error:", error);
+      // [sanitized] console.error removed
     } finally {
       setIsSaving(false);
     }

@@ -151,7 +151,7 @@ const AssignedInheritancePlans: React.FC = () => {
       setPlans(plansList);
       setFilteredPlans(plansList);
     } catch (err) {
-      console.error("Error fetching assigned plans:", err);
+      // [sanitized] console.error removed
       toast.error("Failed to load assigned inheritance plans");
       setPlans([]);
       setFilteredPlans([]);
@@ -197,7 +197,7 @@ const AssignedInheritancePlans: React.FC = () => {
       setSelectedPlanDetail(data?.data ?? data);
       setModalOpen(true);
     } catch (err) {
-      console.error("Error fetching plan details:", err);
+      // [sanitized] console.error removed
       toast.error("Failed to load plan details");
     } finally {
       setDetailLoading(false);
@@ -235,7 +235,7 @@ const AssignedInheritancePlans: React.FC = () => {
       // Reset file input
       e.target.value = "";
     } catch (err) {
-      console.error("Error uploading file:", err);
+      // [sanitized] console.error removed
       toast.error("Failed to upload file");
     } finally {
       setFileUploading(false);

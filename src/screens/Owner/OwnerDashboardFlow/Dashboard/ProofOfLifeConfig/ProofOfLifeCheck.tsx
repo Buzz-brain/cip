@@ -30,15 +30,12 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
     }
       try {
         setConfirming(true);
-        console.log('[ProofOfLifeCheck] clicking confirm, tokenLen=', String(user.token).length);
         const resp = await activateProofOfLife(user.token);
-        console.log('[ProofOfLifeCheck] activateProofOfLife response', resp);
         toast.success('Proof-of-Life confirmed');
         // notify dashboard to refresh via PlanContext
         try {
           emitPlansUpdated?.(resp);
         } catch (e) {
-          console.warn('Could not emit plans updated via context', e);
         }
         if (open && onClose) {
           onClose();
@@ -46,7 +43,6 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
           navigate(-1);
         }
     } catch (err) {
-      console.error('ProofOfLifeCheck activate error', err);
       toast.error('Failed to confirm proof-of-life');
     } finally {
       setConfirming(false);
@@ -98,8 +94,6 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
           setIsLoading(false);
           return;
         }
-        console.log('[ProofOfLifeCheck] active plan', plan);
-        
         // Use correct field names from backend
         const baseTs = Number(plan.last_active_at ?? plan.created_at ?? 0);
         const inactivityDays = Number(plan.inactivity_period_days ?? 0);
@@ -122,7 +116,7 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
         }
         setIsLoading(false);
       } catch (err) {
-        console.warn('Could not fetch active proof plan', err);
+        // [sanitized] console.warn removed
         setHasActivePlan(false);
         setIsLoading(false);
       }

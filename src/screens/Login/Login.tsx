@@ -22,7 +22,7 @@ export const Login = (): JSX.Element => {
       account = normalizeWalletAddress(account);
       setConnectedAccount(account);
     } catch (err) {
-      console.error("Wallet connection failed:", err);
+      // [sanitized] console.error removed
     } finally {
       setIsConnectingWallet(false);
     }
@@ -47,7 +47,6 @@ export const Login = (): JSX.Element => {
 
       // Step 3: Login with signature
       const returnedUser = await loginWithWallet(normalizedAccount, signature, nonce);
-      console.log('[Login] login returnedUser', returnedUser, 'context user before fetch:', user);
       let finalUserInfo = returnedUser?.userInfo ?? null;
       if (!finalUserInfo && returnedUser?.token) {
         try {
@@ -64,14 +63,12 @@ export const Login = (): JSX.Element => {
       const roleLower = role.toLowerCase();
       const likelyUser = roleLower === "user" || roleLower === "";
       const shouldRequireSetup = likelyUser && (isFullyRegistered !== true || isSetup === false);
-      console.log('[Login] finalUser for redirect', { role, isFullyRegistered, isSetup, shouldRequireSetup, userInfo: finalUser.userInfo });
       if (shouldRequireSetup) {
         navigate("/profile-setup");
       } else {
         navigate(getDashboardRoute(role));
       }
     } catch (err) {
-      console.error("Login failed:", err);
     }
   };
 

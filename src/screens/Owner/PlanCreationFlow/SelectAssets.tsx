@@ -253,7 +253,7 @@ export const SelectAssets = (): JSX.Element => {
                     setEthBalance(ethStr);
                 }
             } catch (err) {
-                console.error('[SelectAssets] fetchBalance error', err);
+                // [sanitized] console.error removed
             }
 
             try {
@@ -272,7 +272,7 @@ export const SelectAssets = (): JSX.Element => {
                   }
                 }
             } catch (err) {
-                console.error('[SelectAssets] fetchPrice error', err);
+                // [sanitized] console.error removed
             }
               setEthLoading(false);
         };
@@ -299,10 +299,8 @@ export const SelectAssets = (): JSX.Element => {
         }
         // persist plan name into PlanContext
         setPlanField('name', trimmed);
-        // Log selected assets for debugging / audit trail
         const foundAsset = selectedAssets ? assetData.find(a => a.id === selectedAssets) : null;
         const chosen = foundAsset ? [{ id: foundAsset.id, name: foundAsset.name, symbol: foundAsset.symbol, balance: foundAsset.balance }] : [];
-        console.log('[SelectAssets] Selected assets:', chosen);
         // persist first selected asset into PlanContext (cryptoAsset, amount)
         if (chosen.length > 0) {
             // take first asset as primary
@@ -312,10 +310,9 @@ export const SelectAssets = (): JSX.Element => {
             // persist all selected asset IDs
             setPlanField('assets', selectedAssets ? [selectedAssets] : []);
             // ensure crypto asset and amount persisted (already done) and name persisted above
-            console.log('[SelectAssets] persisted to PlanContext:', { cryptoAsset: first.symbol || first.id, amount: first.balance, assets: selectedAssets ? [selectedAssets] : [] });
         } else {
             toast.error('Please select at least one asset before continuing.');
-            console.warn('[SelectAssets] no assets selected to persist');
+            // [sanitized] console.warn removed
             return;
         }
 

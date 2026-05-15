@@ -27,13 +27,11 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
 
   const handleLogout = async () => {
     try {
-      console.log('[ConnectWalletButton] Logging out...');
       await logout();
       setShowDropdown(false);
       toast.success('Logged out successfully');
-      console.log('[ConnectWalletButton] Logout successful');
     } catch (err) {
-      console.error('[ConnectWalletButton] Logout error:', err);
+      // [sanitized] console.error removed
       toast.error('Failed to logout');
     }
   };
@@ -92,7 +90,6 @@ export const ConnectWalletButton: React.FC<ConnectWalletButtonProps> = ({
   return (
     <button
       onClick={() => {
-        console.log('[ConnectWalletButton] 🔓 Opening AppKit wallet selector...');
         open?.({ view: 'Connect' });
       }}
       disabled={loading}

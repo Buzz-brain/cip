@@ -2,14 +2,18 @@ import { StrictMode } from "react";
 import "../tailwind.css";
 // AppKit initialization - import pre-configured provider wrapper
 import { AppKitProviderComponent } from "./lib/wallet/web3modalConfig.tsx";
-// Mobile debugging tools (Eruda for WalletConnect debugging)
-import { initMobileDebugTools } from "./lib/utils/mobileDebugTools";
-
-// Initialize mobile debugging tools (Eruda) - loads asynchronously, non-blocking
-// Enabled in DEV mode or if ?debug=true is in URL
-initMobileDebugTools().catch(err => {
-  console.warn('[App Init] Mobile debug tools failed to load (non-critical):', err);
-});
+// Debug logging disabled globally (silences console.* outputs and debug UI hooks)
+if (typeof window !== "undefined") {
+  ["log", "warn", "error", "info", "debug", "trace"].forEach((m) => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      console[m] = () => {};
+    } catch (e) {
+      // ignore
+    }
+  });
+}
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
@@ -139,7 +143,6 @@ import AdministrativeDashboard from "./screens/Administrative/AdministrativeDash
 document.documentElement.style.fontFamily = "'Sora', Helvetica, sans-serif";
 document.body.style.fontFamily = "'Sora', Helvetica, sans-serif";
 import { Login } from "./screens/Login";
-import DebugConsole from "./components/DebugConsole";
 import { ConnectWalletProvider } from "./context/ConnectWalletContext";
 import ConnectWalletModalWrapper from "./components/ConnectWalletModalWrapper";
 import { OnboardingProvider } from "./context/OnboardingContext";
@@ -361,7 +364,6 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         draggable
         pauseOnHover
       />
-      <DebugConsole />
       <ConnectWalletModalWrapper />
       <OnboardingModalWrapper />
             </BrowserRouter>
