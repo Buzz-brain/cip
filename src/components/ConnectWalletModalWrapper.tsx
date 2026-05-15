@@ -1,8 +1,15 @@
 import { useConnectWallet } from '../context/ConnectWalletContext';
 import ConnectWalletModal from './ConnectWalletModal';
+import { useEffect } from 'react';
 
 export const ConnectWalletModalWrapper = (): JSX.Element | null => {
-  const { isOpen, closeModal } = useConnectWallet();
+  const { isOpen, closeModal, openModal } = useConnectWallet();
+
+  useEffect(() => {
+    const handler = () => openModal();
+    window.addEventListener('openConnectWallet', handler as EventListener);
+    return () => window.removeEventListener('openConnectWallet', handler as EventListener);
+  }, [openModal]);
 
   if (!isOpen) return null;
 

@@ -143,6 +143,8 @@ import { Login } from "./screens/Login";
 import DebugConsole from "./components/DebugConsole";
 import { ConnectWalletProvider } from "./context/ConnectWalletContext";
 import ConnectWalletModalWrapper from "./components/ConnectWalletModalWrapper";
+import { OnboardingProvider } from "./context/OnboardingContext";
+import OnboardingModalWrapper from "./components/OnboardingModalWrapper";
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
@@ -151,6 +153,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         <AuthProvider>
           <ToastProvider>
             <PlanProvider>
+            <OnboardingProvider>
             <BrowserRouter>
               <Routes>
 
@@ -363,7 +366,9 @@ createRoot(document.getElementById("app") as HTMLElement).render(
       />
       <DebugConsole />
       <ConnectWalletModalWrapper />
+      <OnboardingModalWrapper />
             </BrowserRouter>
+        </OnboardingProvider>
           </PlanProvider>
         </ToastProvider>
       </AuthProvider>

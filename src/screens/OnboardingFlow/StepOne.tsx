@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import React from "react";
 import { Badge } from "@components/ui/badge";
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
@@ -15,6 +16,7 @@ import wormholeIcon from "@assets/wormhole.svg";
 import iExecTeeIcon from "@assets/iexectee.svg";
 import mpcIcon from "@assets/mpc.svg";
 import { Link } from "react-router-dom";
+import { useOnboarding } from '../../context/OnboardingContext';
 
 
 const navigationLinks = [
@@ -59,6 +61,14 @@ const footerLinks = [
 export const StepOne = (): JSX.Element => {
   const navigate = useNavigate();
   const { openModal } = useConnectWallet();
+  const { open } = useOnboarding();
+
+  // On mount, redirect to home and open onboarding modal step one
+  React.useEffect(() => {
+    navigate('/');
+    if (open) open('one');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="w-full min-h-screen">

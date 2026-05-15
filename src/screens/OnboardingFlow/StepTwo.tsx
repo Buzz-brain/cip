@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import React from "react";
 import { Button } from "@components/ui/button";
 import { useConnectWallet } from "../../context/ConnectWalletContext";
 import logoImg from "@assets/cip-logo.png";
@@ -11,11 +12,19 @@ import circlePentagon from "@assets/circle-pentagon.svg";
 import checkGreenCircle from "@assets/check-green-circle.svg";
 import keybg from "@assets/keybg.png";
 import { Link } from "react-router-dom";
+import { useOnboarding } from '../../context/OnboardingContext';
 
 
 export const StepTwo = (): JSX.Element => {
   const navigate = useNavigate();
   const { openModal } = useConnectWallet();
+  const { open } = useOnboarding();
+
+  React.useEffect(() => {
+    navigate('/');
+    if (open) open('two');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <main className="w-full min-h-screen bg-[#221810] flex flex-col">
