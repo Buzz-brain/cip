@@ -221,7 +221,7 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
     <div className="fixed inset-0 z-50 flex items-center justify-center text-white">
       {/* backdrop captures pointer events to allow click-to-close */}
       <div className="absolute inset-0 bg-black/60" onClick={() => onClose && onClose()} />
-      <div className="relative w-full max-w-2xl mx-4 pointer-events-auto max-h-[90vh] overflow-auto">
+      <div className="relative w-full max-w-2xl mx-4 pointer-events-auto max-h-[90vh] overflow-auto scrollbar-thin-custom">
         <div ref={modalRef} role="dialog" aria-labelledby="pol-title" aria-modal="true" tabIndex={-1} className="border-t-4 border-[#EC7813] rounded-lg p-6 bg-[#2E261C] relative">
           {/* close button */}
           <button aria-label="Close proof of life modal" onClick={() => onClose && onClose()} className="absolute top-3 right-3 text-[#B9B09D] hover:text-white">✕</button>

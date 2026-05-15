@@ -10,7 +10,7 @@
     "grant-access": "node scripts/grantAccess.js"
   },
   "dependencies": {
-    "@iexec/dataprotector": "^2.0.0-beta.25",
+    
     "@radix-ui/react-checkbox": "^1.3.3",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-progress": "^1.1.8",

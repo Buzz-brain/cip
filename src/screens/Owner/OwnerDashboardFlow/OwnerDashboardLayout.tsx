@@ -22,7 +22,7 @@ export const OwnerDashboardLayout = (): JSX.Element => {
 
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header onToggleSidebar={() => setMobileOpen((s) => !s)} />
-          <main className="flex-1 overflow-y-auto">
+          <main className="flex-1 overflow-y-auto scrollbar-thin-custom">
             <div className="p-4 md:p-8">
               <Outlet />
             </div>

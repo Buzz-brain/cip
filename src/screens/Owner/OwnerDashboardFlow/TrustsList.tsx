@@ -31,7 +31,7 @@ const templates = [
 export const TrustsList = (): JSX.Element => {
   return (
     <div className="p-8">
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-4">
         <div className="text-[#8b7664] text-sm">
           Dashboard <span className="text-[#8b7664]">/</span> Trusts
         </div>

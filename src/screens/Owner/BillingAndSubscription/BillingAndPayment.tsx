@@ -212,7 +212,7 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
                     </svg>
                   </div>
                   <div className="text-[#AFA89C] text-sm mb-1">Renewal Type</div>
-                  <div className="text-white text-lg font-medium">Auto-Renewal</div>
+                  <div className="text-white text-lg font-medium">Manual Renewal</div>
                 </div>
 
                 <div className="border-t border-[#514437] p-5">
@@ -280,15 +280,15 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
             </div>
 
             <div className="bg-[#33261A] rounded-xl px-6 py-4 border border-[#B5927B]">
-              <h3 className="text-white font-semibold mb-3">
+              <h3 className="text-white font-semibold mb-2.5">
                 Need help with billing?
               </h3>
               <div className="space-y-3">
-                <button className="w-full text-left flex items-center gap-3 text-neutral-400 hover:text-white transition py-2">
+                <button className="w-full text-left flex items-center gap-3 text-neutral-400 hover:text-white transition">
                   <FileText className="w-4 h-4" />
                   <span className="text-sm">Billing FAQ</span>
                 </button>
-                <button className="w-full text-left flex items-center gap-3 text-neutral-400 hover:text-white transition py-2">
+                <button className="w-full text-left flex items-center gap-3 text-neutral-400 hover:text-white transition">
                   <MessageCircle className="w-4 h-4" />
                   <span className="text-sm">Contact Support</span>
                 </button>
@@ -317,8 +317,8 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
           </div>
 
           {subsLoading || dashLoading ? (
-            <div className="space-y-3">
-              {Array.from({ length: 3 }).map((_, i) => (
+            <div className="max-h-80 overflow-y-auto pr-2 space-y-3 scrollbar-thin-custom">
+              {Array.from({ length: 4 }).map((_, i) => (
                 <SkeletonCard key={`billing-skel-${i}`} />
               ))}
             </div>
@@ -337,33 +337,42 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
             }
 
             return (
-              <div className="space-y-3">
+              <div className="max-h-80 overflow-y-auto pr-2 space-y-3 scrollbar-thin-custom">
                 {[...history]
                   .sort((a: any, b: any) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime())
                   .map((sub: any) => (
-                    <div key={sub.id} className="bg-[#2d241a] p-4 rounded">
+                    <div key={sub.id} className="bg-gradient-to-b from-[#35261a] to-[#2a1f16] p-4 rounded-lg border border-[#4b392b] hover:shadow-md transition">
                       <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-white font-semibold">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-md bg-[#3b2a1f] flex items-center justify-center text-[#FFD8B6] font-semibold">
                             {(() => {
                               const planInfo = backendPlans?.find((p: any) => Number(p.id) === Number(sub.pricing_id));
                               const name = planInfo?.name ?? `Plan #${sub.pricing_id}`;
-                              return `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
+                              return name.charAt(0).toUpperCase();
                             })()}
                           </div>
-                          <div className="text-sm text-[#AFA89C]">
-                            {sub.start_date ? new Date(sub.start_date).toLocaleString() : '—'}
+                          <div>
+                            <div className="text-white font-semibold">
+                              {(() => {
+                                const planInfo = backendPlans?.find((p: any) => Number(p.id) === Number(sub.pricing_id));
+                                const name = planInfo?.name ?? `Plan #${sub.pricing_id}`;
+                                return `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
+                              })()}
+                            </div>
+                            <div className="text-sm text-[#AFA89C]">
+                              {sub.start_date ? new Date(sub.start_date).toLocaleString() : '—'}
+                            </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-sm text-[#AFA89C]">
+                        <div className="text-right flex flex-col items-end">
+                          <div className="text-sm">
                             {sub.is_active ? (
-                              <span className="text-green-300">Active</span>
+                              <span className="bg-green-600/20 text-green-200 px-2 py-1 rounded text-xs font-medium">Active</span>
                             ) : (
-                              <span className="text-gray-400">Ended</span>
+                              <span className="bg-gray-700/20 text-gray-300 px-2 py-1 rounded text-xs font-medium">Ended</span>
                             )}
                           </div>
-                          <div className="text-sm text-[#AFA89C]">
+                          <div className="text-sm text-[#AFA89C] mt-2">
                             Ends: {sub.end_date ? new Date(sub.end_date).toLocaleString() : '—'}
                           </div>
                         </div>

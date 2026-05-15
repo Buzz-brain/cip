@@ -5,7 +5,6 @@ import { arbitrumSepolia, arbitrum } from '@reown/appkit/networks';
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
 
 if (!projectId) {
-  // [sanitized] console.warn removed
 }
 
 const metadata = {

@@ -204,7 +204,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Breadcrumb */}
         <div className="text-[#8b7664] text-sm">
@@ -215,18 +215,18 @@ export const ChildrensTrustAccount = (): JSX.Element => {
 
         {/* Title Section */}
         <div className="space-y-4">
-          <h1 className="font-bold text-white text-4xl">
+          <h1 className="font-bold text-white text-2xl sm:text-4xl">
             {viewingLabel}
           </h1>
-          <p className="text-[#b8a494] max-w-2xl">
+          <p className="text-[#b8a494] max-w-2xl text-sm sm:text-base">
             Secure your child's future on Arbitrum. Set up automated savings, choose your asset, and define secure inheritance release rules.
           </p>
         </div>
 
         {/* Two Column Layout */}
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Forms */}
-          <div className="col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6">
             {/* Beneficiary Details */}
             <Card className="bg-[#1a1410] border-[#3a2f1e]">
               <CardContent className="p-6 space-y-6">
@@ -238,7 +238,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-[#8b7664] text-sm block mb-2">
                         Full Name
@@ -307,7 +307,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                   <label className="text-[#8b7664] text-sm block mb-4">
                     Select Asset (Arbitrum Only)
                   </label>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {arbitrumAssets.map((asset) => (
                       <button
                         key={asset.symbol}
@@ -328,7 +328,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-[#8b7664] text-sm block mb-2">
                       Contribution Amount
@@ -376,7 +376,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="font-bold text-white text-4xl">
+                  <div className="font-bold text-white text-3xl sm:text-4xl">
                     {releaseAge}
                     <span className="text-lg text-[#8b7664] ml-2">Years Old</span>
                   </div>
@@ -428,7 +428,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
 
                 {/* Chart */}
                 <div className="bg-[#0d0b08] rounded-lg p-4 space-y-2">
-                  <div className="flex gap-1 h-40 items-end">
+                  <div className="flex gap-1 h-32 sm:h-40 items-end">
                     {Array.from({ length: chartBars }).map((_, i) => {
                       const progressPercent = (i + 1) / chartBars;
                       return (
@@ -459,7 +459,7 @@ export const ChildrensTrustAccount = (): JSX.Element => {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-2 gap-3 pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                   <div className="bg-[#0d0b08] rounded p-3 space-y-1">
                     <p className="text-[#8b7664] text-xs">
                       Total Principal
