@@ -113,7 +113,7 @@ export const ProfileSetupForm = (): JSX.Element => {
 
   useEffect(() => {
     if (!user?.token) {
-      navigate("/connect-wallet");
+      navigate("/");
       return;
     }
 
@@ -281,7 +281,7 @@ export const ProfileSetupForm = (): JSX.Element => {
                 <Button
                   variant="outline"
                   className="h-12 gap-2 rounded-lg border-[#554733] bg-transparent px-8 hover:bg-[#554733]/10"
-                  onClick={() => navigate("/connect-wallet")}
+                  onClick={() => navigate("/")}
                 >
                   <span className="text-base font-bold leading-6 text-white">
                     Cancel

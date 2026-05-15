@@ -24,7 +24,7 @@ const ExecutorLayout = (): JSX.Element => {
             // ignore
         }
         try { toast.success('Logged out successfully'); } catch(e){}
-        navigate("/connect-wallet");
+        navigate("/");
     };
 
     const { user } = useAuth();

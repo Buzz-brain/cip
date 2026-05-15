@@ -12,7 +12,7 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
-  redirectTo = "/connect-wallet"
+  redirectTo = "/"
 }) => {
   const { isAuthenticated, loading } = useAuth();
 

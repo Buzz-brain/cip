@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@components/ui/button";
+import { useConnectWallet } from "../../context/ConnectWalletContext";
 import logoImg from "@assets/cip-logo.png";
 import forwardPlayBtn from "@assets/forward-play-btn.svg";
 import shareButton from "@assets/share-button.svg";
@@ -14,6 +15,7 @@ import { Link } from "react-router-dom";
 
 export const StepTwo = (): JSX.Element => {
   const navigate = useNavigate();
+  const { openModal } = useConnectWallet();
 
   return (
     <main className="w-full min-h-screen bg-[#221810] flex flex-col">
@@ -25,7 +27,7 @@ export const StepTwo = (): JSX.Element => {
         </div>
 
         <button
-          onClick={() => navigate("/connect-wallet")}
+          onClick={() => navigate("/")}
           className="font-medium text-white text-sm hover:text-[#ff6600] transition-colors flex items-center gap-3"
         >
           Skip Intro
@@ -145,7 +147,7 @@ export const StepTwo = (): JSX.Element => {
                   </span>
                 </Button>
                 <Button
-                  onClick={() => navigate("/connect-wallet")}
+                  onClick={() => openModal()}
                   className="h-12 px-8 bg-[#ff6600] hover:bg-[#ff7700] font-bold text-white text-base rounded-lg flex items-center gap-2"
                 >
                   Next Step

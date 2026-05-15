@@ -69,7 +69,7 @@ export const Sidebar = ({ mobile = false, open = false, onClose }: SidebarProps)
 
   const handleCreatePlanClick = async (href: string) => {
     if (!isAuthenticated) {
-      navigate('/connect-wallet');
+      navigate('/');
       return;
     }
 

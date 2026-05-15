@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@components/ui/badge";
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
+import { useConnectWallet } from "../../context/ConnectWalletContext";
 import logoImg from "@assets/cip-logo.png";
 import plusIcon from "@assets/plus-icon.svg";
 import playIcon from "@assets/play-icon.svg";
@@ -57,6 +58,7 @@ const footerLinks = [
 
 export const StepOne = (): JSX.Element => {
   const navigate = useNavigate();
+  const { openModal } = useConnectWallet();
 
   return (
     <div className="w-full min-h-screen">
@@ -87,7 +89,7 @@ export const StepOne = (): JSX.Element => {
               </div>
 
               <Button
-                onClick={() => navigate("/connect-wallet")}
+                onClick={() => openModal()}
                 className="h-10 px-4 bg-[#ff6600] hover:bg-[#ff7700] font-bold text-white text-sm leading-[21px] rounded-lg"
               >
                 Connect Wallet

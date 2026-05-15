@@ -172,7 +172,7 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
                 // ignore
               }
               try { toast.success('Logged out successfully'); } catch(e){}
-              navigate("/connect-wallet");
+              navigate("/");
             }}
             className="w-full flex items-center gap-2 px-3 py-2 text-[#2ccd2c] hover:bg-[#27221c] rounded-lg transition-colors"
           >
@@ -255,7 +255,7 @@ export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children })
                   <p className="font-normal text-[#8b7b64] text-xs truncate">{user?.email ?? ''}</p>
                 </div>
               </div>
-              <button onClick={() => { try { logout(); } catch(e){}; try { toast.success('Logged out successfully'); } catch(e){}; navigate('/connect-wallet'); }} className="w-full flex items-center gap-2 px-3 py-2 text-[#2ccd2c] hover:bg-[#27221c] rounded-lg transition-colors">
+              <button onClick={() => { try { logout(); } catch(e){}; try { toast.success('Logged out successfully'); } catch(e){}; navigate('/'); }} className="w-full flex items-center gap-2 px-3 py-2 text-[#2ccd2c] hover:bg-[#27221c] rounded-lg transition-colors">
                 <LogOutIcon className="w-4 h-4" />
                 <span className="font-normal text-xs">Log out</span>
               </button>

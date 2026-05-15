@@ -141,13 +141,16 @@ document.documentElement.style.fontFamily = "'Sora', Helvetica, sans-serif";
 document.body.style.fontFamily = "'Sora', Helvetica, sans-serif";
 import { Login } from "./screens/Login";
 import DebugConsole from "./components/DebugConsole";
+import { ConnectWalletProvider } from "./context/ConnectWalletContext";
+import ConnectWalletModalWrapper from "./components/ConnectWalletModalWrapper";
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
     <AppKitProviderComponent>
-      <AuthProvider>
-        <ToastProvider>
-          <PlanProvider>
+      <ConnectWalletProvider>
+        <AuthProvider>
+          <ToastProvider>
+            <PlanProvider>
             <BrowserRouter>
               <Routes>
 
@@ -160,7 +163,6 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         {/* User Onboarding Flow */} ✅
         <Route path="/onboarding/step-one" element={<StepOne />} /> ✅
         <Route path="/onboarding/step-two" element={<StepTwo />} /> ✅
-        <Route path="/connect-wallet" element={<ConnectWallet />} /> ✅
         <Route path="/profile-setup" element={<ProfileSetupForm />} /> ✅
 
         {/* Recovery Flow */}
@@ -360,10 +362,12 @@ createRoot(document.getElementById("app") as HTMLElement).render(
         pauseOnHover
       />
       <DebugConsole />
+      <ConnectWalletModalWrapper />
             </BrowserRouter>
           </PlanProvider>
         </ToastProvider>
       </AuthProvider>
+      </ConnectWalletProvider>
     </AppKitProviderComponent>
   </StrictMode>
 );
