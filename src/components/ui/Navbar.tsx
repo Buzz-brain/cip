@@ -224,7 +224,7 @@ export const Navbar = ({
               })}
             </nav>
 
-            <div className="mt-6">{mobileRightActions ?? rightActions ?? null}</div>
+            <div className="mt-6" onClick={() => setMenuOpen(false)}>{mobileRightActions ?? rightActions ?? null}</div>
           </div>
         </div>
       </div>
