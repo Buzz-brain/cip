@@ -1,0 +1,968 @@
+import React, { useEffect, useState } from "react";
+import { Card, CardContent } from "@components/ui/card";
+import { Badge } from "@components/ui/badge";
+import { Search, ChevronLeft, ChevronRight, Copy } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../../../context/useAuth";
+import useActivityLogs from "../../../../lib/hooks/useActivityLogs";
+import { usePlan } from "../../../../context/usePlan";
+import { toast } from "react-toastify";
+import { extractErrorMessage } from "../../../../lib/utils";
+import FundPlanModal from "../../../../components/ui/FundPlanModal";
+import ConfirmModal from '../../../../components/ui/ConfirmModal';
+
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
+
+interface Props {
+  showValues: boolean;
+}
+
+const chainIconFor = (chain?: string) => {
+  if (!chain) return "🔗";
+  switch (chain.toLowerCase()) {
+    case "eth":
+    case "ethereum":
+      return "💎";
+    case "btc":
+    case "bitcoin":
+      return "₿";
+    case "polygon":
+      return "⭕";
+    default:
+      return "🔗";
+  }
+};
+
+const getInitials = (name?: string): string => {
+  if (!name || name === "—") return "—";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length > 1) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return (parts[0][0] + (parts[0][1] || "")).toUpperCase();
+};
+
+const shouldShowField = (planType: string | undefined, fieldName: string): boolean => {
+  const hiddenFieldsByType: Record<string, Set<string>> = {
+    timelock: new Set(["proof_of_life", "grace_period", "inactivity_period_days", "last_active_at"]),
+    health_oracle: new Set(["proof_of_life", "grace_period", "release_timestamp", "inactivity_period_days", "last_active_at"]),
+    inactivity: new Set(["release_timestamp"]),
+  };
+
+  const planTypeKey = (planType || "").toLowerCase();
+  const hiddenFields = hiddenFieldsByType[planTypeKey] || new Set();
+  return !hiddenFields.has(fieldName);
+};
+
+const ActivityLogsList: React.FC<{ selectedPlan?: any; userToken?: string | null }> = ({ selectedPlan, userToken }) => {
+  const { logs, loading, error } = useActivityLogs(userToken ?? undefined);
+  if (!selectedPlan) return <div className="text-[#b8a494]">Select a plan to view logs</div>;
+  const planId = selectedPlan.id ?? selectedPlan.contract_plan_id ?? selectedPlan?.plan_id ?? selectedPlan?.inherit_id;
+  const filtered = Array.isArray(logs)
+    ? logs.filter((l: any) => String(l.plan_id ?? l.inherit_id ?? l.inheritance_id ?? l.id ?? '') === String(planId))
+    : [];
+  if (loading) return <div className="text-[#b8a494]">Loading activity...</div>;
+  if (error) return <div className="text-[#b8a494]">Error loading activity</div>;
+  if (!filtered.length) return <div className="text-[#b8a494]">No activity logs</div>;
+  return (
+    <div className="space-y-2">
+      {filtered.slice(0, 12).map((item: any, idx: number) => {
+        const ts = item.timestamp ?? item.created_at ?? item.createdAt ?? item.time ?? null;
+        const when = ts ? (Number(ts) > 1e12 ? new Date(Number(ts)).toLocaleString() : new Date(Number(ts) * 1000).toLocaleString()) : '';
+        const msg = item.message ?? item.msg ?? item.event ?? JSON.stringify(item);
+        return (
+          <div key={idx} className="p-2 bg-[#231b16] border border-[#2f241c] rounded text-xs text-[#d1c3b4]">
+            <div className="text-sm text-white">{msg}</div>
+            <div className="text-[#8b7664] text-xs mt-1">{when}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+export const AllPlan: React.FC<Props> = ({ showValues }) => {
+  const { user } = useAuth();
+  const planCtx = usePlan();
+  const [loading, setLoading] = useState(false);
+  const [plans, setPlans] = useState<any[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedPlanDetail, setSelectedPlanDetail] = useState<any | null>(null);
+  const [fundModalOpen, setFundModalOpen] = useState(false);
+  const [fundPlanContractId, setFundPlanContractId] = useState<number | null>(null);
+  const [fundPlanDbId, setFundPlanDbId] = useState<number | null>(null);
+  const [fundPlanDefaultAmount, setFundPlanDefaultAmount] = useState<string>('0.0');
+  const [fundPlanOwnerWallet, setFundPlanOwnerWallet] = useState<string | null>(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [pendingDeletePlan, setPendingDeletePlan] = useState<any | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editBeneficiaries, setEditBeneficiaries] = useState<any[]>([]);
+  const [editing, setEditing] = useState(false);
+  const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [highlightedPlanId, setHighlightedPlanId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 4;
+  const [selectedFilter, setSelectedFilter] = useState<"All Plans" | "Active" | "Pending" | "Triggered" | "Cancelled">("All Plans");
+  const highlightTimerRef = React.useRef<number | null>(null);
+  const [viewLoadingId, setViewLoadingId] = useState<string | null>(null);
+  const [fundLoadingId, setFundLoadingId] = useState<string | null>(null);
+  const [deleteOpeningId, setDeleteOpeningId] = useState<string | null>(null);
+  const abbr = (addr?: string | null, start = 6, end = 6) => {
+    if (!addr) return '—';
+    try {
+      if (addr.length <= start + end + 3) return addr;
+      return `${addr.slice(0, start)}...${addr.slice(-end)}`;
+    } catch (e) {
+      return addr;
+    }
+  };
+
+  const copyToClipboard = async (text?: string | null) => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success('Copied to clipboard');
+    } catch (e) {
+      toast.error('Copy failed');
+    }
+  };
+
+  const openPlanDetail = async (idNum?: number | string | null) => {
+    if (!idNum) {
+      toast.error('Cannot load plan details');
+      return;
+    }
+    const idStr = String(idNum);
+    setViewLoadingId(idStr);
+    setModalOpen(true);
+    setSelectedPlanDetail(null);
+    try {
+      const r = await fetch(`${BACKEND_API_URL}/inherit/view-a-inheritances/${idNum}`, {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+        }
+      });
+      if (!r.ok) {
+        const errorMsg = await extractErrorMessage(r);
+        toast.error(`Failed to load plan details: ${errorMsg}`);
+        setSelectedPlanDetail(null);
+        return;
+      }
+      const j = await r.json();
+      setSelectedPlanDetail(j?.data ?? null);
+    } catch (err) {
+      const m = err instanceof Error ? err.message : String(err);
+      toast.error(`Error loading plan details: ${m}`);
+      setSelectedPlanDetail(null);
+    } finally {
+      setViewLoadingId((prev) => (prev === idStr ? null : prev));
+    }
+  };
+
+  const tabs = ["All Plans", "Active", "Pending", "Triggered", "Cancelled"] as const;
+
+  const formatTs = (ts?: number | null) => {
+    if (!ts) return "—";
+    try {
+      // backend returns seconds
+      const d = new Date(Number(ts) * 1000);
+      return d.toLocaleString();
+    } catch (e) {
+      return String(ts);
+    }
+  };
+
+  // extract fetchPlans so other handlers (delete, refresh) can call it
+  const fetchPlans = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${BACKEND_API_URL}/inherit/view-inheritances`, {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+        },
+      });
+      if (!res.ok) {
+        const errorMsg = await extractErrorMessage(res);
+        toast.error(`Failed to load plans: ${errorMsg}`);
+        setPlans([]);
+        return;
+      }
+      const json = await res.json();
+      const items = Array.isArray(json?.data) ? json.data : [];
+      const mapped = items.map((it: any) => {
+        const isFunded = !!it.is_funded;
+        const isReleased = !!it.is_released;
+        const releaseTs = it.release_timestamp ? Number(it.release_timestamp) : null;
+        let triggerHours = 0;
+        if (releaseTs) {
+          const ms = releaseTs * 1000 - Date.now();
+          triggerHours = Math.max(0, Math.ceil(ms / (1000 * 60 * 60)));
+        }
+        const isCancelled = !!it.is_cancelled;
+        return {
+          id: String(it.id ?? it.contract_plan_id ?? "-"),
+          name: it.name ?? `Plan #${it.id}`,
+          chainName: it.crypto_asset ?? "-",
+          chainIcon: chainIconFor(it.crypto_asset),
+          beneficiary: { name: it.owner_wallet ?? "—", avatar: (it.owner_wallet || "—").slice(2, 4).toUpperCase() },
+          beneficiariesPreview: [],
+          assets: it.amount ? String(it.amount) : "—",
+          assetsDetail: it.crypto_asset ?? "—",
+          status: isCancelled ? "Cancelled" : (isReleased ? "Triggered" : isFunded ? "Active" : "Pending"),
+          statusColor: isCancelled ? "bg-gray-500" : (isReleased ? "bg-red-500" : isFunded ? "bg-green-500" : "bg-yellow-500"),
+          triggerDays: triggerHours || 0,
+          raw: it,
+        };
+      });
+      setPlans(mapped);
+      // Fetch single inheritance details for each plan to populate beneficiaries preview (non-blocking)
+      (async () => {
+        try {
+          const detailed = await Promise.all(
+            mapped.map(async (p: any) => {
+              const idNum = p.raw?.id ?? p.raw?.contract_plan_id;
+              if (!idNum) return { id: p.id, beneficiariesPreview: [] };
+              try {
+                const r = await fetch(`${BACKEND_API_URL}/inherit/view-a-inheritances/${idNum}`, {
+                  method: "GET",
+                  headers: {
+                    accept: "application/json",
+                    ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+                  },
+                });
+                if (!r.ok) return { id: p.id, beneficiariesPreview: [] };
+                const j = await r.json();
+                const bens = Array.isArray(j?.data?.beneficiaries) ? j.data.beneficiaries : [];
+                return { id: p.id, beneficiariesPreview: bens };
+              } catch (e) {
+                return { id: p.id, beneficiariesPreview: [] };
+              }
+            })
+          );
+          // merge previews back into state
+          setPlans((prev) => prev.map((pp: any) => {
+            const found = detailed.find((d: any) => String(d.id) === String(pp.id));
+            return found ? { ...pp, beneficiariesPreview: found.beneficiariesPreview } : pp;
+          }));
+        } catch (e) {
+          // ignore preview fetch errors
+        }
+      })();
+    } catch (err) {
+      const m = err instanceof Error ? err.message : String(err);
+      toast.error(`Error loading plans: ${m}`);
+      setPlans([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPlans();
+
+    const onConfirmed = async (detail?: any) => {
+      // refresh plans when proof-of-life confirmation occurs
+      try {
+        await fetchPlans();
+      } catch (e) {
+        // ignore
+      }
+      // highlight the updated plan if detail provided
+      try {
+        const payload = detail && (detail as any).detail !== undefined ? (detail as any).detail : detail;
+        const first = Array.isArray(payload) && payload.length > 0 ? payload[0] : payload;
+        const confirmedId = first ? String(first.id ?? first.contract_plan_id ?? first.contract_plan_id ?? "") : "";
+        if (confirmedId) {
+          setHighlightedPlanId(String(confirmedId));
+          if (highlightTimerRef.current) {
+            window.clearTimeout(highlightTimerRef.current);
+          }
+          highlightTimerRef.current = window.setTimeout(() => {
+            setHighlightedPlanId(null);
+            highlightTimerRef.current = null;
+          }, 6000);
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
+    if (planCtx?.subscribePlansUpdated) {
+      const unsubscribe = planCtx.subscribePlansUpdated(onConfirmed);
+      return () => unsubscribe();
+    }
+    // fallback to window event for compatibility
+    window.addEventListener('proofOfLife:confirmed', onConfirmed);
+    return () => {
+      window.removeEventListener('proofOfLife:confirmed', onConfirmed);
+    };
+  }, [user?.token]);
+
+  // when Fund modal closes, clear fundLoadingId
+  useEffect(() => {
+    if (!fundModalOpen) setFundLoadingId(null);
+  }, [fundModalOpen]);
+
+  // Delete a plan via backend API
+  const handleDelete = async (planObj: any) => {
+    const planIdNum = Number(planObj?.plan?.id ?? planObj?.plan?.contract_plan_id ?? 0);
+    if (!planIdNum) {
+      toast.error('Cannot determine plan id for deletion');
+      return;
+    }
+    // open custom confirm modal
+    setPendingDeletePlan(planObj);
+    setConfirmDeleteOpen(true);
+  };
+
+  const performDelete = async () => {
+    if (!pendingDeletePlan) return;
+    const planIdNum = Number(pendingDeletePlan?.plan?.id ?? pendingDeletePlan?.plan?.contract_plan_id ?? 0);
+    setDeleting(true);
+    try {
+      const resp = await fetch(`${BACKEND_API_URL}/inherit/delete-inheritances/${planIdNum}`, {
+        method: 'DELETE',
+        headers: {
+          accept: 'application/json',
+          ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+        }
+      });
+      if (!resp.ok) {
+        let errorMessage = `Error deleting plan (Status: ${resp.status})`;
+        try {
+          const errorData = await resp.json();
+          if (errorData?.detail) {
+            errorMessage = errorData.detail;
+          } else if (typeof errorData === 'string') {
+            errorMessage = errorData;
+          }
+        } catch {
+          // If JSON parsing fails, try to get plain text
+          try {
+            const text = await resp.text();
+            if (text) errorMessage = text;
+          } catch {}
+        }
+        throw new Error(errorMessage);
+      }
+      toast.success('Plan deleted successfully');
+      setModalOpen(false);
+      setSelectedPlanDetail(null);
+      setConfirmDeleteOpen(false);
+      setPendingDeletePlan(null);
+      // refresh plans
+      await fetchPlans();
+      try {
+        // notify other parts of the app that plans changed
+        planCtx?.emitPlansUpdated?.({ id: planIdNum, deleted: true });
+      } catch (e) {
+        // ignore
+      }
+    } catch (e) {
+      const m = e instanceof Error ? e.message : String(e);
+      toast.error(m);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const filtered = plans
+    .filter((p) => {
+      // Apply status filter
+      if (selectedFilter !== "All Plans" && p.status !== selectedFilter) {
+        return false;
+      }
+      // Apply search filter
+      if (!searchQuery) return true;
+      const q = searchQuery.toLowerCase();
+      const beneficiaryNames = p.beneficiariesPreview?.map((b: any) => (b.name || b.wallet || "")).join(" ") || "";
+      return (
+        String(p.id).toLowerCase().includes(q) ||
+        String(p.name).toLowerCase().includes(q) ||
+        String(p.beneficiary?.name || "").toLowerCase().includes(q) ||
+        beneficiaryNames.toLowerCase().includes(q)
+      );
+    })
+    .sort((a, b) => {
+      // Sort by creation date (newest first)
+      const aCreated = Number(a.raw?.created_at ?? 0);
+      const bCreated = Number(b.raw?.created_at ?? 0);
+      return bCreated - aCreated;
+    });
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  useEffect(() => {
+    if (currentPage > pageCount) setCurrentPage(pageCount);
+  }, [pageCount]);
+
+  const paginated = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const getNoPlansMessage = (): string => {
+    if (selectedFilter === "All Plans") return "No plans";
+    return `No ${selectedFilter.toLowerCase()} plan`;
+  };
+
+  return (
+    <Card className="bg-[#261D18] border-[#393028]">
+      <CardContent className="p-4 sm:p-6 space-y-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2 w-full sm:w-auto">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => { setSelectedFilter(tab); setCurrentPage(1); }}
+                className={`min-w-[96px] flex-shrink-0 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+                  selectedFilter === tab
+                    ? "bg-[#393028] border border-[#FF660080] text-white"
+                    : "text-[#B9B09D] hover:bg-[#2a1f10] border border-transparent"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <div className="ml-auto relative flex w-full sm:w-auto items-center gap-3">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#B9B09D]" />
+              <input
+                type="text"
+                placeholder="Search plans..."
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                className="bg-[#2D241C] border border-[#393028] rounded-lg pl-10 pr-4 py-2 text-[#b8a494] placeholder-[#706758] text-sm focus:outline-none focus:border-[#ff6600] w-full sm:w-56"
+              />
+            </div>
+            <Link to="/owner-dashboard/plans" className="text-sm text-[#ff6600] hover:underline">View all</Link>
+          </div>
+        </div>
+          {modalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/60" onClick={() => { setModalOpen(false); setSelectedPlanDetail(null); }} />
+              <div className="relative bg-[#1f1915] border border-[#3a2f1e] rounded-lg w-[90%] max-w-2xl p-6 z-60">
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <h3 className="text-white font-bold">Plan Details</h3>
+                <button className="text-[#b8a494]" onClick={() => { setModalOpen(false); setSelectedPlanDetail(null); }}>Close</button>
+              </div>
+              <div className="max-h-[72vh] overflow-auto pr-2 scrollbar-thin-custom">
+                {!selectedPlanDetail ? (
+                  <div className="text-[#b8a494]">Loading...</div>
+                ) : (
+                    <div className="space-y-4 text-sm text-[#d1c3b4]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {selectedPlanDetail.plan?.is_cancelled && (
+                        <div className="col-span-2">
+                          <div className="inline-flex items-center gap-2 px-3 py-2 rounded bg-red-700 text-white font-semibold">Cancelled</div>
+                        </div>
+                      )}
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Plan Name</div>
+                        <div className="font-mono text-white">{selectedPlanDetail.plan?.name ?? `Plan #${selectedPlanDetail.plan?.id}`}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Plan ID</div>
+                        <div className="font-mono text-white">{selectedPlanDetail.plan?.id ?? selectedPlanDetail.plan?.contract_plan_id}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Type</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.plan_type}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Owner Wallet</div>
+                        <div className="text-white break-all font-mono text-xs">{selectedPlanDetail.plan?.owner_wallet}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Asset</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.crypto_asset}</div>
+                      </div>
+
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Contract Plan ID</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.contract_plan_id ?? '—'}</div>
+                      </div>
+                      {shouldShowField(selectedPlanDetail.plan?.plan_type, 'proof_of_life') && (
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Proof of Life</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.proof_of_life ?? '—'}</div>
+                      </div>
+                      )}
+
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Contract Address</div>
+                         <div className="text-white break-all font-mono text-xs">{selectedPlanDetail.plan?.contract_address ?? '—'}</div>
+                      </div>
+                      {shouldShowField(selectedPlanDetail.plan?.plan_type, 'grace_period') && (
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Grace Period</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.grace_period ?? '—'}</div>
+                      </div> 
+                      )}
+
+                      {selectedPlanDetail.plan?.plan_type === 'health_oracle' && (
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Oracle Source</div>
+                        {selectedPlanDetail.plan?.oracle_source ? (
+                          <a
+                            href={selectedPlanDetail.plan.oracle_source}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title={selectedPlanDetail.plan.oracle_source}
+                            className="text-[#ff6600] hover:underline break-all font-mono text-xs"
+                          >
+                            {selectedPlanDetail.plan.oracle_source.length > 60 ? `${selectedPlanDetail.plan.oracle_source.slice(0,60)}...` : selectedPlanDetail.plan.oracle_source}
+                          </a>
+                        ) : (
+                          <div className="text-white">—</div>
+                        )}
+                      </div>
+                      )}
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Amount</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.amount ?? '—'}</div>
+                      </div>
+
+                      {selectedPlanDetail.plan?.protected_data && (
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Protected Data</div>
+                        <div className="text-white break-all font-mono text-xs">
+                          <a 
+                            href={`https://explorer.iex.ec/arbitrum-sepolia-testnet/dataset/${selectedPlanDetail.plan.protected_data}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[#ff6600] hover:underline"
+                          >
+                            {selectedPlanDetail.plan.protected_data}
+                          </a>
+                        </div>
+                      </div>
+                      )}
+
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Is Funded</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.is_funded ? 'Yes' : 'No'}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Should Release</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.should_release ? 'Yes' : 'No'}</div>
+                      </div>
+
+                      {shouldShowField(selectedPlanDetail.plan?.plan_type, 'release_timestamp') && (
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Release Timestamp</div>
+                        <div className="text-white">{formatTs(selectedPlanDetail.plan?.release_timestamp)}</div>
+                      </div>
+                      )}
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Is Released</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.is_released ? 'Yes' : 'No'}</div>
+                      </div>
+
+                      {shouldShowField(selectedPlanDetail.plan?.plan_type, 'inactivity_period_days') && (
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Inactivity Period (days)</div>
+                        <div className="text-white">{selectedPlanDetail.plan?.inactivity_period_days ?? '—'}</div>
+                      </div>
+                      )}
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Created At</div>
+                        <div className="text-white">{formatTs(selectedPlanDetail.plan?.created_at)}</div>
+                      </div>
+
+                      {shouldShowField(selectedPlanDetail.plan?.plan_type, 'last_active_at') && (
+                      <div>
+                        <div className="text-xs text-[#8b7664]">Last Active</div>
+                        <div className="text-white">{formatTs(selectedPlanDetail.plan?.last_active_at)}</div>
+                      </div>
+                      )}
+                    </div>
+
+                      <div className="flex gap-2 mt-4">
+                      {!selectedPlanDetail.plan?.is_funded && (user?.publicKey && String(user.publicKey).toLowerCase() === String(selectedPlanDetail.plan?.owner_wallet).toLowerCase()) && (
+                        <button className="px-4 py-2 rounded bg-[#ff6600] text-white" onClick={() => {
+                          const cid = Number(selectedPlanDetail.plan?.contract_plan_id ?? selectedPlanDetail.plan?.id ?? 0);
+                          setFundPlanContractId(cid);
+                          setFundPlanDbId(Number(selectedPlanDetail.plan?.id ?? selectedPlanDetail.plan?.contract_plan_id ?? 0));
+                          setFundPlanDefaultAmount(String(selectedPlanDetail.plan?.amount ?? '0.0'));
+                          setFundPlanOwnerWallet(selectedPlanDetail.plan?.owner_wallet ?? null);
+                          setFundModalOpen(true);
+                        }}>Fund Plan</button>
+                      )}
+                      {/* Owner-only actions: Edit, Cancel, Delete */}
+                      {(user?.publicKey && String(user.publicKey).toLowerCase() === String(selectedPlanDetail.plan?.owner_wallet).toLowerCase()) && (
+                        <div className="flex gap-2">
+                          {!selectedPlanDetail.plan?.is_cancelled && (
+                            <>
+                              {/* Hide if released; show edit only if should_release is false */}
+                              {!selectedPlanDetail.plan?.is_released && !selectedPlanDetail.plan?.should_release && (
+                                <button className="px-4 py-2 rounded bg-[#1f6feb] text-white" onClick={() => {
+                                  setEditBeneficiaries(Array.isArray(selectedPlanDetail?.beneficiaries) ? selectedPlanDetail.beneficiaries.map((b: any) => ({
+                                    id: b.id,
+                                    name: b.name || '',
+                                    relationship: b.relationship || '',
+                                    email: b.email || '',
+                                    wallet: b.wallet || b.wallet_address || '',
+                                    allocation_percentage: b.allocation_percentage ?? b.allocation ?? 0,
+                                  })) : []);
+                                  setEditModalOpen(true);
+                                }}>Edit Inheritance</button>
+                              )}
+                              {/* Hide cancel if should_release is true */}
+                              {!selectedPlanDetail.plan?.is_released && !selectedPlanDetail.plan?.should_release && (
+                                <button className="px-4 py-2 rounded bg-orange-700 text-white" onClick={() => { setConfirmCancelOpen(true); }}>{cancelling ? 'Cancelling...' : 'Cancel Inheritance'}</button>
+                              )}
+                              {/* Show delete unless already released */}
+                              {!selectedPlanDetail.plan?.is_released && (
+                                <button className="px-4 py-2 rounded bg-red-700 text-white" onClick={() => handleDelete(selectedPlanDetail)}>Delete Inheritance</button>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <div className="text-xs text-[#8b7664]">Beneficiaries</div>
+                      <div className="mt-2 space-y-2">
+
+                        {Array.isArray(selectedPlanDetail.beneficiaries) && selectedPlanDetail.beneficiaries.length > 0 ? (
+                          selectedPlanDetail.beneficiaries.map((b: any) => (
+                            <div key={b.id} className="p-3 bg-[#231b16] border border-[#2f241c] rounded">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <div className="text-white font-medium">{b.name || b.wallet}</div>
+                                  <div className="text-xs text-[#8b7664]">{b.relationship ? `${b.relationship} • ` : ''}{b.email ?? b.wallet}</div>
+                                  <div className="text-xs text-[#8b7664]">Wallet: {b.wallet}</div>
+                                </div>
+                                <div className="text-sm text-[#b8a494]">{b.allocation_percentage ? `${b.allocation_percentage}%` : '—'}</div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-[#b8a494]">No beneficiaries found</div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <div className="text-xs text-[#8b7664]">Activity Logs</div>
+                      <div className="mt-2 space-y-2">
+                        {/* Use centralized activity logs hook */}
+                        <ActivityLogsList selectedPlan={selectedPlanDetail?.plan} userToken={user?.token} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Fund plan modal (global) */}
+        {fundModalOpen && fundPlanContractId !== null && (
+          <FundPlanModal
+            open={fundModalOpen}
+            onClose={() => { setFundModalOpen(false); setFundPlanContractId(null); setFundPlanDbId(null); setFundPlanDefaultAmount('0.0'); setFundPlanOwnerWallet(null); }}
+            contractPlanId={fundPlanContractId}
+            planDbId={fundPlanDbId}
+            defaultAmount={fundPlanDefaultAmount}
+            userToken={user?.token ?? null}
+            ownerWallet={fundPlanOwnerWallet}
+          />
+        )}
+
+        {/* Custom confirm delete modal (global) */}
+        {confirmDeleteOpen && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/60 z-[10000]" onClick={() => { if (!deleting) { setConfirmDeleteOpen(false); setPendingDeletePlan(null); } }} />
+            <div className="relative bg-[#1f1915] border border-[#3a2f1e] rounded-lg w-[90%] max-w-md p-6 z-[10001]">
+              <h3 className="text-white font-bold mb-2">Confirm Delete</h3>
+              <div className="text-sm text-[#d1c3b4] mb-4">Are you sure you want to delete this inheritance plan? This action cannot be undone.</div>
+              <div className="flex gap-2 justify-end">
+                <button className="px-4 py-2 rounded bg-[#393028] text-white" onClick={() => { if (!deleting) { setConfirmDeleteOpen(false); setPendingDeletePlan(null); } }}>Cancel</button>
+                <button className="px-4 py-2 rounded bg-red-700 text-white" onClick={() => performDelete()} disabled={deleting}>{deleting ? 'Deleting...' : 'Delete'}</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cancel confirmation modal for selected plan */}
+        {confirmCancelOpen && selectedPlanDetail && (
+          <ConfirmModal
+            open={confirmCancelOpen}
+            title="Cancel Inheritance"
+            description="Are you sure you want to cancel this inheritance? This will stop automatic distributions but will not delete the plan."
+            confirmLabel="Yes, cancel"
+            cancelLabel="Keep plan"
+            loading={cancelling}
+            onCancel={() => { if (!cancelling) setConfirmCancelOpen(false); }}
+            onConfirm={async () => {
+              setCancelling(true);
+              try {
+                const pid = Number(selectedPlanDetail.plan?.id ?? selectedPlanDetail.plan?.contract_plan_id ?? 0);
+                if (!pid) throw new Error('Cannot determine plan id');
+                if (planCtx?.cancelInheritance) {
+                  await planCtx.cancelInheritance(pid);
+                } else {
+                  const r = await fetch(`${BACKEND_API_URL}/inherit/cancel-inheritance/${pid}`, { method: 'PATCH', headers: { accept: 'application/json', ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}) } });
+                  if (!r.ok) throw new Error(await extractErrorMessage(r));
+                }
+                toast.success('Inheritance cancelled');
+                setConfirmCancelOpen(false);
+                await fetchPlans();
+                setModalOpen(false);
+                setSelectedPlanDetail(null);
+              } catch (e:any) {
+                const m = e instanceof Error ? e.message : String(e);
+                toast.error(`Cancel failed: ${m}`);
+              } finally {
+                setCancelling(false);
+              }
+            }}
+          />
+        )}
+
+        {/* Edit inheritance modal (similar UI to PlanDetail edit modal) */}
+        {editModalOpen && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/60 z-[10000]" onClick={() => { if (!editing) { setEditModalOpen(false); } }} />
+            <div className="relative bg-[#1f1915] border border-[#3a2f1e] rounded-lg w-[90%] max-w-2xl p-6 z-[10001]">
+              <h3 className="text-white font-bold mb-2">Edit Inheritance Beneficiaries</h3>
+              <div className="text-sm text-[#d1c3b4] mb-4">Update beneficiary details and allocations, then save.</div>
+              <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+                {editBeneficiaries.map((b, idx) => (
+                  <div key={b.id ?? idx} className="p-3 bg-[#14110f] border border-[#2a241c] rounded">
+                    <div className="grid grid-cols-2 gap-2">
+                      <input className="bg-transparent border border-[#2a241c] p-2 text-white" value={b.name} onChange={(e) => { const copy = [...editBeneficiaries]; copy[idx] = { ...copy[idx], name: e.target.value }; setEditBeneficiaries(copy); }} placeholder="Name" />
+                      <input className="bg-transparent border border-[#2a241c] p-2 text-white" value={b.relationship} onChange={(e) => { const copy = [...editBeneficiaries]; copy[idx] = { ...copy[idx], relationship: e.target.value }; setEditBeneficiaries(copy); }} placeholder="Relationship" />
+                      <input className="bg-transparent border border-[#2a241c] p-2 text-white" value={b.email} onChange={(e) => { const copy = [...editBeneficiaries]; copy[idx] = { ...copy[idx], email: e.target.value }; setEditBeneficiaries(copy); }} placeholder="Email" />
+                      <input className="bg-transparent border border-[#2a241c] p-2 text-white" value={b.wallet} onChange={(e) => { const copy = [...editBeneficiaries]; copy[idx] = { ...copy[idx], wallet: e.target.value }; setEditBeneficiaries(copy); }} placeholder="Wallet" />
+                      <input className="bg-transparent border border-[#2a241c] p-2 text-white col-span-2" value={String(b.allocation_percentage ?? '')} onChange={(e) => { const copy = [...editBeneficiaries]; copy[idx] = { ...copy[idx], allocation_percentage: Number(e.target.value) || 0 }; setEditBeneficiaries(copy); }} placeholder="Allocation percentage" />
+                    </div>
+                  </div>
+                ))}
+                {editBeneficiaries.length === 0 && <div className="text-[#b8a494]">No beneficiaries to edit</div>}
+              </div>
+              <div className="flex gap-2 justify-end mt-4">
+                <button className="px-4 py-2 rounded bg-[#393028] text-white" onClick={() => { if (!editing) setEditModalOpen(false); }}>Cancel</button>
+                <button className="px-4 py-2 rounded bg-[#2ccd2c] text-white" onClick={async () => {
+                  if (!selectedPlanDetail?.plan?.id) { toast.error('Cannot determine plan id'); return; }
+                  setEditing(true);
+                  try {
+                    const payload = { id: Number(selectedPlanDetail.plan.id ?? selectedPlanDetail.plan.contract_plan_id ?? 0), beneficiaries: editBeneficiaries.map((b:any) => ({ name: b.name, relationship: b.relationship, email: b.email, wallet: b.wallet, allocation_percentage: Number(b.allocation_percentage || 0) })) };
+                    if (planCtx?.editInheritance) {
+                      await planCtx.editInheritance(payload);
+                    } else {
+                      await fetch(`${BACKEND_API_URL}/inherit/edit-inheritance`, {
+                        method: 'PUT', headers: { 'Content-Type': 'application/json', ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}) }, body: JSON.stringify(payload)
+                      });
+                    }
+                    toast.success('Inheritance updated');
+                    setEditModalOpen(false);
+                    await fetchPlans();
+                    setModalOpen(false);
+                    setSelectedPlanDetail(null);
+                  } catch (e:any) {
+                    const m = e instanceof Error ? e.message : String(e);
+                    toast.error(`Update failed: ${m}`);
+                  } finally { setEditing(false); }
+                }} disabled={editing}>{editing ? 'Saving...' : 'Save Changes'}</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Mobile list (cards) */}
+        <div className="space-y-3 md:hidden">
+          {loading ? (
+            Array.from({ length: pageSize }).map((_, i) => (
+              <div key={`s-m-${i}`} className="p-4 bg-[#231b16] border border-[#2f241c] rounded">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="h-4 bg-[#2f241c] w-24 rounded animate-pulse" />
+                  <div className="h-4 bg-[#2f241c] w-12 rounded animate-pulse" />
+                </div>
+                <div className="h-3 bg-[#2f241c] w-3/4 rounded animate-pulse" />
+              </div>
+            ))
+          ) : paginated.length > 0 ? (
+            paginated.map((plan) => (
+              <div key={`m-${plan.id}`} className={`p-4 bg-[#231b16] border border-[#2f241c] rounded ${plan.id === highlightedPlanId ? 'ring-2 ring-green-400/40' : ''}`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#3a2f1e] flex items-center justify-center text-white font-bold">{plan.chainIcon}</div>
+                    <div className="min-w-0">
+                      <div className="text-white font-bold text-sm truncate">{plan.name}</div>
+                      <div className="text-[#B9B09D] text-xs truncate">ID #{plan.raw?.id ?? plan.id} • {plan.raw?.plan_type ?? (plan.raw?.planType ?? '—')}</div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-white text-sm">{showValues ? plan.assets : '••••'}</div>
+                    <div className="mt-1">
+                          <Badge className={`${plan.status === "Active" ? "bg-green-500/20 text-green-400 border-green-500/30" : plan.status === "Pending" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" : plan.status === "Cancelled" ? "bg-red-500/20 text-red-400 border-red-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"} font-bold text-xs`}>{plan.status === "Active" ? "● Active" : plan.status === "Pending" ? "● Pending" : plan.status === "Cancelled" ? "● Cancelled" : "● Triggered"}</Badge>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-[#B9B09D]">
+                  <div className="col-span-2 break-words">
+                    <div className="text-[#8b7664] text-[11px]">Owner</div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="font-mono text-white text-sm truncate">{abbr(plan.raw?.owner_wallet || plan.beneficiary?.name)}</div>
+                      <button onClick={() => copyToClipboard(plan.raw?.owner_wallet ?? plan.beneficiary?.name)} aria-label="Copy owner wallet" className="text-[#ff6600] text-sm p-1">
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-[#8b7664] text-[11px]">Asset</div>
+                    <div className="text-white mt-1">{plan.assetsDetail}</div>
+                  </div>
+                  <div>
+                    <div className="text-[#8b7664] text-[11px]">Amount</div>
+                    <div className="text-white mt-1">{plan.assets}</div>
+                  </div>
+
+                  <div>
+                    <div className="text-[#8b7664] text-[11px]">Contract</div>
+                    <div className="text-white mt-1 truncate">{abbr(plan.raw?.contract_address)}</div>
+                  </div>
+                  <div>
+                    <div className="text-[#8b7664] text-[11px]">Funded</div>
+                    <div className="text-white mt-1">{plan.raw?.is_funded ? 'Yes' : 'No'}</div>
+                  </div>
+                </div>
+
+                <div className="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <button disabled={viewLoadingId === String(plan.raw?.id ?? plan.id)} onClick={() => openPlanDetail(plan.raw?.id ?? plan.raw?.contract_plan_id)} className="w-full sm:w-auto px-3 py-2 rounded bg-[#393028] text-sm text-white">
+                    {viewLoadingId === String(plan.raw?.id ?? plan.id) ? 'Opening...' : 'View'}
+                  </button>
+                  {(user?.publicKey && String(user.publicKey).toLowerCase() === String(plan.raw?.owner_wallet).toLowerCase()) && (
+                    <div className="flex gap-2 w-full sm:w-auto">
+                      {!plan.raw?.is_funded && (
+                        <button disabled={Boolean(fundLoadingId)} onClick={() => { const cid = Number(plan.raw?.contract_plan_id ?? plan.raw?.id ?? 0); setFundLoadingId(String(plan.id)); setFundPlanContractId(cid); setFundPlanDbId(Number(plan.raw?.id ?? plan.raw?.contract_plan_id ?? 0)); setFundPlanDefaultAmount(String(plan.raw?.amount ?? '0.0')); setFundPlanOwnerWallet(plan.raw?.owner_wallet ?? null); setFundModalOpen(true); }} className="flex-1 px-3 py-2 rounded bg-[#ff6600] text-sm text-white">{fundLoadingId === String(plan.id) ? 'Opening...' : 'Fund'}</button>
+                      )}
+                      {/* hide delete if plan is already released */}
+                      {!plan.raw?.is_released && (
+                        <button disabled={deleteOpeningId === String(plan.id)} onClick={() => { setDeleteOpeningId(String(plan.id)); setPendingDeletePlan({ plan: plan.raw }); setConfirmDeleteOpen(true); setDeleteOpeningId(null); }} className="flex-1 px-3 py-2 rounded bg-red-700 text-sm text-white">{deleteOpeningId === String(plan.id) ? 'Opening...' : 'Delete'}</button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="p-4 bg-[#231b16] border border-[#2f241c] rounded text-sm text-[#b8a494]">{getNoPlansMessage()}</div>
+          )}
+        </div>
+
+        {/* Table for md+ */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-[#3a2f1e]">
+                <th className="text-left py-3 px-4 font-medium text-[#B9B09D] text-xs uppercase tracking-wider">Plan ID & Chain</th>
+                <th className="text-left py-3 px-4 font-medium text-[#B9B09D] text-xs uppercase tracking-wider">Beneficiary</th>
+                <th className="text-left py-3 px-4 font-medium text-[#B9B09D] text-xs uppercase tracking-wider">Assets</th>
+                <th className="text-left py-3 px-4 font-medium text-[#B9B09D] text-xs uppercase tracking-wider">Status</th>
+                <th className="text-left py-3 px-4 font-medium text-[#B9B09D] text-xs uppercase tracking-wider">Trig</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array.from({ length: pageSize }).map((_, i) => (
+                  <tr key={`s-${i}`} className="border-b border-[#393028]">
+                    <td className="py-4 px-4"><div className="h-6 bg-[#2f241c] rounded w-32" /></td>
+                    <td className="py-4 px-4"><div className="h-4 bg-[#2f241c] rounded w-24" /></td>
+                    <td className="py-4 px-4"><div className="h-4 bg-[#2f241c] rounded w-16" /></td>
+                    <td className="py-4 px-4"><div className="h-4 bg-[#2f241c] rounded w-12" /></td>
+                    <td className="py-4 px-4"><div className="h-4 bg-[#2f241c] rounded w-8" /></td>
+                  </tr>
+                ))
+              ) : paginated.length > 0 ? (
+                paginated.map((plan) => (
+                <tr key={plan.id} className={`border-b border-[#393028] hover:bg-[#0d0b08] transition-colors cursor-pointer ${plan.id === highlightedPlanId ? 'ring-2 ring-green-400/40 bg-green-900/5' : ''}`} onClick={() => openPlanDetail(plan.raw?.id ?? plan.raw?.contract_plan_id)}>
+                  <td className="py-4 px-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-[#332619] rounded-lg flex items-center justify-center text-lg">{plan.chainIcon}</div>
+                      <div>
+                        <div className="font-bold text-white text-sm truncate">{plan.name ? `${plan.name.charAt(0).toUpperCase()}${plan.name.slice(1)}` : plan.name}</div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-[#8b7664] text-xs">#{plan.id} • {plan.chainName}</div>
+                          {plan.id === highlightedPlanId && (
+                            <Badge className="ml-2 bg-green-600 text-white text-xs">Updated</Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-4 px-4">
+                    {(() => {
+                      const beneficiaryName = (plan.beneficiariesPreview && plan.beneficiariesPreview.length > 0) ? (plan.beneficiariesPreview[0].name || plan.beneficiariesPreview[0].wallet) : plan.beneficiary.name;
+                      return (
+                          <div className="flex items-center gap-2 truncate">
+                            <div className="w-6 h-6 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">{getInitials(beneficiaryName)}</div>
+                            <span className="text-white text-sm truncate">{beneficiaryName}</span>
+                          {plan.beneficiariesPreview && plan.beneficiariesPreview.length > 1 && (
+                            <span className="ml-2 text-xs text-[#8b7664]">+{plan.beneficiariesPreview.length - 1} more</span>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </td>
+                  <td className="py-4 px-4">
+                    <div>
+                      <div className="text-white text-sm truncate">{showValues ? plan.assets : "••••••"}</div>
+                      <div className="text-[#B9B09D] text-xs truncate">{plan.assetsDetail}</div>
+                    </div>
+                  </td>
+                  <td className="py-4 px-4">
+                      <Badge className={`${plan.status === "Active" ? "bg-green-500/20 text-green-400 border-green-500/30" : plan.status === "Pending" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" : plan.status === "Cancelled" ? "bg-red-500/20 text-red-400 border-red-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"} font-bold text-xs`}>{plan.status === "Active" ? "● Active" : plan.status === "Pending" ? "● Pending" : plan.status === "Cancelled" ? "● Cancelled" : "● Triggered"}</Badge>
+                  </td>
+                  <td className="py-4 px-4"><span className="text-[#8b7664] text-sm">{plan.triggerDays}h</span></td>
+                </tr>
+              ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="py-8 px-4 text-center">
+                    <p className="text-[#B9B09D]">{getNoPlansMessage()}</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="flex flex-col sm:flex-row items-center sm:justify-between pt-4 gap-3">
+          <span className="text-[#B9B09D] text-sm">Showing {(filtered.length === 0) ? 0 : ((currentPage - 1) * pageSize + 1)} - {Math.min(currentPage * pageSize, filtered.length)} of {filtered.length} plans</span>
+          <div className="flex items-center gap-4">
+            <span className="text-[#B9B09D] text-xs">{currentPage} / {pageCount}</span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className={`w-8 h-8 rounded border border-[#B9B09D] ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[#2a1f10]'} flex items-center justify-center transition-colors`}
+              >
+                <ChevronLeft className="w-4 h-4 text-[#B9B09D]" />
+              </button>
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(pageCount, p + 1))}
+                disabled={currentPage === pageCount}
+                className={`w-8 h-8 rounded border border-[#B9B09D] ${currentPage === pageCount ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[#2a1f10]'} flex items-center justify-center transition-colors`}
+              >
+                <ChevronRight className="w-4 h-4 text-[#B9B09D]" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default AllPlan;

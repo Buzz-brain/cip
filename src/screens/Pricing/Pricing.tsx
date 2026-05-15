@@ -1,0 +1,610 @@
+import { Button } from "@components/ui/button";
+import { Card, CardContent } from "@components/ui/card";
+import { Separator } from "../../components/ui/separator";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { usePlans } from "../../lib/hooks/usePlans";
+import { Navbar } from "@components/ui/Navbar";
+import { useOnboarding } from '../../context/OnboardingContext';
+import { useAuth } from "../../context/useAuth";
+import { toast } from "react-toastify";
+import { extractErrorMessage } from "../../lib/utils";
+import { ToggleBilling } from "@components/ui/ToggleBilling";
+import ConfirmPaymentModal from '@components/ui/ConfirmPaymentModal';
+import logoImg from "@assets/cip-logo.png";
+import sharpCheckSolid from "@assets/sharp-check-solid.svg";
+import sharpUncheckSolid from "@assets/sharp-uncheck-solid.svg";
+import shield from "@assets/shield.svg";
+import lock from "@assets/lock.svg";
+import securityLock from "@assets/security-lock.svg";
+import chatbubble from "@assets/chatbubble.svg";
+
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
+const XCIP_HEADER_VALUE = import.meta.env.VITE_XCIP_HEADER;
+const SUBSCRIPTION_WALLET = import.meta.env.VITE_SUBSCRIPTION_WALLET;
+
+const auditors = [
+  { name: "Hacken", icon: shield },
+  { name: "OpenZeppelin", icon: lock },
+  { name: "Trail of Bits", icon: securityLock },
+];
+
+const faqs = [
+  {
+    question: "Are my assets safe if I stop paying?",
+    answer:
+      "Yes. CIP is non-custodial. Your triggers remain active on-chain, but you will lose access to the editing dashboard and TaxCore features until you renew.",
+  },
+  {
+    question: "Can I upgrade my plan later?",
+    answer:
+      "Absolutely. You can upgrade or downgrade your subscription at any time. Changes take effect immediately.",
+  },
+];
+
+const footerLinksAlt = [
+  "Privacy Policy",
+  "Terms of Service",
+  "Security Audit",
+  "Contact Support",
+];
+
+export const Pricing = (): JSX.Element => {
+  const navigate = useNavigate();
+  const [isYearly, setIsYearly] = useState(false);
+  const { user } = useAuth();
+  const { plans: backendPlans, loading: plansLoading } = usePlans();
+  const { open } = useOnboarding();
+  const [subscribing, setSubscribing] = useState<Record<string, boolean>>({});
+  const [convertingEth, setConvertingEth] = useState<Record<string, boolean>>({});
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalPlan, setModalPlan] = useState<any>(null);
+  const [modalUsdPrice, setModalUsdPrice] = useState<number | null>(null);
+  const [modalEthAmount, setModalEthAmount] = useState<string | null>(null);
+  const [modalLoading, setModalLoading] = useState(false);
+
+  const performPayment = async (plan: any, amountEth: string) => {
+    const key = String(plan.id);
+    setModalLoading(true);
+    setSubscribing((s) => ({ ...s, [key]: true }));
+    try {
+      if (!window.ethereum) throw new Error('No web3 provider found. Connect a wallet.');
+      await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
+      const { BrowserProvider, parseEther } = await import('ethers');
+      const provider = new BrowserProvider(window.ethereum as any);
+      const signer = await provider.getSigner();
+
+      const toAddress = SUBSCRIPTION_WALLET;
+      const value = parseEther(amountEth);
+
+      // GAS ESTIMATION
+      let gasLimit: bigint;
+      try {
+        const estimated = await provider.estimateGas({ to: toAddress, value });
+        gasLimit = (estimated * 130n) / 100n;
+      } catch (e) {
+        gasLimit = 100_000n;
+      }
+
+      // Fee overrides
+      let feeOverrides: { maxFeePerGas?: bigint; maxPriorityFeePerGas?: bigint } = {};
+      try {
+        const feeData = await provider.getFeeData();
+        if (feeData.maxFeePerGas) feeOverrides.maxFeePerGas = (feeData.maxFeePerGas * 125n) / 100n;
+        if (feeData.maxPriorityFeePerGas) feeOverrides.maxPriorityFeePerGas = (feeData.maxPriorityFeePerGas * 125n) / 100n;
+      } catch (e) {
+        console.warn('[performPayment] fee data error', e);
+      }
+
+      const tx = await signer.sendTransaction({ to: toAddress, value, gasLimit, ...feeOverrides });
+      const receipt = await tx.wait();
+      if (!receipt || receipt.status !== 1) throw new Error('On-chain payment failed or was reverted.');
+      const txHash = tx.hash;
+
+      const body = { tx_hash: txHash, pricing_id: plan.id, months: 1 };
+      const res = await fetch(`${BACKEND_API_URL}/auth/subscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'xcip-header': XCIP_HEADER_VALUE,
+          ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+        },
+        body: JSON.stringify(body),
+      });
+      if (res.ok) {
+        toast.success('Subscription successful.');
+        navigate('/owner-dashboard/select-assets');
+      } else {
+        const errorMsg = await extractErrorMessage(res);
+        throw new Error(`Subscription failed: ${errorMsg}`);
+      }
+    } catch (err: any) {
+      toast.error(err?.message ?? String(err));
+    } finally {
+      setModalLoading(false);
+      setModalOpen(false);
+      setModalPlan(null);
+      setModalUsdPrice(null);
+      setModalEthAmount(null);
+      setSubscribing((s) => ({ ...s, [String(plan.id)]: false }));
+      setConvertingEth((s) => ({ ...s, [String(plan.id)]: false }));
+    }
+  };
+
+  const toTitleCase = (input?: string) => {
+    if (!input) return "";
+    return input
+      .split(/\s+/)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+  };
+
+  const getSubscriptionDeniedMessage = (role?: string) => {
+    return `You're signed in as ${role ?? 'a non-owner account'}. Only owners can subscribe.`;
+  };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
+const navigationItems = [
+  { label: "How it Works", href: "#core-capabilities" },
+  { label: "TaxCore", href: "#taxcore-intelligence" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "Enterprise", href: "/login" },
+];
+
+  const auditorElements = auditors.map((auditor) => (
+    <div key={auditor.name} className="flex items-center gap-2">
+      <img src={auditor.icon} alt="" className="w-6 h-6" />
+      <span className="font-bold text-neutral-300 text-xl">
+        {auditor.name}
+      </span>
+    </div>
+  ));
+
+  const sourcePlans = (backendPlans && backendPlans.length > 0) ? backendPlans : null;
+
+  // Use backend plans only. Sort by ascending id.
+  const planSource = sourcePlans ? sourcePlans.slice().sort((a: any, b: any) => Number(a.id) - Number(b.id)) : [];
+
+  const planCards = (plansLoading ? [] : planSource).map((plan: any, idx: number) => {
+    const displayBadge = plan.badge ?? (idx === 2 ? "Recommended" : undefined);
+    const priceValue = typeof plan.price === "number" ? plan.price : (typeof plan.price === "string" ? parseFloat(plan.price.replace(/[^0-9.]/g, "")) : NaN);
+    const monthlyNum = !isNaN(priceValue) ? priceValue : NaN;
+    let displayPrice = plan.price;
+    let displayPeriod = plan.period;
+    if (!isNaN(monthlyNum)) {
+      if (isYearly) {
+        const yearly = monthlyNum * 12 * 0.8; // save 20%
+        displayPrice = `$${yearly % 1 === 0 ? yearly.toFixed(0) : yearly.toFixed(2)}`;
+        displayPeriod = "/yr";
+      } else {
+        displayPrice = typeof plan.price === "number" ? `$${plan.price}` : plan.price;
+        displayPeriod = plan.period;
+      }
+    }
+
+    return (
+      <Card
+        key={plan.name ?? plan.id}
+        className={`${
+          plan.highlighted
+            ? "bg-[#32241a] border-2 border-[#ff6600] relative"
+            : "bg-[#32241a] border-[#554233] relative"
+        }`}
+      >
+        {displayBadge && (
+          <div className="absolute top-0 right-0 w-[90%] bg-[#ff6600] rounded-l-full rounded-tr-full px-4 py-1 flex justify-start">
+            <span className="font-bold text-white text-xs">
+              {displayBadge}
+            </span>
+          </div>
+        )}
+        <CardContent className="p-10 space-y-6">
+          <div className="space-y-2">
+            <h3 className="font-bold text-white text-lg">
+              {toTitleCase(plan.name)}
+            </h3>
+            <div className="flex items-baseline gap-1">
+              <span className="font-bold text-white text-[35px] leading-[45px]">
+                {displayPrice}
+              </span>
+              {displayPeriod && (
+                <span className="font-bold text-[#b8a494] text-sm">
+                  {displayPeriod}
+                </span>
+              )}
+            </div>
+            <p className="text-[#b8a494] text-sm">
+              {plan.description || (plan.name ? `${toTitleCase(plan.name)} Plan` : "")}
+            </p>
+          </div>
+
+          <Button
+            variant={"default"}
+            className={`w-full ${
+              plan.highlighted
+                ? "bg-[#ff6600] hover:bg-[#ff6600]/90"
+                : "bg-[#554233] hover:bg-[#554233]/90"
+            } font-bold`}
+              onClick={async () => {
+              // Only subscribe for backend plans that include an id
+              if (!plan.id) {
+                // fallback: open onboarding modal
+                navigate('/');
+                open('one');
+                return;
+              }
+
+              // If user role is present and is not 'user', prevent calling backend
+              const role = (user?.userInfo?.role ?? (user as any)?.role ?? "").toString();
+              if (role && role.toLowerCase() !== "user") {
+                toast.error(getSubscriptionDeniedMessage(role));
+                return;
+              }
+
+              const key = String(plan.id);
+              if (subscribing[key] || convertingEth[key]) return;
+              
+              try {
+                // --- Convert USD price to ETH ---
+                setConvertingEth((s) => ({ ...s, [key]: true }));
+                toast.info('Calculating ETH amount from current exchange rate...');
+                
+                // Extract USD price from plan
+                let usdPrice = 0;
+                if (typeof plan.price === 'number') {
+                  usdPrice = plan.price;
+                } else if (typeof plan.price === 'string') {
+                  usdPrice = parseFloat(plan.price.replace(/[^0-9.]/g, ''));
+                }
+                
+                if (isNaN(usdPrice) || usdPrice < 0) {
+                  throw new Error('Invalid plan price');
+                }
+                
+                // Convert USD to ETH
+                const { convertUsdToEth } = await import('../../lib/wallet/ethPrice');
+                let amountEth: string;
+                if (usdPrice === 0) {
+                  amountEth = '0';
+                  toast.info('Free plan - no payment required.');
+                } else {
+                  amountEth = await convertUsdToEth(usdPrice);
+                  toast.dismiss();
+                  // open confirmation modal instead of window.confirm
+                  setModalPlan(plan);
+                  setModalUsdPrice(usdPrice);
+                  setModalEthAmount(amountEth);
+                  setModalOpen(true);
+                  // stop here; performPayment will continue when modal confirmed
+                  setConvertingEth((s) => ({ ...s, [key]: false }));
+                  return;
+                }
+                
+                setConvertingEth((s) => ({ ...s, [key]: false }));
+                setSubscribing((s) => ({ ...s, [key]: true }));
+
+                // --- On-chain payment step (skip for free tier) ---
+                if (usdPrice > 0) {
+                  if (!window.ethereum) {
+                    throw new Error('No web3 provider found. Connect a wallet.');
+                  }
+
+                  // Request accounts and send transaction
+                  await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
+                  const { BrowserProvider, parseEther } = await import('ethers');
+                  const provider = new BrowserProvider(window.ethereum as any);
+                  const signer = await provider.getSigner();
+
+                  const toAddress = SUBSCRIPTION_WALLET;
+                  const value = parseEther(amountEth);
+
+                  // --- GAS ESTIMATION ---
+                  let gasLimit: bigint;
+                  try {
+                    const estimated = await provider.estimateGas({ to: toAddress, value });
+                    gasLimit = (estimated * 130n) / 100n; // +30% buffer
+                    console.log('[handleSubscribe] Gas estimation succeeded', {
+                      estimated: estimated.toString(),
+                      withBuffer: gasLimit.toString(),
+                    });
+                  } catch (e) {
+                    gasLimit = 100_000n; // Fallback for simple ETH transfers
+                    console.warn('[handleSubscribe] Gas estimation failed, using fallback:', e);
+                  }
+
+                  // --- FETCH FRESH FEE DATA AND ADD BUFFER ---
+                  let feeOverrides: { maxFeePerGas?: bigint; maxPriorityFeePerGas?: bigint } = {};
+                  try {
+                    const feeData = await provider.getFeeData();
+                    if (feeData.maxFeePerGas) {
+                      feeOverrides.maxFeePerGas = (feeData.maxFeePerGas * 125n) / 100n; // +25% buffer
+                    }
+                    if (feeData.maxPriorityFeePerGas) {
+                      feeOverrides.maxPriorityFeePerGas = (feeData.maxPriorityFeePerGas * 125n) / 100n; // +25% buffer
+                    }
+                    console.log('[handleSubscribe] Fee data fetched', {
+                      maxFeePerGas: feeOverrides.maxFeePerGas?.toString(),
+                      maxPriorityFeePerGas: feeOverrides.maxPriorityFeePerGas?.toString(),
+                    });
+                  } catch (feeErr) {
+                    console.warn('[handleSubscribe] Could not fetch fee data, letting ethers decide:', feeErr);
+                  }
+
+                  toast.info('Awaiting wallet signature to send payment...');
+                  const tx = await signer.sendTransaction({ to: toAddress, value, gasLimit, ...feeOverrides });
+                  toast.info('Payment submitted. Waiting for confirmation...');
+                  const receipt = await tx.wait();
+                  if (!receipt || receipt.status !== 1) {
+                    throw new Error('On-chain payment failed or was reverted.');
+                  }
+                  const txHash = tx.hash;
+
+                  // --- Notify backend with tx_hash ---
+                  const body = { tx_hash: txHash, pricing_id: plan.id, months: 1 };
+                  const res = await fetch(`${BACKEND_API_URL}/auth/subscribe`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'xcip-header': XCIP_HEADER_VALUE,
+                      ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+                    },
+                    body: JSON.stringify(body),
+                  });
+                  if (res.ok) {
+                    toast.success('Subscription successful.');
+                    navigate('/owner-dashboard/select-assets');
+                  } else {
+                    const errorMsg = await extractErrorMessage(res);
+                    throw new Error(`Subscription failed: ${errorMsg}`);
+                  }
+                } else {
+                  // Free tier: skip on-chain payment, just call backend
+                  const body = { tx_hash: '', pricing_id: plan.id, months: 1 };
+                  const res = await fetch(`${BACKEND_API_URL}/auth/subscribe`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'xcip-header': XCIP_HEADER_VALUE,
+                      ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+                    },
+                    body: JSON.stringify(body),
+                  });
+                  if (res.ok) {
+                    toast.success('Subscription successful.');
+                    navigate('/owner-dashboard/select-assets');
+                  } else {
+                    const errorMsg = await extractErrorMessage(res);
+                    throw new Error(`Subscription failed: ${errorMsg}`);
+                  }
+                }
+              } catch (err) {
+                const msg = err instanceof Error ? err.message : String(err);
+                toast.error(`Subscription error: ${msg}`);
+              } finally {
+                setSubscribing((s) => ({ ...s, [key]: false }));
+                setConvertingEth((s) => ({ ...s, [key]: false }));
+              }
+            }}
+            disabled={!!(plan.id && (subscribing[String(plan.id)] || convertingEth[String(plan.id)]))}
+          >
+            {convertingEth[String(plan.id)] ? "Converting..." : subscribing[String(plan.id)] ? "Processing..." : (plan.buttonText || "Choose")}
+          </Button>
+
+          <Separator className="bg-[#554233]" />
+
+          <div className="space-y-3">
+            {Array.isArray(plan.features)
+              ? plan.features.map((feature: any, idx: number) => (
+                  <div key={idx} className="flex items-start gap-4">
+                    {feature.included ? (
+                      <img src={plan.checkIcon || sharpCheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                    ) : (
+                      <img src={plan.uncheckIcon || sharpUncheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                    )}
+                    <div className="flex-1">
+                      <span className={`text-sm ${feature.included ? "font-medium text-slate-200" : "font-normal text-[#8b7964]"}`}>
+                        {feature.text}
+                      </span>
+                      {feature.subtext && (
+                        <p className="font-medium text-[#b8a494] text-xs mt-1">{feature.subtext}</p>
+                      )}
+                    </div>
+                  </div>
+                ))
+              : (
+                // Build features from backend plan shape — show all relevant fields except id
+                <>
+                  <div className="flex items-start gap-4">
+                    <img src={sharpCheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <span className="text-sm font-medium text-slate-200">{`Included Plans: ${plan.plans ?? '—'}`}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <img src={sharpCheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <span className="text-sm font-medium text-slate-200">{`Triggers: ${plan.triggers ?? '—'}`}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <img src={sharpCheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <span className="text-sm font-medium text-slate-200">{`Supported Chains: ${plan.supported_chain ?? '—'}`}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <img src={plan.storage ? sharpCheckSolid : sharpUncheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <span className={`text-sm ${plan.storage ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>{plan.storage ? 'Storage Included' : 'No Storage'}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <img src={plan.taxcore ? sharpCheckSolid : sharpUncheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <span className={`text-sm ${plan.taxcore ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>{plan.taxcore ? 'TaxCore Enabled' : 'No TaxCore'}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <img src={plan.secret_ai ? sharpCheckSolid : sharpUncheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <span className={`text-sm ${plan.secret_ai ? 'font-medium text-slate-200' : 'font-normal text-[#8b7964]'}`}>{plan.secret_ai ? 'Secret AI features' : 'No Secret AI'}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <img src={sharpCheckSolid} alt="" className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <span className="text-sm font-medium text-slate-200">{`Plan edits allowed: ${plan.plan_edit ?? '—'}`}</span>
+                    </div>
+                  </div>
+                </>
+              )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  });
+
+  return (
+    <div className="min-h-screen bg-black">
+        <Navbar
+          logo={logoImg}
+          navItems={navigationItems}
+          logoHref="/"
+          rightActions={
+            <Button
+              className="bg-gradient-to-r from-[#ff6600] to-[#993d00] hover:opacity-90 font-bold text-sm"
+              onClick={() => open('one')}
+            >
+              Launch App
+            </Button>
+          }
+        />
+
+      <section className="py-8 sm:py-12">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="max-w-6xl mx-auto space-y-8 sm:space-y-10">
+            <div className="text-center space-y-4 sm:space-y-6">
+              <h1 className="font-bold text-white text-2xl sm:text-3xl md:text-[46px] leading-snug md:leading-[48px]">
+                Secure your legacy across chains
+              </h1>
+              <p className="text-[#b8a494] text-sm sm:text-base max-w-xl sm:max-w-2xl mx-auto leading-relaxed">
+                Choose the inheritance plan that fits your assets and your family's needs. Upgrade or downgrade at any time with zero lock-in periods.
+              </p>
+                  {/* Billing period toggle */}
+                  <div className="flex items-center justify-center">
+                    <ToggleBilling value={isYearly} onChange={setIsYearly} />
+                  </div>
+            </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                {plansLoading ? (
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <Card key={`skeleton-${i}`} className="bg-[#32241a] border-[#554233] animate-pulse">
+                      <CardContent className="p-6 space-y-6">
+                        <div className="space-y-2">
+                          <div className="h-6 bg-[#2f241c] rounded w-2/3" />
+                          <div className="h-10 bg-[#2f241c] rounded w-1/3 mt-2" />
+                          <div className="h-4 bg-[#2f241c] rounded w-full mt-2" />
+                        </div>
+
+                        <div className="h-10 bg-[#2f241c] rounded w-full" />
+
+                        <Separator className="bg-[#554233]" />
+
+                        <div className="space-y-3">
+                          <div className="h-4 bg-[#2f241c] rounded w-full" />
+                          <div className="h-4 bg-[#2f241c] rounded w-5/6" />
+                          <div className="h-4 bg-[#2f241c] rounded w-4/6" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  planCards
+                )}
+              </div>
+
+            <div className="text-center space-y-4 sm:space-y-6 pt-8 sm:pt-10">
+                <p className="font-bold text-[#b8a494] text-sm">
+                  Trusted by leading auditors
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+                  {auditorElements}
+                </div>
+              </div>
+
+            <div className="max-w-3xl mx-auto space-y-6 pt-10 sm:pt-14 px-2">
+              <h2 className="font-bold text-white text-xl sm:text-2xl text-center">
+                Frequently Asked Questions
+              </h2>
+              <div className="space-y-3">
+                {faqs.map((faq) => (
+                  <Card key={faq.question} className="bg-[#32241a] border-[#554233]">
+                    <CardContent className="p-3 sm:p-4 space-y-2">
+                      <h3 className="font-bold text-white text-base">
+                        {faq.question}
+                      </h3>
+                      <p className="text-[#b8a494] text-sm">
+                        {faq.answer}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="bg-[#32241a] border-t border-[#3b2f1e] py-8 sm:py-12">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 sm:gap-8">
+            <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center sm:items-center justify-center sm:justify-start gap-3 sm:gap-6">
+              {footerLinksAlt.map((link) => (
+                <a
+                  key={link}
+                  href="#"
+                  className="text-[#b8a494] text-sm sm:text-base hover:text-white transition-colors"
+                >
+                  {link}
+                </a>
+              ))}
+            </div>
+
+            <div className="flex flex-col items-center gap-3">
+              <div className="flex items-center justify-center gap-3">
+                <span className="text-[#896d61] text-xs">public</span>
+                <img src={chatbubble} alt="" className="w-5 h-5 sm:w-6 sm:h-6" />
+                <span className="text-[#896d61] text-sm">mail</span>
+              </div>
+              <p className="text-[#8b7964] text-xs sm:text-sm text-center">
+                © 2024 Multi-Chain Inheritance Protocol. All rights reserved.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+      {modalOpen && modalPlan && (
+        <ConfirmPaymentModal
+          open={modalOpen}
+          title={`Subscribe to ${modalPlan?.name ?? 'plan'}`}
+          planName={modalPlan?.name}
+          usdAmount={modalUsdPrice ?? undefined}
+          ethAmount={modalEthAmount ?? undefined}
+          loading={modalLoading}
+          onConfirm={() => performPayment(modalPlan, modalEthAmount ?? '0')}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
+    </div>
+  );
+};

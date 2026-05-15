@@ -1,0 +1,256 @@
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import logoImg from "@assets/cip-logo-full.png";
+import dashboardIcon from "@assets/dashboard.svg";
+import plusCircleIcon from "@assets/plus-icon-grey.svg";
+import fileTextIcon from "@assets/doc-grey.svg";
+import billingsIcon from "@assets/wallet.svg";
+import { useAuth } from "../../context/useAuth";
+import { useSubscription } from "../../lib/hooks/useSubscription";
+import SubscriptionModal from "@components/SubscriptionModal";
+import { useState } from "react";
+
+const sidebarMenuItems = [
+  { icon: dashboardIcon, label: "Dashboard", id: "dashboard" },
+  { icon: plusCircleIcon, label: "Create Plan", id: "create-plan" },
+  { icon: fileTextIcon, label: "Trusts", id: "trusts" },
+  { icon: fileTextIcon, label: "Activity Logs", id: "activity-logs" },
+];
+
+const systemMenuItems = [
+  { icon: billingsIcon, label: "Billing & Payments", id: "billingnpayments" },
+];
+
+interface SidebarProps {
+  mobile?: boolean;
+  open?: boolean;
+  onClose?: () => void;
+}
+
+export const Sidebar = ({ mobile = false, open = false, onClose }: SidebarProps): JSX.Element => {
+  const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
+  const pathname = location.pathname || "/";
+
+  const displayName = user?.name || user?.userInfo?.full_name || user?.publicKey || "Guest";
+  const displayEmail = user?.email || user?.userInfo?.email || "";
+  const avatarInitial = displayName ? String(displayName).charAt(0).toUpperCase() : "G";
+
+  // Pre-compute hrefs for system menu items
+  const systemWithHrefs = systemMenuItems.map((item) => {
+    let href = "#";
+    if (item.id === "billingnpayments") href = "/owner-dashboard/billing-and-payments";
+    return { ...item, href };
+  });
+
+  // Pre-compute hrefs and select the most specific matching href for active state
+  const menuWithHrefs = sidebarMenuItems.map((item) => {
+    let href = "#";
+    if (item.id === "dashboard") href = "/owner-dashboard";
+    if (item.id === "create-plan") href = "/owner-dashboard/select-assets";
+    if (item.id === "trusts") href = "/owner-dashboard/trusts";
+    if (item.id === "activity-logs") href = "/owner-dashboard/activity-logs";
+    return { ...item, href };
+  });
+
+  // Combine all menu items to find the most specific match
+  const allMenuItems = [...menuWithHrefs, ...systemWithHrefs];
+  const activeHref = allMenuItems.reduce((best: string, item) => {
+    if (item.href === "#") return best;
+    // exact match wins
+    if (pathname === item.href) return item.href;
+    // prefer longest prefix match (more specific)
+    if (pathname.startsWith(item.href) && item.href.length > (best?.length || 0)) return item.href;
+    return best;
+  }, "");
+
+  const navigate = useNavigate();
+  const { isSubscribed, loading: checkingSubscription } = useSubscription();
+  const [showModal, setShowModal] = useState(false);
+
+  const handleCreatePlanClick = async (href: string) => {
+    if (!isAuthenticated) {
+      navigate('/');
+      return;
+    }
+
+    // if subscription check hasn't finished, open modal as precaution
+    if (checkingSubscription || isSubscribed === false) {
+      setShowModal(true);
+      return;
+    }
+
+    if (isSubscribed === true) {
+      navigate(href);
+      return;
+    }
+
+    // default fallback: open modal
+    setShowModal(true);
+  };
+
+  // Desktop sidebar (hidden on small screens) or mobile drawer when `mobile` is true
+  if (mobile) {
+    return (
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#1a1410] border-r border-[#3a2f1e] transform transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'}`} aria-hidden={!open}>
+        <div className="p-4 border-b border-[#3a2f1e] flex items-center justify-between">
+          <Link to="/owner-dashboard">
+            <img src={logoImg} alt="Logo" className="h-8 object-contain" />
+          </Link>
+          <button onClick={onClose} aria-label="Close menu" className="text-slate-300 p-2">✕</button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          {menuWithHrefs.map((item) => {
+            const isActive = item.href === activeHref;
+            if (item.id === 'create-plan') {
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => { handleCreatePlanClick(item.href); onClose && onClose(); }}
+                  className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg transition-colors block ${isActive ? "bg-[#332619] text-white" : "text-[#B9B09D] hover:bg-[#2a1f10] hover:text-white"}`}
+                >
+                  <img src={item.icon} />
+                  <span className="font-medium text-sm">{item.label}</span>
+                </button>
+              );
+            }
+
+            return (
+              <Link key={item.id} to={item.href} onClick={onClose} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors block ${isActive ? "bg-[#332619] text-white" : "text-[#B9B09D] hover:bg-[#2a1f10] hover:text-white"}`}>
+                <img src={item.icon} />
+                <span className="font-medium text-sm">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="border-t border-[#3a2f1e] p-4 space-y-2">
+          {systemWithHrefs.map((item) => {
+            const isActive = item.href === activeHref;
+            return (
+              <Link key={item.id} to={item.href} onClick={onClose} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive ? "bg-[#332619] text-white" : "text-[#B9B09D] hover:bg-[#2a1f10] hover:text-white"}`}>
+                <img src={item.icon} />
+                <span className="font-medium text-sm">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="border-t border-[#3a2f1e] p-4">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#2D241C]">
+            <div className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center text-white font-bold text-sm">{avatarInitial}</div>
+            <div className="flex-1 min-w-0">
+              <div className="font-bold text-white text-xs truncate">{displayName}</div>
+              <div className="text-[#B9B09D] text-xs truncate">{displayEmail || (user?.publicKey ? `${user.publicKey.slice(0, 6)}...${user.publicKey.slice(-4)}` : "")}</div>
+              <div className="flex items-center gap-1 text-[#B9B09D] text-xs mt-1"><div className={`w-2 h-2 rounded-full ${isAuthenticated ? "bg-[#22C55E] animate-pulse" : "bg-gray-400"}`}></div><p>{isAuthenticated ? "Online" : "Offline"}</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="hidden md:flex w-56 bg-[#1a1410] border-r border-[#3a2f1e] flex-col">
+            {/* Logo */}
+            <div className="p-6 border-b border-[#3a2f1e]">
+                <div className="flex items-center gap-2">
+                    <div>
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3">
+                                <Link to="/owner-dashboard">
+                                    <img src={logoImg} alt="Logo" className="object-cover" />
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+          {/* Main Menu */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {menuWithHrefs.map((item) => {
+              const isActive = item.href === activeHref;
+
+              // Render a guarded button for Create Plan so we can check subscription
+              if (item.id === 'create-plan') {
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleCreatePlanClick(item.href)}
+                    className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg transition-colors block ${
+                      isActive ? "bg-[#332619] text-white" : "text-[#B9B09D] hover:bg-[#2a1f10] hover:text-white"
+                    }`}
+                  >
+                    <img src={item.icon} />
+                    <span className="font-medium text-sm">
+                      {item.label}
+                    </span>
+                  </button>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.id}
+                  to={item.href}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors block ${
+                    isActive ? "bg-[#332619] text-white" : "text-[#B9B09D] hover:bg-[#2a1f10] hover:text-white"
+                  }`}
+                >
+                  <img src={item.icon} />
+                  <span className="font-medium text-sm">
+                    {item.label}
+                  </span>
+                </Link>
+              );
+            })}
+            {showModal && <SubscriptionModal open={showModal} onClose={() => setShowModal(false)} />}
+          </div>
+
+          {/* System Menu */}
+          <div className="border-t border-[#3a2f1e] p-4 space-y-2">
+            {systemWithHrefs.map((item) => {
+              const isActive = item.href === activeHref;
+
+              return (
+                <Link
+                  key={item.id}
+                  to={item.href}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive ? "bg-[#332619] text-white" : "text-[#B9B09D] hover:bg-[#2a1f10] hover:text-white"
+                  }`}
+                >
+                  <img src={item.icon} />
+                  <span className="font-medium text-sm">
+                    {item.label}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* User Profile */}
+          <div className="border-t border-[#3a2f1e] p-4">
+            <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#2D241C]">
+              <div className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                {avatarInitial}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-white text-xs truncate">
+                  {displayName}
+                </div>
+                <div className="text-[#B9B09D] text-xs truncate">
+                  {displayEmail || (user?.publicKey ? `${user.publicKey.slice(0, 6)}...${user.publicKey.slice(-4)}` : "")}
+                </div>
+                <div className="flex items-center gap-1 text-[#B9B09D] text-xs mt-1">
+                    <div className={`w-2 h-2 rounded-full ${isAuthenticated ? "bg-[#22C55E] animate-pulse" : "bg-gray-400"}`}></div>
+                    <p>{isAuthenticated ? "Online" : "Offline"}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    );
+}

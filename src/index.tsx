@@ -1,0 +1,375 @@
+import { StrictMode } from "react";
+import "../tailwind.css";
+// AppKit initialization - import pre-configured provider wrapper
+import { AppKitProviderComponent } from "./lib/wallet/web3modalConfig.tsx";
+// Mobile debugging tools (Eruda for WalletConnect debugging)
+import { initMobileDebugTools } from "./lib/utils/mobileDebugTools";
+
+// Initialize mobile debugging tools (Eruda) - loads asynchronously, non-blocking
+// Enabled in DEV mode or if ?debug=true is in URL
+initMobileDebugTools().catch(err => {
+  console.warn('[App Init] Mobile debug tools failed to load (non-critical):', err);
+});
+import { createRoot } from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { PlanProvider } from "./context/PlanContext";
+import { ToastProvider } from "./components/ui/toast-context";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Navigate } from "react-router-dom";
+import OwnerDashboardLayout from "./screens/Owner/OwnerDashboardFlow/OwnerDashboardLayout";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Home } from "./screens/Home";
+import { Pricing } from "./screens/Pricing";
+import { ViewPlanHistory } from "./screens/Owner/ViewPlanHistory";
+import { AssetRegistry } from "./screens/Owner/AssetRegistry";
+// onboarding pages removed; onboarding is now modal-driven
+import { ConnectWallet } from "./screens/ConnectWallet";
+import { ProfileSetupForm } from "./screens/ProfileSetupForm";
+import { WalletRecovery } from "./screens/WalletRecovery";
+import { RecoveryProgress } from "./screens/RecoveryProgress";
+import { GuardianApproval } from "./screens/GuardianApproval";
+import { SelectAssets } from "./screens/Owner/PlanCreationFlow/SelectAssets";
+import { AddBeneficiaries } from "./screens/Owner/PlanCreationFlow/AddBeneficiaries";
+import { ChoosePlanType } from "./screens/Owner/PlanCreationFlow/ChoosePlanType";
+import { StaggeredDistribution } from "./screens/Owner/PlanCreationFlow/StaggeredDistribution/StaggeredDistribution.tsx";
+import { PhilanthropyPlan } from "./screens/Owner/PlanCreationFlow/Philantrophy/PhilantrophyPlan.tsx";
+import { ReviewPlan } from "./screens/Owner/PlanCreationFlow/ReviewPlan";
+import { PlanActivatedSuccess } from "./screens/Owner/PlanCreationFlow/PlanActivatedSuccess";
+import { SetTimeLock } from "./screens/Owner/PlanCreationFlow/TimeLock/SetTimeLock.tsx";
+import { ReviewTimeLock } from "./screens/Owner/PlanCreationFlow/TimeLock/ReviewTimeLock.tsx";
+import { BeneficiaryDetails } from "./screens/Beneficiary/BeneficiaryDetails.tsx";
+import { BeneficiaryDashboard } from "./screens/Beneficiary/BeneficiaryDashboard.tsx";
+import { BeneficiaryDisputes } from "./screens/Beneficiary/BeneficiaryDisputes.tsx";
+import { BeneficiaryDisputeDetail } from "./screens/Beneficiary/BeneficiaryDisputeDetail.tsx";
+import BeneficiaryActivityLogs from "./screens/Beneficiary/BeneficiaryActivityLogs";
+import BeneficiaryRoutes from "./screens/Beneficiary/BeneficiaryRoutes";
+import { DisputePlanExecution } from "./screens/DisputeResolutionFlow/DisputePlanExecution";
+import { OwnerDashboard } from "./screens/Owner/OwnerDashboardFlow/Dashboard/OwnerDashboard";
+import { EscrowStateVisualization } from "./screens/DisputeResolutionFlow/EscrowStateVisualization"; 
+import { MPCSelected } from "./screens/Owner/PlanCreationFlow/MPCSelected/MPCSelected.tsx"; 
+
+
+import { SetInactivityPeriod } from "./screens/Owner/PlanCreationFlow/InactivityOracle/SetInactivityPeriod.tsx";
+import { SetInactivityGracePeriod } from "./screens/Owner/PlanCreationFlow/InactivityOracle/SetInactivityGracePeriod.tsx";
+import { ReviewInactivityOraclePlan } from "./screens/Owner/PlanCreationFlow/InactivityOracle/ReviewInactivityOraclePlan.tsx";
+import { ConfirmInactivityOraclePlan } from "./screens/Owner/PlanCreationFlow/InactivityOracle/ConfirmInactivityOraclePlan.tsx";
+
+
+import { ChooseProofOfLifeMethod } from "./screens/Owner/PlanCreationFlow/InactivityOracle/ChooseProofOfLifeMethod.tsx";
+import { BillingAndPayment } from "./screens/Owner/BillingAndSubscription/BillingAndPayment";
+import { SubscriptionRenewal } from "./screens/Owner/BillingAndSubscription/SubscriptionRenewal";
+import { BillingHistory } from "./screens/Owner/BillingAndSubscription/BillingHistory";
+import { GracePeriodActive } from "./screens/Owner/BillingAndSubscription/GracePeriodActive";
+import { ChildrensTrustAccount } from "./screens/Owner/OwnerDashboardFlow/ChildrensTrustAccount"; 
+import TrustsList from "./screens/Owner/OwnerDashboardFlow/TrustsList";
+import { ComplianceSummary } from "./screens/Owner/OwnerDashboardFlow/ComplianceSummary"; 
+import { OwnerDisputePlanExecution } from "./screens/Owner/OwnerDashboardFlow/OwnerDisputePlanExecution.tsx"; 
+import { LegalComplianceCheck } from "./screens/Owner/OwnerDashboardFlow/LegalComplianceCheck.tsx"; 
+import { MainEstateFund } from "./screens/Owner/OwnerDashboardFlow/MainEstateFund"; 
+import { MarketVolatilityAlert } from "./screens/Owner/OwnerDashboardFlow/MarketVolatilityAlert"; 
+import { Notifications } from "./screens/Owner/OwnerDashboardFlow/Notifications"; 
+import { RealTimeVolatility } from "./screens/Owner/OwnerDashboardFlow/RealTimeVolatility";
+import { SecureStorage } from "./screens/Owner/OwnerDashboardFlow/SecureStorage"; 
+import { UploadSignedDoc } from "./screens/Owner/OwnerDashboardFlow/UploadSignedDoc"; 
+import { ProofOfLifeConfig } from "./screens/Owner/OwnerDashboardFlow/Dashboard/ProofOfLifeConfig";
+import OwnerActivityLogs from "./screens/Owner/OwnerDashboardFlow/OwnerActivityLogs";
+import AllPlansPage from "./screens/Owner/OwnerDashboardFlow/AllPlansPage";
+import PlanDetail from "./screens/Owner/OwnerDashboardFlow/PlanDetail";
+
+import { EnterpriseLogin } from "./screens/EnterpriseFlow/EnterpriseLogin";
+import EnterpriseCreate from "./screens/EnterpriseFlow/EnterpriseCreate";
+import { EnterpriseDashboard } from "./screens/EnterpriseFlow/EnterpriseDashboard";
+import EnterpriseDashboardHome from "./screens/EnterpriseFlow/EnterpriseDashboardHome";
+import GenerateApiKey from "./screens/EnterpriseFlow/GenerateApiKey";
+import { ClientManagement } from "./screens/EnterpriseFlow/ClientManagement";
+import { InheritancePlans } from "./screens/EnterpriseFlow/InheritancePlans";
+import BeneficiaryInheritancePlans from "./screens/Beneficiary/InheritancePlans";
+import { AccessControl } from "./screens/EnterpriseFlow/AccessControl";
+import { AuditLogs } from "./screens/EnterpriseFlow/AuditLogs";
+import { ApiDevTools } from "./screens/EnterpriseFlow/ApiDevTools";
+import { SupportCenter } from "./screens/EnterpriseFlow/SupportCenter";
+
+import { MediatorLogin } from "./screens/MediatorFlow/MediatorLogin";
+import { MediatorForgotPwd } from "./screens/MediatorFlow/MediatorForgotPwd";
+import { MediatorSetNewPwd } from "./screens/MediatorFlow/MediatorSetNewPwd";
+import { PwdResetComplete } from "./screens/MediatorFlow/PwdResetComplete";
+import { DisputeCasesOverview } from "./screens/MediatorFlow/DisputeCasesOverview";
+import { AllCases } from "./screens/MediatorFlow/AllCases";
+import { DisputeQueue } from "./screens/MediatorFlow/DisputeQueue";
+
+import { AssignHealthOracleExec } from "./screens/Owner/PlanCreationFlow/HealthOracle/AssignHealthOracleExec.tsx";
+import { ReviewHealthOraclePlan } from "./screens/Owner/PlanCreationFlow/HealthOracle/ReviewHealthOraclePlan.tsx";
+import { ConfirmHealthOraclePlan } from "./screens/Owner/PlanCreationFlow/HealthOracle/ConfirmHealthOraclePlan.tsx";
+
+import { ExecutorLogin } from "./screens/Executor/ExecutorLogin.tsx";
+import { ExecutorForgotPwd } from "./screens/Executor/ExecutorForgotPwd.tsx";
+import { ExecutorSetNewPwd } from "./screens/Executor/ExecutorSetNewPwd.tsx";
+import { ExecPwdResetComplete } from "./screens/Executor/ExecPwdResetComplete.tsx";
+import { ExecutorDashboard } from "./screens/Executor/ExecutorDashboard.tsx";
+import ExecutorActivityLogs from "./screens/Executor/ExecutorActivityLogs";
+import { ExecutorDisputePlan } from "./screens/Executor/ExecutorDisputePlan.tsx";
+import { ExecutorAuditLog } from "./screens/Executor/ExecutorAuditLog.tsx";
+import { ExecuteInheritancePlan } from "./screens/Executor/ExecuteInheritancePlan.tsx";
+import ExecutorInheritancePlans from "./screens/Executor/ExecutorInheritancePlans";
+import { DocumentVerification } from "./screens/Executor/DocumentVerification.tsx";
+import { Compliance } from "./screens/Executor/Compliance.tsx";
+import { CommunicationCenter } from "./screens/Executor/CommunicationCenter.tsx";
+import { BeneficiaryCoordination } from "./screens/Executor/BeneficiaryCoordination.tsx";
+import { MPCShareManagement } from "./screens/Executor/MPCShareManagement.tsx";
+import { ExecutorPlanXp } from "./screens/Executor/ExecutorPlanXp.tsx";
+import { SettingsAndSecurity } from "./screens/Executor/SettingsAndSecurity.tsx";
+import { ExecutorSecureStorage } from "./screens/Executor/ExecutorSecureStorage.tsx";
+import ExecutorLayout from "./screens/Executor/ExecutorLayout.tsx";
+
+
+import { AdministrativeLogin } from "./screens/Administrative/AdministrativeLogin.tsx";
+import { AdministrativeForgotPwd } from "./screens/Administrative/AdministrativeForgotPwd.tsx";
+import { AdministrativeSetNewPwd } from "./screens/Administrative/AdministrativeSetNewPwd.tsx";
+import { AdminPwdResetComplete } from "./screens/Administrative/AdminPwdResetComplete.tsx";
+import CreateAdmin from "./screens/Administrative/CreateAdmin.tsx";
+import AdminListPage from "./screens/Administrative/AdminListPage.tsx";
+import { RoleAccessControl } from "./screens/Administrative/RoleAccessControl.tsx";
+import IexecJobs from "./screens/Administrative/IexecJobs.tsx";
+import { viewUsers, viewExecutors, viewMediators, viewAdmins } from "./lib/api/admin";
+// import { viewEnterprises } from "./lib/api/admin";
+import AdministrativeDashboard from "./screens/Administrative/AdministrativeDashboard.tsx";
+
+document.documentElement.style.fontFamily = "'Sora', Helvetica, sans-serif";
+document.body.style.fontFamily = "'Sora', Helvetica, sans-serif";
+import { Login } from "./screens/Login";
+import DebugConsole from "./components/DebugConsole";
+import { ConnectWalletProvider } from "./context/ConnectWalletContext";
+import ConnectWalletModalWrapper from "./components/ConnectWalletModalWrapper";
+import { OnboardingProvider } from "./context/OnboardingContext";
+import OnboardingModalWrapper from "./components/OnboardingModalWrapper";
+
+createRoot(document.getElementById("app") as HTMLElement).render(
+  <StrictMode>
+    <AppKitProviderComponent>
+      <ConnectWalletProvider>
+        <AuthProvider>
+          <ToastProvider>
+            <PlanProvider>
+            <OnboardingProvider>
+            <BrowserRouter>
+              <Routes>
+
+        {/* Landing Page */}
+        <Route path="/" element={<Home />} /> ✅
+        <Route path="/pricing" element={<Pricing />} /> ✅
+
+        <Route path="/login" element={<Login />} /> ✅
+
+        {/* User Onboarding Flow is now modal-driven and hosted on / */}
+        <Route path="/profile-setup" element={<ProfileSetupForm />} /> ✅
+
+        {/* Recovery Flow */}
+        <Route path="/wallet-recovery" element={<WalletRecovery />} /> ✅
+        <Route path="/recovery-progress" element={<RecoveryProgress />} /> ✅
+        <Route path="/guardian-approval" element={<GuardianApproval />} /> ✅
+
+        {/* Legacy plan/creation/time/inactivity/health routes redirect into dashboard layout */}
+        <Route path="/select-assets" element={<Navigate to="/owner-dashboard/select-assets" replace />} />
+        <Route path="/beneficiaries" element={<Navigate to="/owner-dashboard/beneficiaries" replace />} />
+        <Route path="/choose-plan-type" element={<Navigate to="/owner-dashboard/choose-plan-type" replace />} />
+        <Route path="/staggered-distribution" element={<Navigate to="/owner-dashboard/staggered-distribution" replace />} />
+        <Route path="/philanthropy-plan" element={<Navigate to="/owner-dashboard/philanthropy-plan" replace />} />
+        <Route path="/review-plan" element={<Navigate to="/owner-dashboard/review-plan" replace />} />
+        <Route path="/plan-activated" element={<Navigate to="/owner-dashboard/plan-activated" replace />} />
+
+        <Route path="/set-time-lock" element={<Navigate to="/owner-dashboard/set-time-lock" replace />} />
+        <Route path="/review-time-lock" element={<Navigate to="/owner-dashboard/review-time-lock" replace />} />
+
+        <Route path="/set-inactivity-period" element={<Navigate to="/owner-dashboard/set-inactivity-period" replace />} />
+        <Route path="/choose-proof-of-life" element={<Navigate to="/owner-dashboard/choose-proof-of-life" replace />} />
+        <Route path="/set-inactivity-grace-period" element={<Navigate to="/owner-dashboard/set-inactivity-grace-period" replace />} />
+        <Route path="/review-inactivity-oracle-plan" element={<Navigate to="/owner-dashboard/review-inactivity-oracle-plan" replace />} />
+        <Route path="/confirm-inactivity-oracle-plan" element={<Navigate to="/owner-dashboard/confirm-inactivity-oracle-plan" replace />} />
+
+        <Route path="/assign-health-oracle-exec" element={<Navigate to="/owner-dashboard/assign-health-oracle-exec" replace />} />
+        <Route path="/review-health-oracle-plan" element={<Navigate to="/owner-dashboard/review-health-oracle-plan" replace />} />
+        <Route path="/confirm-health-oracle-plan" element={<Navigate to="/owner-dashboard/confirm-health-oracle-plan" replace />} />
+
+        <Route path="/mpc-selected" element={<Navigate to="/owner-dashboard/mpc-selected" replace />} />
+
+        {/* Owner Dashboard Flow - protected layout with nested routes */}
+        <Route path="/owner-dashboard" element={<ProtectedRoute><OwnerDashboardLayout /></ProtectedRoute>}>
+          <Route index element={<OwnerDashboard />} />
+          <Route path="activity-logs" element={<OwnerActivityLogs />} />
+          <Route path="view-plan-history" element={<ViewPlanHistory />} />
+          <Route path="trusts" element={<TrustsList />} />
+          <Route path="trusts/:trustId" element={<ChildrensTrustAccount />} />
+          <Route path="market-volatility-alert" element={<MarketVolatilityAlert />} />
+          <Route path="real-time-volatility" element={<RealTimeVolatility />} />
+          <Route path="main-estate-fund" element={<MainEstateFund />} />
+          <Route path="notifications" element={<Notifications />} />
+          <Route path="owner-dispute-plan-execution" element={<OwnerDisputePlanExecution />} />
+          <Route path="compliance-summary" element={<ComplianceSummary />} />
+          <Route path="legal-compliance-check" element={<LegalComplianceCheck />} />
+          <Route path="upload-signed-doc" element={<UploadSignedDoc />} />
+          <Route path="secure-storage" element={<SecureStorage />} />
+          {/* Plan Creation Flow as dashboard children */}
+          <Route path="select-assets" element={<SelectAssets />} />
+          <Route path="beneficiaries" element={<AddBeneficiaries />} />
+          <Route path="choose-plan-type" element={<ChoosePlanType />} />
+          <Route path="staggered-distribution" element={<StaggeredDistribution />} />
+          <Route path="philanthropy-plan" element={<PhilanthropyPlan />} />
+          <Route path="review-plan" element={<ReviewPlan />} />
+          <Route path="plan-activated" element={<PlanActivatedSuccess />} />
+          <Route path="plans" element={<AllPlansPage />} />
+          <Route path="plans/:planId" element={<PlanDetail />} />
+
+          {/* TimeLock */}
+          <Route path="set-time-lock" element={<SetTimeLock />} />
+          <Route path="review-time-lock" element={<ReviewTimeLock />} />
+
+          {/* Inactivity Oracle */}
+          <Route path="set-inactivity-period" element={<SetInactivityPeriod />} />
+          <Route path="choose-proof-of-life" element={<ChooseProofOfLifeMethod />} />
+          <Route path="set-inactivity-grace-period" element={<SetInactivityGracePeriod />} />
+          <Route path="review-inactivity-oracle-plan" element={<ReviewInactivityOraclePlan />} />
+          <Route path="confirm-inactivity-oracle-plan" element={<ConfirmInactivityOraclePlan />} />
+
+          {/* Health/Death Oracle */}
+          <Route path="assign-health-oracle-exec" element={<AssignHealthOracleExec />} />
+          <Route path="review-health-oracle-plan" element={<ReviewHealthOraclePlan />} />
+          <Route path="confirm-health-oracle-plan" element={<ConfirmHealthOraclePlan />} />
+
+          {/* If MPC Selected */}
+          <Route path="mpc-selected" element={<MPCSelected />} />
+
+          {/* Billing and Subscription inside Owner Dashboard layout */}
+          <Route path="billing-and-payments" element={<BillingAndPayment />} />
+          <Route path="subscription-renewal" element={<SubscriptionRenewal />} />
+          <Route path="billing-history" element={<BillingHistory />} />
+          <Route path="grace-period-active" element={<GracePeriodActive />} />
+        </Route>
+
+        {/* Legacy top-level owner routes redirect to the new nested paths for backward compatibility */}
+        <Route path="/view-plan-history" element={<Navigate to="/owner-dashboard/view-plan-history" replace />} />
+        <Route path="/childrens-trust-account" element={<Navigate to="/owner-dashboard/trusts" replace />} />
+        <Route path="/market-volatility-alert" element={<Navigate to="/owner-dashboard/market-volatility-alert" replace />} />
+        <Route path="/real-time-volatility" element={<Navigate to="/owner-dashboard/real-time-volatility" replace />} />
+        <Route path="/main-estate-fund" element={<Navigate to="/owner-dashboard/main-estate-fund" replace />} />
+        <Route path="/notifications" element={<Navigate to="/owner-dashboard/notifications" replace />} />
+        <Route path="/owner-dispute-plan-execution" element={<Navigate to="/owner-dashboard/owner-dispute-plan-execution" replace />} />
+        <Route path="/select-jurisdiction" element={<Navigate to="/owner-dashboard/select-jurisdiction" replace />} />
+        <Route path="/compliance-summary" element={<Navigate to="/owner-dashboard/compliance-summary" replace />} />
+        <Route path="/legal-compliance-check" element={<Navigate to="/owner-dashboard/legal-compliance-check" replace />} />
+        <Route path="/upload-signed-doc" element={<Navigate to="/owner-dashboard/upload-signed-doc" replace />} />
+        <Route path="/secure-storage" element={<Navigate to="/owner-dashboard/secure-storage" replace />} />
+
+        {/* Beneficiary Dashboard Flow (nested under layout) */}
+        <Route path="/beneficiary-dashboard" element={<BeneficiaryRoutes />}>
+          <Route index element={<BeneficiaryDashboard />} />
+          <Route path="activity-logs" element={<BeneficiaryActivityLogs />} />
+          <Route path="plans" element={<BeneficiaryInheritancePlans />} />
+          <Route path="disputes" element={<BeneficiaryDisputes />} />
+          <Route path="disputes/view/:disputeId" element={<BeneficiaryDisputeDetail />} />
+          <Route path="disputes/raise/:planId" element={<DisputePlanExecution />} />
+        </Route>
+        <Route path="/beneficiary-details" element={<BeneficiaryDetails />} />
+
+        {/* Dispute Resolution Flow */}
+        <Route path="/dispute-plan-execution" element={<DisputePlanExecution />} /> ✅
+        <Route path="/escrow-state-visualization" element={<EscrowStateVisualization />} /> ✅
+
+        {/* Enterprise Flow */}
+        <Route path="/enterprise-login" element={<EnterpriseLogin />} />
+        <Route path="/enterprise-create" element={<EnterpriseCreate />} />
+        <Route path="/client-management" element={<ClientManagement />} />
+        <Route path="/inheritance-plans" element={<InheritancePlans />} />
+        <Route path="/access-control" element={<AccessControl />} />
+        <Route path="/audit-logs" element={<AuditLogs />} />
+        <Route path="/api-dev-tools" element={<ApiDevTools />} />
+        <Route path="/support-center" element={<SupportCenter />} />
+
+        <Route path="/enterprise-dashboard" element={<ProtectedRoute><EnterpriseDashboard /></ProtectedRoute>}>
+          <Route index element={<EnterpriseDashboardHome />} />
+          <Route path="generate-api-key" element={<GenerateApiKey />} />
+        </Route>
+
+        {/* Proof of Life Configuration  */}
+        <Route path="/proof-of-life-config" element={<ProofOfLifeConfig />} /> ✅
+
+        {/* Mediator Flow */}
+        <Route path="/mediator-login" element={<MediatorLogin />} /> ✅
+        <Route path="/mediator-forgot-password" element={<MediatorForgotPwd />} /> ✅
+        <Route path="/mediator-set-new-password" element={<MediatorSetNewPwd />} /> ✅
+        <Route path="/mediator-password-reset-complete" element={<PwdResetComplete />} /> ✅
+        <Route path="/mediator-dispute-cases-overview" element={<DisputeCasesOverview />} /> ✅
+        <Route path="/mediator-all-cases" element={<AllCases />} /> ✅
+        <Route path="/mediator-dispute-queue" element={<DisputeQueue />} /> ✅
+        
+        {/* Executor Flow: auth routes remain top-level, dashboard and tools nested under protected layout */}
+        <Route path="/executor-login" element={<ExecutorLogin />} /> ✅
+        <Route path="/executor-forgot-password" element={<ExecutorForgotPwd />} /> ✅
+        <Route path="/executor-set-new-password" element={<ExecutorSetNewPwd />} /> ✅
+        <Route path="/executor-password-reset-complete" element={<ExecPwdResetComplete />} /> ✅
+
+        <Route path="/executor-dashboard" element={<ProtectedRoute><ExecutorLayout /></ProtectedRoute>}>
+          <Route index element={<ExecutorDashboard />} />
+          <Route path="activity-logs" element={<ExecutorActivityLogs />} />
+          <Route path="plan-xp" element={<ExecutorPlanXp />} />
+          <Route path="document-verification" element={<DocumentVerification />} />
+          <Route path="mpc-share-management" element={<MPCShareManagement />} />
+          <Route path="compliance" element={<Compliance />} />
+          <Route path="beneficiary-coordination" element={<BeneficiaryCoordination />} />
+          <Route path="communication-center" element={<CommunicationCenter />} />
+          <Route path="executor-inheritance-plan" element={<ExecutorInheritancePlans />} />
+          <Route path="executor-inheritance-plan/:planId" element={<ExecuteInheritancePlan />} />
+          <Route path="executor-audit-log" element={<ExecutorAuditLog />} />
+          <Route path="settings-and-security" element={<SettingsAndSecurity />} />
+          <Route path="executor-dispute-plan" element={<ExecutorDisputePlan />} />
+          <Route path="executor-secure-storage" element={<ExecutorSecureStorage />} />
+        </Route>
+
+
+
+
+
+        {/* Administrative Flows */}
+        <Route path="/administrative-login" element={<AdministrativeLogin />} /> ✅
+        <Route path="/administrative-forgot-password" element={<AdministrativeForgotPwd />} /> ✅
+        <Route path="/administrative-set-new-password" element={<AdministrativeSetNewPwd />} /> ✅
+        <Route path="/administrative-password-reset-complete" element={<AdminPwdResetComplete />} /> ✅
+        <Route path="/administrative-dashboard" element={<AdministrativeDashboard />} /> ✅
+        <Route path="/administrative-create" element={<CreateAdmin />} /> ✅
+        <Route path="/administrative/role-access-control" element={<RoleAccessControl />} /> ✅
+        <Route path="/administrative/users" element={<AdminListPage title="All Users" fetcher={viewUsers} />} /> ✅
+        <Route path="/administrative/executors" element={<AdminListPage title="Executors" fetcher={viewExecutors} />} /> ✅
+        <Route path="/administrative/mediators" element={<AdminListPage title="Mediators" fetcher={viewMediators} />} /> ✅
+        <Route path="/administrative/admins" element={<AdminListPage title="Admins" fetcher={viewAdmins} />} /> ✅
+        <Route path="/administrative/iexec-jobs" element={<IexecJobs />} /> ✅
+
+        <Route path="/asset-registry" element={<AssetRegistry />} />
+
+
+
+
+      </Routes>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      <DebugConsole />
+      <ConnectWalletModalWrapper />
+      <OnboardingModalWrapper />
+            </BrowserRouter>
+        </OnboardingProvider>
+          </PlanProvider>
+        </ToastProvider>
+      </AuthProvider>
+      </ConnectWalletProvider>
+    </AppKitProviderComponent>
+  </StrictMode>
+);

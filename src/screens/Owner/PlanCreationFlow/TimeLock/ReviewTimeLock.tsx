@@ -1,0 +1,213 @@
+import { useLocation, useNavigate } from "react-router-dom";
+import { usePlan } from "../../../../context/usePlan";
+import { CircleAlert as AlertCircle } from "lucide-react";
+import { useEffect } from "react";
+import {
+  Wallet,
+} from "lucide-react";
+import { Card, CardContent } from "@components/ui/card";
+import calendarClockOrangeIcon from "@assets/calendar-clock-orange.svg";
+import usersIcon from "@assets/users.svg";
+import inventoryIcon from "@assets/inventory.svg";
+import gavelGreenIcon from "@assets/gavel-green.svg";
+import checkGreenCircle from "@assets/check-green-circle.svg";
+import rocketIcon from "@assets/rocket.svg";
+
+
+export const ReviewTimeLock = (): JSX.Element => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { unlockDate: stateUnlockDate = "", unlockTime: stateUnlockTime = "00:00" } = location.state || {};
+  const { plan, setPlanField } = usePlan();
+  const releaseTimestamp = plan?.releaseTimestamp;
+  
+  // Convert YYYY-MM-DD format to display format
+  const unlockDate = stateUnlockDate || (releaseTimestamp ? new Date(releaseTimestamp * 1000).toISOString().split('T')[0] : '');
+  const unlockTime = stateUnlockTime || (releaseTimestamp ? new Date(releaseTimestamp * 1000).toISOString().substr(11,5) : '00:00');
+
+  const formatDisplayDate = () => {
+    if (!unlockDate) return "Not set";
+    // unlockDate is in YYYY-MM-DD format
+    const [year, month, day] = unlockDate.split("-");
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    return `${months[parseInt(month) - 1]} ${parseInt(day)}, ${year} at ${unlockTime} UTC`;
+  };
+
+  // Persist date to plan context when arriving from SetTimeLock
+  useEffect(() => {
+    if (stateUnlockDate && !releaseTimestamp) {
+      try {
+        const [year, month, day] = stateUnlockDate.split("-");
+        const [hourStr, minuteStr] = (stateUnlockTime || '00:00').split(':');
+        const hour = parseInt(hourStr || '0', 10);
+        const minute = parseInt(minuteStr || '0', 10);
+        const dateUtc = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), hour, minute, 0));
+        const epochSeconds = Math.floor(dateUtc.getTime() / 1000);
+        setPlanField('releaseTimestamp', epochSeconds);
+        console.log('[ReviewTimeLock] Persisted releaseTimestamp from location state:', epochSeconds);
+      } catch (err) {
+        console.warn('[ReviewTimeLock] Failed to persist date:', err);
+      }
+    }
+  }, [stateUnlockDate, stateUnlockTime, releaseTimestamp, setPlanField]);
+
+  // Get actual asset count from plan or default to 1
+  const assetCount = plan?.assets?.length || 1;
+  
+  // Get actual beneficiary count from plan or default to 1
+  const beneficiaryCount = plan?.beneficiaries?.length || 1;
+
+
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  const handleConfirmDeploy = () => {
+    navigate("/review-plan");
+  };
+
+  return (
+      <main className="flex-1 flex flex-col items-center px-4 py-4">
+        <div className="w-full max-w-[1040px]">
+          <div className="mb-8">
+            <h1 className="font-bold text-white text-2xl sm:text-[31.7px] tracking-[0] leading-7 sm:leading-[38px] mb-2">
+              Review Time-Lock Plan
+            </h1>
+            <p className="font-normal text-[#b9ac9d] text-sm sm:text-base tracking-[0] leading-[22px] sm:leading-[26px]">
+              Verify the parameters of your automated inheritance plan. This setup ensures your assets are distributed exactly when intended.
+            </p>
+          </div>
+
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <span className="font-normal text-white text-sm tracking-[0] leading-5">
+                Step 5 of 5: Review Details
+              </span>
+              <span className="font-semibold text-[#ff6600] text-sm tracking-[0] leading-5">
+                100% Completed
+              </span>
+            </div>
+            <div className="w-full h-2 bg-[#27211c] rounded-full overflow-hidden">
+              <div className="h-full w-[100%] bg-[#ff6600]"></div>
+            </div>
+          </div>
+
+          <Card className="bg-[#8A4F1E1A] border border-[#FF660033] mb-10">
+            <CardContent className="p-8">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-14 h-14 bg-[#FF66001A] rounded-full flex items-center justify-center">
+                    <img src={calendarClockOrangeIcon} alt="" />
+                  </div>
+
+                  <div>
+                    <p className="font-normal text-[#FF6600] text-md tracking-[0] leading-6">
+                      Automatic Trigger
+                    </p>
+
+                    <p className="text-white text-md tracking-[0] leading-5 mt-1">
+                      This plan will execute automatically on {" "}
+                      <span className="text-[#FF6600]">
+                        {formatDisplayDate()}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            <div className="bg-[#27221C] rounded-lg p-6 border border-[#544B3B]">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-[#064E3B33] rounded-lg flex items-center justify-center">
+                  <img src={gavelGreenIcon} className="w-5 h-5" alt="" />
+                </div>
+
+                <h3 className="text-white font-semibold text-lg">
+                  Trustless Execution
+                </h3>
+              </div>
+
+              <div className="rounded-lg mt-6 border border-gray-800 p-3 flex items-start gap-3">
+                <img src={checkGreenCircle} className="w-4 h-4" alt="Icon" />
+                <div>
+                  <div className="text-white font-semibold mb-2">
+                    No executor or approval required.
+                  </div>
+                  <p className="text-gray-400 text-sm">
+                    The smart contract operates independently. No intermediary,
+                    lawyer, or family member needs to sign a transaction for
+                    release.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#27221C] rounded-lg p-6 border border-[#544B3B]">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-[#5541334D] rounded-lg flex items-center justify-center">
+                  <img src={inventoryIcon} className="w-5 h-5" alt="" />
+                </div>
+
+                <h3 className="text-white font-semibold text-lg">
+                  Plan Contents
+                </h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between bg-[#221810] rounded-lg p-4">
+                  <div className="flex items-center gap-2">
+                    <Wallet className="w-5 h-5 text-[#887663]" />
+
+                    <span className="text-gray-300 text-sm">Assets Locked</span>
+                  </div>
+                  <span className="text-white font-semibold">{assetCount} Token{assetCount !== 1 ? 's' : ''}</span>
+                </div>
+                <div className="flex items-center justify-between bg-[#221810] rounded-lg p-4">
+                  <div className="flex items-center gap-2">
+                    <img src={usersIcon} className="w-5 h-5" alt="" />
+                    <span className="text-gray-300 text-sm">Beneficiaries</span>
+                  </div>
+                  <span className="text-white font-semibold">{beneficiaryCount} Wallet{beneficiaryCount !== 1 ? 's' : ''}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+            <div className="flex-1 max-w-6xl mx-auto w-full">
+            <div className="space-y-8 mt-12">
+              <div className="bg-[#7C2D121A] rounded-lg p-6 border border-[#7C2D1233] flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <div className="text-white font-semibold mb-2">
+                    You retain full control
+                  </div>
+                  <p className="text-gray-400 text-sm">
+                    Even though this plan is automatic, you can cancel, pause,
+                    or modify the date and beneficiaries at any time before
+                    execution using your connected wallet.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mt-12 justify-end">
+              <button
+                onClick={handleBack}
+                className="w-full sm:w-auto px-6 py-3 text-white border border-[#544B3B] rounded-lg hover:bg-gray-900 transition-colors font-semibold"
+              >
+                Back
+              </button>
+              <button
+                onClick={handleConfirmDeploy}
+                className="w-full sm:w-auto px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-semibold flex items-center justify-center gap-2"
+              >
+                <span>Confirm & Deploy</span>
+                <img src={rocketIcon} className="w-5 h-5" alt="Rocket" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+  );
+};

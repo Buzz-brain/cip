@@ -1,0 +1,593 @@
+import { ChevronRightIcon, PlusIcon, TrashIcon, UserIcon, WalletIcon } from "lucide-react";
+import { useEffect } from "react";
+import { Button } from "@components/ui/button";
+import { Card, CardContent } from "@components/ui/card";
+import { Input } from "@components/ui/input";
+import { usePlan } from "../../../context/usePlan";
+import { normalizeWalletAddress } from "../../../lib/utils";
+import { toast } from "react-toastify";
+import pieCircleIcon from "@assets/pie-circle.svg";
+import { useNavigate } from "react-router-dom";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@components/ui/select";
+import { Slider } from "@components/ui/slider";
+
+interface Beneficiary {
+    id: string;
+    name: string;
+    relationship: string;
+    email?: string;
+    walletAddress: string;
+    allocation: number;
+    color: string;
+    initial: string;
+}
+
+const RELATIONSHIP_OPTIONS = [
+    "Spouse",
+    "Child",
+    "Parent",
+    "Sibling",
+    "Friend",
+    "Organization",
+    "Other",
+];
+
+const BENEFICIARY_COLORS = [
+    "#ff6600",
+    "#a855f7",
+    "#3b82f6",
+    "#10b981",
+    "#f59e0b",
+    "#ef4444",
+];
+
+export const AddBeneficiaries = (): JSX.Element => {
+    const navigate = useNavigate();
+    const { plan, addBeneficiary, removeBeneficiary, updateBeneficiary, setBeneficiaries } = usePlan();
+    const beneficiaries = plan.beneficiaries;
+    const totalAllocated = beneficiaries.reduce((sum, b) => sum + b.allocation, 0);
+    const unallocated = 100 - totalAllocated;
+
+    const handleAddBeneficiary = () => {
+      // Generate a unique ID by finding the max numeric ID and incrementing
+      let maxId = 0;
+      beneficiaries.forEach((b) => {
+        const numId = parseInt(b.id, 10);
+        if (!isNaN(numId) && numId > maxId) {
+          maxId = numId;
+        }
+      });
+      const newId = (maxId + 1).toString();
+      const colorIndex = beneficiaries.length % BENEFICIARY_COLORS.length;
+      const newBeneficiary: Beneficiary = {
+        id: newId,
+        name: "",
+        relationship: "",
+        walletAddress: "",
+        allocation: 0,
+        color: BENEFICIARY_COLORS[colorIndex],
+        initial: "?",
+      };
+      addBeneficiary(newBeneficiary);
+    };
+
+    const handleUpdateBeneficiary = (id: string, field: keyof Beneficiary, value: any) => {
+        const updates: Partial<Beneficiary> = { [field]: value };
+      if (field === "name" && value) {
+            updates.initial = value.charAt(0).toUpperCase();
+        }
+      if (field === "walletAddress") {
+        const candidate = (value || "").trim();
+        if (!candidate) {
+          updates.walletAddress = "";
+        } else {
+          try {
+            // normalize to checksum casing when possible
+            updates.walletAddress = normalizeWalletAddress(candidate);
+          } catch (err) {
+            // keep raw value; do not show toast here — validation is inline
+            updates.walletAddress = candidate;
+          }
+        }
+      }
+        updateBeneficiary(id, updates);
+    };
+
+    const isChecksumAddress = (address: string) => {
+      if (!address || typeof address !== 'string') return false;
+      try {
+        normalizeWalletAddress(address);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    };
+
+    const isValidAddress = (address: string) => {
+        return isChecksumAddress(address);
+    };
+
+    // Ensure at least one empty beneficiary is present so the form is visible
+    useEffect(() => {
+      if (beneficiaries.length === 0) {
+        // No beneficiaries - add one empty
+        setBeneficiaries([
+          {
+            id: "1",
+            name: "",
+            relationship: "",
+            walletAddress: "",
+            allocation: 0,
+            color: BENEFICIARY_COLORS[0],
+            initial: "?",
+          },
+        ]);
+      } else {
+        // If all are empty and there's more than one, keep only the first one
+        const allEmpty = beneficiaries.every(
+          (b) => !b.name && !b.relationship && !b.walletAddress && b.allocation === 0
+        );
+        if (allEmpty && beneficiaries.length > 1) {
+          setBeneficiaries([
+            {
+              ...beneficiaries[0],
+              id: "1",
+            },
+          ]);
+        }
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [beneficiaries.length]);
+
+    const handleRemoveBeneficiary = (id: string) => {
+      if (beneficiaries.length === 1) {
+        // Don't allow removing the last beneficiary, just clear its fields
+        setBeneficiaries([
+          {
+            ...beneficiaries[0],
+            id: "1",
+            name: "",
+            relationship: "",
+            walletAddress: "",
+            allocation: 0,
+            initial: "?",
+          },
+        ]);
+      } else {
+        const filtered = beneficiaries.filter((b) => b.id !== id);
+        if (filtered.length === 0) {
+          setBeneficiaries([
+            {
+              id: "1",
+              name: "",
+              relationship: "",
+              walletAddress: "",
+              allocation: 0,
+              color: BENEFICIARY_COLORS[0],
+              initial: "?",
+            },
+          ]);
+        } else {
+          setBeneficiaries(filtered);
+        }
+      }
+    };
+
+    return (
+         <div className="min-h-screen bg-[#0d0b08]">
+
+        <div className="flex-1 flex items-center justify-center px-4 py-4">
+          <div className="w-full max-w-6xl">
+            <div className="mb-8">
+              <div className="flex flex-col gap-2">
+                <h1 className="font-extrabold text-white text-2xl sm:text-[35.7px] tracking-[-1.19px] leading-8 sm:leading-10">
+                  Add Beneficiaries
+                </h1>
+                <p className="font-normal text-[#9dabb9] text-sm sm:text-base leading-6">
+                  Define who will inherit your digital assets. You can assign different percentages to multiple beneficiaries. Ensure the total allocation equals 100%.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-6 md:gap-10">
+              <div className="flex flex-col flex-1 gap-8 w-full">
+                <div className="flex flex-col gap-6">
+                  {beneficiaries.map((beneficiary, index) => (
+                    <Card
+                      key={beneficiary.id}
+                      className="bg-[#1a1410] border-[#2c231a] rounded-xl overflow-hidden"
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="flex items-center justify-center w-10 h-10 rounded-full text-white font-bold text-lg"
+                              style={{ backgroundColor: beneficiary.color }}
+                            >
+                              {beneficiary.initial}
+                            </div>
+                            <div>
+                              <h3 className="font-bold text-white text-base">
+                                Beneficiary #{index + 1}
+                              </h3>
+                              <p className="font-normal text-[#80796b] text-xs uppercase tracking-wide">
+                                {index === 0
+                                  ? "Primary Allocator"
+                                  : "Secondary Allocator"}
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleRemoveBeneficiary(beneficiary.id)}
+                            className="text-[#80796b] hover:text-red-500 hover:bg-transparent"
+                          >
+                            <TrashIcon className="w-5 h-5" />
+                          </Button>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                          <div className="flex flex-col gap-2">
+                            <label className="font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
+                              Legal Name / Alias
+                            </label>
+                            <div className="relative">
+                              <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#80796b]" />
+                              <Input
+                                value={beneficiary.name}
+                                onChange={(e) =>
+                                  handleUpdateBeneficiary(
+                                    beneficiary.id,
+                                    "name",
+                                    e.target.value,
+                                  )
+                                }
+                                placeholder="Enter name"
+                                className="pl-10 bg-[#0d0501] border-[#2c231a] text-white placeholder:text-[#80796b] w-full"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2">
+                            <label className="font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
+                              Relationship
+                            </label>
+                            <Select
+                              value={beneficiary.relationship}
+                              onValueChange={(value) =>
+                                handleUpdateBeneficiary(
+                                  beneficiary.id,
+                                  "relationship",
+                                  value,
+                                )
+                              }
+                            >
+                              <SelectTrigger className="bg-[#0d0501] border-[#2c231a] text-white">
+                                <SelectValue placeholder="Select relationship" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-[#0d0501] border-[#2c231a]">
+                                {RELATIONSHIP_OPTIONS.map((option) => (
+                                  <SelectItem
+                                    key={option}
+                                    value={option}
+                                    className="text-white hover:bg-[#2c231a] focus:text-white focus:bg-[#2c231a]"
+                                  >
+                                    {option}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2 mb-6">
+                          <div className="flex items-center justify-between">
+                            <label className="font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
+                              Wallet Address (ETH/EVM)
+                            </label>
+                            {beneficiary.walletAddress ? (
+                              isChecksumAddress(beneficiary.walletAddress) ? (
+                                <span className="flex items-center gap-1 text-green-500 text-xs font-medium">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                  VALID ADDRESS
+                                </span>
+                              ) : (
+                                <span className="flex items-center gap-1 text-red-400 text-xs font-medium">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                                  INVALID ADDRESS
+                                </span>
+                              )
+                            ) : null}
+                          </div>
+                          <div className="relative">
+                            <WalletIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#80796b]" />
+                            <Input
+                              value={beneficiary.walletAddress}
+                              onChange={(e) =>
+                                handleUpdateBeneficiary(
+                                  beneficiary.id,
+                                  "walletAddress",
+                                  e.target.value,
+                                )
+                              }
+                              placeholder="0x..."
+                              className="pl-10 bg-[#0d0501] border-[#2c231a] text-white placeholder:text-[#80796b] font-mono text-sm w-full"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2 mb-6">
+                          <label className="font-medium text-[#9dabb9] text-sm uppercase tracking-wide">
+                            Email
+                          </label>
+                          <Input
+                            value={beneficiary.email || ''}
+                            onChange={(e) =>
+                              handleUpdateBeneficiary(
+                                beneficiary.id,
+                                "email",
+                                e.target.value,
+                              )
+                            }
+                            placeholder="name@example.com"
+                            className="bg-[#0d0501] border-[#2c231a] text-white placeholder:text-[#80796b] w-full"
+                          />
+                        </div>
+
+                        <div className="flex flex-col gap-3">
+                          <div className="flex items-center justify-between">
+                            <label className="font-medium text-white text-sm">
+                              Allocation Share
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="number"
+                                value={beneficiary.allocation}
+                                onChange={(e) =>
+                                  handleUpdateBeneficiary(
+                                    beneficiary.id,
+                                    "allocation",
+                                    Math.max(
+                                      0,
+                                      Math.min(
+                                        100,
+                                        parseInt(e.target.value) || 0,
+                                      ),
+                                    ),
+                                  )
+                                }
+                                className="w-16 h-9 bg-[#0d0501] border-[#2c231a] text-white text-center"
+                              />
+                              <span className="text-white font-medium">%</span>
+                            </div>
+                          </div>
+                          <Slider
+                            value={[beneficiary.allocation]}
+                            onValueChange={(value) =>
+                              handleUpdateBeneficiary(
+                                beneficiary.id,
+                                "allocation",
+                                value[0],
+                              )
+                            }
+                            max={100}
+                            step={1}
+                            className="w-full"
+                            style={
+                              {
+                                "--slider-color": beneficiary.color,
+                              } as React.CSSProperties
+                            }
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+
+                  <button
+                    onClick={handleAddBeneficiary}
+                    className="flex items-center justify-center gap-2 p-4 sm:p-6 border-2 border-dashed border-[#2c231a] rounded-xl hover:border-[#ff6600] hover:bg-[#ff66000d] transition-colors group w-full sm:w-auto"
+                  >
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#2c231a] group-hover:bg-[#ff6600] transition-colors">
+                      <PlusIcon className="w-5 h-5 text-[#80796b] group-hover:text-white transition-colors" />
+                    </div>
+                    <span className="font-medium text-[#80796b] group-hover:text-[#ff6600] text-base transition-colors">
+                      Add Another Beneficiary
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex flex-col w-full md:w-[320px] gap-6 md:sticky md:top-8">
+                <Card className="bg-[#1a1410] border-[#2c231a] rounded-xl overflow-hidden">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-2 mb-6">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-lg">
+                        <img src={pieCircleIcon} alt="" />
+                      </div>
+                      <h3 className="font-bold text-white text-base">
+                        Allocation Summary
+                      </h3>
+                    </div>
+
+                    <div className="flex flex-col items-center justify-center py-8 mb-6">
+                      <div className="relative w-40 h-40 sm:w-48 sm:h-48">
+                        <svg
+                          className="w-full h-full -rotate-90"
+                          viewBox="0 0 100 100"
+                        >
+                          <circle
+                            cx="50"
+                            cy="50"
+                            r="40"
+                            fill="none"
+                            stroke="#2c231a"
+                            strokeWidth="12"
+                          />
+                          {beneficiaries.map((b, index) => {
+                            const previousTotal = beneficiaries
+                              .slice(0, index)
+                              .reduce((sum, prev) => sum + prev.allocation, 0);
+                            const circumference = 2 * Math.PI * 40;
+                            const offset =
+                              (previousTotal / 100) * circumference;
+                            const dashArray = `${(b.allocation / 100) * circumference} ${circumference}`;
+
+                            return (
+                              <circle
+                                key={b.id}
+                                cx="50"
+                                cy="50"
+                                r="40"
+                                fill="none"
+                                stroke={b.color}
+                                strokeWidth="12"
+                                strokeDasharray={dashArray}
+                                strokeDashoffset={-offset}
+                                strokeLinecap="round"
+                              />
+                            );
+                          })}
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className="font-bold text-white text-3xl sm:text-4xl">
+                            {totalAllocated}%
+                          </span>
+                          <span className="font-medium text-[#80796b] text-sm uppercase tracking-wide">
+                            Allocated
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-3 pb-4 mb-4 border-b border-[#2c231a]">
+                      {beneficiaries.map((b) => (
+                        <div
+                          key={b.id}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="w-3 h-3 rounded-full"
+                              style={{ backgroundColor: b.color }}
+                            />
+                            <span className="font-normal text-white text-sm">
+                              {b.name || "Unnamed"}
+                            </span>
+                          </div>
+                          <span className="font-bold text-white text-sm">
+                            {b.allocation}%
+                          </span>
+                        </div>
+                      ))}
+                      {unallocated > 0 && (
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-[#54483b]" />
+                            <span className="font-normal text-[#80796b] text-sm">
+                              Unallocated
+                            </span>
+                          </div>
+                          <span className="font-bold text-[#80796b] text-sm">
+                            {unallocated}%
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {unallocated > 0 && (
+                      <div className="flex items-start gap-3 p-4 bg-[#78350f] border border-[#f59e0b33] rounded-lg">
+                        <div className="flex-shrink-0 mt-0.5">
+                          <svg
+                            className="w-5 h-5 text-[#f59e0b]"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <span className="font-bold text-[#f59e0b] text-xs uppercase tracking-wide">
+                            Action Required
+                          </span>
+                          <p className="font-normal text-[#fef3c7] text-sm leading-5">
+                            You have {unallocated}% of your assets unallocated.
+                            Total allocation must equal 100% to proceed.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                <Button
+                  onClick={() => {
+                    // validate beneficiaries: name, relationship, walletAddress required
+                    if (beneficiaries.length === 0) {
+                      toast.error('Please add at least one beneficiary.');
+                      return;
+                    }
+
+                    for (const b of beneficiaries) {
+                      if (!b.name || b.name.trim().length === 0) {
+                        toast.error('Each beneficiary requires a name.');
+                        return;
+                      }
+                      if (!b.relationship || b.relationship.trim().length === 0) {
+                        toast.error('Each beneficiary requires a relationship selection.');
+                        return;
+                      }
+                      if (!b.walletAddress || !isValidAddress(b.walletAddress)) {
+                        toast.error('Each beneficiary requires a valid wallet address (0x...).');
+                        return;
+                      }
+                    }
+
+                    // log beneficiaries selected before navigation (backend payload shape)
+                    console.log(
+                      '[AddBeneficiaries] Beneficiaries:',
+                      beneficiaries.map((b) => ({
+                        id: b.id,
+                        name: b.name,
+                        relationship: b.relationship,
+                        email: b.email || '',
+                        wallet: b.walletAddress,
+                        allocation_percentage: b.allocation,
+                      })),
+                    );
+                    navigate('/choose-plan-type');
+                  }}
+                  disabled={unallocated !== 0}
+                  className="w-full py-4 sm:py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 disabled:bg-[#54483b] disabled:text-[#80796b] disabled:cursor-not-allowed rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40]"
+                >
+                  <span className="font-bold text-base">
+                    Next: Review Plan
+                  </span>
+                  <ChevronRightIcon className="w-5 h-5" />
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate(-1)}
+                  className="w-full text-[#9dabb9] hover:text-white hover:bg-transparent mt-3"
+                >
+                  Go Back
+                </Button>
+              </div>
+            </div>
+            </div>
+            </div>
+            </div>
+    );
+};
