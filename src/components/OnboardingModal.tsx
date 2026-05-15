@@ -70,7 +70,6 @@ const OnboardingModal: React.FC = () => {
               >
                 <OnboardingContent
                   step={currentStep as 'one' | 'two'}
-                  isModal={true}
                   onNextStep={handleNextStep}
                   onFinish={handleFinish}
                   onPrev={prevStep}

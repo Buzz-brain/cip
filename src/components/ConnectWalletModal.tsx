@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { Button } from "@components/ui/button";
 import { toast } from "react-toastify";
 import * as walletUtils from "../lib/wallet/walletUtils";
-import { initEip6963Discovery, waitForWalletProvider, signMessage, ensureArbitrumSepoliaWithFallback } from "../lib/wallet/walletUtils";
+import { initEip6963Discovery, waitForWalletProvider, ensureArbitrumSepoliaWithFallback } from "../lib/wallet/walletUtils";
 import { useAppKitProvider, useAppKitAccount } from "@reown/appkit/react";
 import { normalizeWalletAddress, getDashboardRoute } from "../lib/utils";
 import { verifyMessage } from "ethers";
@@ -15,7 +15,6 @@ import walletConnect from "@assets/walletconnect-logo.svg";
 import metamask from "@assets/metamask-icon.svg";
 import trustWallet from "@assets/trust-wallet-icon.svg";
 import helpIcon from "@assets/help.svg";
-import { logDebug } from "../lib/debugLogger";
 
 const wallets = [
   {
@@ -70,8 +69,8 @@ export const ConnectWalletModal = ({ onClose }: ConnectWalletModalProps): JSX.El
   const { getNonce, loginWithWallet, fetchUserInfo } = useAuth();
   const navigate = useNavigate();
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
-  const { walletProvider } = useAppKitProvider('eip155');
-  const { address: wcAddress } = useAppKitAccount();
+  useAppKitProvider('eip155');
+  useAppKitAccount();
 
   const toastGuard = useRef(new Set<string>());
 
@@ -88,7 +87,6 @@ export const ConnectWalletModal = ({ onClose }: ConnectWalletModalProps): JSX.El
   const {
     isConnecting: wcIsConnecting,
     openWalletConnectModal,
-    isModalOpen,
   } = useWalletConnectLifecycle({
     onConnected: (address: string) => {
       console.log('[ConnectWalletModal] WalletConnect connected to:', address);
