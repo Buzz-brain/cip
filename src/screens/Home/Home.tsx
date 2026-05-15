@@ -503,7 +503,7 @@ export const Home = (): JSX.Element => {
                 </motion.div>
 
                 <div className="border-l border-[#674932] pl-4 sm:pl-8 space-y-8 sm:space-y-12">
-                  {taxCoreSteps.map((step, index) => (
+                  {taxCoreSteps.map((step) => (
                     <motion.div key={step.title} className="space-y-2">
                       <motion.h3 className="font-bold text-white text-lg">
                         {step.title}
