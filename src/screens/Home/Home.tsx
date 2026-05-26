@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { useOnboarding } from "../../context/OnboardingContext";
 import { useConnectWallet } from "../../context/ConnectWalletContext";
 import logoImg from "@assets/cip-logo.png";
-import logoImgFull from "@assets/cip-logo-full.png";
 import homeBgImg from "@assets/home-bg.svg";
 import shieldCheckImg from "@assets/shield-check.svg";
 import divIcon from "@assets/ethereum.svg";
@@ -1127,7 +1126,7 @@ export const Home = (): JSX.Element => {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
                 <div className="space-y-4">
                   <div className="flex items-center padding 3 gap-2">
-                    <img src={logoImgFull} alt="Logo" />
+                    <img src={logoImg} alt="Logo" />
                   </div>
                   <p className="text-[#8b7664] text-sm leading-[22px]">
                     The standard for sovereign digital inheritance. Securing the

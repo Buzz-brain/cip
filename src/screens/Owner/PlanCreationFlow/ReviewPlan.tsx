@@ -13,6 +13,7 @@ export const ReviewPlan = (): JSX.Element => {
   const location = useLocation();
   const { setPlanField } = usePlan();
   const [isSaving, setIsSaving] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -136,6 +137,7 @@ export const ReviewPlan = (): JSX.Element => {
         ],
         release_timestamp: typeof plan.releaseTimestamp === 'number' ? plan.releaseTimestamp : undefined,
       };
+      void backendPreview;
       // Submit to backend create-inheritance endpoint (abortable)
       abortControllerRef.current = new AbortController();
       let submitResponse: any = null;
@@ -321,13 +323,23 @@ export const ReviewPlan = (): JSX.Element => {
       </div>
 
       <div className="bg-[#211C16E6] rounded-lg p-5 border border-[#3B352D] mb-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <p className="text-gray-400 text-sm mt-1">
-              I have reviewed the plan and accepted the{" "}
-              <span className="text-[#FF6600]">Terms of Service.</span>
-            </p>
-          </div>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <label className="flex items-center gap-3 w-full sm:w-2/3">
+            <input
+              type="checkbox"
+              aria-label="Accept terms of service"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              className="w-5 h-5 rounded-sm bg-black border border-[#544B3B] focus:ring-0"
+              style={{ accentColor: '#FF6600' }}
+            />
+            <div>
+              <p className="text-gray-400 text-sm mt-1">
+                I have reviewed the plan and accepted the{" "}
+                <span className="text-[#FF6600]">Terms of Service.</span>
+              </p>
+            </div>
+          </label>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
             <button
@@ -339,9 +351,9 @@ export const ReviewPlan = (): JSX.Element => {
 
             <button
               onClick={handleConfirmSign}
-              disabled={isSaving}
+              disabled={isSaving || !acceptedTerms}
               aria-busy={isSaving}
-              className={`w-full sm:w-auto px-6 py-3 bg-orange-600 text-white rounded-lg transition-colors font-semibold flex items-center justify-center gap-2 ${isSaving ? 'opacity-60 cursor-not-allowed' : 'hover:bg-orange-700'}`}
+              className={`w-full sm:w-auto px-6 py-3 bg-orange-600 text-white rounded-lg transition-colors font-semibold flex items-center justify-center gap-2 ${isSaving || !acceptedTerms ? 'opacity-60 cursor-not-allowed' : 'hover:bg-orange-700'}`}
             >
               {isSaving ? (
                 <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -351,7 +363,7 @@ export const ReviewPlan = (): JSX.Element => {
               ) : (
                 <img src={fingerprintIcon} alt="" />
               )}
-              {isSaving ? 'Saving…' : 'Confirm & Sign Plan'}
+              {isSaving ? 'Saving…' : 'Sign Plan'}
             </button>
           </div>
         </div>

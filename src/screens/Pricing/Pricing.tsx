@@ -7,6 +7,7 @@ import { usePlans } from "../../lib/hooks/usePlans";
 import { Navbar } from "@components/ui/Navbar";
 import { useOnboarding } from '../../context/OnboardingContext';
 import { useAuth } from "../../context/useAuth";
+import { useConnectWallet } from "../../context/ConnectWalletContext";
 import { toast } from "react-toastify";
 import { extractErrorMessage } from "../../lib/utils";
 import { ToggleBilling } from "@components/ui/ToggleBilling";
@@ -55,6 +56,7 @@ export const Pricing = (): JSX.Element => {
   const { user } = useAuth();
   const { plans: backendPlans, loading: plansLoading } = usePlans();
   const { open } = useOnboarding();
+  const { openModal } = useConnectWallet();
   const [subscribing, setSubscribing] = useState<Record<string, boolean>>({});
   const [convertingEth, setConvertingEth] = useState<Record<string, boolean>>({});
   const [modalOpen, setModalOpen] = useState(false);
@@ -240,6 +242,17 @@ const navigationItems = [
               const role = (user?.userInfo?.role ?? (user as any)?.role ?? "").toString();
               if (role && role.toLowerCase() !== "user") {
                 toast.error(getSubscriptionDeniedMessage(role));
+                return;
+              }
+
+              // Check if user is authenticated (has wallet token)
+              if (!user?.token) {
+                toast.info('Redirecting to wallet connection...');
+                localStorage.setItem('pendingSubscriptionPlanId', String(plan.id));
+                navigate('/');
+                setTimeout(() => {
+                  openModal();
+                }, 100);
                 return;
               }
 

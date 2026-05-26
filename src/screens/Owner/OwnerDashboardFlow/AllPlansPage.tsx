@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@components/ui/card";
 import { Badge } from "@components/ui/badge";
-import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Home as HomeIcon } from "lucide-react";
 import { useAuth } from "../../../context/useAuth";
 import { useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify";
@@ -9,21 +9,7 @@ import { extractErrorMessage } from "../../../lib/utils";
 
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
-const chainIconFor = (chain?: string) => {
-  if (!chain) return "🔗";
-  switch (chain.toLowerCase()) {
-    case "eth":
-    case "ethereum":
-      return "💎";
-    case "btc":
-    case "bitcoin":
-      return "₿";
-    case "polygon":
-      return "⭕";
-    default:
-      return "🔗";
-  }
-};
+import planTypeIcon from '../../../lib/icons/planTypeIcon';
 
 const getInitials = (name?: string): string => {
   if (!name || name === "—") return "—";
@@ -74,19 +60,23 @@ export const AllPlansPage: React.FC = () => {
           const ms = releaseTs * 1000 - Date.now();
           triggerHours = Math.max(0, Math.ceil(ms / (1000 * 60 * 60)));
         }
+        // Prefer beneficiary name from returned beneficiaries list if available
+        const primaryBeneficiary = Array.isArray(it.beneficiaries) && it.beneficiaries.length > 0 ? it.beneficiaries[0] : null;
+        const beneficiaryName = primaryBeneficiary ? (primaryBeneficiary.name || primaryBeneficiary.wallet) : (it.owner_wallet ?? "—");
+        const beneficiaryWallet = primaryBeneficiary ? (primaryBeneficiary.wallet || null) : (it.owner_wallet ?? null);
         return {
           id: String(it.id ?? it.contract_plan_id ?? "-"),
           name: it.name ?? `Plan #${it.id}`,
           chainName: it.crypto_asset ?? "-",
-          chainIcon: chainIconFor(it.crypto_asset),
-          beneficiary: { name: it.owner_wallet ?? "—", avatar: (it.owner_wallet || "—").slice(2, 4).toUpperCase() },
-          beneficiariesPreview: [],
+          chainIcon: planTypeIcon(it.plan_type, it.is_child_trust),
+          isChildTrust,
+          beneficiary: { name: beneficiaryName, wallet: beneficiaryWallet, avatar: (String(beneficiaryName || "—").slice(0,2) || "—").toUpperCase() },
+          beneficiariesPreview: Array.isArray(it.beneficiaries) ? it.beneficiaries : [],
           assets: it.amount ? String(it.amount) : "—",
           assetsDetail: it.crypto_asset ?? "—",
           status: isCancelled ? "Cancelled" : isReleased ? "Triggered" : isFunded ? "Active" : "Pending",
           statusColor: isCancelled ? "bg-gray-500" : isReleased ? "bg-red-500" : isFunded ? "bg-green-500" : "bg-yellow-500",
           triggerDays: triggerHours || 0,
-          isChildTrust,
           raw: it,
         };
       });
@@ -137,11 +127,20 @@ export const AllPlansPage: React.FC = () => {
 
   return (
     <div className="p-4">
-      <button onClick={() => navigate("/owner-dashboard")} className="text-sm text-[#B9B09D] mb-2">← Back</button>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-white text-2xl font-bold">All Plans</h1>
-        <div className="text-sm text-[#B9B09D]">{plans.length} total plans</div>
-      </div>
+      <header className="mb-4">
+        <div className="flex items-center gap-2 text-[#8b7b64]">
+          <button onClick={() => navigate("/owner-dashboard")} className="hover:text-white transition-colors">
+            <HomeIcon className="w-4 h-4" />
+          </button>
+          <span className="text-sm">/</span>
+          <span className="text-sm">Owner Plans</span>
+        </div>
+
+        <div className="flex items-center justify-between mt-2">
+          <h1 className="text-white text-2xl font-bold">All Plans</h1>
+          <div className="text-sm text-[#B9B09D]">{plans.length} total plans</div>
+        </div>
+      </header>
 
       {/* Top filters */}
       <Card className="bg-[#231b16] border-[#393028] mb-6">

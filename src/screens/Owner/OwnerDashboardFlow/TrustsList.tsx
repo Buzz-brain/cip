@@ -49,7 +49,7 @@ export const TrustsList = (): JSX.Element => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {templates.map((tpl) => (
             <Link key={tpl.id} to={`/owner-dashboard/trusts/${tpl.id}`}>
-              <Card className="bg-[#1a1410] border-[#3a2f1e] hover:shadow-lg transition-shadow">
+              <Card className="bg-[#1a1410] border-[#3a2f1e] hover:shadow-lg hover:shadow-orange-500/20 transition-shadow">
                 <CardContent className="p-5">
                   <div className="flex items-center justify-between">
                     <div>

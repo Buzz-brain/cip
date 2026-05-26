@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import * as authAPI from "../../lib/api/auth";
 import { Button } from "@components/ui/button";
+import Spinner from '@components/ui/Spinner';
 import { Card, CardContent } from "@components/ui/card";
 import { Input } from "@components/ui/input";
 import {
@@ -101,7 +102,14 @@ export const ProfileSetupForm = (): JSX.Element => {
         latestUserInfo = user.userInfo;
       }
       const role = latestUserInfo?.role || user?.userInfo?.role;
-      navigate(getDashboardRoute(role));
+      
+      // Check if there's a pending subscription intent
+      const pendingPlanId = localStorage.getItem('pendingSubscriptionPlanId');
+      if (pendingPlanId) {
+        navigate('/owner-dashboard/billing-and-payments');
+      } else {
+        navigate(getDashboardRoute(role));
+      }
     } catch (err) {
       // Preserve error handling but remove console output; toast will notify user
       setSaveError(err instanceof Error ? err.message : "Failed to save profile.");
@@ -292,7 +300,14 @@ export const ProfileSetupForm = (): JSX.Element => {
                   disabled={saveLoading}
                   className="h-12 px-8 bg-[#ff6600] hover:bg-[#ff7700] font-bold text-white text-base rounded-lg flex items-center gap-2"
                 >
-                  {saveLoading ? "Saving..." : "Save Profile"}
+                  {saveLoading ? (
+                    <>
+                      <Spinner className="text-white" size={16} />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    "Save Profile"
+                  )}
                 </Button>
 
                 {saveError && (

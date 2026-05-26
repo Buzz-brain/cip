@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/useAuth';
 import { getExecutorInheritanceById, postExecutePlan } from '../../lib/api/executor';
+import { formatTimestampUtc } from '../../lib/utils';
 import { toast } from 'react-toastify';
 
 export const ExecuteInheritancePlan = (): JSX.Element => {
@@ -13,12 +14,7 @@ export const ExecuteInheritancePlan = (): JSX.Element => {
   const [loading, setLoading] = useState(false);
 
   const formatTs = (ts?: number | null) => {
-    if (!ts) return '—';
-    try {
-      return new Date(Number(ts) * 1000).toLocaleString();
-    } catch (e) {
-      return String(ts);
-    }
+    return formatTimestampUtc(ts);
   };
   const getInitials = (name?: string) => {
     if (!name) return 'U';

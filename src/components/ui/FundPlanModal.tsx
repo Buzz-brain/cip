@@ -18,9 +18,11 @@ interface Props {
   defaultAmount?: string;
   userToken?: string | null;
   ownerWallet?: string | null;
+  /** Callback fired after plan is successfully funded (after backend notified). Used for immediate parent refresh. */
+  onFundSuccess?: (planId: number | string) => void;
 }
 
-const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbId = null, defaultAmount = "0.0", userToken = null, ownerWallet = null }) => {
+const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbId = null, defaultAmount = "0.0", userToken = null, ownerWallet = null, onFundSuccess = undefined }) => {
   const [amount, setAmount] = useState<string>(defaultAmount);
   const [status, setStatus] = useState<"idle" | "signing" | "pending" | "success" | "error">("idle");
   const [txHash, setTxHash] = useState<string | null>(null);
@@ -101,14 +103,7 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
     }
   }, [open, defaultAmount]);
 
-  useEffect(() => {
-    if (status === "success") {
-      const timer = setTimeout(() => {
-        onClose();
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [status, onClose]);
+
 
   // render
 
@@ -208,15 +203,33 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
           });
           if (detailRes.ok) {
             const detailJson = await detailRes.json();
+            const payload = detailJson?.data ?? detailJson;
+            // Emit via PlanContext to all listeners (single source of truth)
             try {
-              planCtx?.emitPlansUpdated?.(detailJson?.data ?? detailJson);
+              planCtx?.emitPlansUpdated?.(payload);
             } catch (e) {
+              // Log in dev but don't crash
+              if (import.meta.env.DEV) console.warn('emitPlansUpdated failed:', e);
+            }
+            // Dispatch window event as fallback for components not using PlanContext
+            try {
+              window.dispatchEvent(new CustomEvent('plans:updated', { detail: payload }));
+            } catch (e) {
+              if (import.meta.env.DEV) console.warn('plans:updated dispatch failed:', e);
             }
           }
         } catch (e) {
           // [sanitized] console.warn removed
         }
 
+        // Call parent callback for immediate refresh before closing modal
+        try {
+          if (onFundSuccess) onFundSuccess(planIdNum);
+        } catch (e) {
+          if (import.meta.env.DEV) console.warn('onFundSuccess callback failed:', e);
+        }
+        // Close modal and mark success so parent UI updates immediately
+        try { onClose(); } catch (e) {}
         setStatus("success");
         toast.success("Plan funded and backend notified.");
         } catch (e: any) {
@@ -265,15 +278,32 @@ const FundPlanModal: React.FC<Props> = ({ open, onClose, contractPlanId, planDbI
         });
         if (detailRes.ok) {
           const detailJson = await detailRes.json();
+          const payload = detailJson?.data ?? detailJson;
+          // Emit via PlanContext to all listeners (single source of truth)
           try {
-            planCtx?.emitPlansUpdated?.(detailJson?.data ?? detailJson);
+            planCtx?.emitPlansUpdated?.(payload);
           } catch (e) {
+            if (import.meta.env.DEV) console.warn('emitPlansUpdated failed:', e);
+          }
+          // Dispatch window event as fallback for components not using PlanContext
+          try {
+            window.dispatchEvent(new CustomEvent('plans:updated', { detail: payload }));
+          } catch (e) {
+            if (import.meta.env.DEV) console.warn('plans:updated dispatch failed:', e);
           }
         }
       } catch (e) {
-        // [sanitized] console.warn removed
+        if (import.meta.env.DEV) console.warn('Retry refetch failed:', e);
       }
 
+      // Call parent callback for immediate refresh before closing
+      try {
+        if (onFundSuccess) onFundSuccess(Number(contractPlanId));
+      } catch (e) {
+        if (import.meta.env.DEV) console.warn('onFundSuccess callback failed:', e);
+      }
+      // Close modal and mark success so parent UI updates immediately
+      try { onClose(); } catch (e) {}
       setStatus("success");
       setBackendNotifyFailed(false);
       toast.success("Backend notified successfully!");

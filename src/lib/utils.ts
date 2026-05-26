@@ -54,6 +54,25 @@ export async function extractErrorMessage(response: Response): Promise<string> {
   }
 }
 
+export function formatTimestampUtc(ts?: number | null): string {
+  if (!ts) return '—';
+  try {
+    const d = new Date(Number(ts) * 1000);
+    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const month = months[d.getUTCMonth()];
+    const day = d.getUTCDate();
+    const year = d.getUTCFullYear();
+    const hh = d.getUTCHours();
+    const mm = String(d.getUTCMinutes()).padStart(2, '0');
+    const ss = String(d.getUTCSeconds()).padStart(2, '0');
+    const period = hh >= 12 ? 'PM' : 'AM';
+    const hour12 = hh % 12 === 0 ? 12 : hh % 12;
+    return `${month} ${day}, ${year} at ${hour12}:${mm}:${ss} ${period} UTC`;
+  } catch (e) {
+    return String(ts);
+  }
+}
+
 // Map user role to dashboard route. Keeps routing logic in one place.
 export function getDashboardRoute(role?: string | null): string {
   switch ((role || "").toLowerCase()) {

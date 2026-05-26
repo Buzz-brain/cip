@@ -4,9 +4,11 @@ import { useAuth } from "../../../../../context/useAuth";
 import { toast } from 'react-toastify';
 import { activateProofOfLife, getActiveProofPlan } from '../../../../../lib/api/inherit';
 import { usePlan } from '../../../../../context/usePlan';
+import { calculateProofOfLifeStatus, supportsProofOfLife } from '../../../../../lib/utils/proofOfLife';
 import alarmBuzzOrangeIcon from "@assets/alarm-buzz-orange.svg";
 import thumbprintIcon from "@assets/thumbprint.svg";
 import heartVideo from "@assets/video/heart-video.mp4";
+import Spinner from '@components/ui/Spinner';
 
 export type ProofOfLifeModalProps = {
   open?: boolean;
@@ -69,51 +71,40 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
       try {
         setIsLoading(true);
         
-        // If deadlineTs is provided via props, use it directly
-        if (props?.deadlineTs) {
-          const remainingMs = props.deadlineTs - Date.now();
-          if (remainingMs > 0) {
-            const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
-            setTimeRemaining({ days, hours, minutes, seconds });
-            expiryRef.current = props.deadlineTs;
-            setHasActivePlan(true);
-          }
-          setIsLoading(false);
-          return;
-        }
-        
-        // Otherwise, fetch from API
+        // Fetch plan from API
         const plan = await getActiveProofPlan(user?.token);
         if (!mounted) return;
         
-        if (!plan) {
+        if (!plan || !supportsProofOfLife(plan.plan_type)) {
           setHasActivePlan(false);
           setIsLoading(false);
           return;
         }
-        // Use correct field names from backend
-        const baseTs = Number(plan.last_active_at ?? plan.created_at ?? 0);
-        const inactivityDays = Number(plan.inactivity_period_days ?? 0);
-        const graceDays = Number(plan.grace_period ?? 0);
+
+        // Use the shared utility to calculate POL status
+        const polData = calculateProofOfLifeStatus(plan);
         
-        if (baseTs && (inactivityDays || graceDays)) {
-          const expirySec = baseTs + (inactivityDays + graceDays) * 86400;
-          const expiryMs = expirySec * 1000;
-          const remainingMs = expiryMs - Date.now();
-          
-          if (remainingMs > 0) {
-            const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
-            setTimeRemaining({ days, hours, minutes, seconds });
-            expiryRef.current = expiryMs;
-            setHasActivePlan(true);
-          }
+        if (polData.status === null) {
+          // POL not applicable (unfunded or cancelled)
+          setHasActivePlan(false);
+          setIsLoading(false);
+          return;
         }
+
+        // Set up countdown with the correct expiry timestamp based on status
+        if (polData.timeRemaining) {
+          setTimeRemaining(polData.timeRemaining);
+        }
+        // Use triggerTs for "active" status (inactivity period), deadlineTs for "missed" (grace period)
+        if (polData.status === "active" && polData.triggerTs) {
+          expiryRef.current = polData.triggerTs;
+        } else if (polData.status === "missed" && polData.deadlineTs) {
+          expiryRef.current = polData.deadlineTs;
+        } else if (polData.deadlineTs) {
+          // Fallback for critical status
+          expiryRef.current = polData.deadlineTs;
+        }
+        setHasActivePlan(true);
         setIsLoading(false);
       } catch (err) {
         // [sanitized] console.warn removed
@@ -123,9 +114,9 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
     })();
 
     return () => { mounted = false; };
-  }, []); // Only run on mount
+  }, [user?.token]); // Include user?.token as dependency
 
-  // Separate countdown interval
+  // Separate countdown interval - recalculates using utility to ensure accuracy
   useEffect(() => {
     if (!hasActivePlan || !expiryRef.current) return;
     
@@ -243,7 +234,7 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
               <div className="grid grid-cols-1 md:grid-cols-[45%_55%]">
                 {/* Left: Video */}
                 <div className="w-full bg-black">
-                  <div className="relative" style={{ paddingTop: '56.25%' }}>
+                  <div className="relative" style={{ paddingTop: '100%' }}>
                     <video
                       src={heartVideo}
                       className="absolute inset-0 w-full h-full object-cover"
@@ -315,7 +306,19 @@ export const ProofOfLifeCheck = (props?: ProofOfLifeModalProps): JSX.Element | n
                         className={`flex-1 ${confirming || !hasActivePlan || isLoading ? 'opacity-60 cursor-not-allowed' : 'bg-[#FF6600] hover:bg-orange-700'} text-white py-3 rounded-lg font-bold transition text-md flex gap-2 items-center justify-center`}
                       >
                         <img src={thumbprintIcon} className="w-5 h-5" alt="Thumbprint" />
-                        <span>{isLoading ? 'Loading...' : confirming ? 'Confirming...' : 'Confirm Life'}</span>
+                          {isLoading ? (
+                            <>
+                              <Spinner className="text-white" size={16} />
+                              <span>Loading...</span>
+                            </>
+                          ) : confirming ? (
+                            <>
+                              <Spinner className="text-white" size={16} />
+                              <span>Confirming...</span>
+                            </>
+                          ) : (
+                            <span>Confirm Life</span>
+                          )}
                       </button>
                       <button
                         onClick={() => onClose ? onClose() : navigate(-1)}

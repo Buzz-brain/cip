@@ -3,7 +3,7 @@ import { NavLink, Outlet, useNavigate, Link } from 'react-router-dom';
 import { Header } from '../Administrative/Header';
 import { AppProvider } from '../Administrative/AppContext';
 import { useAuth } from '../../context/useAuth'
-import logoImg from "@assets/cip-logo-full.png";;
+import logoImg from "@assets/cip-logo.png";;
 import { toast } from 'react-toastify';
 
 export const EnterpriseDashboard: React.FC = () => {

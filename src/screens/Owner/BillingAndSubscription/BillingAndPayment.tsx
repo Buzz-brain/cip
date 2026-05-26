@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { getSubscriptionHistory } from '../../../lib/api/auth';
 import { useAuth } from '../../../context/useAuth';
 import { usePlans } from '../../../lib/hooks/usePlans';
+import { toast } from 'react-toastify';
 import AvailablePlans from './AvailablePlans';
 import { SkeletonCard } from '@components/ui/skeleton-card';
 
@@ -10,16 +11,16 @@ interface BillingPaymentPageProps {
   onUpgrade?: () => void;
 }
 
-export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.Element => {
+export const BillingAndPayment = ({ onUpgrade: _onUpgrade }: BillingPaymentPageProps): JSX.Element => {
   const { user } = useAuth();
   const { plans: backendPlans } = usePlans();
 
   const [dashLoading, setDashLoading] = useState(false);
   const [dashboard, setDashboard] = useState<any | null>(null);
-  const [dashError, setDashError] = useState<string | null>(null);
+  const [_dashError, setDashError] = useState<string | null>(null);
   const [subscriptions, setSubscriptions] = useState<any[] | null>(null);
   const [subsLoading, setSubsLoading] = useState(false);
-  const [subsError, setSubsError] = useState<string | null>(null);
+  const [_subsError, setSubsError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -71,6 +72,17 @@ export const BillingAndPayment = ({ onUpgrade }: BillingPaymentPageProps): JSX.E
     fetchSubs();
     return () => { mounted = false; };
   }, [user?.token]);
+
+  // Check for pending subscription intent and show welcome toast (only once per session)
+  useEffect(() => {
+    const toastAlreadyShown = sessionStorage.getItem('pendingSubscriptionToastShown');
+    const pendingPlanId = localStorage.getItem('pendingSubscriptionPlanId');
+    
+    if (pendingPlanId && !toastAlreadyShown) {
+      toast.info("You're now connected! Please complete your subscription.");
+      sessionStorage.setItem('pendingSubscriptionToastShown', 'true');
+    }
+  }, []);
   
   return (
     <div className="flex flex-col w-full min-h-screen text-white">

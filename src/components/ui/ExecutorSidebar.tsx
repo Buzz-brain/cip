@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import logoImg from "@assets/cip-logo-full.png";
+import logoImg from "@assets/cip-logo.png";
 
 export type SidebarItem = {
   id: string;

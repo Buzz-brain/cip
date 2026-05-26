@@ -304,12 +304,11 @@ export const PlanProvider: React.FC<PlanProviderProps> = ({ children }) => {
         break;
 
       default:
-        // fallback: include optional fields when present
+        // fallback: include optional fields when present, but never executor
         if (typeof plan.releaseTimestamp === "number") body.release_timestamp = plan.releaseTimestamp;
         if (typeof plan.inactivityPeriodDays === "number") body.inactivity_period_days = plan.inactivityPeriodDays;
         if (plan.proofOfLifeMethod) body.proof_of_life = plan.proofOfLifeMethod;
         if (typeof plan.gracePeriod === "number") body.grace_period = plan.gracePeriod;
-        if (executor && executor.length > 0) body.executor = executor;
         break;
     }
 

@@ -405,10 +405,10 @@ export const AddBeneficiaries = (): JSX.Element => {
                 </div>
               </div>
 
-              <div className="flex flex-col w-full md:w-[320px] gap-6 md:sticky md:top-8">
+              <div className="flex flex-col w-full md:w-[320px] gap-5 md:sticky md:top-8">
                 <Card className="bg-[#1a1410] border-[#2c231a] rounded-xl overflow-hidden">
                   <CardContent className="p-6">
-                    <div className="flex items-center gap-2 mb-6">
+                    <div className="flex items-center gap-2">
                       <div className="flex items-center justify-center w-8 h-8 rounded-lg">
                         <img src={pieCircleIcon} alt="" />
                       </div>
@@ -417,7 +417,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                       </h3>
                     </div>
 
-                    <div className="flex flex-col items-center justify-center py-8 mb-6">
+                    <div className="flex flex-col items-center justify-center py-8 mb-2">
                       <div className="relative w-40 h-40 sm:w-48 sm:h-48">
                         <svg
                           className="w-full h-full -rotate-90"
@@ -558,7 +558,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                     navigate('/choose-plan-type');
                   }}
                   disabled={unallocated !== 0}
-                  className="w-full py-4 sm:py-6 bg-[#ff6600] hover:bg-[#ff6600]/90 disabled:bg-[#54483b] disabled:text-[#80796b] disabled:cursor-not-allowed rounded-lg shadow-[0px_4px_6px_-4px_#137fec40,0px_10px_15px_-3px_#137fec40]"
+                  className="w-full py-4 sm:py-6 bg-[#ff6600] hover:bg-[#ff6600]/60 disabled:bg-[#54483b] disabled:text-[#80796b] disabled:cursor-not-allowed rounded-lg"
                 >
                   <span className="font-bold text-base">
                     Next: Review Plan
@@ -569,7 +569,7 @@ export const AddBeneficiaries = (): JSX.Element => {
                 <Button
                   variant="ghost"
                   onClick={() => navigate(-1)}
-                  className="w-full text-[#9dabb9] hover:text-white hover:bg-transparent mt-3"
+                  className="w-full text-[#9dabb9] hover:text-white hover:bg-transparent border border-[#2c231a] hover:border-[#ff6600] transition-colors py-5"
                 >
                   Go Back
                 </Button>

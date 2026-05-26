@@ -90,8 +90,8 @@ export const ReviewTimeLock = (): JSX.Element => {
             </div>
           </div>
 
-          <Card className="bg-[#8A4F1E1A] border border-[#FF660033] mb-10">
-            <CardContent className="p-8">
+          <Card className="bg-[#8A4F1E1A] border border-[#FF660033] mb-8">
+            <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-14 h-14 bg-[#FF66001A] rounded-full flex items-center justify-center">
@@ -173,7 +173,7 @@ export const ReviewTimeLock = (): JSX.Element => {
           </div>
 
             <div className="flex-1 max-w-6xl mx-auto w-full">
-            <div className="space-y-8 mt-12">
+            <div className="space-y-8 mt-10">
               <div className="bg-[#7C2D121A] rounded-lg p-6 border border-[#7C2D1233] flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                 <div>

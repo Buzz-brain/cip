@@ -1,4 +1,5 @@
 import { Shield, Wallet, Lock, AlertCircle } from "lucide-react";
+import Spinner from '@components/ui/Spinner';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
@@ -135,7 +136,14 @@ export const Login = (): JSX.Element => {
                     className="w-full bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 text-white hover:border-orange-500 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Wallet className="w-4 h-4" />
-                    {isConnectingWallet ? "Connecting..." : "Connect Wallet"}
+                    {isConnectingWallet ? (
+                      <>
+                        <Spinner className="text-white" size={14} />
+                        <span>Connecting...</span>
+                      </>
+                    ) : (
+                      "Connect Wallet"
+                    )}
                   </button>
                 ) : (
                   <div className="bg-black/50 border border-green-600/50 rounded-lg px-4 py-3 flex items-center justify-between">
@@ -161,23 +169,30 @@ export const Login = (): JSX.Element => {
                 disabled={!connectedAccount || loading}
                 className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-medium py-3 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Signing in..." : "Sign In"}
-                {!loading && (
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    className="rotate-180"
-                  >
-                    <path
-                      d="M3 8H13M13 8L9 4M13 8L9 12"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                {loading ? (
+                  <>
+                    <Spinner className="text-white" size={16} />
+                    <span>Signing in...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Sign In</span>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      className="rotate-180"
+                    >
+                      <path
+                        d="M3 8H13M13 8L9 4M13 8L9 12"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </>
                 )}
               </button>
             </form>

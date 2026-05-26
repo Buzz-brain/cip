@@ -730,7 +730,7 @@ export const SelectAssets = (): JSX.Element => {
             </div>
           </div>
 
-          <footer className="items-start pt-14 pb-0 px-0 self-stretch w-full flex-[0_0_auto] flex flex-col relative">
+          <footer className="items-start pt-8 pb-0 px-0 self-stretch w-full flex-[0_0_auto] flex flex-col relative">
             <div className="flex items-center justify-between pt-8 pb-12 px-0 relative self-stretch w-full flex-[0_0_auto] border-t [border-top-style:solid] border-[#54483b]">
               <Button
                 onClick={() => navigate(-1)}

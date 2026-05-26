@@ -318,9 +318,9 @@ export const SetTimeLock = (): JSX.Element => {
               }
                   let year: number, month: number, day: number;
                   if (unlockDateObj) {
-                    year = unlockDateObj.getUTCFullYear();
-                    month = unlockDateObj.getUTCMonth() + 1;
-                    day = unlockDateObj.getUTCDate();
+                    year = unlockDateObj.getFullYear();
+                    month = unlockDateObj.getMonth() + 1;
+                    day = unlockDateObj.getDate();
                   } else {
                     const parts = unlockDate.split('-');
                     if (parts.length !== 3) {

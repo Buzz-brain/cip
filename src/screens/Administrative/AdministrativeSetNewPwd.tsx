@@ -1,7 +1,7 @@
 import { Shield, EyeOff, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logoImg from "@assets/cip-logo-full.png";
+import logoImg from "@assets/cip-logo.png";
 import setNewPwdIcon from "@assets/set-new-pwd.svg";
 
 export const AdministrativeSetNewPwd = (): JSX.Element => {

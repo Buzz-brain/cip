@@ -3,7 +3,7 @@ import { createAdmin } from "../../lib/api/admin";
 import { useAuth } from "../../context/useAuth";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
-import logoImg from "@assets/cip-logo-full.png";
+import logoImg from "@assets/cip-logo.png";
 import loginBgImg from "@assets/login-bg.svg";
 import shieldPadlockIcon from "@assets/shield-padlock-orange.svg";
 import loginArrowIcon from "@assets/login-arrow.svg";

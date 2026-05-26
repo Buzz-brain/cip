@@ -1,7 +1,7 @@
 import { ArrowLeft, Lock } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logoImg from "@assets/cip-logo-full.png";
+import logoImg from "@assets/cip-logo.png";
 
 export const AdministrativeForgotPwd = (): JSX.Element => {
   const navigate = useNavigate();

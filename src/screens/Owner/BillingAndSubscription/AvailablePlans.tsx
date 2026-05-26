@@ -28,6 +28,7 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
   const [modalUsdPrice, setModalUsdPrice] = React.useState<number | null>(null);
   const [modalEthAmount, setModalEthAmount] = React.useState<string | null>(null);
   const [modalLoading, setModalLoading] = React.useState(false);
+  const [intentRestored, setIntentRestored] = React.useState(false);
 
   const performPayment = async (plan: any, amountEth: string) => {
     const key = String(plan.id);
@@ -89,7 +90,16 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
         throw new Error(text || `Status ${res.status}`);
       }
     } catch (err: any) {
-      toast.error(err?.message ?? String(err));
+      const raw = err?.message ?? String(err);
+      const norm = String(raw).toLowerCase();
+      // Detect common insufficient funds errors from providers/ethers
+      if (norm.includes('insufficient') && norm.includes('fund')) {
+        toast.error('Insufficient funds in your wallet to complete this payment. Please top up and try again.');
+      } else if (norm.includes('user rejected') || norm.includes('request rejected') || norm.includes('user denied')) {
+        toast.error('Payment cancelled in wallet.');
+      } else {
+        toast.error(raw);
+      }
     } finally {
       setModalLoading(false);
       setModalOpen(false);
@@ -178,6 +188,24 @@ export const AvailablePlans = ({ onSubscribe }: { onSubscribe?: () => void }) =>
     setConvertingEth((s) => ({ ...s, [key]: false }));
   }
   };
+
+  // Check for pending subscription intent on component mount/when plans load
+  React.useEffect(() => {
+    if (!intentRestored && !plansLoading && backendPlans && backendPlans.length > 0) {
+      const pendingPlanId = localStorage.getItem('pendingSubscriptionPlanId');
+      if (pendingPlanId) {
+        // Find the plan and trigger subscription
+        const plan = backendPlans.find((p: any) => String(p.id) === pendingPlanId);
+        if (plan) {
+          // Clear the stored intent
+          localStorage.removeItem('pendingSubscriptionPlanId');
+          setIntentRestored(true);
+          // Trigger subscription for this plan
+          setTimeout(() => handleSubscribe(plan), 100);
+        }
+      }
+    }
+  }, [plansLoading, backendPlans, intentRestored]);
 
   if (plansLoading) return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

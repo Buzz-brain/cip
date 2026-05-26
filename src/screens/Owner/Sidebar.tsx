@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logoImg from "@assets/cip-logo-full.png";
+import logoImg from "@assets/cip-logo.png";
 import dashboardIcon from "@assets/dashboard.svg";
 import plusCircleIcon from "@assets/plus-icon-grey.svg";
 import fileTextIcon from "@assets/doc-grey.svg";

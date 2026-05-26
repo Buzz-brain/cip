@@ -9,6 +9,8 @@ import { getAllDisputes } from "../../lib/api/dispute";
 import NominateMediatorModal from "../../components/ui/NominateMediatorModal";
 import { toast } from "react-toastify";
 import BeneficiaryLayout from "./BeneficiaryLayout";
+import { formatTimestampUtc } from "../../lib/utils";
+import { getHeartbeatStatus } from "../../lib/utils/proofOfLife";
 
 export const BeneficiaryDetails = (): JSX.Element => {
   const navigate = useNavigate();
@@ -23,12 +25,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
   const [taxInfo, setTaxInfo] = useState<{ beneficiary_id?: number; country?: string | null; asset?: string; amount?: number; tax_rate?: number; estimated_tax?: number } | null>(null);
 
   const formatTs = (ts?: number | null) => {
-    if (!ts) return '—';
-    try {
-      return new Date(Number(ts) * 1000).toLocaleString();
-    } catch (e) {
-      return String(ts);
-    }
+    return formatTimestampUtc(ts);
   };
   const getInitials = (name?: string) => {
     if (!name) return 'U';
@@ -67,14 +64,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
   };
 
   const heartbeatStatus = (plan: any) => {
-    if (!plan) return { label: '—', sub: '' };
-    const last = plan.last_active_at ? new Date(Number(plan.last_active_at) * 1000) : null;
-    if (!last) return { label: 'No Activity', sub: 'Owner has not checked in' };
-    const ms = Date.now() - last.getTime();
-    const days = Math.floor(ms / (1000 * 60 * 60 * 24));
-    if (days <= 2) return { label: 'Heartbeat Active', sub: `Last check-in: ${days} day(s) ago` };
-    if (days <= 30) return { label: 'Delayed Check-ins', sub: `Last check-in: ${days} day(s) ago` };
-    return { label: 'Missed Checks', sub: `Last check-in: ${days} day(s) ago` };
+    return getHeartbeatStatus(plan);
   };
 
   useEffect(() => {
@@ -190,7 +180,7 @@ export const BeneficiaryDetails = (): JSX.Element => {
           <>
             <header className="flex items-center justify-between px-4 py-4 bg-[#0d0501]">
               <div className="flex items-center gap-2 text-[#8b7b64]">
-                <button onClick={() => navigate("/overview")} className="hover:text-white transition-colors">
+                <button onClick={() => navigate("/beneficiary-dashboard")} className="hover:text-white transition-colors">
                   <HomeIcon className="w-4 h-4" />
                 </button>
                 <span className="text-sm">/</span>

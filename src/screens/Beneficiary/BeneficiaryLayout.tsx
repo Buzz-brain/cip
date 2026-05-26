@@ -3,7 +3,7 @@ import { Bell as BellIcon, FileText as FileTextIcon, LayoutGrid as LayoutGridIco
 import { toast } from 'react-toastify';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
-import logoImg from '@assets/cip-logo-full.png';
+import logoImg from '@assets/cip-logo.png';
 
 export const BeneficiaryLayout: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   const navigate = useNavigate();

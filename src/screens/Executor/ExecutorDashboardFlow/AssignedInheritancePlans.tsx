@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle, Circle, Upload } from "lucide-react";
 import { useAuth } from "../../../context/useAuth";
+import { formatTimestampUtc } from "../../../lib/utils";
 import { toast } from "react-toastify";
 
 const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL;
@@ -170,14 +171,7 @@ const AssignedInheritancePlans: React.FC = () => {
   };
 
   const formatTs = (ts?: number | null) => {
-    if (!ts) return "—";
-    try {
-      // backend returns seconds
-      const d = new Date(Number(ts) * 1000);
-      return d.toLocaleString();
-    } catch (e) {
-      return String(ts);
-    }
+    return formatTimestampUtc(ts);
   };
 
   const fetchPlanDetails = async (planId: number) => {

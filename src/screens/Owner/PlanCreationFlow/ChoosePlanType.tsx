@@ -222,7 +222,7 @@ export const ChoosePlanType = (): JSX.Element => {
 
                         {supportedBackendTypes === null ? (
                             <div className="grid md:grid-cols-3 gap-6">
-                                {Array.from({ length: 6 }).map((_, i) => (
+                                {Array.from({ length: 3 }).map((_, i) => (
                                     <div key={i} className="p-6 rounded-lg bg-[#27231C] border-2 border-[#54493B] animate-pulse">
                                         <div className="w-12 h-12 bg-gray-700 rounded-lg mb-4"></div>
                                         <div className="h-6 bg-gray-700 rounded mb-2 w-3/4"></div>

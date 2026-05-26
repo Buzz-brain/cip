@@ -90,7 +90,7 @@ const ExecutorLayout = (): JSX.Element => {
                             <aside className={`absolute left-0 top-0 h-full w-[260px] bg-[#14100d] border-r border-[#3a3430] transform transition-transform duration-300 ${showMobileNav ? 'translate-x-0' : '-translate-x-full'}`}>
                                 <div className="p-6 border-b border-[#3a3430] flex items-center justify-between">
                                     <Link to="/executor-dashboard">
-                                        <img src={"/assets/cip-logo-full.png"} alt="Logo" className="object-cover w-36" />
+                                        <img src={"/assets/cip-logo.png"} alt="Logo" className="object-cover w-36" />
                                     </Link>
                                     <button onClick={() => setShowMobileNav(false)} className="p-2 rounded hover:bg-[#27221c]"><MenuIcon className="w-5 h-5 text-[#8b7b64] rotate-90" /></button>
                                 </div>

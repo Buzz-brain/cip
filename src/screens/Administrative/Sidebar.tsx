@@ -10,7 +10,7 @@ import { useApp } from "./AppContext";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { toast } from "react-toastify";
-import logoImg from "@assets/cip-logo-full.png";
+import logoImg from "@assets/cip-logo.png";
 
 interface SidebarProps {
   variant?: "default" | "simple";

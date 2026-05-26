@@ -13,18 +13,9 @@ import { useAuth } from "../../../../context/useAuth";
 import getOwnerDashboardStats from "../../../../lib/dashboard/ownerStats";
 import { usePlan } from "../../../../context/usePlan";
 import { Plus, Eye, EyeOff } from "lucide-react";
-
-interface ActivityItem {
-  id: string;
-  icon: string;
-  title: string;
-  description: string;
-  timestamp: string;
-}
-
-// sample plans removed - now driven by backend
-
-const activities: ActivityItem[] = [];
+import useActivityLogs from '../../../../lib/hooks/useActivityLogs';
+import ActivityListSkeleton from '@components/ActivityLogs/ActivityListSkeleton';
+import { calculateProofOfLifeStatus, supportsProofOfLife } from "../../../../lib/utils/proofOfLife";
 
 export const OwnerDashboard = (): JSX.Element => {
   const [showValues, setShowValues] = useState(true);
@@ -55,67 +46,33 @@ export const OwnerDashboard = (): JSX.Element => {
   }, [auth?.user?.token]);
 
   useEffect(() => {
-    let mounted = true;
     fetchStats();
-    return () => { mounted = false; };
   }, [fetchStats]);
 
   const fetchPlan = useCallback(async () => {
     try {
       setPolLoading(true);
       const plan = await getActiveProofPlan(auth?.user?.token);
-      if (!plan) {
+      if (!plan || !supportsProofOfLife(plan.plan_type)) {
         setPolStatus(null);
+        setPolPlan(null);
         setPolLoading(false);
         return;
       }
 
-      const now = Date.now();
-      const baseTs = (plan.last_active_at || plan.created_at || plan.updated_at || 0) * 1000;
-      const inactivityDays = Number(plan.inactivity_period_days || plan.inactivity_period || 30);
-      const graceDays = Number(plan.grace_period_days || plan.grace_period || 2);
-
-      const msDay = 24 * 60 * 60 * 1000;
-      const inactivityTs = baseTs + inactivityDays * msDay;
-      const expiryTs = baseTs + (inactivityDays + graceDays) * msDay;
-
+      // Use the shared utility function for all proof-of-life calculations
+      const polData = calculateProofOfLifeStatus(plan);
+      
       setPolPlan(plan);
-
-      const isTriggered = plan.should_release === true || plan.is_released === true;
-
-      if (!isTriggered) {
-        setPolStatus("active");
-        const deadlineTs = baseTs + (inactivityDays + graceDays) * 86400000;
-        setPolDeadlineTs(deadlineTs);
-        const remainingMs = Math.max(0, deadlineTs - now);
-        const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
-        setPolTimeRemaining({ days, hours, minutes, seconds });
-      } else if (now <= expiryTs) {
-        setPolStatus("missed");
-        const remainingMs = expiryTs - now;
-        const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
-        setPolTimeRemaining({ days, hours, minutes, seconds });
-        setMissedCheckCount(plan.missed_checks || 0);
-      } else {
-        setPolStatus("critical");
-        const remainingMs = Math.max(0, expiryTs - now);
-        const days = Math.floor(remainingMs / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((remainingMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
-        setPolTimeRemaining({ days, hours, minutes, seconds });
-        setMissedCheckCount(plan.missed_checks || 0);
-      }
+      setPolStatus(polData.status);
+      setPolTimeRemaining(polData.timeRemaining);
+      setPolDeadlineTs(polData.deadlineTs);
+      setMissedCheckCount(plan.missed_checks || 0);
       setPolLoading(false);
     } catch (err) {
       // [sanitized] console.warn removed
       setPolStatus(null);
+      setPolPlan(null);
       setPolLoading(false);
     }
   }, [auth?.user?.token]);
@@ -127,7 +84,7 @@ export const OwnerDashboard = (): JSX.Element => {
   // Subscribe to plan updates and refresh stats and proof-of-life when plans change
   const planCtx = usePlan();
   useEffect(() => {
-    const onUpdated = async (detail?: any) => {
+    const onUpdated = async (_detail?: any) => {
       try {
         await fetchStats();
       } catch (e) {}
@@ -557,50 +514,54 @@ export const OwnerDashboard = (): JSX.Element => {
           <h2 className="font-bold text-white text-lg">
             Recent Activity
           </h2>
-          <a
-            href="#"
+          <button
+            onClick={() => navigate('/owner-dashboard/activity-logs')}
             className="font-bold text-[#ff6600] hover:text-[#ff6600]/80 text-sm"
           >
             View All
-          </a>
+          </button>
         </div>
-
-        <div className="space-y-2">
-          {activities.length > 0 ? (
-            activities.map((activity) => (
-              <Card
-                key={activity.id}
-                className="bg-[#2D241C] border-[#393028] hover:border-[#554433] transition-colors"
-              >
-                <CardContent className="p-4 flex items-center gap-4">
-                  <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center text-green-400 text-sm flex-shrink-0">
-                    {activity.icon}
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-bold text-white text-sm">
-                      {activity.title}
-                    </h4>
-                    <p className="text-[#B9B09D] text-xs mt-1">
-                      {activity.description}
-                    </p>
-                  </div>
-                  <span className="text-[#B9B09D] text-xs flex-shrink-0">
-                    {activity.timestamp}
-                  </span>
-                </CardContent>
-              </Card>
-            ))
-          ) : (
-            <Card className="bg-[#2D241C] border-[#393028]">
-              <CardContent className="p-8 flex items-center justify-center">
-                <p className="text-[#B9B09D] text-sm">
-                  No recent activity
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+        <RecentActivityBlock />
       </div>
+    </div>
+  );
+};
+
+const RecentActivityBlock: React.FC = () => {
+  const auth = useAuth();
+  const { logs, loading } = useActivityLogs(auth?.user?.token);
+
+  if (loading) return <ActivityListSkeleton count={3} />;
+
+  const items = Array.isArray(logs) ? logs.slice().sort((a: any, b: any) => {
+    const ta = Number(a.timestamp ?? a.created_at ?? a.time ?? 0);
+    const tb = Number(b.timestamp ?? b.created_at ?? b.time ?? 0);
+    return tb - ta;
+  }).slice(0, 3) : [];
+
+  if (!items || items.length === 0) {
+    return (
+      <Card className="bg-[#2D241C] border-[#393028]">
+        <CardContent className="p-8 flex items-center justify-center">
+          <p className="text-[#B9B09D] text-sm">No recent activity</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {items.map((activity: any) => (
+        <Card key={activity.id ?? activity._id ?? JSON.stringify(activity)} className="bg-[#2D241C] border-[#393028] hover:border-[#554433] transition-colors">
+          <CardContent className="p-4 flex items-center gap-4">
+            <div className="flex-1">
+              <h4 className="font-bold text-white text-sm">{String(activity.message ?? activity.title ?? activity.event ?? activity.msg ?? 'Activity')}</h4>
+              <p className="text-[#B9B09D] text-xs mt-1">{String(activity.body ?? activity.details ?? activity.data ?? '')}</p>
+            </div>
+            <span className="text-[#B9B09D] text-xs flex-shrink-0">{new Date(Number(activity.timestamp ?? activity.created_at ?? activity.time ?? 0) * (Number(String(activity.timestamp ?? activity.created_at ?? activity.time ?? 0)) < 1e12 ? 1000 : 1)).toLocaleString()}</span>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 };

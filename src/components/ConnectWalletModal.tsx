@@ -54,10 +54,16 @@ function normalizeErrorMessage(err: unknown): string {
 }
 
 function resolvePostLoginRoute(userInfo: any, role: string): string {
+  const pendingSubscriptionPlanId = localStorage.getItem('pendingSubscriptionPlanId');
   const roleLower = (role || '').toLowerCase();
   const likelyUser = roleLower === 'user' || roleLower === '';
   const isFullyRegistered = userInfo?.full_reg;
   const shouldRequireSetup = likelyUser && isFullyRegistered !== true;
+
+  if (pendingSubscriptionPlanId && !shouldRequireSetup) {
+    return '/owner-dashboard/billing-and-payments';
+  }
+
   return shouldRequireSetup ? '/profile-setup' : getDashboardRoute(role);
 }
 
