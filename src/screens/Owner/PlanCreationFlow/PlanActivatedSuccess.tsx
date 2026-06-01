@@ -192,7 +192,7 @@ export const PlanActivatedSuccess: React.FC = () => {
                     className="text-sm text-[#d1c3b4] hover:underline ml-auto"
                     target="_blank"
                     rel="noreferrer"
-                    href={`https://sepolia.arbiscan.io/tx/${trxHex}`}
+                    href={`https://arbiscan.io/tx/${trxHex}`}
                   >
                     View on Arbiscan →
                   </a>

@@ -699,7 +699,7 @@ export const AllPlan: React.FC<Props> = ({ showValues }) => {
                           </div>
                           <div className="text-white break-all font-mono text-xs">
                             <a
-                              href={`https://explorer.iex.ec/arbitrum-sepolia-testnet/dataset/${selectedPlanDetail.plan.protected_data}`}
+                              href={`https://explorer.iex.ec/arbitrum-one/dataset/${selectedPlanDetail.plan.protected_data}`}
                               target="_blank"
                               rel="noreferrer"
                               className="text-[#ff6600] hover:underline"

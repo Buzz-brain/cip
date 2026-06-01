@@ -348,7 +348,7 @@ export const PlanDetail: React.FC = () => {
                     <div className="text-xs text-[#8b7664]">Protected Data</div>
                     <div className="text-white break-all font-mono text-sm">
                       <a 
-                        href={`https://explorer.iex.ec/arbitrum-sepolia-testnet/dataset/${detail.plan.protected_data}`}
+                        href={`https://explorer.iex.ec/arbitrum-one/dataset/${detail.plan.protected_data}`}
                         target="_blank"
                         rel="noreferrer"
                         className="text-[#ff6600] hover:underline"

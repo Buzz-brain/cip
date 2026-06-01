@@ -34,7 +34,7 @@ export async function fundPlanOnChain(
       if (feeData.maxFeePerGas) {
         // +50% buffer over current maxFeePerGas to absorb block-to-block baseFee fluctuation
         let maxFee = (feeData.maxFeePerGas * 150n) / 100n;
-        // Ensure minimum floor of 30 million wei to prevent rejection on Arbitrum Sepolia
+        // Ensure minimum floor of 30 million wei to prevent rejection on Arbitrum One
         if (maxFee < 30000000n) {
           maxFee = 30000000n;
         }

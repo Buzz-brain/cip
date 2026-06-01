@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { AppKitProvider } from '@reown/appkit/react';
 import { EthersAdapter } from '@reown/appkit-adapter-ethers';
-import { arbitrumSepolia, arbitrum } from '@reown/appkit/networks';
+import { arbitrum } from '@reown/appkit/networks';
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
 
@@ -23,8 +23,8 @@ export function AppKitProviderComponent({ children }: { children: ReactNode }): 
   return (
     <AppKitProvider
       adapters={[ethersAdapter]}
-      networks={[arbitrumSepolia, arbitrum]}
-      defaultNetwork={arbitrumSepolia}
+      networks={[arbitrum]}
+      defaultNetwork={arbitrum}
       projectId={projectId || ''}
       metadata={metadata}
       features={{

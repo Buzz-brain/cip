@@ -3,7 +3,7 @@ import { useChainEnforcement } from '../../hooks/useChainEnforcement';
 import { Button } from './button';
 
 export const ChainAlert = (): JSX.Element | null => {
-  const { currentChain, isWrongChain, chainName, isChecking, error, switchToArbitrumSepolia } =
+  const { currentChain, isWrongChain, chainName, isChecking, error, switchToArbitrumMainnet } =
     useChainEnforcement();
   const [dismissed, setDismissed] = useState(false);
   const [isSwitching, setIsSwitching] = useState(false);
@@ -20,7 +20,7 @@ export const ChainAlert = (): JSX.Element | null => {
   const handleSwitch = async () => {
     setIsSwitching(true);
     try {
-      await switchToArbitrumSepolia();
+      await switchToArbitrumMainnet();
     } finally {
       setIsSwitching(false);
     }
@@ -42,7 +42,7 @@ export const ChainAlert = (): JSX.Element | null => {
                 {" "}
                 Please switch to{" "}
                 <span className="font-semibold text-red-50">
-                  Arbitrum Sepolia
+                  Arbitrum One
                 </span>{" "}
                 to use this app.
               </span>

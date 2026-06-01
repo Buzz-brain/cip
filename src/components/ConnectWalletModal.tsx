@@ -4,7 +4,7 @@ import { useAuth } from "../context/useAuth";
 import { Button } from "@components/ui/button";
 import { toast } from "react-toastify";
 import * as walletUtils from "../lib/wallet/walletUtils";
-import { initEip6963Discovery, waitForWalletProvider, ensureArbitrumSepoliaWithFallback } from "../lib/wallet/walletUtils";
+import { initEip6963Discovery, waitForWalletProvider, ensureArbitrumMainnet } from "../lib/wallet/walletUtils";
 import { useAppKitProvider, useAppKitAccount } from "@reown/appkit/react";
 import { normalizeWalletAddress, getDashboardRoute } from "../lib/utils";
 import { verifyMessage } from "ethers";
@@ -148,7 +148,7 @@ export const ConnectWalletModal = ({ onClose }: ConnectWalletModalProps): JSX.El
 
       const account = normalizeWalletAddress(accounts[0]);
 
-      await ensureArbitrumSepoliaWithFallback(provider);
+      await ensureArbitrumMainnet(provider);
       const nonce = await getNonce(account);
       const signature = await walletUtils.signMessage(nonce, account, provider);
 

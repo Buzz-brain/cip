@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { usePlan } from "../../../context/usePlan";
 import { mapPlanTypeToDataProtectorType } from "../../../context/PlanContext";
-import { ensureArbitrumSepolia } from "../../../lib/wallet/walletUtils";
+import { ensureArbitrumMainnet } from "../../../lib/wallet/walletUtils";
 import fingerprintIcon from "@assets/fingerprint.svg";
 // Using backend create-inheritance directly; DataProtector flow removed.
 
@@ -107,7 +107,7 @@ export const ReviewPlan = (): JSX.Element => {
       if (!plan.planType) throw new Error("Please select a plan type.");
       if (!plan.beneficiaries || plan.beneficiaries.length === 0) throw new Error("Add at least one beneficiary.");
 
-      await ensureArbitrumSepolia();
+      await ensureArbitrumMainnet();
 
       const payload = getProtectorPayload();
       if (!payload.crypto_asset) {

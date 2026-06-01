@@ -28,8 +28,6 @@ import { Home } from "./screens/Home";
 import { Pricing } from "./screens/Pricing";
 import { ViewPlanHistory } from "./screens/Owner/ViewPlanHistory";
 import { AssetRegistry } from "./screens/Owner/AssetRegistry";
-// onboarding pages removed; onboarding is now modal-driven
-import { ConnectWallet } from "./screens/ConnectWallet";
 import { ProfileSetupForm } from "./screens/ProfileSetupForm";
 import { WalletRecovery } from "./screens/WalletRecovery";
 import { RecoveryProgress } from "./screens/RecoveryProgress";

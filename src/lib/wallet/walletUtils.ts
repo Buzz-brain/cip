@@ -197,45 +197,6 @@ export async function getCurrentChainId(provider?: any): Promise<string> {
   return await ethereumProvider.request({ method: "eth_chainId" });
 }
 
-const ARBITRUM_SEPOLIA_CHAIN_ID_HEX = '0x66eee'; // 421614
-
-export async function ensureArbitrumSepoliaWithFallback(provider?: any): Promise<void> {
-  const ethereumProvider = provider || (window as any).ethereum;
-  if (!ethereumProvider) return;
-
-  try {
-    const currentChainId = await ethereumProvider.request({ method: 'eth_chainId' });
-    if (currentChainId === ARBITRUM_SEPOLIA_CHAIN_ID_HEX) return; // already on correct chain
-
-    try {
-      await ethereumProvider.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: ARBITRUM_SEPOLIA_CHAIN_ID_HEX }],
-      });
-    } catch (switchError: any) {
-      if (switchError.code === 4902) {
-        // Chain not added to wallet — add it
-        try {
-          await ethereumProvider.request({
-            method: 'wallet_addEthereumChain',
-            params: [{
-              chainId: ARBITRUM_SEPOLIA_CHAIN_ID_HEX,
-              chainName: 'Arbitrum Sepolia',
-              nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
-              rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
-              blockExplorerUrls: ['https://sepolia.arbiscan.io'],
-            }],
-          });
-        } catch (addError) {
-        }
-      } else {
-      }
-    }
-  } catch (err) {
-    throw err;
-  }
-}
-
 export async function switchToEthereumMainnet(provider?: any): Promise<void> {
   // Use provided provider, fallback to window.ethereum
   const ethereumProvider = provider || window.ethereum;
@@ -280,7 +241,6 @@ export async function switchToEthereumMainnet(provider?: any): Promise<void> {
 }
 
 const ARBITRUM_MAINNET_CHAIN_ID = "0xa4b1"; // 42161 in hex
-const ARBITRUM_SEPOLIA_CHAIN_ID = "0x66eee"; // 421614 in hex
 
 export async function switchToArbitrumMainnet(provider?: any): Promise<void> {
   // Use provided provider, fallback to window.ethereum
@@ -323,60 +283,11 @@ export async function switchToArbitrumMainnet(provider?: any): Promise<void> {
   }
 }
 
-export async function switchToArbitrumSepolia(provider?: any): Promise<void> {
-  // Use provided provider, fallback to window.ethereum
-  const ethereumProvider = provider || window.ethereum;
-  
-  if (!ethereumProvider) {
-    throw new Error("Wallet not detected.");
-  }
-
-  try {
-    await ethereumProvider.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: ARBITRUM_SEPOLIA_CHAIN_ID }],
-    });
-  } catch (switchError: any) {
-    if (switchError.code === 4902) {
-      try {
-        await ethereumProvider.request({
-          method: "wallet_addEthereumChain",
-          params: [
-            {
-              chainId: ARBITRUM_SEPOLIA_CHAIN_ID,
-              chainName: "Arbitrum Sepolia",
-              nativeCurrency: {
-                name: "Ether",
-                symbol: "ETH",
-                decimals: 18,
-              },
-              rpcUrls: ["https://sepolia-rollup.arbitrum.io/rpc"],
-              blockExplorerUrls: ["https://sepolia.arbiscan.io/"],
-            },
-          ],
-        });
-      } catch (addError) {
-        throw new Error("Failed to add Arbitrum Sepolia to wallet.");
-      }
-    } else {
-      throw new Error("Failed to switch to Arbitrum Sepolia.");
-    }
-  }
-}
-
 export async function ensureArbitrumMainnet(provider?: any): Promise<void> {
   const currentChainId = await getCurrentChainId(provider);
 
   if (currentChainId !== ARBITRUM_MAINNET_CHAIN_ID) {
     await switchToArbitrumMainnet(provider);
-  }
-}
-
-export async function ensureArbitrumSepolia(provider?: any): Promise<void> {
-  const currentChainId = await getCurrentChainId(provider);
-
-  if (currentChainId !== ARBITRUM_SEPOLIA_CHAIN_ID) {
-    await switchToArbitrumSepolia(provider);
   }
 }
 

@@ -57,7 +57,7 @@ export const assetData = [
         symbol: "ETH",
         chainIcon: ethIcon,
         chainIconClass: "w-[75.00%] h-[68.18%] top-[15.91%] left-[12.50%]",
-        chain: "Arbitrum Sepolia",
+        chain: "Arbitrum One",
         balance: null,
         value: null,
         bridgeStatus: "Native",

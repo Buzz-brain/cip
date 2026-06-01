@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
-const ARBITRUM_SEPOLIA_CHAIN_ID = '0x66eee'; // 421614 in hex
-const ARBITRUM_SEPOLIA_DECIMAL = 421614;
+const ARBITRUM_MAINNET_CHAIN_ID = '0xa4b1'; // 42161 in hex
+const ARBITRUM_MAINNET_DECIMAL = 42161;
 
 interface ChainEnforcementState {
   currentChain: string | null;
@@ -12,13 +12,13 @@ interface ChainEnforcementState {
 }
 
 /**
- * Hook to enforce Arbitrum Sepolia chain
+ * Hook to enforce Arbitrum One (mainnet) chain
  * - Detects current chain on mount and at intervals
- * - Automatically attempts to switch to Arbitrum Sepolia
+ * - Automatically attempts to switch to Arbitrum One
  * - Returns state about current chain and error handling
  */
 export function useChainEnforcement(): ChainEnforcementState & {
-  switchToArbitrumSepolia: () => Promise<void>;
+  switchToArbitrumMainnet: () => Promise<void>;
 } {
   const [state, setState] = useState<ChainEnforcementState>({
     currentChain: null,
@@ -29,8 +29,8 @@ export function useChainEnforcement(): ChainEnforcementState & {
   });
 
   const getChainName = useCallback((chainId: string): string => {
-    if (chainId === ARBITRUM_SEPOLIA_CHAIN_ID || chainId === String(ARBITRUM_SEPOLIA_DECIMAL)) {
-      return 'Arbitrum Sepolia';
+    if (chainId === ARBITRUM_MAINNET_CHAIN_ID || chainId === String(ARBITRUM_MAINNET_DECIMAL)) {
+      return 'Arbitrum One';
     }
     const chainMap: Record<string, string> = {
       '0x1': 'Ethereum Mainnet',
@@ -41,7 +41,7 @@ export function useChainEnforcement(): ChainEnforcementState & {
     return chainMap[chainId] || `Chain ${chainId}`;
   }, []);
 
-  const switchToArbitrumSepolia = useCallback(async (): Promise<void> => {
+  const switchToArbitrumMainnet = useCallback(async (): Promise<void> => {
     const ethereum = (window as any).ethereum;
     if (!ethereum) {
       setState((prev) => ({
@@ -55,11 +55,11 @@ export function useChainEnforcement(): ChainEnforcementState & {
       // Try to switch to existing chain
       await ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: ARBITRUM_SEPOLIA_CHAIN_ID }],
+        params: [{ chainId: ARBITRUM_MAINNET_CHAIN_ID }],
       });
       setState((prev) => ({
         ...prev,
-        currentChain: ARBITRUM_SEPOLIA_CHAIN_ID,
+        currentChain: ARBITRUM_MAINNET_CHAIN_ID,
         isWrongChain: false,
         error: null,
       }));
@@ -71,28 +71,28 @@ export function useChainEnforcement(): ChainEnforcementState & {
             method: 'wallet_addEthereumChain',
             params: [
               {
-                chainId: ARBITRUM_SEPOLIA_CHAIN_ID,
-                chainName: 'Arbitrum Sepolia',
+                chainId: ARBITRUM_MAINNET_CHAIN_ID,
+                chainName: 'Arbitrum One',
                 nativeCurrency: {
                   name: 'Ether',
                   symbol: 'ETH',
                   decimals: 18,
                 },
-                rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
-                blockExplorerUrls: ['https://sepolia.arbiscan.io'],
+                rpcUrls: ['https://arb1.arbitrum.io/rpc'],
+                blockExplorerUrls: ['https://arbiscan.io'],
               },
             ],
           });
           setState((prev) => ({
             ...prev,
-            currentChain: ARBITRUM_SEPOLIA_CHAIN_ID,
+            currentChain: ARBITRUM_MAINNET_CHAIN_ID,
             isWrongChain: false,
             error: null,
           }));
         } catch (addError) {
           setState((prev) => ({
             ...prev,
-            error: 'Failed to add Arbitrum Sepolia network',
+            error: 'Failed to add Arbitrum One network',
           }));
         }
       } else if (switchError.code === 4001) {
@@ -122,7 +122,7 @@ export function useChainEnforcement(): ChainEnforcementState & {
 
     try {
       const chainId = await ethereum.request({ method: 'eth_chainId' });
-      const isWrong = chainId !== ARBITRUM_SEPOLIA_CHAIN_ID;
+      const isWrong = chainId !== ARBITRUM_MAINNET_CHAIN_ID;
       const chainName = getChainName(chainId);
 
       setState((prev) => ({
@@ -137,7 +137,7 @@ export function useChainEnforcement(): ChainEnforcementState & {
       // If on wrong chain, attempt automatic switch
       if (isWrong && chainId !== '0x1' && chainId !== '0xa4b1') {
         // Only auto-switch if not on Mainnet or Arbitrum One
-        await switchToArbitrumSepolia();
+        await switchToArbitrumMainnet();
       }
     } catch (err) {
       setState((prev) => ({
@@ -146,7 +146,7 @@ export function useChainEnforcement(): ChainEnforcementState & {
         error: 'Failed to check chain',
       }));
     }
-  }, [switchToArbitrumSepolia, getChainName]);
+  }, [switchToArbitrumMainnet, getChainName]);
 
   // Check chain on mount and set up listener
   useEffect(() => {
@@ -173,6 +173,6 @@ export function useChainEnforcement(): ChainEnforcementState & {
 
   return {
     ...state,
-    switchToArbitrumSepolia,
+    switchToArbitrumMainnet,
   };
 }
