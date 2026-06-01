@@ -1184,7 +1184,7 @@ export const Home = (): JSX.Element => {
 
               <div className="flex items-center justify-between">
                 <p className="text-[#695d47] text-sm">
-                  ┬⌐ 2024 CIP Protocol. All rights reserved.
+                  © 2024 CIP Protocol. All rights reserved.
                 </p>
                 <div className="flex items-center gap-4">
                   <span className="text-[#8b7664] text-xs">public</span>
