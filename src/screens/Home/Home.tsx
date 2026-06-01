@@ -519,7 +519,7 @@ export const Home = (): JSX.Element => {
                         <img src={calculatorIcon} alt="" className="w-4 h-4" />
                       </div>
                       <span className="font-bold text-white">
-                        TaxCore CalculatorIcon
+                        TaxCore Calculator
                       </span>
                     </div>
                     <Badge className="bg-[#22c55e1a] border-[#22c55e33] text-green-400 p-2">
